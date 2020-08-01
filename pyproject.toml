@@ -22,7 +22,7 @@ briefcase = "^0.3.3"
 [tool.briefcase]
 project_name = "ReadStor"
 bundle = "com.tnahs.readstor"
-version = "0.1.1"
+version = "0.1.0"
 url = "https://github.com/tnahs/readstor"
 license = "MIT license"
 author = "Shant Ergenian"

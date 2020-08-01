@@ -194,5 +194,5 @@ pip-selfcheck.json
 tmp/
 *tmp/
 
-# briefcase
+# Briefcase builds
 macOS
