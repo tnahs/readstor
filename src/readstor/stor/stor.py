@@ -65,8 +65,8 @@ class Stor(DateTimeUtilsMixin):
         """ Re-makes today's database backup directory in case
         `AppleBooks.stor()` is run more than once a day. """
 
-        helpers.os_utils.remove(path=config.user.path_database_today)
-        helpers.os_utils.make(path=config.user.path_database_today)
+        helpers.shell.remove(path=config.user.path_database_today)
+        helpers.shell.make(path=config.user.path_database_today)
 
     def _copy_source_applebooks_databases(self) -> None:
         """ Copies both BKLibrary###.sqlite and AEAnnotation###.sqlite to
@@ -78,7 +78,7 @@ class Stor(DateTimeUtilsMixin):
                 continue
 
             if item.name.startswith(config.applebooks.NAME_BKLIBRARY):
-                helpers.os_utils.copy(
+                helpers.shell.copy(
                     sources=[item], destination=config.user.path_database_today,
                 )
 
@@ -88,7 +88,7 @@ class Stor(DateTimeUtilsMixin):
                 continue
 
             if item.name.startswith(config.applebooks.NAME_AEANNOTATION):
-                helpers.os_utils.copy(
+                helpers.shell.copy(
                     sources=[item], destination=config.user.path_database_today,
                 )
 
@@ -182,10 +182,10 @@ class Stor(DateTimeUtilsMixin):
         self.__manifest[item.source.id] = datetime.datetime.now()
 
         # Make /[user-stor]/data/items/[title-by-author-xxxxxx]
-        helpers.os_utils.make(path=item.path_item_data)
+        helpers.shell.make(path=item.path_item_data)
 
         # Make /[user-stor]/data/items/[title-by-author-xxxxxx]/media
-        helpers.os_utils.make(path=item.path_media)
+        helpers.shell.make(path=item.path_media)
 
         # Write /[user-stor]/data/items/[title-by-author-xxxxxx]/data.json
         with open(item.file_data, "w", encoding="utf-8") as f:
@@ -215,12 +215,10 @@ class Stor(DateTimeUtilsMixin):
 
     def is_running(self) -> bool:
         """ Checks to see if Apple Books is currently running. """
-        return helpers.os_utils.process_is_running(
-            process_names=config.applebooks.NAMES
-        )
+        return helpers.shell.process_is_running(process_names=config.applebooks.NAMES)
 
     def quit(self) -> None:
         """ Kindly asks Apple Books to quit. """
-        helpers.os_utils.run(
+        helpers.shell.run(
             ["osascript", "-e", f'tell application "{config.applebooks.NAME}" to quit',]
         )

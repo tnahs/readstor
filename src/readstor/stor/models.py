@@ -332,14 +332,12 @@ class StorItem(DateTimeUtilsMixin):
     @property
     def name_safe(self) -> str:
         # title-by-author-xxxxxx
-        return helpers.os_utils.slugify(string=self.name)
+        return helpers.misc.slugify(string=self.name)
 
     @property
     def name_safe_pretty(self) -> str:
         # Title by Author XXXXXX
-        return helpers.os_utils.slugify(
-            string=self.name, delimiter=" ", lowercase=False
-        )
+        return helpers.misc.slugify(string=self.name, delimiter=" ", lowercase=False)
 
     @property
     def path_item_data(self) -> pathlib.Path:

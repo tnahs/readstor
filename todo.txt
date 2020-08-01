@@ -1,10 +1,10 @@
 HIGH:
-    - Create dummy data from a new macOS user.
-    - Are we going to save/recall any history?
+  - Hide Dock icon.
+  - Design logo/icon.
+  - Raise errors.ApplicationError() anytime the user needs to know an error occurred
 
 MEDIUM:
-    - Raise errors.ApplicationError() anytime the user needs to know an error occurred
+  - Clean up dialogs.
 
 LOW:
-    - Design logo/icon.
-    - Clean up dialogs.
+  - Create dummy data from a new macOS user.

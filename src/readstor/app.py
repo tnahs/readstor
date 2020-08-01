@@ -31,7 +31,6 @@ def main(args: argparse.Namespace) -> None:
 
     app = PySide2.QtWidgets.QApplication([])
     app.setQuitOnLastWindowClosed(False)
-    app.setAttribute(PySide2.QtCore.Qt.AA_UseHighDpiPixmaps, True)
 
     view = views.MenuBarView(config=config)
     view.show()

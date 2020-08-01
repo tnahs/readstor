@@ -12,7 +12,7 @@ import psutil
 logger = logging.getLogger(__name__)
 
 
-class OSUtils:
+class Shell:
 
     TRASH = pathlib.Path().home() / ".Trash"
 
@@ -153,12 +153,7 @@ class OSUtils:
             shutil.rmtree(path)
 
         elif path.is_file():
-            # Python 3.8 introduced `missing_ok`. However at the moment
-            # PyInstaller still does not support Python 3.8.
-            try:
-                path.unlink()
-            except FileNotFoundError:
-                pass
+            path.unlink(missing_ok=True)
 
     def trash(self, path: pathlib.Path) -> None:
         """ Move an item to the Trash. """
@@ -326,7 +321,7 @@ class OSUtils:
             items: Iterator[pathlib.Path] = path.glob(glob)
             ignoring.update(items)
 
-        prunables: List[pathlib.Path] = []
+        prunable: List[pathlib.Path] = []
         for item in path.iterdir():
 
             if item in ignoring:
@@ -340,25 +335,25 @@ class OSUtils:
                 ignoring.add(item)
                 continue
 
-            prunables.append(item)
+            prunable.append(item)
 
         logger.debug(f"Ignoring {len(ignoring)} items in `{path}`.")
 
-        if len(prunables) <= size:
+        if len(prunable) <= size:
             logger.debug(
                 "Pruning skipped! Number of prunable items is under the size limit."
             )
             return
 
-        logger.debug(f"Found {len(prunables)} prunable items in `{path}`.")
+        logger.debug(f"Found {len(prunable)} prunable items in `{path}`.")
 
         # Sort by the time of most recent metadata change on Unix.
         # https://docs.python.org/3/library/os.html#os.stat_result.st_ctime
-        prunables = sorted(prunables, reverse=True, key=lambda p: p.stat().st_ctime)
+        prunable = sorted(prunable, reverse=True, key=lambda p: p.stat().st_ctime)
 
         logger.info(f"Pruning `{path}` to {size} items.")
 
-        for count, path in enumerate(prunables, start=1):
+        for count, path in enumerate(prunable, start=1):
 
             # Ignore the first n-files based on `size`.
             if count <= size:
@@ -403,6 +398,8 @@ class OSUtils:
 
         return False
 
+
+class Misc:
     def slugify(self, string: str, delimiter: str = "-", lowercase: bool = True) -> str:
         """ Returns a normalized string. Converts to ASCII, strips non-word
         characters, lowers case and replaces spaces with `delimeter`.
@@ -428,4 +425,5 @@ class OSUtils:
         return string
 
 
-os_utils = OSUtils()
+shell = Shell()
+misc = Misc()

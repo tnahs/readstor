@@ -20,8 +20,8 @@ class Logo:
             self._pixmap = self._pixmap.scaled(
                 size,
                 size,
-                aspectRatioMode=PySide2.QtCore.Qt.KeepAspectRatio,
-                transformMode=PySide2.QtCore.Qt.SmoothTransformation,
+                PySide2.QtCore.Qt.KeepAspectRatio,
+                PySide2.QtCore.Qt.SmoothTransformation,
             )
 
         self._icon = PySide2.QtGui.QIcon(self._pixmap)

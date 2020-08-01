@@ -106,7 +106,7 @@ class MenuBarView(PySide2.QtWidgets.QSystemTrayIcon):
         self.setIcon(self._menu_bar_icon.busy)
 
     def _action__open_stor(self) -> None:
-        helpers.os_utils.run(command=["open", config.user.path_stor])
+        helpers.shell.run(command=["open", config.user.path_stor])
 
     def _action__stor_applebooks(self) -> None:
 

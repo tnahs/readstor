@@ -146,7 +146,7 @@ class AppConfig:
         └── logs.log
         """
 
-        helpers.os_utils.make(path=self.PATH_HOME)
+        helpers.shell.make(path=self.PATH_HOME)
 
     def init_logger(self, log_level: str) -> None:
 
@@ -238,7 +238,7 @@ class UserConfig:
         ]
 
         for path in directories:
-            helpers.os_utils.make(path=path)
+            helpers.shell.make(path=path)
 
     def load(self) -> None:
 
@@ -386,7 +386,7 @@ class UserConfig:
             if item.name == self.__global_config.app.FILENAME_LOGS:
                 continue
 
-            helpers.os_utils.move(source=item, destination=destination)
+            helpers.shell.move(source=item, destination=destination)
 
     def _serialize(self) -> dict:
 
