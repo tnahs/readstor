@@ -54,8 +54,8 @@ class MenuBarView(PySide2.QtWidgets.QSystemTrayIcon):
 
     def _init_ui(self) -> None:
 
-        self._menu_bar_icon = widgets.MenuBarIcon()
-        self.setIcon(self._menu_bar_icon.idle)
+        self._menubar_icon = widgets.MenuBarIcon()
+        self.setIcon(self._menubar_icon.idle)
 
         #
 
@@ -98,12 +98,12 @@ class MenuBarView(PySide2.QtWidgets.QSystemTrayIcon):
     def _callback__global_ui_enable(self) -> None:
         self._menu_item__open_preferences_dialog.setEnabled(True)
         self._menu_item__stor_applebooks.setEnabled(True)
-        self.setIcon(self._menu_bar_icon.idle)
+        self.setIcon(self._menubar_icon.idle)
 
     def _callback__global_ui_disable(self) -> None:
         self._menu_item__open_preferences_dialog.setEnabled(False)
         self._menu_item__stor_applebooks.setEnabled(False)
-        self.setIcon(self._menu_bar_icon.busy)
+        self.setIcon(self._menubar_icon.busy)
 
     def _action__open_stor(self) -> None:
         helpers.shell.run(command=["open", config.user.path_stor])

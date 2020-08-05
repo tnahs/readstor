@@ -122,8 +122,8 @@ class AppConfig:
         # /[application]/src/resources/images
         self.PATH_IMAGES: pathlib.Path = self.PATH_RESOURCES / "images"
         self.LOGO: pathlib.Path = self.PATH_IMAGES / "logo.png"
-        self.MENU_BAR_ICON_IDLE: pathlib.Path = self.PATH_IMAGES / "menu-bar-icon-idle.png"
-        self.MENU_BAR_ICON_BUSY: pathlib.Path = self.PATH_IMAGES / "menu-bar-icon-busy.png"
+        self.MENUBAR_ICON_IDLE: pathlib.Path = self.PATH_IMAGES / "menubar-icon-idle.png"
+        self.MENUBAR_ICON_BUSY: pathlib.Path = self.PATH_IMAGES / "menubar-icon-busy.png"
 
         #
 

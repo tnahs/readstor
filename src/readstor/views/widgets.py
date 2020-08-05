@@ -42,8 +42,8 @@ class Logo:
 class MenuBarIcon:
     def __init__(self) -> None:
 
-        pixmap__idle = PySide2.QtGui.QPixmap(str(config.app.MENU_BAR_ICON_IDLE))
-        pixmap__busy = PySide2.QtGui.QPixmap(str(config.app.MENU_BAR_ICON_BUSY))
+        pixmap__idle = PySide2.QtGui.QPixmap(str(config.app.MENUBAR_ICON_IDLE))
+        pixmap__busy = PySide2.QtGui.QPixmap(str(config.app.MENUBAR_ICON_BUSY))
 
         self._icon_idle = PySide2.QtGui.QIcon(pixmap__idle)
         self._icon_busy = PySide2.QtGui.QIcon(pixmap__busy)

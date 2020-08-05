@@ -1,9 +1,8 @@
 HIGH:
-  - Hide Dock icon.
   - Design logo/icon.
-  - Raise errors.ApplicationError() anytime the user needs to know an error occurred
 
 MEDIUM:
+  - Raise errors.ApplicationError() anytime the user needs to know an error occurred
   - Clean up dialogs.
 
 LOW:

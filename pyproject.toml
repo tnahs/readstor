@@ -31,7 +31,7 @@ author_email = "shant.ergenian@gmail.com"
 [tool.briefcase.app.readstor]
 formal_name = "ReadStor"
 description = ""
-icon = "src/readstor/resources/readstor"
+icon = "src/readstor/resources/icon"
 sources = ["src/readstor"]
 requires = ["pyside2>=5.15.0","jinja2>=2.11.1", "psutil>=5.7.0"]
 
