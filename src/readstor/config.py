@@ -3,10 +3,10 @@ import json
 import logging
 import logging.handlers
 import pathlib
-import sys
 
 import PySide2
 import PySide2.QtCore
+import PySide2.QtWidgets
 
 from . import __version__, errors, helpers
 from .applebooks.config import AppleBooksConfig
@@ -175,6 +175,10 @@ class AppConfig:
         logging.basicConfig(
             level=log_level, handlers=[stream_handler, file_handler],
         )
+
+    @property
+    def pixel_ratio(self):
+        return PySide2.QtWidgets.QApplication.instance().devicePixelRatio()
 
 
 class UserConfigKeys:

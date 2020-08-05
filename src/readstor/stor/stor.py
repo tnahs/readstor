@@ -6,8 +6,9 @@ from typing import Dict, Optional
 from readstor import helpers
 from readstor.applebooks import database
 from readstor.config import config
-from .mixins import DateTimeUtilsMixin
+
 from . import exporter, models
+from .mixins import DateTimeUtilsMixin
 
 
 logger = logging.getLogger(__name__)

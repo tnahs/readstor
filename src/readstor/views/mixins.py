@@ -1,12 +1,14 @@
 from typing import Optional
 
 import PySide2
+import PySide2.QtWidgets
 
 
 class QtShowMixin:
     def center_window(
         self, offset_x: Optional[float] = None, offset_y: Optional[float] = None
     ) -> None:
+
         if not self.isVisible():
             raise AssertionError(
                 "Qt object must be visible before calling this function."

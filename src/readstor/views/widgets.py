@@ -6,7 +6,8 @@ import PySide2.QtGui
 import PySide2.QtCore
 import PySide2.QtWidgets
 
-from readstor.config import config, errors
+from readstor.config import config
+from readstor import errors
 
 from . import mixins
 
@@ -16,7 +17,17 @@ class Logo:
 
         self._pixmap = PySide2.QtGui.QPixmap(str(config.app.LOGO))
 
+        # Enables HiDPI images to scale properly.
+        self._pixmap.setDevicePixelRatio(config.app.pixel_ratio)
+
         if size is not None:
+
+            # Normalizes the size so that all pixel values passed to Qt's
+            # public API follow the same convention. i.e. When adding spacing,
+            # a value of '5' passed to <layout>.addSpacing() yields a spacing
+            # of 10 if the pixel ratio is 2.
+            size = size * config.app.pixel_ratio
+
             self._pixmap = self._pixmap.scaled(
                 size,
                 size,
@@ -240,6 +251,7 @@ class AboutDialog(PySide2.QtWidgets.QDialog, mixins.QtShowMixin):
         layout.setContentsMargins(32, 16, 32, 24)
         layout.setSpacing(0)
         layout.addWidget(logo)
+        layout.addSpacing(5)
         layout.addWidget(label__name)
         layout.addSpacing(20)
         layout.addWidget(label__copyright)
