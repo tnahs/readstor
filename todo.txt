@@ -1,5 +1,4 @@
 HIGH:
-  - Design logo/icon.
 
 MEDIUM:
   - Raise errors.ApplicationError() anytime the user needs to know an error occurred
