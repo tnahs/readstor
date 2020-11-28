@@ -14,10 +14,13 @@ pyside2 = "^5.15.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"
-black = "^19.10b0"
-mypy = "^0.770"
-flake8 = "^3.7.9"
 briefcase = "^0.3.3"
+
+[tool.isort]
+profile = "black"
+lines_after_imports = 2
+skip_gitignore = true
+
 
 [tool.briefcase]
 project_name = "ReadStor"

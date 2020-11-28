@@ -2,12 +2,12 @@ import pathlib
 from typing import Callable, List, Optional
 
 import PySide2
-import PySide2.QtGui
 import PySide2.QtCore
+import PySide2.QtGui
 import PySide2.QtWidgets
 
-from readstor.config import config
 from readstor import errors
+from readstor.config import GlobalConfig
 
 from . import mixins
 
@@ -15,10 +15,10 @@ from . import mixins
 class Logo:
     def __init__(self, size: Optional[int] = None) -> None:
 
-        self._pixmap = PySide2.QtGui.QPixmap(str(config.app.LOGO))
+        self._pixmap = PySide2.QtGui.QPixmap(str(GlobalConfig.app.LOGO))
 
         # Enables HiDPI images to scale properly.
-        self._pixmap.setDevicePixelRatio(config.app.pixel_ratio)
+        self._pixmap.setDevicePixelRatio(GlobalConfig.app.pixel_ratio)
 
         if size is not None:
 
@@ -26,7 +26,7 @@ class Logo:
             # public API follow the same convention. i.e. When adding spacing,
             # a value of '5' passed to <layout>.addSpacing() yields a spacing
             # of 10 if the pixel ratio is 2.
-            size = size * config.app.pixel_ratio
+            size = size * GlobalConfig.app.pixel_ratio
 
             self._pixmap = self._pixmap.scaled(
                 size,
@@ -53,8 +53,8 @@ class Logo:
 class MenuBarIcon:
     def __init__(self) -> None:
 
-        pixmap__idle = PySide2.QtGui.QPixmap(str(config.app.MENUBAR_ICON_IDLE))
-        pixmap__busy = PySide2.QtGui.QPixmap(str(config.app.MENUBAR_ICON_BUSY))
+        pixmap__idle = PySide2.QtGui.QPixmap(str(GlobalConfig.app.MENUBAR_ICON_IDLE))
+        pixmap__busy = PySide2.QtGui.QPixmap(str(GlobalConfig.app.MENUBAR_ICON_BUSY))
 
         self._icon_idle = PySide2.QtGui.QIcon(pixmap__idle)
         self._icon_busy = PySide2.QtGui.QIcon(pixmap__busy)
@@ -123,9 +123,9 @@ class SelectDirectoryDialog(PySide2.QtWidgets.QFileDialog):
 
 class ErrorDialog(PySide2.QtWidgets.QMessageBox, mixins.QtShowMixin):
     def __init__(self, message: str) -> None:
-        """ Creates a customizable "message" dialog.
+        """Creates a customizable "message" dialog.
 
-        message -- Error message. """
+        message -- Error message."""
 
         super().__init__(parent=None)
 
@@ -163,7 +163,7 @@ class AlertDialog(PySide2.QtWidgets.QMessageBox, mixins.QtShowMixin):
         details: Optional[str] = None,
         action_button: Optional[dict] = None,
     ) -> None:
-        """ Creates a customizable "alert" dialog.
+        """Creates a customizable "alert" dialog.
 
         message -- Message to alert.
         details -- Optional message details.
@@ -179,7 +179,7 @@ class AlertDialog(PySide2.QtWidgets.QMessageBox, mixins.QtShowMixin):
                 generally be "clicked" using the `Enter` or `Return` key.)
 
         https://doc.qt.io/qtforpython/PySide2/QtWidgets/QMessageBox.html
-        https://doc.qt.io/qtforpython/PySide2/QtWidgets/QPushButton.html """
+        https://doc.qt.io/qtforpython/PySide2/QtWidgets/QPushButton.html"""
 
         super().__init__(parent=None)
 
@@ -236,15 +236,15 @@ class AboutDialog(PySide2.QtWidgets.QDialog, mixins.QtShowMixin):
 
     def _init_ui(self) -> None:
 
-        self.setWindowTitle(f"About {config.app.NAME_PRETTY}")
+        self.setWindowTitle(f"About {GlobalConfig.app.NAME_PRETTY}")
 
         logo = Logo(size=96).widget()
         logo.setAlignment(PySide2.QtCore.Qt.AlignCenter)
 
-        label__name = PySide2.QtWidgets.QLabel(config.app.NAME_PRETTY_VERSION)
+        label__name = PySide2.QtWidgets.QLabel(GlobalConfig.app.NAME_PRETTY_VERSION)
         label__name.setAlignment(PySide2.QtCore.Qt.AlignCenter)
 
-        label__copyright = PySide2.QtWidgets.QLabel(config.app.COPYRIGHT_INFO)
+        label__copyright = PySide2.QtWidgets.QLabel(GlobalConfig.app.COPYRIGHT_INFO)
         label__copyright.setAlignment(PySide2.QtCore.Qt.AlignCenter)
 
         layout = PySide2.QtWidgets.QVBoxLayout()
@@ -274,7 +274,7 @@ class PreferencesDialog(PySide2.QtWidgets.QDialog, mixins.QtShowMixin):
     def __init__(self) -> None:
         super().__init__(parent=None)
 
-        config.modified.connect(self._update_ui)
+        GlobalConfig.modified.connect(self._update_ui)
 
         self._init_ui()
         self._init_dialogs()
@@ -283,15 +283,15 @@ class PreferencesDialog(PySide2.QtWidgets.QDialog, mixins.QtShowMixin):
     def _init_dialogs(self) -> None:
 
         self._bad_directory_error_dialog = ErrorDialog(
-            message=f"Error setting {config.app.NAME_PRETTY} directory."
+            message=f"Error setting {GlobalConfig.app.NAME_PRETTY} directory."
         )
 
     def _init_ui(self) -> None:
 
-        self.setWindowTitle(f"{config.app.NAME_PRETTY} Preferences")
+        self.setWindowTitle(f"{GlobalConfig.app.NAME_PRETTY} Preferences")
 
         label__stor_directory = PySide2.QtWidgets.QLabel()
-        label__stor_directory.setText(f"{config.app.NAME_PRETTY} directory:")
+        label__stor_directory.setText(f"{GlobalConfig.app.NAME_PRETTY} directory:")
         label__stor_directory.setAttribute(PySide2.QtCore.Qt.WA_MacSmallSize, True)
 
         self._lineedit__stor_directory = PySide2.QtWidgets.QLineEdit()
@@ -316,28 +316,28 @@ class PreferencesDialog(PySide2.QtWidgets.QDialog, mixins.QtShowMixin):
 
         #
 
-        label__export_text = PySide2.QtWidgets.QLabel()
-        label__export_text.setText("Export:")
-        label__export_text.setAttribute(PySide2.QtCore.Qt.WA_MacSmallSize, True)
+        label__export = PySide2.QtWidgets.QLabel()
+        label__export.setText("Export on Stor:")
+        label__export.setAttribute(PySide2.QtCore.Qt.WA_MacSmallSize, True)
 
-        self._checkbox__export_markdown = PySide2.QtWidgets.QCheckBox()
-        self._checkbox__export_markdown.setText("Markdown")
-        self._checkbox__export_markdown.clicked.connect(
-            self._action__toggle_export_markdown
-        )
+        self._checkbox__export_flat = PySide2.QtWidgets.QCheckBox()
+        self._checkbox__export_flat.setText("Flat")
+        self._checkbox__export_flat.clicked.connect(self._action__toggle_export_flat)
 
-        self._checkbox__export_text = PySide2.QtWidgets.QCheckBox("Text")
-        self._checkbox__export_text.setText("Text")
-        self._checkbox__export_text.clicked.connect(self._action__toggle_export_text)
+        # fmt:off
+        self._checkbox__export_nested = PySide2.QtWidgets.QCheckBox("Nested")
+        self._checkbox__export_nested.setText("Nested")
+        self._checkbox__export_nested.clicked.connect(self._action__toggle_export_nested)
+        # fmt:on
 
         layout__bottom = PySide2.QtWidgets.QVBoxLayout()
         layout__bottom.setContentsMargins(0, 0, 0, 0)
         layout__bottom.setSpacing(0)
-        layout__bottom.addWidget(label__export_text)
+        layout__bottom.addWidget(label__export)
         layout__bottom.addSpacing(3)
-        layout__bottom.addWidget(self._checkbox__export_markdown)
+        layout__bottom.addWidget(self._checkbox__export_flat)
         layout__bottom.addSpacing(6)
-        layout__bottom.addWidget(self._checkbox__export_text)
+        layout__bottom.addWidget(self._checkbox__export_nested)
 
         #
 
@@ -351,25 +351,25 @@ class PreferencesDialog(PySide2.QtWidgets.QDialog, mixins.QtShowMixin):
         self.setLayout(layout)
 
     def _update_ui(self) -> None:
-        self._lineedit__stor_directory.setText(str(config.user.path_stor))
-        self._checkbox__export_markdown.setChecked(config.user.export_markdown)
-        self._checkbox__export_text.setChecked(config.user.export_text)
+        self._lineedit__stor_directory.setText(str(GlobalConfig.user.path_stor))
+        self._checkbox__export_flat.setChecked(GlobalConfig.user.export_flat)
+        self._checkbox__export_nested.setChecked(GlobalConfig.user.export_nested)
 
-    def _action__toggle_export_markdown(self) -> None:
-        config.user.export_markdown = self._checkbox__export_markdown.isChecked()
+    def _action__toggle_export_flat(self) -> None:
+        GlobalConfig.user.export_flat = self._checkbox__export_flat.isChecked()
 
-    def _action__toggle_export_text(self) -> None:
-        config.user.export_text = self._checkbox__export_text.isChecked()
+    def _action__toggle_export_nested(self) -> None:
+        GlobalConfig.user.export_nested = self._checkbox__export_nested.isChecked()
 
     def _action__change_stor(self) -> None:
 
-        dialog = SelectDirectoryDialog(directory=config.user.path_stor)
+        dialog = SelectDirectoryDialog(directory=GlobalConfig.user.path_stor)
 
         if not dialog.exec_():
             return
 
         try:
-            config.user.path_stor = dialog.selected_directory
+            GlobalConfig.user.path_stor = dialog.selected_directory
         except errors.ConfigurationError as error:
             self._bad_directory_error_dialog.set_details(details=str(error))
             self._bad_directory_error_dialog.show()

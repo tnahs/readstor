@@ -4,12 +4,8 @@ import sqlite3
 from typing import Iterator, List
 
 from readstor import errors
-from readstor.config import config
-from readstor.stor.models import (
-    AnnotationKeys,
-    SourceKeys,
-    StorItemKeys,
-)
+from readstor.config import GlobalConfig
+from readstor.stor.models import AnnotationKeys, SourceKeys, StorItemKeys
 
 
 logger = logging.getLogger(__name__)
@@ -17,7 +13,7 @@ logger = logging.getLogger(__name__)
 
 class AppleBooksDatabase:
     def serialize(self) -> dict:
-        """ Converts database's lists of dictionaries to a single dictionary.
+        """Converts database's lists of dictionaries to a single dictionary.
 
         Sources:
 
@@ -181,19 +177,19 @@ class AppleBooksDatabase:
 
     @property
     def _sources_database(self) -> pathlib.Path:
-        return self._get_database(prefix=config.applebooks.NAME_BKLIBRARY)
+        return self._get_database(prefix=GlobalConfig.applebooks.NAME_BKLIBRARY)
 
     @property
     def _annotations_database(self) -> pathlib.Path:
-        return self._get_database(prefix=config.applebooks.NAME_AEANNOTATION)
+        return self._get_database(prefix=GlobalConfig.applebooks.NAME_AEANNOTATION)
 
     def _get_database(self, prefix: str) -> pathlib.Path:
-        """ Returns the path to an Apple Books database with `prefix` in:
-        /[user-stor]/data/databases/[date-today]. """
+        """Returns the path to an Apple Books database with `prefix` in:
+        /[user-stor]/data/databases/[date-today]."""
 
         glob: str = f"{prefix}*.sqlite"
 
-        path_database_today = config.user.path_database_today
+        path_database_today = GlobalConfig.user.path_database_today
         paths_database: Iterator[pathlib.Path] = path_database_today.glob(glob)
 
         try:
@@ -234,7 +230,7 @@ class AppleBooksDatabase:
         return data
 
     def _dict_factory(self, cursor: sqlite3.Cursor, row: tuple) -> dict:
-        """ Reconfigures sqlite.Connection.row_factory to return a dictionary
+        """Reconfigures sqlite.Connection.row_factory to return a dictionary
         instead.
 
         https://docs.python.org/3/library/sqlite3.html#sqlite3.Connection.row_factory

@@ -5,7 +5,7 @@ from typing import List, Optional
 
 from readstor import helpers
 from readstor.applebooks.mixins import AppleBooksUtilsMixin
-from readstor.config import config
+from readstor.config import GlobalConfig
 
 from .mixins import DateTimeUtilsMixin, EPUBUtilsMixin
 
@@ -326,43 +326,8 @@ class StorItem(DateTimeUtilsMixin):
 
     @property
     def name(self) -> str:
-        # Title by Author XXXXXX
-        return f"{self.source.name_pretty} {self.source.id[:6]}"
-
-    @property
-    def name_safe(self) -> str:
-        # title-by-author-xxxxxx
-        return helpers.misc.slugify(string=self.name)
-
-    @property
-    def name_safe_pretty(self) -> str:
-        # Title by Author XXXXXX
-        return helpers.misc.slugify(string=self.name, delimiter=" ", lowercase=False)
-
-    @property
-    def path_item_data(self) -> pathlib.Path:
-        # /[user-stor]/data/items/[title-by-author-xxxxxx]
-        return config.user.path_items_data / self.name_safe
-
-    @property
-    def file_data(self) -> pathlib.Path:
-        # /[user-stor]/data/items/[title-by-author-xxxxxx]/data.json
-        return self.path_item_data / config.app.FILENAME_DATA
-
-    @property
-    def path_media(self) -> pathlib.Path:
-        # /[user-stor]/data/items/[title-by-author-xxxxxx]/media
-        return self.path_item_data / config.app.DIRECTORY_NAME_MEDIA
-
-    @property
-    def file_export_text(self) -> pathlib.Path:
-        # /[user-stor]/exports/text/[Title by Author XXXXXX.txt]
-        return config.user.path_exports_text / f"{self.name_safe_pretty}.txt"
-
-    @property
-    def file_export_markdown(self) -> pathlib.Path:
-        # /[user-stor]/exports/markdown/[Title by Author XXXXXX.md]
-        return config.user.path_exports_markdown / f"{self.name_safe_pretty}.md"
+        # Title-by-Author
+        return helpers.misc.slugify(string=self.source.name_pretty, lowercase=False)
 
     def serialize_source(self) -> dict:
         return self.source.serialize()

@@ -9,7 +9,7 @@ import PySide2.QtCore
 import PySide2.QtWidgets
 
 from . import __version__, errors, helpers
-from .applebooks.config import AppleBooksConfig
+from .applebooks.config import _AppleBooksConfig
 
 
 logger = logging.getLogger(__name__)
@@ -19,7 +19,7 @@ class GlobalConfigKeys:
     ENV = "env"
 
 
-class GlobalConfig(PySide2.QtCore.QObject):
+class _GlobalConfig(PySide2.QtCore.QObject):
 
     modified = PySide2.QtCore.Signal()
 
@@ -38,9 +38,9 @@ class GlobalConfig(PySide2.QtCore.QObject):
             GlobalConfigKeys.ENV: self.ENV_DEFAULT,
         }
 
-        self.app: AppConfig = AppConfig(global_config=self)
-        self.user: UserConfig = UserConfig(global_config=self)
-        self.applebooks: AppleBooksConfig = AppleBooksConfig(global_config=self)
+        self.app = _AppConfig(global_config=self)
+        self.user = _UserConfig(global_config=self)
+        self.applebooks = _AppleBooksConfig(global_config=self)
 
     @property
     def env(self) -> str:
@@ -64,7 +64,7 @@ class AppConfigKeys:
     pass
 
 
-class AppConfig:
+class _AppConfig:
 
     VERSION: str = __version__
 
@@ -76,29 +76,12 @@ class AppConfig:
 
     FILENAME_CONFIG: str = "config.json"
     FILENAME_LOGS: str = "logs.log"
-    FILENAME_MANIFEST: str = "manifest.json"
-    FILENAME_DATA: str = "data.json"
 
     DIRECTORY_NAME_DATA: str = "data"
-    DIRECTORY_NAME_ITEMS_DATA: str = "items"
     DIRECTORY_NAME_DATABASES: str = "databases"
-    DIRECTORY_NAME_MEDIA: str = "media"
     DIRECTORY_NAME_EXPORTS: str = "exports"
-    DIRECTORY_NAME_TEXT: str = "text"
-    DIRECTORY_NAME_MARKDOWN: str = "markdown"
 
-    """
-    SYSTEM_RESOURCES = pathlib.Path(
-        "/System/Library/CoreServices/CoreTypes.bundle/Contents/Resources"
-    )
-
-    ALERT_STOP_ICON = SYSTEM_RESOURCES / "AlertStopIcon.icns"
-    ALERT_CAUTION_ICON = SYSTEM_RESOURCES / "AlertCautionIcon.icns"
-    ALERT_CAUTION_BADGE_ICON = SYSTEM_RESOURCES / "AlertCautionBadgeIcon.icns"
-    ALERT_NOTE_ICON = SYSTEM_RESOURCES / "AlertNoteIcon.icns"
-    """
-
-    def __init__(self, global_config: GlobalConfig) -> None:
+    def __init__(self, global_config: _GlobalConfig) -> None:
 
         self.__global_config = global_config
 
@@ -122,8 +105,12 @@ class AppConfig:
         # /[application]/src/resources/images
         self.PATH_IMAGES: pathlib.Path = self.PATH_RESOURCES / "images"
         self.LOGO: pathlib.Path = self.PATH_IMAGES / "logo.png"
-        self.MENUBAR_ICON_IDLE: pathlib.Path = self.PATH_IMAGES / "menubar-icon-idle.png"
-        self.MENUBAR_ICON_BUSY: pathlib.Path = self.PATH_IMAGES / "menubar-icon-busy.png"
+        self.MENUBAR_ICON_IDLE: pathlib.Path = (
+            self.PATH_IMAGES / "menubar-icon-idle.png"
+        )
+        self.MENUBAR_ICON_BUSY: pathlib.Path = (
+            self.PATH_IMAGES / "menubar-icon-busy.png"
+        )
 
         #
 
@@ -137,7 +124,7 @@ class AppConfig:
         self.FILE_LOGS: pathlib.Path = self.PATH_HOME / self.FILENAME_LOGS
 
     def setup(self) -> None:
-        """ Creates required directories for running the application.
+        """Creates required directories for running the application.
 
         /Users/[user]/.readstor (AppConfig.PATH_HOME)
         │ Path to application
@@ -151,7 +138,8 @@ class AppConfig:
     def init_logger(self, log_level: str) -> None:
 
         stream_formatter = logging.Formatter(
-            fmt="{threadName} {name} {levelname}: {message}", style="{",
+            fmt="{threadName} {name} {levelname}: {message}",
+            style="{",
         )
         stream_handler = logging.StreamHandler()
         stream_handler.setFormatter(stream_formatter)
@@ -173,7 +161,8 @@ class AppConfig:
         #
 
         logging.basicConfig(
-            level=log_level, handlers=[stream_handler, file_handler],
+            level=log_level,
+            handlers=[stream_handler, file_handler],
         )
 
     @property
@@ -183,24 +172,24 @@ class AppConfig:
 
 class UserConfigKeys:
     PATH_STOR: str = "path_stor"
-    EXPORT_MARKDOWN: str = "export_markdown"
-    EXPORT_TEXT: str = "export_text"
+    EXPORT_FLAT: str = "export_flat"
+    EXPORT_NESTED: str = "export_nested"
 
 
-class UserConfig:
-    def __init__(self, global_config: GlobalConfig) -> None:
+class _UserConfig:
+    def __init__(self, global_config: _GlobalConfig) -> None:
 
         self.__global_config = global_config
 
         self.__data: dict = {
             # Defaults to `/Users/[user]/.readstor`.
             UserConfigKeys.PATH_STOR: self.__global_config.app.PATH_HOME,
-            UserConfigKeys.EXPORT_MARKDOWN: True,
-            UserConfigKeys.EXPORT_TEXT: True,
+            UserConfigKeys.EXPORT_FLAT: True,
+            UserConfigKeys.EXPORT_NESTED: True,
         }
 
     def setup(self) -> None:
-        """ Creates all required directories for saving user data.
+        """Creates all required directories for saving user data.
 
         /path/to/stor
         │ Defaults to the the application root `/Users/[user]/.readstor`. When
@@ -208,11 +197,6 @@ class UserConfig:
         │ contents from `config.json`.
         │
         ├── data
-        │   ├── manifest.json
-        │   ├── items
-        │   │   ├── item-01
-        │   │   ├── item-02
-        │   │   └── ...
         │   └── databases
         │       ├── 2020-01-01
         │       │   ├── AEAnnotation
@@ -223,22 +207,13 @@ class UserConfig:
         │       ├── 2020-01-02
         │       └── ...
         └── exports
-            ├── markdown
-            │   ├── item-01
-            │   ├── item-02
-            │   └── ...
-            └── text
-                ├── item-01
-                ├── item-02
-                └── ...
         """
 
         directories = [
             self.path_stor,
             self.path_data,
             self.path_databases,
-            self.path_exports_text,
-            self.path_exports_markdown,
+            self.path_exports,
         ]
 
         for path in directories:
@@ -311,16 +286,6 @@ class UserConfig:
         return self.path_stor / self.__global_config.app.DIRECTORY_NAME_DATA
 
     @property
-    def path_items_data(self) -> pathlib.Path:
-        # /[user-stor]/data/items
-        return self.path_data / self.__global_config.app.DIRECTORY_NAME_ITEMS_DATA
-
-    @property
-    def file_manifest(self) -> pathlib.Path:
-        # /[user-stor]/data/manifest.json
-        return self.path_data / self.__global_config.app.FILENAME_MANIFEST
-
-    @property
     def path_databases(self) -> pathlib.Path:
         # /[user-stor]/data/databases
         return self.path_data / self.__global_config.app.DIRECTORY_NAME_DATABASES
@@ -336,31 +301,21 @@ class UserConfig:
         return self.path_stor / self.__global_config.app.DIRECTORY_NAME_EXPORTS
 
     @property
-    def path_exports_text(self) -> pathlib.Path:
-        # /[user-stor]/exports/text
-        return self.path_exports / self.__global_config.app.DIRECTORY_NAME_TEXT
+    def export_flat(self) -> bool:
+        return self.__data[UserConfigKeys.EXPORT_FLAT]
 
-    @property
-    def path_exports_markdown(self) -> pathlib.Path:
-        # /[user-stor]/exports/markdown
-        return self.path_exports / self.__global_config.app.DIRECTORY_NAME_MARKDOWN
-
-    @property
-    def export_markdown(self) -> bool:
-        return self.__data[UserConfigKeys.EXPORT_MARKDOWN]
-
-    @export_markdown.setter
-    def export_markdown(self, value: bool) -> None:
-        self.__data[UserConfigKeys.EXPORT_MARKDOWN] = value
+    @export_flat.setter
+    def export_flat(self, value: bool) -> None:
+        self.__data[UserConfigKeys.EXPORT_FLAT] = value
         self._save()
 
     @property
-    def export_text(self) -> bool:
-        return self.__data[UserConfigKeys.EXPORT_TEXT]
+    def export_nested(self) -> bool:
+        return self.__data[UserConfigKeys.EXPORT_NESTED]
 
-    @export_text.setter
-    def export_text(self, value: bool) -> None:
-        self.__data[UserConfigKeys.EXPORT_TEXT] = value
+    @export_nested.setter
+    def export_nested(self, value: bool) -> None:
+        self.__data[UserConfigKeys.EXPORT_NESTED] = value
         self._save()
 
     def _save(self) -> None:
@@ -396,23 +351,23 @@ class UserConfig:
 
         return {
             UserConfigKeys.PATH_STOR: str(self.path_stor),
-            UserConfigKeys.EXPORT_MARKDOWN: self.export_markdown,
-            UserConfigKeys.EXPORT_TEXT: self.export_text,
+            UserConfigKeys.EXPORT_FLAT: self.export_flat,
+            UserConfigKeys.EXPORT_NESTED: self.export_nested,
         }
 
     def _deserialize(self, data: dict) -> dict:
 
         # fmt: off
         data_root: str = data.get(UserConfigKeys.PATH_STOR, self.__global_config.app.PATH_HOME)
-        export_markdown: bool = data.get(UserConfigKeys.EXPORT_MARKDOWN, True)
-        export_text: bool = data.get(UserConfigKeys.EXPORT_TEXT, True)
+        export_flat: bool = data.get(UserConfigKeys.EXPORT_FLAT, True)
+        export_nested: bool = data.get(UserConfigKeys.EXPORT_NESTED, True)
         # fmt: on
 
         return {
             UserConfigKeys.PATH_STOR: pathlib.Path(data_root),
-            UserConfigKeys.EXPORT_MARKDOWN: export_markdown,
-            UserConfigKeys.EXPORT_TEXT: export_text,
+            UserConfigKeys.EXPORT_FLAT: export_flat,
+            UserConfigKeys.EXPORT_NESTED: export_nested,
         }
 
 
-config = GlobalConfig()
+GlobalConfig = _GlobalConfig()

@@ -1,11 +1,12 @@
 import datetime
 import json
 import logging
+import pathlib
 from typing import Dict, Optional
 
 from readstor import helpers
 from readstor.applebooks import database
-from readstor.config import config
+from readstor.config import GlobalConfig
 
 from . import exporter, models
 from .mixins import DateTimeUtilsMixin
@@ -15,7 +16,7 @@ logger = logging.getLogger(__name__)
 
 
 class Stor(DateTimeUtilsMixin):
-    """ The basic structure of this module.
+    """The basic structure of this module.
 
     <Stor>
      │  │ Sets up directories, copies databases and contains methods to perform
@@ -43,7 +44,26 @@ class Stor(DateTimeUtilsMixin):
      │
      └── <Exporter>
        Manages Jinja template environment to export data to various file
-       formats. """
+       formats.
+
+    #
+
+    Data Folder Structure
+
+    /path/to/data
+    ├── manifest.json
+    └── items
+        ├── item-01
+        │   └── data.json
+        ├── item-02
+        │   └── data.json
+        └── ...
+    """
+
+    DIRECTORY_NAME_ITEMS_DATA: str = "items"
+
+    FILENAME_MANIFEST: str = "manifest.json"
+    FILENAME_DATA: str = "data.json"
 
     __manifest: Dict[str, datetime.datetime] = {}
 
@@ -52,8 +72,8 @@ class Stor(DateTimeUtilsMixin):
         self._exporter = exporter.Exporter()
 
     def stor(self) -> None:
-        """ Primary public method. Runs a series of functions to
-        backup/query/save data from the Apple Books databases. """
+        """Primary public method. Runs a series of functions to
+        backup/query/save data from the Apple Books databases."""
 
         self._remake_directory_database_today()
         self._copy_source_applebooks_databases()
@@ -62,39 +82,51 @@ class Stor(DateTimeUtilsMixin):
         self._process_applebooks_database()
         self._save_manifest()
 
-    def _remake_directory_database_today(self) -> None:
-        """ Re-makes today's database backup directory in case
-        `AppleBooks.stor()` is run more than once a day. """
+    @property
+    def path_items_data(self) -> pathlib.Path:
+        # /[user-stor]/data/items
+        return GlobalConfig.user.path_data / self.DIRECTORY_NAME_ITEMS_DATA
 
-        helpers.shell.remove(path=config.user.path_database_today)
-        helpers.shell.make(path=config.user.path_database_today)
+    @property
+    def file_manifest(self) -> pathlib.Path:
+        # /[user-stor]/data/manifest.json
+        return GlobalConfig.user.path_data / self.FILENAME_MANIFEST
+
+    def _remake_directory_database_today(self) -> None:
+        """Re-makes today's database backup directory in case
+        `AppleBooks.stor()` is run more than once a day."""
+
+        helpers.shell.remove(path=GlobalConfig.user.path_database_today)
+        helpers.shell.make(path=GlobalConfig.user.path_database_today)
 
     def _copy_source_applebooks_databases(self) -> None:
-        """ Copies both BKLibrary###.sqlite and AEAnnotation###.sqlite to
-        /[user-stor]/data/databases/[date-today]. """
+        """Copies both BKLibrary###.sqlite and AEAnnotation###.sqlite to
+        /[user-stor]/data/databases/[date-today]."""
 
-        for item in config.applebooks.PATH_BKLIBRARY.iterdir():
+        for item in GlobalConfig.applebooks.PATH_BKLIBRARY.iterdir():
 
             if not item.is_file():
                 continue
 
-            if item.name.startswith(config.applebooks.NAME_BKLIBRARY):
+            if item.name.startswith(GlobalConfig.applebooks.NAME_BKLIBRARY):
                 helpers.shell.copy(
-                    sources=[item], destination=config.user.path_database_today,
+                    sources=[item],
+                    destination=GlobalConfig.user.path_database_today,
                 )
 
-        for item in config.applebooks.PATH_AEANNOTATION.iterdir():
+        for item in GlobalConfig.applebooks.PATH_AEANNOTATION.iterdir():
 
             if not item.is_file():
                 continue
 
-            if item.name.startswith(config.applebooks.NAME_AEANNOTATION):
+            if item.name.startswith(GlobalConfig.applebooks.NAME_AEANNOTATION):
                 helpers.shell.copy(
-                    sources=[item], destination=config.user.path_database_today,
+                    sources=[item],
+                    destination=GlobalConfig.user.path_database_today,
                 )
 
     def _load_manifest(self) -> None:
-        """ Loads the manifest file from /[user-stor]/data/manifest.json.
+        """Loads the manifest file from /[user-stor]/data/manifest.json.
 
         This file contains a dictionary of `id:date` key-value pairs referring
         to a `AppleBooksStoreItem.source.id` the last time its respective book
@@ -102,30 +134,30 @@ class Stor(DateTimeUtilsMixin):
         book, update an existing one or skip it.
 
         NOTE: `AppleBooksStoreItem.source.id` is the unique identifier given to
-        a book in Apple Books. """
+        a book in Apple Books."""
 
         logger.debug(
-            f"Loading `{config.user.file_manifest.name}` from `{config.user.path_data}`."
+            f"Loading `{self.file_manifest.name}` from `{GlobalConfig.user.path_data}`."
         )
 
         try:
 
-            with open(config.user.file_manifest, "r") as f:
+            with open(self.file_manifest, "r") as f:
                 data = json.load(f)
 
         except FileNotFoundError:
 
             logger.warning(
-                f"Creating new `{config.user.file_manifest.name}` in "
-                f"`{config.user.path_data}`."
+                f"Creating new `{self.file_manifest.name}` in "
+                f"`{GlobalConfig.user.path_data}`."
             )
             self._save_manifest()
 
         except json.JSONDecodeError:
 
             logger.error(
-                f"Error reading `{config.user.file_manifest.name}` in "
-                f"`{config.user.path_data}`."
+                f"Error reading `{self.file_manifest.name}` in "
+                f"`{GlobalConfig.user.path_data}`."
             )
             self._save_manifest()
 
@@ -139,10 +171,10 @@ class Stor(DateTimeUtilsMixin):
         """ Saves the manifest file to /[user-stor]/data/manifest.json. """
 
         logger.debug(
-            f"Saving `{config.user.file_manifest.name}` to `{config.user.path_data}`."
+            f"Saving `{self.file_manifest.name}` to `{GlobalConfig.user.path_data}`."
         )
 
-        with open(config.user.file_manifest, "w") as f:
+        with open(self.file_manifest, "w") as f:
             json.dump(self._serialize_manifest(), f, sort_keys=False, indent=4)
 
     def _process_applebooks_database(self) -> None:
@@ -163,6 +195,7 @@ class Stor(DateTimeUtilsMixin):
             if item.source.id not in self.__manifest.keys():
                 logger.info(f"Added {item.source.name_pretty}.")
                 self._add_update_item(item=item)
+                self._exporter.export(item=item)
                 continue
 
             date_last_updated = self.__manifest[item.source.id]
@@ -172,6 +205,7 @@ class Stor(DateTimeUtilsMixin):
             if item.date_last_opened > date_last_updated:
                 logger.info(f"Updated {item.source.name_pretty}.")
                 self._add_update_item(item=item)
+                self._exporter.export(item=item)
                 continue
 
             # Skip items that are already in the manifest and have not been
@@ -182,17 +216,16 @@ class Stor(DateTimeUtilsMixin):
         # Add/update the item in the manifest with the current datetime.
         self.__manifest[item.source.id] = datetime.datetime.now()
 
-        # Make /[user-stor]/data/items/[title-by-author-xxxxxx]
-        helpers.shell.make(path=item.path_item_data)
+        # /[user-stor]/data/items/[Title-by-Author]
+        path_data = self.path_items_data / item.name
 
-        # Make /[user-stor]/data/items/[title-by-author-xxxxxx]/media
-        helpers.shell.make(path=item.path_media)
+        # /[user-stor]/data/items/[Title-by-Author]/data.json
+        file_data = path_data / self.FILENAME_DATA
 
-        # Write /[user-stor]/data/items/[title-by-author-xxxxxx]/data.json
-        with open(item.file_data, "w", encoding="utf-8") as f:
+        helpers.shell.make(path=path_data)
+
+        with open(file_data, "w", encoding="utf-8") as f:
             json.dump(item.serialize(), f, sort_keys=False, indent=4)
-
-        self._exporter.export(item=item)
 
     def _serialize_manifest(self) -> dict:
         """ Converts `str:datetime.datetime` to `str:str` """
@@ -216,10 +249,16 @@ class Stor(DateTimeUtilsMixin):
 
     def is_running(self) -> bool:
         """ Checks to see if Apple Books is currently running. """
-        return helpers.shell.process_is_running(process_names=config.applebooks.NAMES)
+        return helpers.shell.process_is_running(
+            process_names=GlobalConfig.applebooks.NAMES
+        )
 
     def quit(self) -> None:
         """ Kindly asks Apple Books to quit. """
         helpers.shell.run(
-            ["osascript", "-e", f'tell application "{config.applebooks.NAME}" to quit',]
+            [
+                "osascript",
+                "-e",
+                f'tell application "{GlobalConfig.applebooks.NAME}" to quit',
+            ]
         )

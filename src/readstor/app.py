@@ -7,7 +7,7 @@ import PySide2
 import PySide2.QtCore
 import PySide2.QtWidgets
 
-from .config import config
+from .config import GlobalConfig
 from .views import views
 
 
@@ -16,23 +16,25 @@ logger = logging.getLogger(__name__)
 
 def main(args: argparse.Namespace) -> None:
 
-    config.env = args.env
+    GlobalConfig.env = args.env
 
-    config.app.setup()
-    config.app.init_logger(log_level=args.log_level)
+    GlobalConfig.app.setup()
+    GlobalConfig.app.init_logger(log_level=args.log_level)
 
-    config.user.setup()
-    config.user.load()
+    GlobalConfig.user.setup()
+    GlobalConfig.user.load()
 
-    logger.info(f"Running in {config.env} mode.")
-    logger.info(f"Application root directory: `{config.app.PATH_HOME}`.")
-    logger.info(f"User data directory: `{config.user.path_stor}`.")
-    logger.info(f"Database directory: `{config.applebooks.PATH_SOURCE_DATABASES}`.")
+    logger.info(f"Running in {GlobalConfig.env} mode.")
+    logger.info(f"Application root directory: `{GlobalConfig.app.PATH_HOME}`.")
+    logger.info(f"User data directory: `{GlobalConfig.user.path_stor}`.")
+    logger.info(
+        f"Database directory: `{GlobalConfig.applebooks.PATH_SOURCE_DATABASES}`."
+    )
 
     app = PySide2.QtWidgets.QApplication([])
     app.setQuitOnLastWindowClosed(False)
 
-    view = views.MenuBarView(config=config)
+    view = views.MenuBarView()
     view.show()
 
     sys.exit(app.exec_())

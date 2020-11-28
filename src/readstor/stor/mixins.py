@@ -22,22 +22,22 @@ class DateTimeUtilsMixin:
 
         if cocoa is True:
 
-            """ Core Data timestamp is the number of seconds (or nanoseconds) since
+            """Core Data timestamp is the number of seconds (or nanoseconds) since
             midnight, January 1, 2001, GMT (see CFAbsoluteTime). The difference between
             a Core Data timestamp and a Unix timestamp (seconds since 1/1/1970) is
             978307200 seconds.
 
-            https://www.epochconverter.com/coredata """
+            https://www.epochconverter.com/coredata"""
 
             epoch = epoch + 978307200.0
 
         try:
             return datetime.utcfromtimestamp(epoch)
         except ValueError:
-            """ `ValueError` typically refers to `ValueError: year 0 is out of
+            """`ValueError` typically refers to `ValueError: year 0 is out of
             range` The `datetime` library does not have a year 0. If this is
             raised when called by an `AppleBooksSource` to parse its
-            `last_opened_date` it signifies the source was never opened. """
+            `last_opened_date` it signifies the source was never opened."""
             return datetime(1, 1, 1)
 
     @staticmethod
@@ -56,8 +56,7 @@ class DateTimeUtilsMixin:
 class EPUBUtilsMixin:
     @staticmethod
     def location_from_epubcfi(epubcfi: Optional[str]) -> str:
-        """ https://github.com/matttrent/ibooks-highlights/blob/master/ibooks_highlights/util.py#L20
-        """
+        """https://github.com/matttrent/ibooks-highlights/blob/master/ibooks_highlights/util.py#L20"""
 
         if epubcfi is None:
             return ""

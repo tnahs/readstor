@@ -6,17 +6,14 @@ import PySide2.QtWidgets
 
 from readstor import agent, helpers
 from readstor.applebooks import applebooks
-from readstor.config import config
+from readstor.config import GlobalConfig
 from readstor.stor import stor
 
 from . import widgets
 
-if TYPE_CHECKING:
-    from ..config import GlobalConfig
-
 
 class MenuBarView(PySide2.QtWidgets.QSystemTrayIcon):
-    def __init__(self, config: "GlobalConfig" = config) -> None:
+    def __init__(self) -> None:
         super().__init__(parent=None)
 
         self._worker_agent = agent.WorkerAgent(
@@ -64,21 +61,25 @@ class MenuBarView(PySide2.QtWidgets.QSystemTrayIcon):
         )
 
         self._menu_item__stor_applebooks = widgets.MenuItem(
-            label="Stor Apple Books", actions=[self._action__stor_applebooks],
+            label="Stor Apple Books",
+            actions=[self._action__stor_applebooks],
         )
 
         self._menu_item__open_stor = widgets.MenuItem(
-            label=f"Open {config.app.NAME_PRETTY} in Finder...",
+            label=f"Open {GlobalConfig.app.NAME_PRETTY} in Finder...",
             actions=[self._action__open_stor],
         )
 
         self._menu_item__open_preferences_dialog = widgets.MenuItem(
-            label=f"Open {config.app.NAME_PRETTY} Preferences...",
+            label=f"Open {GlobalConfig.app.NAME_PRETTY} Preferences...",
             actions=[self._preferences_dialog.show],
+            shortcut="Ctrl+,",
         )
 
         self._menu_item__quit = widgets.MenuItem(
-            label="Quit", actions=[sys.exit], shortcut="Ctrl+Q",
+            label="Quit",
+            actions=[sys.exit],
+            shortcut="Ctrl+Q",
         )
 
         #
@@ -106,7 +107,7 @@ class MenuBarView(PySide2.QtWidgets.QSystemTrayIcon):
         self.setIcon(self._menubar_icon.busy)
 
     def _action__open_stor(self) -> None:
-        helpers.shell.run(command=["open", config.user.path_stor])
+        helpers.shell.run(command=["open", GlobalConfig.user.path_stor])
 
     def _action__stor_applebooks(self) -> None:
 

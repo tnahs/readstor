@@ -1,0 +1,11 @@
+---
+source-id: {{ item.source.id }}
+title: {{ item.source.title }}
+author: {{ item.source.author }}
+last-opened: {{ item.date_last_opened.strftime("%Y-%m-%d") }}
+annotation-count: {{ item.annotations | length }}
+exported: {{ date_exported }}
+---
+
+
+{{ item.source.name_pretty }}

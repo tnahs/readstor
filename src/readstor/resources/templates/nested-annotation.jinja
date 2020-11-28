@@ -1,0 +1,12 @@
+---
+source-id: {{ item.source.id }}
+title: {{ item.source.title }}
+author: {{ item.source.author }}
+annotation-id: {{ annotation.id }}
+created: {{ annotation.date_created.strftime("%Y-%m-%d") }}
+modified: {{ annotation.date_modified.strftime("%Y-%m-%d") }}
+notes: {{ annotation.notes }}
+---
+
+
+{{ annotation.body | replace("\n", "\n\n") }}

@@ -1,11 +1,12 @@
 import pathlib
 from typing import TYPE_CHECKING
 
+
 if TYPE_CHECKING:
-    from readstor.config import GlobalConfig
+    from readstor.config import _GlobalConfig
 
 
-class AppleBooksConfig:
+class _AppleBooksConfig:
 
     VERSION = "Books 2.0 (1841)"
 
@@ -15,13 +16,13 @@ class AppleBooksConfig:
     NAME_BKLIBRARY = "BKLibrary"
     NAME_AEANNOTATION = "AEAnnotation"
 
-    def __init__(self, global_config: "GlobalConfig") -> None:
+    def __init__(self, global_config: "_GlobalConfig") -> None:
 
         self.__global_config = global_config
 
     @property
     def PATH_SOURCE_DATABASES(self) -> pathlib.Path:
-        """ Returns the database directory depending on if the application is
+        """Returns the database directory depending on if the application is
         running in production mode or not.
 
         Development and production Apple Books data directories. Both containing
@@ -29,7 +30,7 @@ class AppleBooksConfig:
         respective `.sqlite` files.
 
             Development: /[application]/src/data/databases
-            Production: /Library/Containers/com.apple.iBooksX/Data/Documents """
+            Production: /Library/Containers/com.apple.iBooksX/Data/Documents"""
 
         databases_development = self.__global_config.app.PATH_DATA / "databases"
         databases_production = (

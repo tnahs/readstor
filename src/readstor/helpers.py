@@ -21,7 +21,7 @@ class Shell:
         command: List[Union[str, pathlib.Path]],
         path: Optional[pathlib.Path] = None,
     ) -> None:
-        """ Runs a terminal command.
+        """Runs a terminal command.
 
         command -- Command to run.
         path -- Path to run the command in.
@@ -44,7 +44,7 @@ class Shell:
             (or for the first item in args) relative to `cwd` if the executable
             path is a relative path.
 
-        https://docs.python.org/3/library/subprocess.html#subprocess.run """
+        https://docs.python.org/3/library/subprocess.html#subprocess.run"""
 
         command_normalized: List[str] = [str(s) for s in command]
 
@@ -53,7 +53,10 @@ class Shell:
 
         try:
             subprocess.run(
-                command_normalized, check=True, capture_output=True, cwd=path,
+                command_normalized,
+                check=True,
+                capture_output=True,
+                cwd=path,
             )
         except subprocess.CalledProcessError:
             logger.exception(
@@ -61,7 +64,7 @@ class Shell:
             )
 
     def make(self, path: pathlib.Path, as_file: bool = False) -> None:
-        """ Makes a file or directory. By default directorties are created
+        """Makes a file or directory. By default directorties are created
         unless `as_file=True`. Does not raise an Exception if the file or
         directory exists.
 
@@ -89,7 +92,7 @@ class Shell:
             is updated to the current time), otherwise FileExistsError is
             raised.
 
-        https://docs.python.org/3/library/pathlib.html#pathlib.Path.touch """
+        https://docs.python.org/3/library/pathlib.html#pathlib.Path.touch"""
 
         logger.debug(f"Making `{path}`.")
 
@@ -101,7 +104,7 @@ class Shell:
     def move(
         self, source: pathlib.Path, destination: pathlib.Path, force: bool = True
     ) -> None:
-        """ Move files and/or directories.
+        """Move files and/or directories.
 
         source -- Path to file and/or directory to move.
         destination -- Path to move to.
@@ -114,7 +117,7 @@ class Shell:
                 Prompt before moving a file that would overwrite an existing
                 file. A response of `y` or `Y`, will allow the move to proceed.
 
-        https://ss64.com/osx/mv.html """
+        https://ss64.com/osx/mv.html"""
 
         flags: List[str] = []
 
@@ -126,7 +129,7 @@ class Shell:
         self.run(command=["mv", *flags, source, destination])
 
     def remove(self, path: pathlib.Path) -> None:
-        """ Removes a file or directory.
+        """Removes a file or directory.
 
         path -- Path to file or directory to remove.
 
@@ -145,7 +148,7 @@ class Shell:
             If missing_ok is true, FileNotFoundError exceptions will be ignored
             (same behavior as the POSIX rm -f command).
 
-        https://docs.python.org/3/library/pathlib.html#pathlib.Path.unlink """
+        https://docs.python.org/3/library/pathlib.html#pathlib.Path.unlink"""
 
         logger.debug(f"Removing `{path}`.")
 
@@ -168,7 +171,7 @@ class Shell:
         destination: pathlib.Path,
         recursive: bool = False,
     ) -> None:
-        """ Copies a list of files and/or directories.
+        """Copies a list of files and/or directories.
 
         sources -- Paths to files and/or directories to copy.
         destination -- Path to place copies.
@@ -205,7 +208,7 @@ class Shell:
 
             -v   Verbose - show files as they are copied.
 
-        https://ss64.com/osx/cp.html """
+        https://ss64.com/osx/cp.html"""
 
         self.make(path=destination)
 
@@ -222,7 +225,7 @@ class Shell:
     def link(
         self, original: pathlib.Path, symbolic: pathlib.Path, force: bool = False
     ) -> None:
-        """ Makes a symlink.
+        """Makes a symlink.
 
         original -- Path to original file.
         symbolic -- Path to where the symlink will reside.
@@ -231,7 +234,7 @@ class Shell:
 
             Make this path a symbolic link to target.
 
-        https://docs.python.org/3/library/pathlib.html """
+        https://docs.python.org/3/library/pathlib.html"""
 
         logger.debug(f"Linking `{original}` to `{symbolic}`.")
 
@@ -253,7 +256,7 @@ class Shell:
             symbolic.symlink_to(original)
 
     def archive(self, sources: List[pathlib.Path], destination: pathlib.Path) -> None:
-        """ Writes a `tar` archives from list of files and/or directories.
+        """Writes a `tar` archives from list of files and/or directories.
 
         sources -- Paths to files and/or directories to archive.
         destination -- Path, with filename and extension, of archive.
@@ -274,7 +277,7 @@ class Shell:
             --gzip
                 (create mode only) Compress the resulting archive with gzip(1).
 
-        https://ss64.com/osx/tar.html """
+        https://ss64.com/osx/tar.html"""
 
         # Ensure the destination path has a tar-like file extension.
         if destination.suffixes not in [[".tar", ".gz"], [".tgz"]]:
@@ -298,7 +301,7 @@ class Shell:
         ignore_files: bool = False,
         ignore_directories: bool = False,
     ) -> None:
-        """ Removes items from a directory based on a size limit, preserving
+        """Removes items from a directory based on a size limit, preserving
         the newest files based on metadata changes.
 
         Only runs if prunable contents are *greater than* `size`.
@@ -308,7 +311,7 @@ class Shell:
         trash -- Send pruned files to the Trash.
         ignore_globs -- Ignore files/directories that match these glob patterns.
         ignore_files -- Do not prune files.
-        ignore_directories -- Do not prune directories. """
+        ignore_directories -- Do not prune directories."""
 
         logger.debug(f"Path `{path}` contains {len(list(path.iterdir()))} items.")
 
@@ -369,9 +372,9 @@ class Shell:
                 self.trash(path=path)
 
     def process_is_running(self, process_names: List[str]) -> bool:
-        """ Check to see an process is currently running.
+        """Check to see an process is currently running.
 
-        process_names -- A list of names process might appear as. """
+        process_names -- A list of names process might appear as."""
 
         process_names = [name.lower() for name in process_names]
 
@@ -380,9 +383,9 @@ class Shell:
             try:
                 process_info = process.as_dict(attrs=["name"])
             except psutil.NoSuchProcess:
-                """ When a process doesn't have a name it might mean it's a
+                """When a process doesn't have a name it might mean it's a
                 zombie process which ends up raising a NoSuchProcess exception
-                or its subclass the ZombieProcess exception. """
+                or its subclass the ZombieProcess exception."""
                 continue
 
             process_name = process_info["name"].lower()
@@ -401,7 +404,7 @@ class Shell:
 
 class Misc:
     def slugify(self, string: str, delimiter: str = "-", lowercase: bool = True) -> str:
-        """ Returns a normalized string. Converts to ASCII, strips non-word
+        """Returns a normalized string. Converts to ASCII, strips non-word
         characters, lowers case and replaces spaces with `delimeter`.
 
         https://docs.djangoproject.com/en/3.0/_modules/django/utils/text/#slugify

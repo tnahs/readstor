@@ -1,0 +1,22 @@
+---
+source-id: {{ item.source.id }}
+title: {{ item.source.title }}
+author: {{ item.source.author }}
+last-opened: {{ item.date_last_opened.strftime("%Y-%m-%d") }}
+annotation-count: {{ item.annotations | length }}
+exported: {{ date_exported }}
+---
+
+
+{% for annotation in item.annotations -%}
+
+{{ annotation.body | replace("\n", "\n\n") }}
+
+annotation-id: {{ annotation.id }}
+created: {{ annotation.date_created.strftime("%Y-%m-%d") }}
+modified: {{ annotation.date_modified.strftime("%Y-%m-%d") }}
+notes: {{ annotation.notes }}
+
+{% if not loop.last %}---{% endif %}
+
+{% endfor %}

@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 
 
 class WorkerSignals(PySide2.QtCore.QObject):
-    """ Defines signals for `Worker` objects.
+    """Defines signals for `Worker` objects.
 
     Note: The signals are decoupled from the `Worker` because `QRunnable` is
     not a subclass of `QObject` and does not support signal emission.
@@ -31,7 +31,7 @@ class WorkerSignals(PySide2.QtCore.QObject):
     complete -- Emitted at the end of the `Worker.run` method independent of
         wheather or not any exceptions were raised while excecuting the
         workers internal `__func`. Emits the worker's name via the `threading`
-        module. """
+        module."""
 
     NAMES = [
         "started",
@@ -57,7 +57,7 @@ class Worker(PySide2.QtCore.QRunnable):
         self.__kwargs = kwargs
 
     def run(self) -> None:
-        """ Note: The current QThread can be access by calling the static
+        """Note: The current QThread can be access by calling the static
         function:
 
             PySide2.QtCore.QThread.currentThread()
@@ -157,14 +157,14 @@ class WorkerAgent(PySide2.QtCore.QObject):
         kwargs: Optional[Dict[str, Any]] = None,
         local_callbacks: Optional[Dict[str, Callable]] = None,
     ) -> None:
-        """ Creates a `Worker` from a callable object and dispatches it to a
+        """Creates a `Worker` from a callable object and dispatches it to a
         `QThreadPool`.
 
         func -- The function to call in the thread.
         args -- The function arguments.
         kwargs -- The function keyword arguments.
         local_callbacks -- Local callback are identical to global ones but are
-            connected only the current worker. See `global_callbacks`. """
+            connected only the current worker. See `global_callbacks`."""
 
         if args is None:
             args = ()
