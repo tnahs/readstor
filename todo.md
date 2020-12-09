@@ -4,8 +4,7 @@
 
 ## MEDIUM
 
-- Setup tags parsing
-- config -> Config
+- Setup tags/collection parsing
 - Clean-up type annotations.
 - Raise errors.ApplicationError() anytime the user needs to know an error occurred
 - Clean up dialogs.
