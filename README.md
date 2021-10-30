@@ -23,7 +23,7 @@ $ readstor --version
 ### Using Cargo
 
 ```console
-cargo install readstor
+$ cargo install readstor
 ```
 
 ## Version Support
