@@ -1,11 +1,11 @@
 [package]
 name = "readstor"
-version = "0.1.0"
+version = "0.1.1"
 description = "A CLI for Apple Books annotations"
 readme = "README.md"
-license-file = "LICENSE.txt"
-homepage = "https://github.com/tnahs/readstor_rs"
-repository = "https://github.com/tnahs/readstor_rs"
+license = "MIT"
+homepage = "https://github.com/tnahs/readstor"
+repository = "https://github.com/tnahs/readstor"
 keywords = ["apple", "macos", "books", "ibooks", "highlights"]
 categories = ["command-line-utilities"]
 edition = "2021"
