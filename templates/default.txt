@@ -1,0 +1,15 @@
+title: {{ book.title }}
+author: {{ book.author }}
+last-opened: {{ book.metadata.last_opened | date }}
+
+{% for annotation in annotations -%}
+
+---
+
+{{ annotation.body | join_paragraph }}
+
+notes: {{ annotation.notes }}
+style: {{ annotation.style }}
+tags: {{ annotation.tags | join(sep=" ") }}
+
+{% endfor %}
