@@ -1,3 +1,10 @@
 [alias]
-lint = "clippy --all-targets --all-features"
+lint = """\
+    clippy \
+        --all-targets \
+        --all-features \
+        -- \
+        --warn clippy::pedantic \
+        --warn clippy::cargo \
+    """
 docs = "doc --no-deps"

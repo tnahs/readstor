@@ -13,12 +13,13 @@ static RE_TAG: Lazy<Regex> = Lazy::new(|| Regex::new(r"#[^\s#]+").unwrap());
 #[derive(Debug, Default, Clone, Serialize)]
 pub struct Annotation {
     pub body: Vec<String>,
-    pub notes: String,
     pub style: String,
+    pub notes: String,
     pub tags: Vec<String>,
     pub metadata: AnnotationMetadata,
 }
 
+/// Represents the data that is not directly editable by the user.
 #[derive(Debug, Default, Clone, Serialize)]
 pub struct AnnotationMetadata {
     pub id: String,
@@ -37,14 +38,14 @@ impl Annotation {
             .filter(|&s| !s.is_empty())
             // Trim whitespace.
             .map(str::trim)
-            .map(|s| s.to_owned())
+            .map(ToOwned::to_owned)
             .collect()
     }
 
     /// Returns a `String` with all `#tag`s removed.
     fn process_notes(notes: &Option<String>) -> String {
         let notes = match notes {
-            Some(notes) => notes.to_owned(),
+            Some(notes) => notes.clone(),
             None => return "".to_owned(),
         };
 
@@ -67,12 +68,12 @@ impl Annotation {
             // Find all occurrences of `#tag`.
             .find_iter(notes)
             .map(|m| m.as_str())
-            .map(|s| s.to_owned())
+            .map(ToOwned::to_owned)
             .collect()
     }
 
     /// Returns a style/color string from Apple Books' id representation.
-    fn style_from_id(int: &u8) -> String {
+    fn style_from_id(int: u8) -> String {
         let style = match int {
             0 => "underline",
             1 => "green",
@@ -88,7 +89,7 @@ impl Annotation {
 }
 
 impl ABQueryable for Annotation {
-    const DATABASE_NAME: ABDatabaseName = ABDatabaseName::AEAnnotation;
+    const DATABASE_NAME: ABDatabaseName = ABDatabaseName::Annotations;
 
     const QUERY: &'static str = {
         "SELECT
@@ -100,12 +101,9 @@ impl ABQueryable for Annotation {
             ZANNOTATIONCREATIONDATE,           -- 5 created
             ZANNOTATIONMODIFICATIONDATE,       -- 6 modified
             ZANNOTATIONLOCATION                -- 7 location
-
         FROM ZAEANNOTATION
-
         WHERE ZANNOTATIONSELECTEDTEXT IS NOT NULL
             AND ZANNOTATIONDELETED = 0
-
         ORDER BY ZANNOTATIONASSETID;"
     };
 
@@ -118,22 +116,22 @@ impl ABQueryable for Annotation {
         // column indices in the `query` method below.
 
         let body: String = row.get_unwrap(0);
-        let _notes: Option<String> = row.get_unwrap(1);
+        let r_notes: Option<String> = row.get_unwrap(1);
         let style: u8 = row.get_unwrap(2);
         let created: f64 = row.get_unwrap(5);
         let modified: f64 = row.get_unwrap(6);
         let epubcfi: String = row.get_unwrap(7);
 
         let body = Self::process_body(&body);
-        let notes = Self::process_notes(&_notes);
-        let style = Self::style_from_id(&style);
-        let tags = Self::process_tags(&_notes);
+        let style = Self::style_from_id(style);
+        let notes = Self::process_notes(&r_notes);
+        let tags = Self::process_tags(&r_notes);
         let location = parser::parse_epubcfi(&epubcfi);
 
         Self {
             body,
-            notes,
             style,
+            notes,
             tags,
             metadata: AnnotationMetadata {
                 id: row.get_unwrap(3),

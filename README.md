@@ -32,6 +32,8 @@ The following versions have been verified as working.
 
 _Note that using iCloud to "Sync collections, bookmarks, and highlights across devices" is currently unverified and might produce unexpected results._
 
+- macOS Monterey 12.x
+    - Apple Books 4.1
 - macOS Big Sur 11.x
     - Apple Books 3.2
 
@@ -49,6 +51,7 @@ _Note that using iCloud to "Sync collections, bookmarks, and highlights across d
  │   │   │   └─ annotations.json
  │   │   │
  │   │   └─ assets
+ │   │       ├─ .gitkeep
  │   │       ├─ Author - Title.epub   ─┐
  │   │       ├─ cover.jpeg             ├─ These are not exported.
  │   │       └─ ...                   ─┘
@@ -59,15 +62,15 @@ _Note that using iCloud to "Sync collections, bookmarks, and highlights across d
  │   └─ ...
  │
  ├─ exports
- │   │  
+ │   │
  │   └─ default ── [template-name]
  │       ├─ Author - Title.[template-ext]
  │       ├─ Author - Title.txt
  │       ├─ Author - Title.txt
  │       └─ ...
- │   
+ │
  └─ backups
-     │   
+     │
      ├─ 2021-01-01-000000 v3.2-2217 ── [YYYY-MM-DD-HHMMSS VERSION]
      │   │
      │   ├─ AEAnnotation
@@ -90,7 +93,7 @@ _Note that using iCloud to "Sync collections, bookmarks, and highlights across d
 
 ``` plaintext
 readstor
-    -o, --output [PATH]      Sets a custom [output] path [default: ~/.readstor]
+    -o, --output [PATH]      Sets the [output] path [default: ~/.readstor]
     -t, --template [FILE]    Sets a custom export template
     -b, --backup             Backs-up Apple Books' databases to [output]
     -e, --export             Exports annotations via template to [output]
@@ -103,12 +106,12 @@ readstor
 ``` plaintext
 readstor
     dump                      Runs 'save', 'export' and 'backup'
-        --output [PATH]           Sets a custom [output] path 
+        --output [PATH]           Sets a custom [output] path
     save                      Saves Apple Books' database data to [output]
-        --output [PATH]           Sets a custom [output] path 
+        --output [PATH]           Sets a custom [output] path
         --force                   Runs even if Apple Books is open
     export                    Exports annotations/books via templates to [output]
-        --output [PATH]           Sets a custom [output] path 
+        --output [PATH]           Sets a custom [output] path
         --templates [PATH]        Sets a custom templates path
         --force                   Runs even if Apple Books is open
     backup                    Backs-up Apple Books' databases to [output]
@@ -118,7 +121,7 @@ readstor
     search [QUERY]            Searches [user-database]
     random                    Returns a random annotation from the [user-database]
         --count                   Sets number of random annotations
-    check                     Prompts to delete unintentional annotations
+    check                     Prompts to delete unintentional annotations from the [user-database]
         --source                  Also deletes annotations from Apple Books' database
     info                      Prints ReadStor info
     -v, -vv, -vvv             Sets the level of verbosity

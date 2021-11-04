@@ -1,4 +1,5 @@
-#![allow(rustdoc::private_intra_doc_links)]
+#![warn(clippy::pedantic, clippy::cargo)]
+#![allow(clippy::module_name_repetitions, rustdoc::private_intra_doc_links)]
 
 mod cli;
 pub mod lib;

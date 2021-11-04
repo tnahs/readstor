@@ -1,8 +1,10 @@
+use std::ffi::OsStr;
 use std::ops::{Deref, DerefMut};
 use std::path::Path;
+use std::time::UNIX_EPOCH;
 use std::{fs, io};
 
-use chrono::{DateTime, Local, NaiveDateTime, Utc, MIN_DATETIME};
+use chrono::{DateTime, Local, NaiveDateTime, Utc};
 use serde::Serialize;
 
 #[allow(unused_imports)] // For docs.
@@ -28,7 +30,7 @@ pub struct DateTimeUTC(DateTime<Utc>);
 
 impl Default for DateTimeUTC {
     fn default() -> Self {
-        Self(MIN_DATETIME)
+        Self(DateTime::<Utc>::from(UNIX_EPOCH))
     }
 }
 
@@ -54,24 +56,35 @@ impl DerefMut for DateTimeUTC {
 /// 978307200 seconds.
 ///
 /// <https://www.epochconverter.com/coredata>
+#[allow(clippy::cast_possible_truncation, clippy::cast_sign_loss)]
 impl From<f64> for DateTimeUTC {
     fn from(f: f64) -> Self {
         // Add the `Core Data` timestamp offset
-        let timestamp = f + 978307200f64;
+        let timestamp = f + 978_307_200_f64;
 
-        let secs = timestamp.trunc() as i64;
-        let nsecs = timestamp.fract() * 1_000_000_000.0;
-        let ndt = NaiveDateTime::from_timestamp(secs, nsecs as u32);
+        let seconds = timestamp.trunc() as i64;
+        let nanoseconds = timestamp.fract() * 1_000_000_000.0;
+        let datetime = NaiveDateTime::from_timestamp(seconds, nanoseconds as u32);
 
-        DateTimeUTC(DateTime::from_utc(ndt, Utc))
+        DateTimeUTC(DateTime::from_utc(datetime, Utc))
     }
 }
 
 /// Recursively copies all files in a directory.
 ///
-/// <https://stackoverflow.com/a/65192210/16968574>
+/// # Errors
+///
+/// Will return `Err` if any IO errors are encountered.
+//
+// <https://stackoverflow.com/a/65192210/16968574>
 pub fn copy_dir(source: &Path, destination: &Path) -> io::Result<()> {
     fs::create_dir_all(&destination)?;
+
+    log::debug!(
+        "Copying `{}` to `{}`",
+        &source.display(),
+        &destination.display(),
+    );
 
     for entry in fs::read_dir(source)? {
         let entry = entry?;
@@ -87,21 +100,25 @@ pub fn copy_dir(source: &Path, destination: &Path) -> io::Result<()> {
 }
 
 /// Returns the file extension of a path.
+#[must_use]
 pub fn get_file_extension(path: &Path) -> Option<&str> {
-    path.extension().and_then(|e| e.to_str())
+    path.extension().and_then(OsStr::to_str)
 }
 
 /// Returns the file name of a path.
+#[must_use]
 pub fn get_file_name(path: &Path) -> Option<&str> {
-    path.file_name().and_then(|f| f.to_str())
+    path.file_name().and_then(OsStr::to_str)
 }
 
 /// Returns the file stem of a path.
+#[must_use]
 pub fn get_file_stem(path: &Path) -> Option<&str> {
-    path.file_stem().and_then(|e| e.to_str())
+    path.file_stem().and_then(OsStr::to_str)
 }
 
 /// Returns today's date as a string.
+#[must_use]
 pub fn today_format(format: &str) -> String {
     Local::now().format(format).to_string()
 }

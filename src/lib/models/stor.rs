@@ -1,5 +1,6 @@
 use std::collections::HashMap;
 use std::ops::{Deref, DerefMut};
+use std::path::Path;
 
 use serde::Serialize;
 
@@ -8,8 +9,6 @@ use super::book::Book;
 use crate::lib::applebooks::database::ABDatabase;
 use crate::lib::result::Result;
 
-#[allow(unused_imports)] // For docs.
-use crate::lib::applebooks::defaults::APPLEBOOKS_DATABASES;
 #[allow(unused_imports)] // For docs.
 use crate::lib::templates::Templates;
 
@@ -58,11 +57,13 @@ pub struct Stor {
 impl Stor {
     /// Builds the [`StorData`] from the Apple Books database.
     ///
-    /// Locating the database path is delegated to the [`ABDatabase`] and the
-    /// [`static@APPLEBOOKS_DATABASES`] static variable.
-    pub fn build(&mut self) -> Result<()> {
-        let books = ABDatabase::query::<Book>()?;
-        let annotations = ABDatabase::query::<Annotation>()?;
+    /// # Errors
+    ///
+    /// See [`ABDatabase::query`] for information on errors as these are the
+    /// only sources of possible errors.
+    pub fn build(&mut self, databases: &Path) -> Result<()> {
+        let books = ABDatabase::query::<Book>(databases)?;
+        let annotations = ABDatabase::query::<Annotation>(databases)?;
 
         log::debug!("Found {} book(s) in database.", books.len());
         log::debug!("Found {} annotation(s) in database.", annotations.len());
@@ -79,17 +80,17 @@ impl Stor {
             .collect();
 
         // `Annotation`s are pushed onto a `StorItem` based on its `book_id`.
-        annotations.into_iter().for_each(|annotation| {
+        for annotation in annotations {
             if let Some(stor_item) = data.get_mut(&annotation.metadata.book_id) {
                 stor_item.annotations.push(annotation);
             }
-        });
+        }
 
         // Remove `StorItem`s that have no `Annotation`s.
         data.retain(|_, stor_item| !stor_item.annotations.is_empty());
 
         // Sort `Annotation`s by their `location`s.
-        data.values_mut().for_each(|stor_item| {
+        for stor_item in data.values_mut() {
             stor_item
                 .annotations
                 // <https://stackoverflow.com/a/56106352/16968574>
@@ -99,7 +100,7 @@ impl Stor {
                         .location
                         .cmp(&annotation_b.metadata.location)
                 });
-        });
+        }
 
         self.data = data;
 
@@ -107,11 +108,13 @@ impl Stor {
     }
 
     /// Returns the number of books.
+    #[must_use]
     pub fn count_books(&self) -> usize {
         self.data.len()
     }
 
     /// Returns the number of annotations.
+    #[must_use]
     pub fn count_annotations(&self) -> usize {
         self.data
             .iter()
@@ -145,6 +148,7 @@ pub struct StorItem {
 impl StorItem {
     /// Formats a [`StorItem`] into a friendly-human-readable string. Primarily
     /// used for naming files or directories for its respective [`Book`].
+    #[must_use]
     pub fn name(&self) -> String {
         format!("{} - {}", self.book.author, self.book.title)
     }

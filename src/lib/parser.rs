@@ -1,8 +1,9 @@
-use once_cell::sync::Lazy;
-use regex::Regex;
+use std::borrow::ToOwned;
 
 #[allow(unused_imports)] // For docs.
 use super::models::annotation::Annotation;
+use once_cell::sync::Lazy;
+use regex::Regex;
 
 /// Capture a 'Step Reference' e.g. `/6` `/4`
 ///
@@ -72,6 +73,7 @@ static RE_SPACIAL_OFFSET: Lazy<Regex> =
 ///
 /// See <https://w3c.github.io/epub-specs/epub33/epubcfi/> for more
 /// information.
+#[must_use]
 pub fn parse_epubcfi(raw: &str) -> String {
     // Check that the incoming string is an `epubcfi`.
     if !raw.starts_with("epubcfi(") && !raw.ends_with(')') {
@@ -145,7 +147,7 @@ pub fn parse_epubcfi(raw: &str) -> String {
     let mut steps = RE_STEP_REFERENCE
         .find_iter(&location)
         .map(|m| m.as_str())
-        .map(|s| s.to_owned())
+        .map(ToOwned::to_owned)
         .collect::<Vec<String>>()
         .join("");
 
@@ -167,8 +169,7 @@ pub fn parse_epubcfi(raw: &str) -> String {
     let character_offset = RE_CHARACTER_OFFSET
         .find(&location)
         .map(|m| m.as_str())
-        .map(|s| s.to_owned())
-        .unwrap_or_else(|| "".to_owned());
+        .map_or_else(|| "".to_owned(), ToOwned::to_owned);
 
     // -> A: 6.4.4.10.2.1:1
     // -> B: 6.4.4.10.1:3

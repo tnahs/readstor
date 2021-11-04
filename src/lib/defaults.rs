@@ -11,10 +11,3 @@ pub static ROOT: Lazy<PathBuf> = Lazy::new(|| env!("CARGO_MANIFEST_DIR").into())
 // the process has started. Which is highly unlikely, and would be okay to
 // panic if that was the case.
 pub static HOME: Lazy<PathBuf> = Lazy::new(|| home::home_dir().unwrap());
-
-/// Defines the environment variable key used to determine weather testing is
-/// happening or not.
-///
-/// When testing, the official Apple Books database path is bypassed and
-/// redirected to the local testing database.
-pub const READSTOR_TESTING: &str = "READSTOR_TESTING";

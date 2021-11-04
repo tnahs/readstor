@@ -12,13 +12,14 @@ pub struct Book {
 }
 
 #[derive(Debug, Default, Clone, Serialize)]
+/// Represents the data that is not directly editable by the user.
 pub struct BookMetadata {
     pub id: String,
     pub last_opened: DateTimeUTC,
 }
 
 impl ABQueryable for Book {
-    const DATABASE_NAME: ABDatabaseName = ABDatabaseName::BKLibrary;
+    const DATABASE_NAME: ABDatabaseName = ABDatabaseName::Books;
 
     const QUERY: &'static str = {
         "SELECT
@@ -26,9 +27,7 @@ impl ABQueryable for Book {
             ZBKLIBRARYASSET.ZAUTHOR,       -- 1 author
             ZBKLIBRARYASSET.ZASSETID,      -- 2 id
             ZBKLIBRARYASSET.ZLASTOPENDATE  -- 3 last_opened
-
         FROM ZBKLIBRARYASSET
-
         ORDER BY ZBKLIBRARYASSET.ZTITLE;"
     };
 

@@ -1,4 +1,4 @@
-### TODO
+# TODO
 
 - [ ] Document how to implement custom templates
 - [ ] Implement `From<&'a Row> for T`
@@ -9,6 +9,7 @@
 - [ ] More logging
 - [ ] More tests
 - [ ] Test "Sync collections, bookmarks, and highlights across devices"
+    - [ ] /Users/[USER]/Library/Mobile Documents/iCloud~com~apple~iBooks/Documents
 - [ ] `check` annotations and 'delete' from source database
 
 ```sql
@@ -19,3 +20,4 @@ UPDATE ZAEANNOTATION
 
 - [ ] Atomic writes
 - [ ] Add highlights from other sources?
+- [ ] Move from `chrono` > `time` crate

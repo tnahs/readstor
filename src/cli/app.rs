@@ -3,7 +3,7 @@ use std::fs;
 use anyhow::Context;
 
 use crate::cli::config::AppConfig;
-use crate::lib::applebooks::defaults::APPLEBOOKS_DATABASES;
+use crate::lib::applebooks::database::ABDatabaseName;
 use crate::lib::applebooks::utils::APPLEBOOKS_VERSION;
 use crate::lib::models::stor::Stor;
 use crate::lib::result::Result;
@@ -35,13 +35,13 @@ impl App {
     }
 
     pub fn run(&mut self) -> AnyhowResult<()> {
-        println!("Building stor...");
+        println!("* Building stor...");
 
         self.stor
-            .build()
+            .build(&self.config.databases)
             .context("ReadStor failed while building stor")?;
 
-        println!("Saving items...");
+        println!("* Saving items...");
 
         self.save_items()
             .context("ReadStor failed while saving items")?;
@@ -50,14 +50,14 @@ impl App {
             .context("ReadStor failed while exporting to templates")?;
 
         if self.config.backup {
-            println!("Backing up databases...");
+            println!("* Backing up databases...");
 
             self.backup_databases()
                 .context("ReadStor failed while backing up databases")?;
         }
 
         println!(
-            "Exported {} annotations from {} books.",
+            "* Saved {} annotations from {} books.",
             self.stor.count_annotations(),
             self.stor.count_books()
         );
@@ -79,6 +79,7 @@ impl App {
     ///      │   │   └─ annotations.json
     ///      │   │
     ///      │   └─ assets
+    ///      │       ├─ .gitkeep
     ///      │       ├─ Author - Title.epub   ─┐
     ///      │       ├─ cover.jpeg             ├─ These are not exported.
     ///      │       └─ ...                   ─┘
@@ -119,6 +120,10 @@ impl App {
             let annotations_file = fs::File::create(annotations_json)?;
 
             serde_json::to_writer_pretty(&annotations_file, &stor_item.annotations)?;
+
+            // -> [output]/data/Author - Title/assets/.gitkeep
+            let gitkeep = assets.join(".gitkeep");
+            fs::File::create(gitkeep)?;
         }
 
         Ok(())
@@ -180,22 +185,37 @@ impl App {
         // -> [output]/backups/
         let root = self.config.output.join("backups");
 
-        // -> [output]/backups/[YYYY-MM-DD-HHMMSS] [version]
+        // -> [YYYY-MM-DD-HHMMSS] [VERSION]
         let today = format!(
             "{} {}",
             utils::today_format("%Y-%m-%d-%H%M%S"),
             APPLEBOOKS_VERSION.to_owned()
         );
 
-        let destination = root.join(today);
+        // -> [output]/backups/[YYYY-MM-DD-HHMMSS] [VERSION]
+        let destination_root = root.join(&today);
 
-        log::debug!(
-            "Copying databases from: `{}` to `{}`",
-            APPLEBOOKS_DATABASES.as_path().display(),
-            destination.display(),
-        );
+        // -> [output]/backups/[YYYY-MM-DD-HHMMSS] [VERSION]/BKLibrary
+        let destination_books = destination_root.join(ABDatabaseName::Books.to_string());
 
-        utils::copy_dir(APPLEBOOKS_DATABASES.as_path(), &destination)?;
+        // -> [output]/backups/[YYYY-MM-DD-HHMMSS] [VERSION]/AEAnnotations
+        let destination_annotations =
+            destination_root.join(ABDatabaseName::Annotations.to_string());
+
+        // -> [DATABASES]/BKLibrary
+        let source_books = &self
+            .config
+            .databases
+            .join(ABDatabaseName::Books.to_string());
+
+        // -> [DATABASES]/AEAnnotations
+        let source_annotations = &self
+            .config
+            .databases
+            .join(ABDatabaseName::Annotations.to_string());
+
+        utils::copy_dir(source_books, &destination_books)?;
+        utils::copy_dir(source_annotations, &destination_annotations)?;
 
         Ok(())
     }
@@ -204,21 +224,47 @@ impl App {
 #[cfg(test)]
 mod tests {
 
+    use super::super::defaults::DATABASES_DEV;
     use super::*;
 
-    use crate::lib::defaults::READSTOR_TESTING;
-
     #[test]
-    // TODO Swap test databases for something more custom.
-    fn test_app() {
-        std::env::set_var(READSTOR_TESTING, "1");
+    fn test_databases_empty() {
+        let databases = DATABASES_DEV.join("empty");
 
         let mut app = App::default();
 
         // Mimicking what happens in the [`App::run`] method.
-        app.stor.build().unwrap();
+        app.stor.build(&databases).unwrap();
 
-        assert_eq!(app.stor.count_books(), 72);
-        assert_eq!(app.stor.count_annotations(), 1301);
+        assert_eq!(app.stor.count_books(), 0);
+        assert_eq!(app.stor.count_annotations(), 0);
+    }
+
+    #[test]
+    fn test_databases_books_new() {
+        let databases = DATABASES_DEV.join("books-new");
+
+        let mut app = App::default();
+
+        // Mimicking what happens in the [`App::run`] method.
+        app.stor.build(&databases).unwrap();
+
+        // Although there are books in the database, the books are not
+        // annotated therefore they are filtered out of the `Stor`.
+        assert_eq!(app.stor.count_books(), 0);
+        assert_eq!(app.stor.count_annotations(), 0);
+    }
+
+    #[test]
+    fn test_databases_books_annotated() {
+        let databases = DATABASES_DEV.join("books-annotated");
+
+        let mut app = App::default();
+
+        // Mimicking what happens in the [`App::run`] method.
+        app.stor.build(&databases).unwrap();
+
+        assert_eq!(app.stor.count_books(), 3);
+        assert_eq!(app.stor.count_annotations(), 10);
     }
 }

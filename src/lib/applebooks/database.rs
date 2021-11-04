@@ -4,7 +4,8 @@ use std::path::PathBuf;
 use rusqlite::OpenFlags;
 use rusqlite::{Connection, Row};
 
-use super::defaults::APPLEBOOKS_DATABASES;
+#[allow(unused_imports)] // For docs.
+use super::defaults::DATABASES;
 #[allow(unused_imports)] // For docs.
 use crate::lib::models::annotation::Annotation;
 #[allow(unused_imports)] // For docs.
@@ -14,14 +15,25 @@ use crate::lib::result::{ApplicationError, Result};
 pub struct ABDatabase;
 
 impl ABDatabase {
-    /// Queries the appropriate Apple Books database and returns a
-    /// `Result<Vec<T>>` where `T` is a type that implements [`ABQueryable`].
-    /// In most cases `T` would be either [`Book`] or [`Annotation`].
+    /// Queries an Apple Books database based on the `databases` path and `T`.
     ///
-    /// See [`static@APPLEBOOKS_DATABASES`] for more information.
-    pub fn query<T: ABQueryable>() -> Result<Vec<T>> {
+    /// The `databases` path determines where the databases are located while
+    /// `T` determines which of the two databases will be queried. `T` should
+    /// be either [`Book`] or [`Annotation`] referring to `BKLibrary*.sqlite`
+    /// or `AEAnnotation*.sqlite`.
+    ///
+    /// See [`ABDatabase::get_database`] for information on how the `databases`
+    /// directory should be structured.
+    ///
+    /// # Errors
+    ///
+    /// Will return `Err` if the database cannot be opened or the underlying
+    /// schema has changed, meaning this application is out of sync with the
+    /// latest version of Apple Books.
+    #[allow(clippy::missing_panics_doc)]
+    pub fn query<T: ABQueryable>(databases: &Path) -> Result<Vec<T>> {
         // Returns the appropriate database based on `T`.
-        let path = Self::get_database::<T>(&APPLEBOOKS_DATABASES)?;
+        let path = Self::get_database::<T>(databases)?;
 
         let connection =
             match Connection::open_with_flags(&path, OpenFlags::SQLITE_OPEN_READ_ONLY) {
@@ -34,6 +46,8 @@ impl ABDatabase {
                 }
             };
 
+        // TODO This is a case where user feedback would be helpful. Bubble
+        // up some helpful information on how to report an issue.
         let mut statement = match connection.prepare(T::QUERY) {
             Ok(statement) => statement,
             Err(_) => {
@@ -131,8 +145,7 @@ impl ABDatabase {
 /// how [`Book`] and [`Annotation`] instances are created. Thus it should only
 /// have to be implemented by said structs. It allows instances to be created
 /// generically over the rows of their respective databases `BKLibrary*.sqlite`
-/// and `AEAnnotation*.sqlite`. See [`static@APPLEBOOKS_DATABASES`] for path
-/// information.
+/// and `AEAnnotation*.sqlite`. See [`static@DATABASES`] for path information.
 ///
 /// The [`ABQueryable::from_row`] and [`ABQueryable::QUERY`] methods are
 /// strongly coupled in that the declared rows in the `SELECT` statement *must*
@@ -161,16 +174,16 @@ pub trait ABQueryable {
 
 /// Describes Apple Books' two databases.
 pub enum ABDatabaseName {
-    BKLibrary,
-    AEAnnotation,
+    Books,
+    Annotations,
 }
 
 /// Provides a `to_string` method to convert `ABDatabaseName`s to `String`s.
 impl std::fmt::Display for ABDatabaseName {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            ABDatabaseName::BKLibrary => write!(f, "BKLibrary"),
-            ABDatabaseName::AEAnnotation => write!(f, "AEAnnotation"),
+            ABDatabaseName::Books => write!(f, "BKLibrary"),
+            ABDatabaseName::Annotations => write!(f, "AEAnnotation"),
         }
     }
 }

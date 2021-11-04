@@ -34,9 +34,12 @@ impl Default for Templates {
 }
 
 impl Templates {
-    /// Adds a template to the registry. This will fail if the template
-    /// contains either syntax errors or variables that reference non-existent
-    /// fields in a [`StorItem`].
+    /// Adds a template to the registry.
+    ///
+    /// # Errors
+    ///
+    /// Will return `Err` if the template contains either syntax errors or
+    /// variables that reference non-existent fields in a [`StorItem`].
     pub fn add(&mut self, template: Template) -> Result<()> {
         // Attempt to add a new template to the registry. This will fail if
         // the template has syntax errors.
@@ -53,7 +56,8 @@ impl Templates {
         // non-existent fields in a `StorItem`.
         match self.registry.render(
             &template.name,
-            &Context::from_serialize(StorItem::default()).unwrap(),
+            // TODO How would this fail?
+            &Context::from_serialize(StorItem::default())?,
         ) {
             Ok(_) => {}
             Err(err) => return Err(ApplicationError::Template(err)),
@@ -75,6 +79,10 @@ impl Templates {
     ///      ├─ Author - Title.ext
     ///      └─ ...
     /// ```
+    ///
+    /// # Errors
+    ///
+    /// Will return `Err` if any IO errors are encountered.
     pub fn render(&self, stor_item: &StorItem, path: &Path) -> Result<()> {
         for template in &self.templates {
             // -> [path]/[template-name]
@@ -91,6 +99,7 @@ impl Templates {
 
             match self.registry.render_to(
                 &template.name,
+                // TODO How would this fail?
                 &Context::from_serialize(stor_item)?,
                 file,
             ) {
@@ -139,35 +148,38 @@ where
     fn from(path: P) -> Self {
         let path: PathBuf = path.into();
 
-        let name = utils::get_file_name(&path)
-            .map(String::from)
-            .unwrap_or_else(|| {
+        let name = utils::get_file_name(&path).map_or_else(
+            || {
                 log::warn!(
                     "Could not read custom template file name. Using default \
                     value: `custom.txt`."
                 );
                 "custom.txt".to_owned()
-            });
+            },
+            String::from,
+        );
 
-        let stem = utils::get_file_stem(&path)
-            .map(String::from)
-            .unwrap_or_else(|| {
+        let stem = utils::get_file_stem(&path).map_or_else(
+            || {
                 log::warn!(
                     "Could not read custom template file stem. Using default \
                     value: `custom`."
                 );
                 "custom".to_owned()
-            });
+            },
+            String::from,
+        );
 
-        let extension = utils::get_file_extension(&path)
-            .map(String::from)
-            .unwrap_or_else(|| {
+        let extension = utils::get_file_extension(&path).map_or_else(
+            || {
                 log::warn!(
                     "Could not read custom template file extension. Using \
                     default value: `txt`."
                 );
                 "txt".to_owned()
-            });
+            },
+            String::from,
+        );
 
         Self {
             path,
@@ -184,7 +196,7 @@ fn join_paragraph(value: &Value, _: &HashMap<String, Value>) -> tera::Result<Val
 
     let rendered = value
         .iter()
-        .map(|v| v.as_str())
+        .map(serde_json::Value::as_str)
         // TODO Is there a more elegant way to do this?
         .map(|v| v.unwrap_or(""))
         .collect::<Vec<_>>()

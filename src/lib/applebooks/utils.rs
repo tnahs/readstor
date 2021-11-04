@@ -27,23 +27,23 @@ pub static APPLEBOOKS_VERSION: Lazy<String> = Lazy::new(|| {
     .iter()
     .collect();
 
-    let value = match Value::from_file(&path) {
-        Ok(value) => value,
-        Err(_) => {
-            // This can happen if the user is on a non-macOS device.
-            log::warn!(
-                "Could not determine Apple Books version. `Info.plist` not found at `{}`",
-                &path.display()
-            );
-            return "v?".to_owned();
-        }
+    let value = if let Ok(value) = Value::from_file(&path) {
+        value
+    } else {
+        // This can happen if the user is on a non-macOS device.
+        log::warn!(
+            "Could not determine Apple Books version. \
+            `Info.plist` not found at `{}`",
+            &path.display()
+        );
+        return "v?".to_owned();
     };
 
     // -> 3.2
     let version_short = value
         .as_dictionary()
         .and_then(|d| d.get("CFBundleShortVersionString"))
-        .and_then(|v| v.as_string())
+        .and_then(plist::Value::as_string)
         .unwrap_or_else(|| {
             log::warn!("Could not determine `CFBundleShortVersionString`");
             "?"
@@ -53,7 +53,7 @@ pub static APPLEBOOKS_VERSION: Lazy<String> = Lazy::new(|| {
     let version = value
         .as_dictionary()
         .and_then(|d| d.get("CFBundleVersion"))
-        .and_then(|v| v.as_string())
+        .and_then(plist::Value::as_string)
         .unwrap_or_else(|| {
             log::warn!("Could not determine `CFBundleVersion`");
             "?"
@@ -64,6 +64,7 @@ pub static APPLEBOOKS_VERSION: Lazy<String> = Lazy::new(|| {
 });
 
 /// Returns boolean based on if Apple Books is running or not.
+#[must_use]
 pub fn applebooks_is_running() -> bool {
     let process_names: HashSet<String> = System::new_all()
         .processes()

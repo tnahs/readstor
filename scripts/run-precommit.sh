@@ -1,6 +1,6 @@
 #! /bin/zsh
 
 cargo fmt \
-&& cargo clippy \
+&& cargo lint \
 && cargo build \
 && cargo test \

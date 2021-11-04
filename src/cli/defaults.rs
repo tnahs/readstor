@@ -4,6 +4,11 @@ use once_cell::sync::Lazy;
 
 use crate::lib::defaults::{HOME, ROOT};
 
+/// Defines the environment variable key used to determine whether the
+/// application is being worked on. If so, the Apple Books database path is
+/// bypassed and redirected to a local testing/dev database.
+pub const DEV_READSTOR: &str = "DEV_READSTOR";
+
 /// Defines the default output directory.
 ///
 /// The full path:
@@ -16,5 +21,12 @@ pub static OUTPUT: Lazy<PathBuf> = Lazy::new(|| HOME.join(".readstor"));
 pub static TEMPLATE: Lazy<PathBuf> = Lazy::new(|| {
     let mut path = ROOT.to_owned();
     path.extend(["templates", "default.txt"].iter());
+    path
+});
+
+/// Defines the path to the testing/dev databases.
+pub static DATABASES_DEV: Lazy<PathBuf> = Lazy::new(|| {
+    let mut path = ROOT.to_owned();
+    path.extend(["tests", "data", "databases"].iter());
     path
 });
