@@ -22,8 +22,8 @@ plist = "1.0"
 regex = "1.5"
 rusqlite = "0.26"
 serde_json = "1.0"
-sysinfo = "0.20"
-tera = "1"
+sysinfo = "0.22"
+tera = "1.15"
 thiserror = "1.0"
 
 [dependencies.chrono]

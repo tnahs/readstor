@@ -1,15 +1,16 @@
 # TODO
 
 - [ ] Document how to implement custom templates
+- [ ] Print more info on run e.g. where the export happened
 - [ ] Implement `From<&'a Row> for T`
 - [ ] Implement `Config` search paths
-    - $HOME/.readstor.toml
-    - $HOME/.readstor/config.toml
-    - $HOME/.config/readstor/config.toml
+    - `$HOME/.readstor.toml`
+    - `$HOME/.readstor/config.toml`
+    - `$HOME/.config/readstor/config.toml`
 - [ ] More logging
 - [ ] More tests
 - [ ] Test "Sync collections, bookmarks, and highlights across devices"
-    - [ ] /Users/[USER]/Library/Mobile Documents/iCloud~com~apple~iBooks/Documents
+    - [ ] `/Users/[USER]/Library/Mobile Documents/iCloud~com~apple~iBooks/Documents`
 - [ ] `check` annotations and 'delete' from source database
 
 ```sql
@@ -21,3 +22,4 @@ UPDATE ZAEANNOTATION
 - [ ] Atomic writes
 - [ ] Add highlights from other sources?
 - [ ] Move from `chrono` > `time` crate
+- [ ] `termcolor` for pretty output

@@ -23,6 +23,7 @@
         "sysinfo",
         "templating",
         "tera",
+        "termcolor",
         "thiserror",
         "trunc"
     ],
