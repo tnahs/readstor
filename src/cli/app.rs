@@ -23,9 +23,11 @@ impl App {
     pub fn new(config: AppConfig) -> AnyhowResult<Self> {
         let mut templates = Templates::default();
 
-        templates
-            .add(Template::from(&config.template))
-            .context("ReadStor failed while parsing template")?;
+        if let Some(template) = &config.template {
+            templates
+                .add(Template::from(template))
+                .context("ReadStor failed while parsing template")?;
+        }
 
         Ok(Self {
             stor: Stor::default(),
@@ -152,6 +154,7 @@ impl App {
 
         std::fs::create_dir_all(&root)?;
 
+        // `StorItem` aka a book.
         for stor_item in self.stor.values() {
             self.templates.render(stor_item, &root)?;
         }

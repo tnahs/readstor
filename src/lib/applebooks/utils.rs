@@ -3,7 +3,7 @@ use std::path::PathBuf;
 
 use once_cell::sync::Lazy;
 use plist::Value;
-use sysinfo::{ProcessExt, System, SystemExt};
+use sysinfo::{System, SystemExt};
 
 use super::defaults::APPLEBOOKS_NAMES;
 #[allow(unused_imports)] // For docs.
@@ -69,7 +69,7 @@ pub fn applebooks_is_running() -> bool {
     let process_names: HashSet<String> = System::new_all()
         .processes()
         .values()
-        .map(|p| p.name())
+        .map(sysinfo::ProcessExt::name)
         .map(String::from)
         .collect();
 

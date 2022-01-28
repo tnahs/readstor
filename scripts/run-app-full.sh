@@ -14,4 +14,7 @@ mkdir $output
 
 cargo run -- \
     --output $output \
-    "$@"
+    --export \
+    --backup \
+    --force \
+    -vvv \

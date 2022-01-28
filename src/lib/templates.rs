@@ -5,6 +5,7 @@ use std::path::{Path, PathBuf};
 use serde_json::{self, Value};
 use tera::{Context, Tera};
 
+use super::defaults::{DEFAULT_TEMPLATE, DEFAULT_TEMPLATE_NAME};
 use super::models::stor::StorItem;
 use super::result::{ApplicationError, Result};
 use super::utils;
@@ -14,6 +15,9 @@ use super::utils;
 pub struct Templates {
     /// Template registry containing all the parsed templates.
     registry: Tera,
+
+    /// TODO Document
+    default: Template,
 
     /// Stores a list of all [`Template`]s in the registry. See [`Template`]
     /// and [`Templates::render`] for more information.
@@ -25,9 +29,21 @@ impl Default for Templates {
         let mut registry = Tera::default();
 
         registry.register_filter("join_paragraph", join_paragraph);
+        registry
+            .add_raw_template(DEFAULT_TEMPLATE_NAME, DEFAULT_TEMPLATE)
+            // TODO Add unwrap documentation.
+            .unwrap();
+
+        let default = Template {
+            path: PathBuf::new(),
+            name: DEFAULT_TEMPLATE_NAME.to_owned(),
+            stem: "default".to_owned(),
+            extension: "txt".to_owned(),
+        };
 
         Self {
             registry,
+            default,
             templates: Vec::new(),
         }
     }
@@ -84,29 +100,42 @@ impl Templates {
     ///
     /// Will return `Err` if any IO errors are encountered.
     pub fn render(&self, stor_item: &StorItem, path: &Path) -> Result<()> {
-        for template in &self.templates {
-            // -> [path]/[template-name]
-            let template_path = path.join(&template.stem);
-
-            std::fs::create_dir_all(&template_path)?;
-
-            // -> [base-name].[extension] e.g. `Author - Title.md`
-            let file_name = format!("{}.{}", stor_item.name(), template.extension);
-            // -> [path]/[template-name]/Author - Title.md
-            let file_path = template_path.join(file_name);
-
-            let file = fs::File::create(&file_path)?;
-
-            match self.registry.render_to(
-                &template.name,
-                // TODO How would this fail?
-                &Context::from_serialize(stor_item)?,
-                file,
-            ) {
-                Ok(_) => {}
-                Err(err) => return Err(ApplicationError::Template(err)),
-            }
+        if self.templates.is_empty() {
+            self.render_single(path, &self.default, stor_item)?;
+            return Ok(());
         }
+
+        for template in &self.templates {
+            self.render_single(path, template, stor_item)?;
+        }
+
+        Ok(())
+    }
+
+    fn render_single(
+        &self,
+        path: &Path,
+        template: &Template,
+        stor_item: &StorItem,
+    ) -> Result<()> {
+        // -> [path]/[template-name]
+        let template_path = path.join(&template.stem);
+
+        std::fs::create_dir_all(&template_path)?;
+
+        let file_name = format!("{}.{}", stor_item.name(), template.extension);
+        let file_path = template_path.join(file_name);
+        let file = fs::File::create(&file_path)?;
+
+        match self.registry.render_to(
+            &template.name,
+            // TODO How would this fail?
+            &Context::from_serialize(stor_item)?,
+            file,
+        ) {
+            Ok(_) => {}
+            Err(err) => return Err(ApplicationError::Template(err)),
+        };
 
         Ok(())
     }

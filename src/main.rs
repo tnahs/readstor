@@ -4,27 +4,27 @@
 mod cli;
 pub mod lib;
 
+use clap::Parser;
 use loggerv::Logger;
-use structopt::StructOpt;
 
-use cli::app::AnyhowResult;
-use cli::app::App;
-use cli::config::AppConfig;
-use cli::opt::Opt;
-use lib::applebooks::utils::applebooks_is_running;
+use crate::cli::app::AnyhowResult;
+use crate::cli::app::App;
+use crate::cli::args::Args;
+use crate::cli::config::AppConfig;
+use crate::lib::applebooks::utils::applebooks_is_running;
 
 fn main() -> AnyhowResult<()> {
-    let opt = Opt::from_args();
+    let args = Args::parse();
 
     Logger::new()
-        .verbosity(opt.verbosity)
+        .verbosity(args.verbosity)
         .level(true)
         .init()
         .unwrap();
 
-    log::debug!("Running with: {:#?}.", &opt);
+    log::debug!("Running with: {:#?}.", &args);
 
-    if !opt.force && applebooks_is_running() {
+    if !args.force && applebooks_is_running() {
         println!(
             "Apple Books is currently running. \
             To ignore this, use the `-f, --force` flag."
@@ -32,7 +32,7 @@ fn main() -> AnyhowResult<()> {
         return Ok(());
     }
 
-    let config: AppConfig = opt.into();
+    let config: AppConfig = args.into();
 
     log::debug!("Running with: {:#?}.", &config);
 
