@@ -4,13 +4,15 @@
 mod cli;
 pub mod lib;
 
+use anyhow::Context;
 use clap::Parser;
 use loggerv::Logger;
 
 use crate::cli::app::AnyhowResult;
 use crate::cli::app::App;
 use crate::cli::args::Args;
-use crate::cli::config::AppConfig;
+use crate::cli::args::Command;
+use crate::cli::config::Config;
 use crate::lib::applebooks::utils::applebooks_is_running;
 
 fn main() -> AnyhowResult<()> {
@@ -22,7 +24,7 @@ fn main() -> AnyhowResult<()> {
         .init()
         .unwrap();
 
-    log::debug!("Running with: {:#?}.", &args);
+    log::debug!("Running with `args`: {:#?}.", &args);
 
     if !args.force && applebooks_is_running() {
         println!(
@@ -32,11 +34,36 @@ fn main() -> AnyhowResult<()> {
         return Ok(());
     }
 
-    let config: AppConfig = args.into();
+    let config = Config::new(&args);
+    let mut app = App::new(config);
 
-    log::debug!("Running with: {:#?}.", &config);
+    println!("* Building stor...");
 
-    App::new(config)?.run()?;
+    app.init().context("ReadStor failed while building stor")?;
+
+    match &args.command {
+        Command::Export => {
+            println!("* Exporting data...");
+            app.export_data()
+                .context("ReadStor failed while exporting data")?;
+        }
+        Command::Render { ref template } => {
+            println!("* Rendering template...");
+            app.render_templates(template.as_ref())
+                .context("ReadStor failed while rendering template")?;
+        }
+        Command::Backup => {
+            println!("* Backing up databases...");
+            app.backup_databases()
+                .context("ReadStor failed while backing up databases")?;
+        }
+    }
+
+    println!(
+        "* Saved {} annotations from {} books.",
+        app.count_annotations(),
+        app.count_books()
+    );
 
     Ok(())
 }

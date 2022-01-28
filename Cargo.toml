@@ -1,6 +1,6 @@
 [package]
 name = "readstor"
-version = "0.1.2"
+version = "0.2.0"
 description = "A CLI for Apple Books annotations"
 readme = "README.md"
 license = "MIT"

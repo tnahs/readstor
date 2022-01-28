@@ -3,7 +3,7 @@
 
 ReadStor is a simple CLI for exporting user-generated data from Apple Books. The goal of this project is to facilitate data-migration from Apple Books to any other platform. Currently Apple Books provides no simple way to do this. Exporting is possible but not ideal and often times truncates long annotations.
 
-Version `0.1.x` contains the core functionality: (1) save all annotations and notes as JSON (2) export them via a custom (or the default) template using the [Tera](https://tera.netlify.app/) syntax or (3) backup the current Apple Books databases. See [Output Structure](#output-structure) for more information.
+Version `0.1.x` contains the core functionality: (1) export all annotations and notes as JSON (2) render them via a custom (or the default) template using the [Tera](https://tera.netlify.app/) syntax or (3) backup the current Apple Books databases. See [Output Structure](#output-structure) for more information.
 
 Note that this repository is a heavy work-in-progress and things are bound to change. Templating documentation is not yet ready but a peek into this repo (see `StorItem`) and the [Tera docs](https://tera.netlify.app/docs/) should be enough information for the curious.
 
@@ -42,7 +42,7 @@ _Note that using iCloud to "Sync collections, bookmarks, and highlights across d
 ```plaintext
 [output] ── [default: ~/.readstor]
  │
- ├─ items
+ ├─ data
  │   │
  │   ├─ Author - Title
  │   │   │
@@ -50,7 +50,7 @@ _Note that using iCloud to "Sync collections, bookmarks, and highlights across d
  │   │   │   ├─ book.json
  │   │   │   └─ annotations.json
  │   │   │
- │   │   └─ assets
+ │   │   └─ resources
  │   │       ├─ .gitkeep
  │   │       ├─ Author - Title.epub   ─┐
  │   │       ├─ cover.jpeg             ├─ These are not exported.
@@ -61,7 +61,7 @@ _Note that using iCloud to "Sync collections, bookmarks, and highlights across d
  │   │
  │   └─ ...
  │
- ├─ exports
+ ├─ renders
  │   │
  │   └─ default ── [template-name]
  │       ├─ Author - Title.[template-ext]
@@ -89,16 +89,27 @@ _Note that using iCloud to "Sync collections, bookmarks, and highlights across d
 
 ## CLI Hierarchy / Functionality
 
-### 0.1.x
+### 0.2.x
 
 ``` plaintext
-readstor
-    -o, --output [PATH]      Sets the [output] path [default: ~/.readstor]
-    -t, --template [FILE]    Sets a custom export template
-    -b, --backup             Backs-up Apple Books' databases to [output]
-    -e, --export             Exports annotations via template to [output]
-    -f, --force              Runs even if Apple Books is open
-    -v, -vv, -vvv            Sets the level of verbosity
+readstor 0.2.0
+A CLI for Apple Books annotations
+
+USAGE:
+    readstor [OPTIONS] <SUBCOMMAND>
+
+OPTIONS:
+    -o, --output <PATH>    Sets the [output] path [default: ~/.readstor]
+    -f, --force            Runs even if Apple Books is open
+    -v                     Sets the logging verbosity
+    -h, --help             Print help information
+    -V, --version          Print version information
+
+SUBCOMMANDS:
+    export    Exports Apple Books' data to [output]
+    render    Renders annotations via a template to [output]
+    backup    Backs-up Apple Books' databases to [output]
+    help      Print this message or the help of the given subcommand(s)
 ```
 
 ### 1.x Target
@@ -124,7 +135,7 @@ readstor
     check                     Prompts to delete unintentional annotations from the [user-database]
         --source                  Also deletes annotations from Apple Books' database
     info                      Prints ReadStor info
-    -v, -vv, -vvv             Sets the level of verbosity
+    -v,                       Sets the logging verbosity
 ```
 
 ```toml

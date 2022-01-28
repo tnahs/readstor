@@ -13,8 +13,16 @@ mkdir $tmp
 mkdir $output
 
 cargo run -- \
+    export \
     --output $output \
-    --export \
-    --backup \
-    --force \
+    -vvv \
+
+cargo run -- \
+    render \
+    --output $output \
+    -vvv \
+
+cargo run -- \
+    backup \
+    --output $output \
     -vvv \

@@ -1,8 +1,9 @@
 use std::fs;
+use std::path::PathBuf;
 
 use anyhow::Context;
 
-use crate::cli::config::AppConfig;
+use crate::cli::config::Config;
 use crate::lib::applebooks::database::ABDatabaseName;
 use crate::lib::applebooks::utils::APPLEBOOKS_VERSION;
 use crate::lib::models::stor::Stor;
@@ -15,59 +16,33 @@ pub type AnyhowResult<T> = anyhow::Result<T>;
 #[derive(Default)]
 pub struct App {
     stor: Stor,
-    config: AppConfig,
+    config: Config,
     templates: Templates,
 }
 
 impl App {
-    pub fn new(config: AppConfig) -> AnyhowResult<Self> {
-        let mut templates = Templates::default();
-
-        if let Some(template) = &config.template {
-            templates
-                .add(Template::from(template))
-                .context("ReadStor failed while parsing template")?;
-        }
-
-        Ok(Self {
+    pub fn new(config: Config) -> Self {
+        Self {
             stor: Stor::default(),
             config,
-            templates,
-        })
+            templates: Templates::default(),
+        }
     }
 
-    pub fn run(&mut self) -> AnyhowResult<()> {
-        println!("* Building stor...");
-
-        self.stor
-            .build(&self.config.databases)
-            .context("ReadStor failed while building stor")?;
-
-        println!("* Saving items...");
-
-        self.save_items()
-            .context("ReadStor failed while saving items")?;
-
-        self.export_templates()
-            .context("ReadStor failed while exporting to templates")?;
-
-        if self.config.backup {
-            println!("* Backing up databases...");
-
-            self.backup_databases()
-                .context("ReadStor failed while backing up databases")?;
-        }
-
-        println!(
-            "* Saved {} annotations from {} books.",
-            self.stor.count_annotations(),
-            self.stor.count_books()
-        );
-
+    pub fn init(&mut self) -> Result<()> {
+        self.stor.build(&self.config.databases)?;
         Ok(())
     }
 
-    /// Saves Apple Books' data with the following structure:
+    pub fn count_annotations(&self) -> usize {
+        self.stor.count_annotations()
+    }
+
+    pub fn count_books(&self) -> usize {
+        self.stor.count_books()
+    }
+
+    /// Exports Apple Books' data with the following structure:
     ///
     /// ```plaintext
     /// [output]
@@ -95,7 +70,7 @@ impl App {
     /// Existing files are left unaffected unless explicitly written to. For
     /// example, the `assets` directory will not be deleted/recreated if it
     /// already exists and/or contains data.
-    pub fn save_items(&self) -> Result<()> {
+    pub fn export_data(&self) -> Result<()> {
         // -> [output]/items/
         let root = self.config.output.join("items");
 
@@ -148,13 +123,22 @@ impl App {
     /// ```
     ///
     /// See [`Templates::render`] for more information.
-    pub fn export_templates(&self) -> Result<()> {
+    pub fn render_templates(&mut self, template: Option<&PathBuf>) -> AnyhowResult<()> {
+        // TODO Move template initialization into its own function when default
+        // template directories are implemented. For now, this should be fine
+        // as we're only dealing with a single template.
+        if let Some(template) = template {
+            self.templates
+                .add(Template::from(template))
+                .context("ReadStor failed while parsing template")?;
+        }
+
         // -> [output]/exports/
         let root = self.config.output.join("exports");
 
         std::fs::create_dir_all(&root)?;
 
-        // `StorItem` aka a book.
+        // Renders each `StorItem` aka a book.
         for stor_item in self.stor.values() {
             self.templates.render(stor_item, &root)?;
         }
@@ -236,7 +220,7 @@ mod tests {
 
         let mut app = App::default();
 
-        // Mimicking what happens in the [`App::run`] method.
+        // Mimicking what happens in the [`App::init()`] method.
         app.stor.build(&databases).unwrap();
 
         assert_eq!(app.stor.count_books(), 0);
@@ -249,7 +233,7 @@ mod tests {
 
         let mut app = App::default();
 
-        // Mimicking what happens in the [`App::run`] method.
+        // Mimicking what happens in the [`App::init()`] method.
         app.stor.build(&databases).unwrap();
 
         // Although there are books in the database, the books are not
@@ -264,7 +248,7 @@ mod tests {
 
         let mut app = App::default();
 
-        // Mimicking what happens in the [`App::run`] method.
+        // Mimicking what happens in the [`App::init()`] method.
         app.stor.build(&databases).unwrap();
 
         assert_eq!(app.stor.count_books(), 3);

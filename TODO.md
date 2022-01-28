@@ -1,5 +1,14 @@
 # TODO
 
+## v0.2.0
+
+- [x] Fix broken default template
+- [x] Rename 'assets' to 'resources'
+- [x] Rework CLI commands
+- [ ] Update README
+
+## Other
+
 - [ ] Document how to implement custom templates
 - [ ] Print more info on run e.g. where the export happened
 - [ ] Implement `From<&'a Row> for T`
