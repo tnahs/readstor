@@ -4,13 +4,14 @@ use rusqlite::OpenFlags;
 use rusqlite::{Connection, Row};
 
 #[allow(unused_imports)] // For docs.
-use super::defaults as applebooks_defaults;
-use super::utils::APPLEBOOKS_VERSION;
-#[allow(unused_imports)] // For docs.
 use crate::lib::models::annotation::Annotation;
 #[allow(unused_imports)] // For docs.
 use crate::lib::models::book::Book;
-use crate::lib::result::{ApplicationError, Result};
+use crate::lib::result::{LibError, LibResult};
+
+#[allow(unused_imports)] // For docs.
+use super::defaults as applebooks_defaults;
+use super::utils::APPLEBOOKS_VERSION;
 
 pub struct ABDatabase;
 
@@ -31,7 +32,7 @@ impl ABDatabase {
     /// schema has changed, meaning this application is out of sync with the
     /// latest version of Apple Books.
     #[allow(clippy::missing_panics_doc)]
-    pub fn query<T: ABQuery>(databases: &Path) -> Result<Vec<T>> {
+    pub fn query<T: ABQuery>(databases: &Path) -> LibResult<Vec<T>> {
         // Returns the appropriate database based on `T`.
         let path = Self::get_database::<T>(databases)?;
 
@@ -39,7 +40,7 @@ impl ABDatabase {
             match Connection::open_with_flags(&path, OpenFlags::SQLITE_OPEN_READ_ONLY) {
                 Ok(connection) => connection,
                 Err(_) => {
-                    return Err(ApplicationError::DatabaseConnection {
+                    return Err(LibError::DatabaseConnection {
                         name: T::DATABASE_NAME.to_string(),
                         path: path.display().to_string(),
                     });
@@ -49,7 +50,7 @@ impl ABDatabase {
         let mut statement = match connection.prepare(T::QUERY) {
             Ok(statement) => statement,
             Err(_) => {
-                return Err(ApplicationError::DatabaseUnsupported {
+                return Err(LibError::UnsupportedVersion {
                     version: APPLEBOOKS_VERSION.to_owned(),
                 });
             }
@@ -91,7 +92,7 @@ impl ABDatabase {
     ///  │
     ///  └─ ...
     /// ```
-    fn get_database<T: ABQuery>(databases: &Path) -> Result<PathBuf> {
+    fn get_database<T: ABQuery>(databases: &Path) -> LibResult<PathBuf> {
         let mut root = databases.to_owned();
 
         // Appends `DATABASE_NAME` twice to the root path. Prepping the path
@@ -119,7 +120,7 @@ impl ABDatabase {
             .collect();
 
         if databases.is_empty() {
-            return Err(ApplicationError::DatabaseMissing {
+            return Err(LibError::DatabaseMissing {
                 name: T::DATABASE_NAME.to_string(),
                 path,
             });
@@ -130,7 +131,7 @@ impl ABDatabase {
         // `.sqlite`. If there are more then we'd possibly run into unexpected
         // behaviors.
         if databases.len() > 1 {
-            return Err(ApplicationError::DatabaseUnresolvable {
+            return Err(LibError::DatabaseUnresolvable {
                 name: T::DATABASE_NAME.to_string(),
                 path,
             });

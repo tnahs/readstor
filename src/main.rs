@@ -4,18 +4,20 @@
 mod cli;
 pub mod lib;
 
-use anyhow::Context;
 use clap::Parser;
+use color_eyre::eyre::WrapErr;
 use loggerv::Logger;
 
-use crate::cli::app::AnyhowResult;
 use crate::cli::app::App;
+use crate::cli::app::AppResult;
 use crate::cli::args::Args;
 use crate::cli::args::Command;
 use crate::cli::config::Config;
 use crate::lib::applebooks::utils::applebooks_is_running;
 
-fn main() -> AnyhowResult<()> {
+fn main() -> AppResult<()> {
+    color_eyre::install()?;
+
     let args = Args::parse();
 
     Logger::new()
@@ -39,23 +41,22 @@ fn main() -> AnyhowResult<()> {
 
     println!("• Building stor...");
 
-    app.init().context("ReadStor failed while building stor")?;
+    app.init()?;
 
     match &args.command {
         Command::Export => {
             println!("• Exporting data...");
-            app.export_data()
-                .context("ReadStor failed while exporting data")?;
+            app.export_data().wrap_err("failed while exporting data")?;
         }
         Command::Render { ref template } => {
             println!("• Rendering template...");
             app.render_templates(template.as_ref())
-                .context("ReadStor failed while rendering template")?;
+                .wrap_err("failed while rendering template")?;
         }
         Command::Backup => {
             println!("• Backing up databases...");
             app.backup_databases()
-                .context("ReadStor failed while backing up databases")?;
+                .wrap_err("failed while backing up databases")?;
         }
     }
 

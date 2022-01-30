@@ -3,13 +3,14 @@ use std::path::PathBuf;
 
 use once_cell::sync::Lazy;
 
-#[allow(unused_imports)] // For docs.
-use super::database::ABDatabase;
 use crate::lib::defaults as lib_defaults;
 #[allow(unused_imports)] // For docs.
 use crate::lib::models::annotation::Annotation;
 #[allow(unused_imports)] // For docs.
 use crate::lib::models::book::Book;
+
+#[allow(unused_imports)] // For docs.
+use super::database::ABDatabase;
 
 /// Defines the root databases directory.
 ///

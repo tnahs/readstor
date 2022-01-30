@@ -12,7 +12,7 @@ edition = "2021"
 exclude = ["scripts/*", ".vscode/*"]
 
 [dependencies]
-anyhow = "1.0.53"
+color-eyre = "0.6.0"
 glob = "0.3.0"
 home = "0.5.3"
 log = "0.4.14"
@@ -30,12 +30,12 @@ thiserror = "1.0.30"
 version = "0.4.19"
 features = ["serde"]
 
-[dependencies.serde]
-version = "1.0.136"
-features = ["derive"]
-
 [dependencies.clap]
 version = "3.0.13"
+features = ["derive"]
+
+[dependencies.serde]
+version = "1.0.136"
 features = ["derive"]
 
 [dev-dependencies]

@@ -48,7 +48,6 @@ pub enum Command {
     Backup,
 }
 
-/// Validates that a path exists.
 pub fn validate_path_exists(value: &str) -> Result<PathBuf, String> {
     let path = PathBuf::from(value);
 

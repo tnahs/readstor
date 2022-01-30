@@ -1,17 +1,16 @@
 use std::fs;
 use std::path::PathBuf;
 
-use anyhow::Context;
+use color_eyre::eyre::WrapErr;
 
 use crate::cli::config::Config;
 use crate::lib::applebooks::database::ABDatabaseName;
 use crate::lib::applebooks::utils::APPLEBOOKS_VERSION;
 use crate::lib::models::stor::Stor;
-use crate::lib::result::Result;
 use crate::lib::templates::{Template, Templates};
 use crate::lib::utils;
 
-pub type AnyhowResult<T> = anyhow::Result<T>;
+pub type AppResult<T> = color_eyre::Result<T>;
 
 #[derive(Default)]
 pub struct App {
@@ -29,8 +28,10 @@ impl App {
         }
     }
 
-    pub fn init(&mut self) -> Result<()> {
-        self.stor.build(self.config.databases())
+    pub fn init(&mut self) -> AppResult<()> {
+        self.stor
+            .build(self.config.databases())
+            .wrap_err("failed while building stor")
     }
 
     pub fn config(&self) -> &Config {
@@ -69,7 +70,7 @@ impl App {
     /// Existing files are left unaffected unless explicitly written to. For
     /// example, the `assets` directory will not be deleted/recreated if it
     /// already exists and/or contains data.
-    pub fn export_data(&self) -> Result<()> {
+    pub fn export_data(&self) -> AppResult<()> {
         // -> [output]/data/
         let root = self.config.output().join("data");
 
@@ -122,14 +123,14 @@ impl App {
     /// ```
     ///
     /// See [`Templates::render()`] for more information.
-    pub fn render_templates(&mut self, template: Option<&PathBuf>) -> AnyhowResult<()> {
+    pub fn render_templates(&mut self, template: Option<&PathBuf>) -> AppResult<()> {
         // TODO Move template initialization into its own function when default
         // template directories are implemented. For now, this should be fine
         // as we're only dealing with a single template.
         if let Some(template) = template {
             self.templates
                 .add(Template::from(template))
-                .context("ReadStor failed while parsing template")?;
+                .wrap_err("failed while parsing template")?;
         }
 
         // -> [output]/exports/
@@ -139,7 +140,9 @@ impl App {
 
         // Renders each `StorItem` aka a book.
         for stor_item in self.stor.values() {
-            self.templates.render(stor_item, &root)?;
+            self.templates
+                .render(stor_item, &root)
+                .wrap_err("failed while rendering template")?;
         }
 
         Ok(())
@@ -167,7 +170,7 @@ impl App {
     ///      │
     ///      └─ ...
     /// ```
-    pub fn backup_databases(&self) -> Result<()> {
+    pub fn backup_databases(&self) -> AppResult<()> {
         // -> [output]/backups/
         let root = self.config.output().join("backups");
 
@@ -213,8 +216,8 @@ mod tests {
     use super::*;
     use crate::cli::defaults as cli_defaults;
 
-    #[test]
     /// Tests that an empty database returns zero books and zero annotations.
+    #[test]
     fn test_databases_empty() {
         let databases = cli_defaults::DEV_DATABASES.join("empty");
 
@@ -227,9 +230,9 @@ mod tests {
         assert_eq!(app.stor.count_annotations(), 0);
     }
 
-    #[test]
     /// Tests that a database with un-annotated books returns zero books and
     /// zero annotations.
+    #[test]
     fn test_databases_books_new() {
         let databases = cli_defaults::DEV_DATABASES.join("books-new");
 
@@ -243,9 +246,9 @@ mod tests {
         assert_eq!(app.stor.count_annotations(), 0);
     }
 
-    #[test]
     /// Tests that a database with annotated books returns non-zero books and
     /// non-zero annotations.
+    #[test]
     fn test_databases_books_annotated() {
         let databases = cli_defaults::DEV_DATABASES.join("books-annotated");
 

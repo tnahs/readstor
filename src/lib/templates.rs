@@ -7,7 +7,7 @@ use tera::{Context, Tera};
 
 use super::defaults as lib_defaults;
 use super::models::stor::StorItem;
-use super::result::{ApplicationError, Result};
+use super::result::{LibError, LibResult};
 use super::utils;
 
 /// Provides a simple interface to add templates and render [`StorItem`]s.
@@ -60,27 +60,22 @@ impl Templates {
     ///
     /// Will return `Err` if the template contains either syntax errors or
     /// variables that reference non-existent fields in a [`StorItem`].
-    pub fn add(&mut self, template: Template) -> Result<()> {
+    pub fn add(&mut self, template: Template) -> LibResult<()> {
         // Attempt to add a new template to the registry. This will fail if
         // the template has syntax errors.
-        match self
-            .registry
+        self.registry
             .add_template_file(&template.path, Some(&template.name))
-        {
-            Ok(_) => {}
-            Err(err) => return Err(ApplicationError::Template(err)),
-        };
+            .map_err(LibError::Template)?;
 
         // Run a test render of the new template using an dummy `StorItem` to
         // check that the template does not contain variables that reference
         // non-existent fields in a `StorItem`.
-        match self.registry.render(
-            &template.name,
-            &Context::from_serialize(StorItem::default())?,
-        ) {
-            Ok(_) => {}
-            Err(err) => return Err(ApplicationError::Template(err)),
-        };
+        self.registry
+            .render(
+                &template.name,
+                &Context::from_serialize(StorItem::default())?,
+            )
+            .map_err(LibError::Template)?;
 
         self.templates.push(template);
 
@@ -103,7 +98,7 @@ impl Templates {
     ///
     /// Will return `Err` if any IO errors are encountered.
     // TODO add `serde_json::Error` as possible error.
-    pub fn render(&self, stor_item: &StorItem, path: &Path) -> Result<()> {
+    pub fn render(&self, stor_item: &StorItem, path: &Path) -> LibResult<()> {
         // TODO Document
         if self.templates.is_empty() {
             self.render_to_file(path, &self.default, stor_item)?;
@@ -124,7 +119,7 @@ impl Templates {
         path: &Path,
         template: &Template,
         stor_item: &StorItem,
-    ) -> Result<()> {
+    ) -> LibResult<()> {
         // -> [path]/[template-name]
         let template_path = path.join(&template.stem);
 
@@ -134,14 +129,9 @@ impl Templates {
         let file_path = template_path.join(file_name);
         let file = fs::File::create(&file_path)?;
 
-        match self.registry.render_to(
-            &template.name,
-            &Context::from_serialize(stor_item)?,
-            file,
-        ) {
-            Ok(_) => {}
-            Err(err) => return Err(ApplicationError::Template(err)),
-        };
+        self.registry
+            .render_to(&template.name, &Context::from_serialize(stor_item)?, file)
+            .map_err(LibError::Template)?;
 
         Ok(())
     }

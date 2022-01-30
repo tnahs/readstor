@@ -1,8 +1,11 @@
 use std::path::PathBuf;
 
+#[allow(unused_imports)] // For docs.
+use crate::lib::applebooks::database::ABDatabase;
+use crate::lib::applebooks::defaults as applebooks_defaults;
+
 use super::args::Args;
 use super::defaults as cli_defaults;
-use crate::lib::applebooks::defaults as applebooks_defaults;
 
 /// Represents the application's base configuration.
 #[derive(Debug)]
