@@ -1,9 +1,11 @@
+use std::cmp::Ordering;
+
 use once_cell::sync::Lazy;
 use regex::Regex;
 use rusqlite::Row;
 use serde::Serialize;
 
-use crate::lib::applebooks::database::{ABDatabaseName, ABQueryable};
+use crate::lib::applebooks::database::{ABDatabaseName, ABQuery};
 use crate::lib::parser;
 use crate::lib::utils::DateTimeUTC;
 
@@ -28,6 +30,18 @@ pub struct AnnotationMetadata {
     pub modified: DateTimeUTC,
     pub location: String,
     pub epubcfi: String,
+}
+
+impl PartialOrd for Annotation {
+    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+        self.metadata.location.partial_cmp(&other.metadata.location)
+    }
+}
+
+impl PartialEq for Annotation {
+    fn eq(&self, other: &Self) -> bool {
+        self.metadata.location == other.metadata.location
+    }
 }
 
 impl Annotation {
@@ -88,7 +102,7 @@ impl Annotation {
     }
 }
 
-impl ABQueryable for Annotation {
+impl ABQuery for Annotation {
     const DATABASE_NAME: ABDatabaseName = ABDatabaseName::Annotations;
 
     const QUERY: &'static str = {
@@ -142,5 +156,25 @@ impl ABQueryable for Annotation {
                 epubcfi,
             },
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+
+    use super::*;
+
+    #[test]
+    /// TODO Base function to start testing annotation order using `<` and `>`.
+    fn test_cmp_annotations() {
+        let mut a1 = Annotation::default();
+        a1.metadata.location =
+            parser::parse_epubcfi("epubcfi(/6/10[c01]!/4/10/3,:335,:749)");
+
+        let mut a2 = Annotation::default();
+        a2.metadata.location =
+            parser::parse_epubcfi("epubcfi(/6/12[c02]!/4/26/3,:68,:493)");
+
+        assert!(a1 < a2);
     }
 }

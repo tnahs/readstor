@@ -5,7 +5,7 @@ use once_cell::sync::Lazy;
 use plist::Value;
 use sysinfo::{System, SystemExt};
 
-use super::defaults::APPLEBOOKS_NAMES;
+use super::defaults as applebooks_defaults;
 #[allow(unused_imports)] // For docs.
 use crate::lib::models::annotation::Annotation;
 #[allow(unused_imports)] // For docs.
@@ -63,7 +63,7 @@ pub static APPLEBOOKS_VERSION: Lazy<String> = Lazy::new(|| {
     format!("v{}-{}", version_short, version)
 });
 
-/// Returns boolean based on if Apple Books is running or not.
+/// Returns a boolean based on if Apple Books is running or not.
 #[must_use]
 pub fn applebooks_is_running() -> bool {
     let process_names: HashSet<String> = System::new_all()
@@ -77,5 +77,5 @@ pub fn applebooks_is_running() -> bool {
     // equivalent to checking for an empty intersection."
     //
     // https://doc.rust-lang.org/std/collections/hash_set/struct.HashSet.html#method.is_disjoint
-    !APPLEBOOKS_NAMES.is_disjoint(&process_names)
+    !applebooks_defaults::APPLEBOOKS_NAMES.is_disjoint(&process_names)
 }

@@ -24,7 +24,7 @@ use super::templates::Templates;
 /// written `Default` of [`StorItem`] which would include multiple nested
 /// structs or wrap `DateTime<Utc>` and provide a `Default` implementation.
 ///
-/// See [`Templates::add`] for more information.
+/// See [`Templates::add()`] for more information.
 #[derive(Debug, Clone, Serialize)]
 pub struct DateTimeUTC(DateTime<Utc>);
 

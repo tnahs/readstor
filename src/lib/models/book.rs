@@ -1,7 +1,7 @@
 use rusqlite::Row;
 use serde::Serialize;
 
-use crate::lib::applebooks::database::{ABDatabaseName, ABQueryable};
+use crate::lib::applebooks::database::{ABDatabaseName, ABQuery};
 use crate::lib::utils::DateTimeUTC;
 
 #[derive(Debug, Default, Clone, Serialize)]
@@ -11,14 +11,14 @@ pub struct Book {
     pub metadata: BookMetadata,
 }
 
-#[derive(Debug, Default, Clone, Serialize)]
 /// Represents the data that is not directly editable by the user.
+#[derive(Debug, Default, Clone, Serialize)]
 pub struct BookMetadata {
     pub id: String,
     pub last_opened: DateTimeUTC,
 }
 
-impl ABQueryable for Book {
+impl ABQuery for Book {
     const DATABASE_NAME: ABDatabaseName = ABDatabaseName::Books;
 
     const QUERY: &'static str = {

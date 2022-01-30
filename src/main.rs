@@ -37,32 +37,33 @@ fn main() -> AnyhowResult<()> {
     let config = Config::new(&args);
     let mut app = App::new(config);
 
-    println!("* Building stor...");
+    println!("• Building stor...");
 
     app.init().context("ReadStor failed while building stor")?;
 
     match &args.command {
         Command::Export => {
-            println!("* Exporting data...");
+            println!("• Exporting data...");
             app.export_data()
                 .context("ReadStor failed while exporting data")?;
         }
         Command::Render { ref template } => {
-            println!("* Rendering template...");
+            println!("• Rendering template...");
             app.render_templates(template.as_ref())
                 .context("ReadStor failed while rendering template")?;
         }
         Command::Backup => {
-            println!("* Backing up databases...");
+            println!("• Backing up databases...");
             app.backup_databases()
                 .context("ReadStor failed while backing up databases")?;
         }
     }
 
     println!(
-        "* Saved {} annotations from {} books.",
-        app.count_annotations(),
-        app.count_books()
+        "• Saved {} annotations from {} books to `{}`",
+        app.stor().count_annotations(),
+        app.stor().count_books(),
+        app.config().output().display()
     );
 
     Ok(())

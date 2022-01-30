@@ -5,7 +5,7 @@ use std::path::{Path, PathBuf};
 use serde_json::{self, Value};
 use tera::{Context, Tera};
 
-use super::defaults::{DEFAULT_TEMPLATE, DEFAULT_TEMPLATE_NAME};
+use super::defaults as lib_defaults;
 use super::models::stor::StorItem;
 use super::result::{ApplicationError, Result};
 use super::utils;
@@ -16,11 +16,11 @@ pub struct Templates {
     /// Template registry containing all the parsed templates.
     registry: Tera,
 
-    /// TODO Document
+    /// Stores the default template.
     default: Template,
 
     /// Stores a list of all [`Template`]s in the registry. See [`Template`]
-    /// and [`Templates::render`] for more information.
+    /// and [`Templates::render()`] for more information.
     templates: Vec<Template>,
 }
 
@@ -30,13 +30,17 @@ impl Default for Templates {
 
         registry.register_filter("join_paragraph", join_paragraph);
         registry
-            .add_raw_template(DEFAULT_TEMPLATE_NAME, DEFAULT_TEMPLATE)
-            // TODO Add unwrap documentation.
+            .add_raw_template(
+                lib_defaults::DEFAULT_TEMPLATE_NAME,
+                lib_defaults::DEFAULT_TEMPLATE,
+            )
+            // Should be safe here to unwrap seeing as this is the default
+            // template and will be evaluated at compile-time.
             .unwrap();
 
         let default = Template {
             path: PathBuf::new(),
-            name: DEFAULT_TEMPLATE_NAME.to_owned(),
+            name: lib_defaults::DEFAULT_TEMPLATE_NAME.to_owned(),
             stem: "default".to_owned(),
             extension: "txt".to_owned(),
         };
@@ -72,7 +76,6 @@ impl Templates {
         // non-existent fields in a `StorItem`.
         match self.registry.render(
             &template.name,
-            // TODO How would this fail?
             &Context::from_serialize(StorItem::default())?,
         ) {
             Ok(_) => {}
@@ -99,20 +102,24 @@ impl Templates {
     /// # Errors
     ///
     /// Will return `Err` if any IO errors are encountered.
+    // TODO add `serde_json::Error` as possible error.
     pub fn render(&self, stor_item: &StorItem, path: &Path) -> Result<()> {
+        // TODO Document
         if self.templates.is_empty() {
-            self.render_single(path, &self.default, stor_item)?;
+            self.render_to_file(path, &self.default, stor_item)?;
             return Ok(());
         }
 
+        // TODO Document
         for template in &self.templates {
-            self.render_single(path, template, stor_item)?;
+            self.render_to_file(path, template, stor_item)?;
         }
 
         Ok(())
     }
 
-    fn render_single(
+    /// TODO Document
+    fn render_to_file(
         &self,
         path: &Path,
         template: &Template,
@@ -129,7 +136,6 @@ impl Templates {
 
         match self.registry.render_to(
             &template.name,
-            // TODO How would this fail?
             &Context::from_serialize(stor_item)?,
             file,
         ) {
@@ -147,7 +153,7 @@ impl Templates {
 /// template data from the registry and determine the path and file name of the
 /// rendered template.
 ///
-/// See [`Templates::render`] for more information.
+/// See [`Templates::render()`] for more information.
 #[derive(Debug)]
 pub struct Template {
     /// The path to the template.
@@ -159,7 +165,7 @@ pub struct Template {
     /// [`Templates`] `registry` and is the name given to the directory where
     /// its respective template renders to.
     ///
-    /// See [`Templates::render`] for more information.
+    /// See [`Templates::render()`] for more information.
     pub name: String,
 
     /// The template's file name e.g. `/path/to/default.md` -> `default`.
@@ -220,6 +226,7 @@ where
 }
 
 /// Joins a list of paragraph blocks with double line-breaks.
+/// <https://github.com/Keats/tera/blob/master/src/builtins/filters/array.rs>
 fn join_paragraph(value: &Value, _: &HashMap<String, Value>) -> tera::Result<Value> {
     let value = tera::try_get_value!("join_paragraph", "value", Vec<Value>, value);
 

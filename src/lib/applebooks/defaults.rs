@@ -5,7 +5,7 @@ use once_cell::sync::Lazy;
 
 #[allow(unused_imports)] // For docs.
 use super::database::ABDatabase;
-use crate::lib::defaults::HOME;
+use crate::lib::defaults as lib_defaults;
 #[allow(unused_imports)] // For docs.
 use crate::lib::models::annotation::Annotation;
 #[allow(unused_imports)] // For docs.
@@ -21,7 +21,7 @@ use crate::lib::models::book::Book;
 /// /users/[user]/Library/Containers/com.apple.iBooksX/Data/Documents.
 /// ```
 pub static DATABASES: Lazy<PathBuf> = Lazy::new(|| {
-    let mut path = HOME.to_owned();
+    let mut path = lib_defaults::HOME.to_owned();
     path.extend(
         [
             "Library",

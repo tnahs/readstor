@@ -99,16 +99,16 @@ USAGE:
     readstor [OPTIONS] <SUBCOMMAND>
 
 OPTIONS:
-    -o, --output <PATH>    Sets the [output] path [default: ~/.readstor]
-    -f, --force            Runs even if Apple Books is open
-    -v                     Sets the logging verbosity
-    -h, --help             Print help information
-    -V, --version          Print version information
+    -o, --output <OUTPUT>    Sets the OUTPUT path [default: ~/.readstor]
+    -f, --force              Runs even if Apple Books is open
+    -v                       Sets the logging verbosity
+    -h, --help               Print help information
+    -V, --version            Print version information
 
 SUBCOMMANDS:
-    export    Exports Apple Books' data to [output]
-    render    Renders annotations via a template to [output]
-    backup    Backs-up Apple Books' databases to [output]
+    export    Exports Apple Books' data to OUTPUT
+    render    Renders annotations via a template to OUTPUT
+    backup    Backs-up Apple Books' databases to OUTPUT
     help      Print this message or the help of the given subcommand(s)
 ```
 

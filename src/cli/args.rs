@@ -6,11 +6,10 @@ use clap::{AppSettings, Parser, Subcommand};
 #[derive(Debug, Parser)]
 #[clap(author, version, about, setting(AppSettings::DeriveDisplayOrder))]
 pub struct Args {
-    /// Sets the [output] path [default: ~/.readstor]
+    /// Sets the OUTPUT path [default: ~/.readstor]
     #[clap(
         short,
         long,
-        value_name = "PATH",
         global = true,
         parse(try_from_str = validate_path_exists),
     )]
@@ -31,22 +30,21 @@ pub struct Args {
 #[derive(Debug, Subcommand)]
 #[clap(setting(AppSettings::DeriveDisplayOrder))]
 pub enum Command {
-    /// Exports Apple Books' data to [output]
+    /// Exports Apple Books' data to OUTPUT
     Export,
 
-    /// Renders annotations via a template to [output]
+    /// Renders annotations via a template to OUTPUT
     Render {
         /// Sets a custom template
         #[clap(
             short,
             long,
-            value_name = "FILE",
             parse(try_from_str = validate_path_exists),
         )]
         template: Option<PathBuf>,
     },
 
-    /// Backs-up Apple Books' databases to [output]
+    /// Backs-up Apple Books' databases to OUTPUT
     Backup,
 }
 

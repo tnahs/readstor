@@ -4,7 +4,10 @@
 
 - [x] Fix broken default template
 - [x] Rename 'assets' to 'resources'
+- [x] Rename 'items' to 'data'
 - [x] Rework CLI commands
+- [x] Update license to "MIT OR Apache-2.0"
+- [ ] Switch to `color_eyre`
 - [ ] Update README
 
 ## Other

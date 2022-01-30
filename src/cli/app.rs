@@ -30,16 +30,15 @@ impl App {
     }
 
     pub fn init(&mut self) -> Result<()> {
-        self.stor.build(&self.config.databases)?;
-        Ok(())
+        self.stor.build(self.config.databases())
     }
 
-    pub fn count_annotations(&self) -> usize {
-        self.stor.count_annotations()
+    pub fn config(&self) -> &Config {
+        &self.config
     }
 
-    pub fn count_books(&self) -> usize {
-        self.stor.count_books()
+    pub fn stor(&self) -> &Stor {
+        &self.stor
     }
 
     /// Exports Apple Books' data with the following structure:
@@ -47,7 +46,7 @@ impl App {
     /// ```plaintext
     /// [output]
     ///  │
-    ///  └─ items
+    ///  └─ data
     ///      │
     ///      ├─ Author - Title
     ///      │   │
@@ -71,8 +70,8 @@ impl App {
     /// example, the `assets` directory will not be deleted/recreated if it
     /// already exists and/or contains data.
     pub fn export_data(&self) -> Result<()> {
-        // -> [output]/items/
-        let root = self.config.output.join("items");
+        // -> [output]/data/
+        let root = self.config.output().join("data");
 
         for stor_item in self.stor.values() {
             // -> [output]/data/Author - Title
@@ -122,7 +121,7 @@ impl App {
     ///      └─ ...
     /// ```
     ///
-    /// See [`Templates::render`] for more information.
+    /// See [`Templates::render()`] for more information.
     pub fn render_templates(&mut self, template: Option<&PathBuf>) -> AnyhowResult<()> {
         // TODO Move template initialization into its own function when default
         // template directories are implemented. For now, this should be fine
@@ -134,7 +133,7 @@ impl App {
         }
 
         // -> [output]/exports/
-        let root = self.config.output.join("exports");
+        let root = self.config.output().join("exports");
 
         std::fs::create_dir_all(&root)?;
 
@@ -170,7 +169,7 @@ impl App {
     /// ```
     pub fn backup_databases(&self) -> Result<()> {
         // -> [output]/backups/
-        let root = self.config.output.join("backups");
+        let root = self.config.output().join("backups");
 
         // -> [YYYY-MM-DD-HHMMSS] [VERSION]
         let today = format!(
@@ -185,20 +184,20 @@ impl App {
         // -> [output]/backups/[YYYY-MM-DD-HHMMSS] [VERSION]/BKLibrary
         let destination_books = destination_root.join(ABDatabaseName::Books.to_string());
 
-        // -> [output]/backups/[YYYY-MM-DD-HHMMSS] [VERSION]/AEAnnotations
+        // -> [output]/backups/[YYYY-MM-DD-HHMMSS] [VERSION]/AEAnnotation
         let destination_annotations =
             destination_root.join(ABDatabaseName::Annotations.to_string());
 
         // -> [DATABASES]/BKLibrary
         let source_books = &self
             .config
-            .databases
+            .databases()
             .join(ABDatabaseName::Books.to_string());
 
-        // -> [DATABASES]/AEAnnotations
+        // -> [DATABASES]/AEAnnotation
         let source_annotations = &self
             .config
-            .databases
+            .databases()
             .join(ABDatabaseName::Annotations.to_string());
 
         utils::copy_dir(source_books, &destination_books)?;
@@ -211,12 +210,13 @@ impl App {
 #[cfg(test)]
 mod tests {
 
-    use super::super::defaults::DATABASES_DEV;
     use super::*;
+    use crate::cli::defaults as cli_defaults;
 
     #[test]
+    /// Tests that an empty database returns zero books and zero annotations.
     fn test_databases_empty() {
-        let databases = DATABASES_DEV.join("empty");
+        let databases = cli_defaults::DEV_DATABASES.join("empty");
 
         let mut app = App::default();
 
@@ -228,23 +228,26 @@ mod tests {
     }
 
     #[test]
+    /// Tests that a database with un-annotated books returns zero books and
+    /// zero annotations.
     fn test_databases_books_new() {
-        let databases = DATABASES_DEV.join("books-new");
+        let databases = cli_defaults::DEV_DATABASES.join("books-new");
 
         let mut app = App::default();
 
         // Mimicking what happens in the [`App::init()`] method.
         app.stor.build(&databases).unwrap();
 
-        // Although there are books in the database, the books are not
-        // annotated therefore they are filtered out of the `Stor`.
+        // Un-annotated books are filtered out.
         assert_eq!(app.stor.count_books(), 0);
         assert_eq!(app.stor.count_annotations(), 0);
     }
 
     #[test]
+    /// Tests that a database with annotated books returns non-zero books and
+    /// non-zero annotations.
     fn test_databases_books_annotated() {
-        let databases = DATABASES_DEV.join("books-annotated");
+        let databases = cli_defaults::DEV_DATABASES.join("books-annotated");
 
         let mut app = App::default();
 

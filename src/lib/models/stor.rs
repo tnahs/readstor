@@ -59,7 +59,7 @@ impl Stor {
     ///
     /// # Errors
     ///
-    /// See [`ABDatabase::query`] for information on errors as these are the
+    /// See [`ABDatabase::query()`] for information on errors as these are the
     /// only sources of possible errors.
     pub fn build(&mut self, databases: &Path) -> Result<()> {
         let books = ABDatabase::query::<Book>(databases)?;
