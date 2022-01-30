@@ -216,48 +216,57 @@ mod tests {
     use super::*;
     use crate::cli::defaults as cli_defaults;
 
-    /// Tests that an empty database returns zero books and zero annotations.
-    #[test]
-    fn test_databases_empty() {
-        let databases = cli_defaults::DEV_DATABASES.join("empty");
+    /// Creates an app from a database found in `tests/data/databases/`.
+    fn app_from_test_db(name: &str) -> App {
+        let databases = cli_defaults::DEV_DATABASES.join(name);
 
         let mut app = App::default();
 
         // Mimicking what happens in the [`App::init()`] method.
         app.stor.build(&databases).unwrap();
 
-        assert_eq!(app.stor.count_books(), 0);
-        assert_eq!(app.stor.count_annotations(), 0);
+        app
+    }
+
+    /// Tests that an empty database returns zero books and zero annotations.
+    #[test]
+    fn test_databases_empty() {
+        let app = app_from_test_db("empty");
+
+        assert_eq!(app.stor().count_books(), 0);
+        assert_eq!(app.stor().count_annotations(), 0);
     }
 
     /// Tests that a database with un-annotated books returns zero books and
     /// zero annotations.
     #[test]
     fn test_databases_books_new() {
-        let databases = cli_defaults::DEV_DATABASES.join("books-new");
-
-        let mut app = App::default();
-
-        // Mimicking what happens in the [`App::init()`] method.
-        app.stor.build(&databases).unwrap();
+        let app = app_from_test_db("books-new");
 
         // Un-annotated books are filtered out.
-        assert_eq!(app.stor.count_books(), 0);
-        assert_eq!(app.stor.count_annotations(), 0);
+        assert_eq!(app.stor().count_books(), 0);
+        assert_eq!(app.stor().count_annotations(), 0);
     }
 
     /// Tests that a database with annotated books returns non-zero books and
     /// non-zero annotations.
     #[test]
     fn test_databases_books_annotated() {
-        let databases = cli_defaults::DEV_DATABASES.join("books-annotated");
+        let app = app_from_test_db("books-annotated");
 
-        let mut app = App::default();
+        assert_eq!(app.stor().count_books(), 3);
+        assert_eq!(app.stor().count_annotations(), 10);
+    }
 
-        // Mimicking what happens in the [`App::init()`] method.
-        app.stor.build(&databases).unwrap();
+    /// Tests that the annotations are sorted in the correct order.
+    #[test]
+    fn test_annotations_order() {
+        let app = app_from_test_db("books-annotated");
 
-        assert_eq!(app.stor.count_books(), 3);
-        assert_eq!(app.stor.count_annotations(), 10);
+        for stor_item in app.stor().values() {
+            for annotations in stor_item.annotations.windows(2) {
+                assert!(annotations[0] < annotations[1]);
+            }
+        }
     }
 }
