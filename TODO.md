@@ -8,11 +8,11 @@
 - [x] Rework CLI commands
 - [x] Update license to "MIT OR Apache-2.0"
 - [x] Switch to `color_eyre`
+- [x] Document how to implement custom templates
 - [ ] Update README
 
 ## Other
 
-- [ ] Document how to implement custom templates
 - [ ] Print more info on run e.g. where the export happened
 - [ ] Implement `From<&'a Row> for T`
 - [ ] Implement `Config` search paths
