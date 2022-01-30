@@ -175,7 +175,9 @@ extract-tags = true
 
 ## Creating a Custom Template
 
-The templating syntax is based on Jinja2 and Django templates. In a nutshell, accessing a value is as simple as placing an attribute (listed below) between `{{ }}` e.g. `{{ book.title }}`. You can use [filters](https://tera.netlify.app/docs/#filters) to manipulate the accessed values. And [statements](https://tera.netlify.app/docs/#control-structures) placed between `{% %}` e.g. `{% if my_var %} ... {% else %} ... {% endif %}` can be used for control flow. For more information, see the [Tera](https://tera.netlify.app/docs/#templates) documentation.
+### Syntax
+
+The templating syntax is based on Jinja2 and Django templates. In a nutshell, accessing a value is as simple as placing an attribute (listed below) between `{{ }}` e.g. `{{ book.title }}`. You can use [filters](https://tera.netlify.app/docs/#filters) to manipulate the accessed values e.g. `{{ name | capitalize }}`. And [statements](https://tera.netlify.app/docs/#control-structures) placed between `{% %}` e.g. `{% if my_var %} ... {% else %} ... {% endif %}`, can be used for control flow. For more information, see the [Tera](https://tera.netlify.app/docs/#templates) documentation.
 
 Every template has access to two object: the current book as `book` and its annotations as `annotations`.
 

@@ -1,19 +1,5 @@
 # TODO
 
-## v0.2.0
-
-- [x] Fix broken default template
-- [x] Rename 'assets' to 'resources'
-- [x] Rename 'items' to 'data'
-- [x] Rework CLI commands
-- [x] Update license to "MIT OR Apache-2.0"
-- [x] Switch to `color_eyre`
-- [x] Document how to implement custom templates
-- [ ] Update README
-
-## Other
-
-- [ ] Print more info on run e.g. where the export happened
 - [ ] Implement `From<&'a Row> for T`
 - [ ] Implement `Config` search paths
     - `$HOME/.readstor.toml`
