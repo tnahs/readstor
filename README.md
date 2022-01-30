@@ -97,11 +97,17 @@ _Note that using iCloud to "Sync collections, bookmarks, and highlights across d
  │
  └─ renders
      │
-     └─ default ── [template-name]
-         ├─ Author - Title.[template-ext]
-         ├─ Author - Title.txt
-         ├─ Author - Title.txt
-         └─ ...
+     ├─ default ── (omitted if a custom template is used)
+     │   ├─ Author - Title.[template-ext]
+     │   ├─ Author - Title.txt
+     │   └─ ...
+     │
+     ├─ [template-name]
+     │   ├─ Author - Title.[template-ext]
+     │   ├─ Author - Title.txt
+     │   └─ ...
+     │   
+     └─ ...
 ```
 
 ### `backup`
