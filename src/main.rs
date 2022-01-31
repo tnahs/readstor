@@ -4,27 +4,31 @@
 mod cli;
 pub mod lib;
 
+use clap::Parser;
+use color_eyre::eyre::WrapErr;
 use loggerv::Logger;
-use structopt::StructOpt;
 
-use cli::app::AnyhowResult;
-use cli::app::App;
-use cli::config::AppConfig;
-use cli::opt::Opt;
-use lib::applebooks::utils::applebooks_is_running;
+use crate::cli::app::App;
+use crate::cli::app::AppResult;
+use crate::cli::args::Args;
+use crate::cli::args::Command;
+use crate::cli::config::Config;
+use crate::lib::applebooks::utils::applebooks_is_running;
 
-fn main() -> AnyhowResult<()> {
-    let opt = Opt::from_args();
+fn main() -> AppResult<()> {
+    color_eyre::install()?;
+
+    let args = Args::parse();
 
     Logger::new()
-        .verbosity(opt.verbosity)
+        .verbosity(args.verbosity)
         .level(true)
         .init()
         .unwrap();
 
-    log::debug!("Running with: {:#?}.", &opt);
+    log::debug!("Running with `args`: {:#?}.", &args);
 
-    if !opt.force && applebooks_is_running() {
+    if !args.force && applebooks_is_running() {
         println!(
             "Apple Books is currently running. \
             To ignore this, use the `-f, --force` flag."
@@ -32,11 +36,36 @@ fn main() -> AnyhowResult<()> {
         return Ok(());
     }
 
-    let config: AppConfig = opt.into();
+    let config = Config::new(&args);
+    let mut app = App::new(config);
 
-    log::debug!("Running with: {:#?}.", &config);
+    println!("• Building stor...");
 
-    App::new(config)?.run()?;
+    app.init()?;
+
+    match &args.command {
+        Command::Export => {
+            println!("• Exporting data...");
+            app.export_data().wrap_err("failed while exporting data")?;
+        }
+        Command::Render { ref template } => {
+            println!("• Rendering template...");
+            app.render_templates(template.as_ref())
+                .wrap_err("failed while rendering template")?;
+        }
+        Command::Backup => {
+            println!("• Backing up databases...");
+            app.backup_databases()
+                .wrap_err("failed while backing up databases")?;
+        }
+    }
+
+    println!(
+        "• Saved {} annotations from {} books to `{}`",
+        app.stor().count_annotations(),
+        app.stor().count_books(),
+        app.config().output().display()
+    );
 
     Ok(())
 }

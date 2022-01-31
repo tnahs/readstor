@@ -8,7 +8,6 @@ last-opened: {{ book.metadata.last_opened | date }}
 
 {{ annotation.body | join_paragraph }}
 
-style: {{ annotation.style }}
 notes: {{ annotation.notes }}
 tags: {{ annotation.tags | join(sep=" ") }}
 

@@ -4,13 +4,13 @@ use std::path::Path;
 
 use serde::Serialize;
 
-use super::annotation::Annotation;
-use super::book::Book;
 use crate::lib::applebooks::database::ABDatabase;
-use crate::lib::result::Result;
-
+use crate::lib::result::LibResult;
 #[allow(unused_imports)] // For docs.
 use crate::lib::templates::Templates;
+
+use super::annotation::Annotation;
+use super::book::Book;
 
 /// Defines the `StorData` type alias.
 ///
@@ -59,9 +59,9 @@ impl Stor {
     ///
     /// # Errors
     ///
-    /// See [`ABDatabase::query`] for information on errors as these are the
+    /// See [`ABDatabase::query()`] for information on errors as these are the
     /// only sources of possible errors.
-    pub fn build(&mut self, databases: &Path) -> Result<()> {
+    pub fn build(&mut self, databases: &Path) -> LibResult<()> {
         let books = ABDatabase::query::<Book>(databases)?;
         let annotations = ABDatabase::query::<Annotation>(databases)?;
 

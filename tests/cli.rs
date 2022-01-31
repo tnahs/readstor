@@ -6,8 +6,8 @@ const COMMAND: &str = env!("CARGO_PKG_NAME");
 fn output_does_not_exit() {
     let mut cmd = Command::cargo_bin(COMMAND).unwrap();
 
-    cmd.args(&["--output", "./path/does/not/exists"])
+    cmd.args(&["--output", "./path/does/not/exist"])
         .assert()
-        .code(1)
+        .code(2)
         .failure();
 }

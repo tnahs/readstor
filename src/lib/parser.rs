@@ -1,9 +1,10 @@
 use std::borrow::ToOwned;
 
-#[allow(unused_imports)] // For docs.
-use super::models::annotation::Annotation;
 use once_cell::sync::Lazy;
 use regex::Regex;
+
+#[allow(unused_imports)] // For docs.
+use super::models::annotation::Annotation;
 
 /// Capture a 'Step Reference' e.g. `/6` `/4`
 ///

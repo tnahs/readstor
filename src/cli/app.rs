@@ -1,76 +1,53 @@
 use std::fs;
+use std::path::PathBuf;
 
-use anyhow::Context;
+use color_eyre::eyre::WrapErr;
 
-use crate::cli::config::AppConfig;
+use crate::cli::config::Config;
 use crate::lib::applebooks::database::ABDatabaseName;
 use crate::lib::applebooks::utils::APPLEBOOKS_VERSION;
 use crate::lib::models::stor::Stor;
-use crate::lib::result::Result;
 use crate::lib::templates::{Template, Templates};
 use crate::lib::utils;
 
-pub type AnyhowResult<T> = anyhow::Result<T>;
+pub type AppResult<T> = color_eyre::Result<T>;
 
 #[derive(Default)]
 pub struct App {
     stor: Stor,
-    config: AppConfig,
+    config: Config,
     templates: Templates,
 }
 
 impl App {
-    pub fn new(config: AppConfig) -> AnyhowResult<Self> {
-        let mut templates = Templates::default();
-
-        templates
-            .add(Template::from(&config.template))
-            .context("ReadStor failed while parsing template")?;
-
-        Ok(Self {
+    pub fn new(config: Config) -> Self {
+        Self {
             stor: Stor::default(),
             config,
-            templates,
-        })
-    }
-
-    pub fn run(&mut self) -> AnyhowResult<()> {
-        println!("* Building stor...");
-
-        self.stor
-            .build(&self.config.databases)
-            .context("ReadStor failed while building stor")?;
-
-        println!("* Saving items...");
-
-        self.save_items()
-            .context("ReadStor failed while saving items")?;
-
-        self.export_templates()
-            .context("ReadStor failed while exporting to templates")?;
-
-        if self.config.backup {
-            println!("* Backing up databases...");
-
-            self.backup_databases()
-                .context("ReadStor failed while backing up databases")?;
+            templates: Templates::default(),
         }
-
-        println!(
-            "* Saved {} annotations from {} books.",
-            self.stor.count_annotations(),
-            self.stor.count_books()
-        );
-
-        Ok(())
     }
 
-    /// Saves Apple Books' data with the following structure:
+    pub fn init(&mut self) -> AppResult<()> {
+        self.stor
+            .build(self.config.databases())
+            .wrap_err("failed while building stor")
+    }
+
+    pub fn config(&self) -> &Config {
+        &self.config
+    }
+
+    pub fn stor(&self) -> &Stor {
+        &self.stor
+    }
+
+    /// Exports Apple Books' data with the following structure:
     ///
     /// ```plaintext
     /// [output]
     ///  │
-    ///  └─ items
+    ///  └─ data
     ///      │
     ///      ├─ Author - Title
     ///      │   │
@@ -78,7 +55,7 @@ impl App {
     ///      │   │   ├─ book.json
     ///      │   │   └─ annotations.json
     ///      │   │
-    ///      │   └─ assets
+    ///      │   └─ resources
     ///      │       ├─ .gitkeep
     ///      │       ├─ Author - Title.epub   ─┐
     ///      │       ├─ cover.jpeg             ├─ These are not exported.
@@ -91,23 +68,23 @@ impl App {
     /// ```
     ///
     /// Existing files are left unaffected unless explicitly written to. For
-    /// example, the `assets` directory will not be deleted/recreated if it
+    /// example, the `resources` directory will not be deleted/recreated if it
     /// already exists and/or contains data.
-    pub fn save_items(&self) -> Result<()> {
-        // -> [output]/items/
-        let root = self.config.output.join("items");
+    pub fn export_data(&self) -> AppResult<()> {
+        // -> [output]/data/
+        let root = self.config.output().join("data");
 
         for stor_item in self.stor.values() {
             // -> [output]/data/Author - Title
             let item = root.join(stor_item.name());
             // -> [output]/data/Author - Title/data
             let data = item.join("data");
-            // -> [output]/data/Author - Title/assets
-            let assets = item.join("assets");
+            // -> [output]/data/Author - Title/resources
+            let resources = item.join("resources");
 
             std::fs::create_dir_all(&item)?;
             std::fs::create_dir_all(&data)?;
-            std::fs::create_dir_all(&assets)?;
+            std::fs::create_dir_all(&resources)?;
 
             // -> [output]/data/Author - Title/data/book.json
             let book_json = data.join("book").with_extension("json");
@@ -121,8 +98,8 @@ impl App {
 
             serde_json::to_writer_pretty(&annotations_file, &stor_item.annotations)?;
 
-            // -> [output]/data/Author - Title/assets/.gitkeep
-            let gitkeep = assets.join(".gitkeep");
+            // -> [output]/data/Author - Title/resources/.gitkeep
+            let gitkeep = resources.join(".gitkeep");
             fs::File::create(gitkeep)?;
         }
 
@@ -145,15 +122,27 @@ impl App {
     ///      └─ ...
     /// ```
     ///
-    /// See [`Templates::render`] for more information.
-    pub fn export_templates(&self) -> Result<()> {
+    /// See [`Templates::render()`] for more information.
+    pub fn render_templates(&mut self, template: Option<&PathBuf>) -> AppResult<()> {
+        // TODO Move template initialization into its own function when default
+        // template directories are implemented. For now, this should be fine
+        // as we're only dealing with a single template.
+        if let Some(template) = template {
+            self.templates
+                .add(Template::from(template))
+                .wrap_err("failed while parsing template")?;
+        }
+
         // -> [output]/exports/
-        let root = self.config.output.join("exports");
+        let root = self.config.output().join("exports");
 
         std::fs::create_dir_all(&root)?;
 
+        // Renders each `StorItem` aka a book.
         for stor_item in self.stor.values() {
-            self.templates.render(stor_item, &root)?;
+            self.templates
+                .render(stor_item, &root)
+                .wrap_err("failed while rendering template")?;
         }
 
         Ok(())
@@ -181,9 +170,9 @@ impl App {
     ///      │
     ///      └─ ...
     /// ```
-    pub fn backup_databases(&self) -> Result<()> {
+    pub fn backup_databases(&self) -> AppResult<()> {
         // -> [output]/backups/
-        let root = self.config.output.join("backups");
+        let root = self.config.output().join("backups");
 
         // -> [YYYY-MM-DD-HHMMSS] [VERSION]
         let today = format!(
@@ -198,20 +187,20 @@ impl App {
         // -> [output]/backups/[YYYY-MM-DD-HHMMSS] [VERSION]/BKLibrary
         let destination_books = destination_root.join(ABDatabaseName::Books.to_string());
 
-        // -> [output]/backups/[YYYY-MM-DD-HHMMSS] [VERSION]/AEAnnotations
+        // -> [output]/backups/[YYYY-MM-DD-HHMMSS] [VERSION]/AEAnnotation
         let destination_annotations =
             destination_root.join(ABDatabaseName::Annotations.to_string());
 
         // -> [DATABASES]/BKLibrary
         let source_books = &self
             .config
-            .databases
+            .databases()
             .join(ABDatabaseName::Books.to_string());
 
-        // -> [DATABASES]/AEAnnotations
+        // -> [DATABASES]/AEAnnotation
         let source_annotations = &self
             .config
-            .databases
+            .databases()
             .join(ABDatabaseName::Annotations.to_string());
 
         utils::copy_dir(source_books, &destination_books)?;
@@ -224,47 +213,60 @@ impl App {
 #[cfg(test)]
 mod tests {
 
-    use super::super::defaults::DATABASES_DEV;
     use super::*;
+    use crate::cli::defaults as cli_defaults;
 
+    /// Creates an app from a database found in `tests/data/databases/`.
+    fn app_from_test_db(name: &str) -> App {
+        let databases = cli_defaults::DEV_DATABASES.join(name);
+
+        let mut app = App::default();
+
+        // Mimicking what happens in the [`App::init()`] method.
+        app.stor.build(&databases).unwrap();
+
+        app
+    }
+
+    /// Tests that an empty database returns zero books and zero annotations.
     #[test]
     fn test_databases_empty() {
-        let databases = DATABASES_DEV.join("empty");
+        let app = app_from_test_db("empty");
 
-        let mut app = App::default();
-
-        // Mimicking what happens in the [`App::run`] method.
-        app.stor.build(&databases).unwrap();
-
-        assert_eq!(app.stor.count_books(), 0);
-        assert_eq!(app.stor.count_annotations(), 0);
+        assert_eq!(app.stor().count_books(), 0);
+        assert_eq!(app.stor().count_annotations(), 0);
     }
 
+    /// Tests that a database with un-annotated books returns zero books and
+    /// zero annotations.
     #[test]
     fn test_databases_books_new() {
-        let databases = DATABASES_DEV.join("books-new");
+        let app = app_from_test_db("books-new");
 
-        let mut app = App::default();
-
-        // Mimicking what happens in the [`App::run`] method.
-        app.stor.build(&databases).unwrap();
-
-        // Although there are books in the database, the books are not
-        // annotated therefore they are filtered out of the `Stor`.
-        assert_eq!(app.stor.count_books(), 0);
-        assert_eq!(app.stor.count_annotations(), 0);
+        // Un-annotated books are filtered out.
+        assert_eq!(app.stor().count_books(), 0);
+        assert_eq!(app.stor().count_annotations(), 0);
     }
 
+    /// Tests that a database with annotated books returns non-zero books and
+    /// non-zero annotations.
     #[test]
     fn test_databases_books_annotated() {
-        let databases = DATABASES_DEV.join("books-annotated");
+        let app = app_from_test_db("books-annotated");
 
-        let mut app = App::default();
+        assert_eq!(app.stor().count_books(), 3);
+        assert_eq!(app.stor().count_annotations(), 10);
+    }
 
-        // Mimicking what happens in the [`App::run`] method.
-        app.stor.build(&databases).unwrap();
+    /// Tests that the annotations are sorted in the correct order.
+    #[test]
+    fn test_annotations_order() {
+        let app = app_from_test_db("books-annotated");
 
-        assert_eq!(app.stor.count_books(), 3);
-        assert_eq!(app.stor.count_annotations(), 10);
+        for stor_item in app.stor().values() {
+            for annotations in stor_item.annotations.windows(2) {
+                assert!(annotations[0] < annotations[1]);
+            }
+        }
     }
 }

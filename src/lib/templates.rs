@@ -5,8 +5,9 @@ use std::path::{Path, PathBuf};
 use serde_json::{self, Value};
 use tera::{Context, Tera};
 
+use super::defaults as lib_defaults;
 use super::models::stor::StorItem;
-use super::result::{ApplicationError, Result};
+use super::result::{LibError, LibResult};
 use super::utils;
 
 /// Provides a simple interface to add templates and render [`StorItem`]s.
@@ -15,8 +16,11 @@ pub struct Templates {
     /// Template registry containing all the parsed templates.
     registry: Tera,
 
+    /// Stores the default template.
+    default: Template,
+
     /// Stores a list of all [`Template`]s in the registry. See [`Template`]
-    /// and [`Templates::render`] for more information.
+    /// and [`Templates::render()`] for more information.
     templates: Vec<Template>,
 }
 
@@ -25,9 +29,25 @@ impl Default for Templates {
         let mut registry = Tera::default();
 
         registry.register_filter("join_paragraph", join_paragraph);
+        registry
+            .add_raw_template(
+                lib_defaults::DEFAULT_TEMPLATE_NAME,
+                lib_defaults::DEFAULT_TEMPLATE,
+            )
+            // Should be safe here to unwrap seeing as this is the default
+            // template and will be evaluated at compile-time.
+            .unwrap();
+
+        let default = Template {
+            path: PathBuf::new(),
+            name: lib_defaults::DEFAULT_TEMPLATE_NAME.to_owned(),
+            stem: "default".to_owned(),
+            extension: "txt".to_owned(),
+        };
 
         Self {
             registry,
+            default,
             templates: Vec::new(),
         }
     }
@@ -40,28 +60,22 @@ impl Templates {
     ///
     /// Will return `Err` if the template contains either syntax errors or
     /// variables that reference non-existent fields in a [`StorItem`].
-    pub fn add(&mut self, template: Template) -> Result<()> {
+    pub fn add(&mut self, template: Template) -> LibResult<()> {
         // Attempt to add a new template to the registry. This will fail if
         // the template has syntax errors.
-        match self
-            .registry
+        self.registry
             .add_template_file(&template.path, Some(&template.name))
-        {
-            Ok(_) => {}
-            Err(err) => return Err(ApplicationError::Template(err)),
-        };
+            .map_err(LibError::Template)?;
 
         // Run a test render of the new template using an dummy `StorItem` to
         // check that the template does not contain variables that reference
         // non-existent fields in a `StorItem`.
-        match self.registry.render(
-            &template.name,
-            // TODO How would this fail?
-            &Context::from_serialize(StorItem::default())?,
-        ) {
-            Ok(_) => {}
-            Err(err) => return Err(ApplicationError::Template(err)),
-        };
+        self.registry
+            .render(
+                &template.name,
+                &Context::from_serialize(StorItem::default())?,
+            )
+            .map_err(LibError::Template)?;
 
         self.templates.push(template);
 
@@ -83,30 +97,41 @@ impl Templates {
     /// # Errors
     ///
     /// Will return `Err` if any IO errors are encountered.
-    pub fn render(&self, stor_item: &StorItem, path: &Path) -> Result<()> {
-        for template in &self.templates {
-            // -> [path]/[template-name]
-            let template_path = path.join(&template.stem);
-
-            std::fs::create_dir_all(&template_path)?;
-
-            // -> [base-name].[extension] e.g. `Author - Title.md`
-            let file_name = format!("{}.{}", stor_item.name(), template.extension);
-            // -> [path]/[template-name]/Author - Title.md
-            let file_path = template_path.join(file_name);
-
-            let file = fs::File::create(&file_path)?;
-
-            match self.registry.render_to(
-                &template.name,
-                // TODO How would this fail?
-                &Context::from_serialize(stor_item)?,
-                file,
-            ) {
-                Ok(_) => {}
-                Err(err) => return Err(ApplicationError::Template(err)),
-            }
+    // TODO add `serde_json::Error` as possible error.
+    pub fn render(&self, stor_item: &StorItem, path: &Path) -> LibResult<()> {
+        // TODO Document
+        if self.templates.is_empty() {
+            self.render_to_file(path, &self.default, stor_item)?;
+            return Ok(());
         }
+
+        // TODO Document
+        for template in &self.templates {
+            self.render_to_file(path, template, stor_item)?;
+        }
+
+        Ok(())
+    }
+
+    /// TODO Document
+    fn render_to_file(
+        &self,
+        path: &Path,
+        template: &Template,
+        stor_item: &StorItem,
+    ) -> LibResult<()> {
+        // -> [path]/[template-name]
+        let template_path = path.join(&template.stem);
+
+        std::fs::create_dir_all(&template_path)?;
+
+        let file_name = format!("{}.{}", stor_item.name(), template.extension);
+        let file_path = template_path.join(file_name);
+        let file = fs::File::create(&file_path)?;
+
+        self.registry
+            .render_to(&template.name, &Context::from_serialize(stor_item)?, file)
+            .map_err(LibError::Template)?;
 
         Ok(())
     }
@@ -118,7 +143,7 @@ impl Templates {
 /// template data from the registry and determine the path and file name of the
 /// rendered template.
 ///
-/// See [`Templates::render`] for more information.
+/// See [`Templates::render()`] for more information.
 #[derive(Debug)]
 pub struct Template {
     /// The path to the template.
@@ -130,7 +155,7 @@ pub struct Template {
     /// [`Templates`] `registry` and is the name given to the directory where
     /// its respective template renders to.
     ///
-    /// See [`Templates::render`] for more information.
+    /// See [`Templates::render()`] for more information.
     pub name: String,
 
     /// The template's file name e.g. `/path/to/default.md` -> `default`.
@@ -191,6 +216,7 @@ where
 }
 
 /// Joins a list of paragraph blocks with double line-breaks.
+/// <https://github.com/Keats/tera/blob/master/src/builtins/filters/array.rs>
 fn join_paragraph(value: &Value, _: &HashMap<String, Value>) -> tera::Result<Value> {
     let value = tera::try_get_value!("join_paragraph", "value", Vec<Value>, value);
 

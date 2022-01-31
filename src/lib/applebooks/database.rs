@@ -1,16 +1,17 @@
-use std::path::Path;
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 
 use rusqlite::OpenFlags;
 use rusqlite::{Connection, Row};
 
 #[allow(unused_imports)] // For docs.
-use super::defaults::DATABASES;
-#[allow(unused_imports)] // For docs.
 use crate::lib::models::annotation::Annotation;
 #[allow(unused_imports)] // For docs.
 use crate::lib::models::book::Book;
-use crate::lib::result::{ApplicationError, Result};
+use crate::lib::result::{LibError, LibResult};
+
+#[allow(unused_imports)] // For docs.
+use super::defaults as applebooks_defaults;
+use super::utils::APPLEBOOKS_VERSION;
 
 pub struct ABDatabase;
 
@@ -22,8 +23,8 @@ impl ABDatabase {
     /// be either [`Book`] or [`Annotation`] referring to `BKLibrary*.sqlite`
     /// or `AEAnnotation*.sqlite`.
     ///
-    /// See [`ABDatabase::get_database`] for information on how the `databases`
-    /// directory should be structured.
+    /// See [`ABDatabase::get_database()`] for information on how the
+    /// `databases` directory should be structured.
     ///
     /// # Errors
     ///
@@ -31,7 +32,7 @@ impl ABDatabase {
     /// schema has changed, meaning this application is out of sync with the
     /// latest version of Apple Books.
     #[allow(clippy::missing_panics_doc)]
-    pub fn query<T: ABQueryable>(databases: &Path) -> Result<Vec<T>> {
+    pub fn query<T: ABQuery>(databases: &Path) -> LibResult<Vec<T>> {
         // Returns the appropriate database based on `T`.
         let path = Self::get_database::<T>(databases)?;
 
@@ -39,19 +40,19 @@ impl ABDatabase {
             match Connection::open_with_flags(&path, OpenFlags::SQLITE_OPEN_READ_ONLY) {
                 Ok(connection) => connection,
                 Err(_) => {
-                    return Err(ApplicationError::DatabaseConnection {
+                    return Err(LibError::DatabaseConnection {
                         name: T::DATABASE_NAME.to_string(),
                         path: path.display().to_string(),
                     });
                 }
             };
 
-        // TODO This is a case where user feedback would be helpful. Bubble
-        // up some helpful information on how to report an issue.
         let mut statement = match connection.prepare(T::QUERY) {
             Ok(statement) => statement,
             Err(_) => {
-                return Err(ApplicationError::DatabaseUnsupported);
+                return Err(LibError::UnsupportedVersion {
+                    version: APPLEBOOKS_VERSION.to_owned(),
+                });
             }
         };
 
@@ -65,8 +66,8 @@ impl ABDatabase {
             // that all the items are wrapped in an `Ok`. At this point the
             // there should be nothing that would fail in regards to querying
             // and creating an instance of T unless there's an error in the
-            // implementation of the [`ABQueryable`] trait. See [`ABQueryable`]
-            // for more information.
+            // implementation of the [`ABQuery`] trait. See [`ABQuery`] for
+            // more information.
             .filter_map(std::result::Result::ok)
             .collect();
 
@@ -91,7 +92,7 @@ impl ABDatabase {
     ///  │
     ///  └─ ...
     /// ```
-    fn get_database<T: ABQueryable>(databases: &Path) -> Result<PathBuf> {
+    fn get_database<T: ABQuery>(databases: &Path) -> LibResult<PathBuf> {
         let mut root = databases.to_owned();
 
         // Appends `DATABASE_NAME` twice to the root path. Prepping the path
@@ -119,7 +120,7 @@ impl ABDatabase {
             .collect();
 
         if databases.is_empty() {
-            return Err(ApplicationError::DatabaseMissing {
+            return Err(LibError::DatabaseMissing {
                 name: T::DATABASE_NAME.to_string(),
                 path,
             });
@@ -130,7 +131,7 @@ impl ABDatabase {
         // `.sqlite`. If there are more then we'd possibly run into unexpected
         // behaviors.
         if databases.len() > 1 {
-            return Err(ApplicationError::DatabaseUnresolvable {
+            return Err(LibError::DatabaseUnresolvable {
                 name: T::DATABASE_NAME.to_string(),
                 path,
             });
@@ -145,11 +146,12 @@ impl ABDatabase {
 /// how [`Book`] and [`Annotation`] instances are created. Thus it should only
 /// have to be implemented by said structs. It allows instances to be created
 /// generically over the rows of their respective databases `BKLibrary*.sqlite`
-/// and `AEAnnotation*.sqlite`. See [`static@DATABASES`] for path information.
+/// and `AEAnnotation*.sqlite`. See [`static@applebooks_defaults::DATABASES`]
+/// for path information.
 ///
-/// The [`ABQueryable::from_row`] and [`ABQueryable::QUERY`] methods are
-/// strongly coupled in that the declared rows in the `SELECT` statement *must*
-/// map directly to the `rusqlite`'s `Row.get` method e.g. the first row of the
+/// The [`ABQuery::from_row()`] and [`ABQuery::QUERY`] methods are strongly
+/// coupled in that the declared rows in the `SELECT` statement *must* map
+/// directly to the `rusqlite`'s `Row.get` method e.g. the first row of the
 /// `SELECT` statement maps to `row.get(0)` etc. The `unwrap` on the `Row.get`
 /// methods will panic if the index is out of range or the there's a type
 /// mismatch to the struct field it's been mapped to.
@@ -160,12 +162,12 @@ impl ABDatabase {
 /// Book         ZBKLIBRARYASSET.ZASSETID ─────────┐
 /// Annotation   ZAEANNOTATION.ZANNOTATIONASSETID ─┘
 /// ```
-pub trait ABQueryable {
+pub trait ABQuery {
     /// The database's name being either `BKLibrary` or `AEAnnotation`.
     const DATABASE_NAME: ABDatabaseName;
 
     /// The query to retrieve rows that are subsequently passed into
-    /// [`ABQueryable::from_row`] to create instances of the implemented type.
+    /// [`ABQuery::from_row()`] to create instances of the implemented type.
     const QUERY: &'static str;
 
     /// Constructs an instance of the respective type from a `rusqlite::Row`.

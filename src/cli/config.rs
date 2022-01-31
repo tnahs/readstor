@@ -1,43 +1,74 @@
-use std::env;
 use std::path::PathBuf;
 
-use super::defaults::{DATABASES_DEV, DEV_READSTOR, OUTPUT, TEMPLATE};
-use super::opt::Opt;
-use crate::lib::applebooks::defaults::DATABASES;
+#[allow(unused_imports)] // For docs.
+use crate::lib::applebooks::database::ABDatabase;
+use crate::lib::applebooks::defaults as applebooks_defaults;
 
+use super::args::Args;
+use super::defaults as cli_defaults;
+
+/// Represents the application's base configuration.
 #[derive(Debug)]
+pub struct Config {
+    /// The path to the output directory where data, renders and back-ups are
+    /// saved to. Defaults to `~/.readstor`.
+    output: PathBuf,
 
-pub struct AppConfig {
-    pub output: PathBuf,
-    pub databases: PathBuf,
-    pub template: PathBuf,
-    pub backup: bool,
+    /// Path to the root databases directory. This value can either point to
+    /// the official Apple Books directory or one designed to use during
+    /// development. See [`ABDatabase::get_database()`] for information on how
+    /// the directory is be structured.
+    databases: PathBuf,
 }
 
-impl Default for AppConfig {
+/// Default implementation for `Config` primarily used for testing.
+impl Default for Config {
     fn default() -> Self {
         Self {
-            output: OUTPUT.to_owned(),
-            databases: DATABASES.to_owned(),
-            template: TEMPLATE.to_owned(),
-            backup: false,
+            output: cli_defaults::OUTPUT.to_owned(),
+            databases: applebooks_defaults::DATABASES.to_owned(),
         }
     }
 }
 
-impl From<Opt> for AppConfig {
-    fn from(opt: Opt) -> Self {
-        // Bypass the official database if the application is being worked on.
-        let databases = match env::var_os(DEV_READSTOR) {
-            Some(_) => DATABASES_DEV.to_owned().join("books-annotated"),
-            None => DATABASES.to_owned(),
+impl Config {
+    pub fn new(args: &Args) -> Self {
+        // If no output directory is supplied fall back to the default.
+        let output = args
+            .output
+            .clone()
+            .unwrap_or_else(|| cli_defaults::OUTPUT.to_owned());
+
+        // Select the appropriate database depending on development mode.
+        let databases = if Self::is_development_mode() {
+            log::warn!("Running in development mode.");
+            cli_defaults::DEV_DATABASES
+                .to_owned()
+                .join("books-annotated")
+        } else {
+            applebooks_defaults::DATABASES.to_owned()
         };
 
-        AppConfig {
-            output: opt.output.unwrap_or_else(|| OUTPUT.to_owned()),
-            databases,
-            template: opt.template.unwrap_or_else(|| TEMPLATE.to_owned()),
-            backup: opt.backup,
-        }
+        let config = Self { output, databases };
+
+        log::debug!("Running with `config`: {:#?}.", &config);
+
+        config
+    }
+
+    /// Returns a bool based on if the `DEV_READSTOR` environment variable is
+    /// set or not. This is primarily used to switch to a development database.
+    fn is_development_mode() -> bool {
+        std::env::var_os(cli_defaults::DEV_READSTOR).is_some()
+    }
+
+    /// See [`Config`].
+    pub fn output(&self) -> &PathBuf {
+        &self.output
+    }
+
+    /// See [`Config`].
+    pub fn databases(&self) -> &PathBuf {
+        &self.databases
     }
 }

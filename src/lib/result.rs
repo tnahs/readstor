@@ -1,7 +1,7 @@
-pub type Result<T> = std::result::Result<T, ApplicationError>;
+pub type LibResult<T> = std::result::Result<T, LibError>;
 
-#[derive(thiserror::Error, Debug)]
-pub enum ApplicationError {
+#[derive(Debug, thiserror::Error)]
+pub enum LibError {
     #[error("missing `{name}*.sqlite` in `{path}`")]
     DatabaseMissing { name: String, path: String },
 
@@ -11,14 +11,12 @@ pub enum ApplicationError {
     #[error("unable to connect to `{name}*.sqlite` at `{path}`")]
     DatabaseConnection { name: String, path: String },
 
-    // TODO Improve error message and provide helpful information.
-    #[error("unsupported database version")]
-    DatabaseUnsupported,
+    #[error("Apple Books {version} unsupported")]
+    UnsupportedVersion { version: String },
 
     #[error(transparent)]
     Template(#[from] tera::Error),
 
-    // TODO Test to see if this ever gets triggered.
     #[error(transparent)]
     Serialization(#[from] serde_json::error::Error),
 

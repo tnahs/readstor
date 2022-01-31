@@ -1,6 +1,7 @@
 #! /bin/zsh
 
 cargo fmt \
-&& cargo lint \
-&& cargo build \
-&& cargo test \
+    && cargo test \
+    && cargo build \
+    && cargo lint \
+    && cargo doc --no-deps \
