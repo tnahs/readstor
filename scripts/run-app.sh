@@ -2,21 +2,21 @@
 
 export DEV_READSTOR=1
 
+# https://unix.stackexchange.com/a/115431
+ROOT_DIR=${0:A:h:h}
+
 function run {
-    # https://unix.stackexchange.com/a/115431
-    root=${0:A:h:h}
+    tmp_dir="$ROOT_DIR/tmp"
+    output_dir="$tmp_dir/output"
 
-    tmp="$root/tmp"
-    output="$tmp/run"
-
-    rm -r $output
-    mkdir $tmp
-    mkdir $output
+    rm -r $output_dir
+    mkdir $tmp_dir
+    mkdir $output_dir
 
     cargo run -- \
         --output $output \
         "$1"
-        # -vvv \
+        -vvv \
 }
 
 function main {
@@ -30,9 +30,8 @@ function main {
     elif [[ ! ${choices[(r)$1]} ]] then;
         echo $error
     else
-        run "$1"
+        run $1
     fi
 }
-
 
 main $@

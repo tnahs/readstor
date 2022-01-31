@@ -1,8 +1,8 @@
 #! /bin/zsh
 
 # https://unix.stackexchange.com/a/115431
-root=${0:A:h:h}
+ROOT_DIR=${0:A:h:h}
 
-"$root/scripts/run-app.sh" export
-"$root/scripts/run-app.sh" render
-"$root/scripts/run-app.sh" backup
+"$ROOT_DIR/scripts/run-app.sh" export
+"$ROOT_DIR/scripts/run-app.sh" render
+"$ROOT_DIR/scripts/run-app.sh" backup
