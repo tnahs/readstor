@@ -55,7 +55,7 @@ impl App {
     ///      │   │   ├─ book.json
     ///      │   │   └─ annotations.json
     ///      │   │
-    ///      │   └─ assets
+    ///      │   └─ resources
     ///      │       ├─ .gitkeep
     ///      │       ├─ Author - Title.epub   ─┐
     ///      │       ├─ cover.jpeg             ├─ These are not exported.
@@ -68,7 +68,7 @@ impl App {
     /// ```
     ///
     /// Existing files are left unaffected unless explicitly written to. For
-    /// example, the `assets` directory will not be deleted/recreated if it
+    /// example, the `resources` directory will not be deleted/recreated if it
     /// already exists and/or contains data.
     pub fn export_data(&self) -> AppResult<()> {
         // -> [output]/data/
@@ -79,12 +79,12 @@ impl App {
             let item = root.join(stor_item.name());
             // -> [output]/data/Author - Title/data
             let data = item.join("data");
-            // -> [output]/data/Author - Title/assets
-            let assets = item.join("assets");
+            // -> [output]/data/Author - Title/resources
+            let resources = item.join("resources");
 
             std::fs::create_dir_all(&item)?;
             std::fs::create_dir_all(&data)?;
-            std::fs::create_dir_all(&assets)?;
+            std::fs::create_dir_all(&resources)?;
 
             // -> [output]/data/Author - Title/data/book.json
             let book_json = data.join("book").with_extension("json");
@@ -98,8 +98,8 @@ impl App {
 
             serde_json::to_writer_pretty(&annotations_file, &stor_item.annotations)?;
 
-            // -> [output]/data/Author - Title/assets/.gitkeep
-            let gitkeep = assets.join(".gitkeep");
+            // -> [output]/data/Author - Title/resources/.gitkeep
+            let gitkeep = resources.join(".gitkeep");
             fs::File::create(gitkeep)?;
         }
 

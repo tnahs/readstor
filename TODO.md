@@ -1,5 +1,6 @@
 # TODO
 
+- [ ] Maybe `book.author` should be `book.authors`?
 - [ ] Implement `From<&'a Row> for T`
 - [ ] Implement `Config` search paths
     - `$HOME/.readstor.toml`
