@@ -207,7 +207,7 @@ book {
 
 #### Book Example
 
-Here the [`date`](https://tera.netlify.app/docs/#date) filter is used to format the `datetime` object into a human-readable date.
+Here the [`date`](https://tera.netlify.app/docs/#date) filter is used to format a `datetime` object into a human-readable date.
 
 ```jinja
 title: {{ book.title }}
