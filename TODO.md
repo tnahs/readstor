@@ -1,5 +1,6 @@
 # TODO
 
+- [ ] Add `dump` command to execute `export`, `render` and `backup`.
 - [ ] Maybe `book.author` should be `book.authors`?
 - [ ] Implement `From<&'a Row> for T`
 - [ ] Implement `Config` search paths
