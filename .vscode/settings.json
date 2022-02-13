@@ -25,7 +25,9 @@
         "tera",
         "termcolor",
         "thiserror",
-        "trunc"
+        "TMPDIR",
+        "trunc",
+        "yrgg"
     ],
     "cSpell.ignoreWords": [
         "HHMMSS",

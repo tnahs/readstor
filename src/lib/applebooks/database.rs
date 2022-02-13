@@ -13,6 +13,7 @@ use crate::lib::result::{LibError, LibResult};
 use super::defaults as applebooks_defaults;
 use super::utils::APPLEBOOKS_VERSION;
 
+#[derive(Debug, Clone, Copy)]
 pub struct ABDatabase;
 
 impl ABDatabase {
@@ -171,10 +172,11 @@ pub trait ABQuery {
     const QUERY: &'static str;
 
     /// Constructs an instance of the respective type from a `rusqlite::Row`.
-    fn from_row(row: &Row) -> Self;
+    fn from_row(row: &Row<'_>) -> Self;
 }
 
 /// Describes Apple Books' two databases.
+#[derive(Debug, Clone, Copy)]
 pub enum ABDatabaseName {
     Books,
     Annotations,

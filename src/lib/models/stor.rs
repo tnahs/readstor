@@ -49,7 +49,7 @@ type StorData = HashMap<String, StorItem>;
 ///      │       └─ Annotation
 ///      └─ ...
 /// ```
-#[derive(Default)]
+#[derive(Debug, Default)]
 pub struct Stor {
     data: StorData,
 }

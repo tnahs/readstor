@@ -31,7 +31,7 @@ impl ABQuery for Book {
         ORDER BY ZBKLIBRARYASSET.ZTITLE;"
     };
 
-    fn from_row(row: &Row) -> Self {
+    fn from_row(row: &Row<'_>) -> Self {
         // It's necessary to explicitly type all these variables as `rusqlite`
         // needs the type information to convert the column value to `T`. If
         // the types do not match `rusqlite` will return an `InvalidColumnType`

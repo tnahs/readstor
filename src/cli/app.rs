@@ -3,43 +3,71 @@ use std::path::PathBuf;
 
 use color_eyre::eyre::WrapErr;
 
-use crate::cli::config::Config;
+use crate::cli::args::Command;
+use crate::cli::config::Configuration;
 use crate::lib::applebooks::database::ABDatabaseName;
 use crate::lib::applebooks::utils::APPLEBOOKS_VERSION;
 use crate::lib::models::stor::Stor;
 use crate::lib::templates::{Template, Templates};
 use crate::lib::utils;
 
+use super::args::Args;
+
 pub type AppResult<T> = color_eyre::Result<T>;
 
-#[derive(Default)]
+#[derive(Debug)]
 pub struct App {
+    config: Box<dyn Configuration>,
     stor: Stor,
-    config: Config,
     templates: Templates,
 }
 
 impl App {
-    pub fn new(config: Config) -> Self {
+    pub fn new(config: Box<dyn Configuration>) -> Self {
         Self {
-            stor: Stor::default(),
             config,
+            stor: Stor::default(),
             templates: Templates::default(),
         }
     }
 
-    pub fn init(&mut self) -> AppResult<()> {
-        self.stor
-            .build(self.config.databases())
-            .wrap_err("failed while building stor")
+    /// TODO Document
+    fn init(&mut self) -> AppResult<()> {
+        self.stor.build(self.config.databases()).map_err(From::from)
     }
 
-    pub fn config(&self) -> &Config {
-        &self.config
-    }
+    pub fn run(&mut self, args: &Args) -> AppResult<()> {
+        println!("• Building stor...");
 
-    pub fn stor(&self) -> &Stor {
-        &self.stor
+        self.init().wrap_err("failed while building stor")?;
+
+        match args.command {
+            Command::Export => {
+                println!("• Exporting data...");
+                self.export_data().wrap_err("failed while exporting data")?;
+            }
+            Command::Render { ref template } => {
+                println!("• Rendering template...");
+                self.render_templates(template.as_ref())
+                    .wrap_err("failed while rendering template")?;
+            }
+            Command::Backup => {
+                println!("• Backing up databases...");
+                self.backup_databases()
+                    .wrap_err("failed while backing up databases")?;
+            }
+        }
+
+        let message = format!(
+            "• Saved {} annotations from {} books to `{}`",
+            self.stor.count_annotations(),
+            self.stor.count_books(),
+            self.config.output().display()
+        );
+
+        log::debug!("{}", message);
+
+        Ok(())
     }
 
     /// Exports Apple Books' data with the following structure:
@@ -70,7 +98,7 @@ impl App {
     /// Existing files are left unaffected unless explicitly written to. For
     /// example, the `resources` directory will not be deleted/recreated if it
     /// already exists and/or contains data.
-    pub fn export_data(&self) -> AppResult<()> {
+    fn export_data(&self) -> AppResult<()> {
         // -> [output]/data/
         let root = self.config.output().join("data");
 
@@ -123,7 +151,7 @@ impl App {
     /// ```
     ///
     /// See [`Templates::render()`] for more information.
-    pub fn render_templates(&mut self, template: Option<&PathBuf>) -> AppResult<()> {
+    fn render_templates(&mut self, template: Option<&PathBuf>) -> AppResult<()> {
         // TODO Move template initialization into its own function when default
         // template directories are implemented. For now, this should be fine
         // as we're only dealing with a single template.
@@ -170,7 +198,7 @@ impl App {
     ///      │
     ///      └─ ...
     /// ```
-    pub fn backup_databases(&self) -> AppResult<()> {
+    fn backup_databases(&self) -> AppResult<()> {
         // -> [output]/backups/
         let root = self.config.output().join("backups");
 
@@ -211,59 +239,60 @@ impl App {
 }
 
 #[cfg(test)]
-mod tests {
+mod test_app {
+
+    use crate::cli::config::test::TestConfig;
 
     use super::*;
-    use crate::cli::defaults as cli_defaults;
-
-    /// Creates an app from a database found in `tests/data/databases/`.
-    fn app_from_test_db(name: &str) -> App {
-        let databases = cli_defaults::DEV_DATABASES.join(name);
-
-        let mut app = App::default();
-
-        // Mimicking what happens in the [`App::init()`] method.
-        app.stor.build(&databases).unwrap();
-
-        app
-    }
 
     /// Tests that an empty database returns zero books and zero annotations.
     #[test]
     fn test_databases_empty() {
-        let app = app_from_test_db("empty");
+        let config = TestConfig::new("empty");
+        let mut app = App::new(Box::new(config));
 
-        assert_eq!(app.stor().count_books(), 0);
-        assert_eq!(app.stor().count_annotations(), 0);
+        app.init().unwrap();
+
+        assert_eq!(app.stor.count_books(), 0);
+        assert_eq!(app.stor.count_annotations(), 0);
     }
 
     /// Tests that a database with un-annotated books returns zero books and
     /// zero annotations.
     #[test]
     fn test_databases_books_new() {
-        let app = app_from_test_db("books-new");
+        let config = TestConfig::new("books-new");
+        let mut app = App::new(Box::new(config));
+
+        app.init().unwrap();
 
         // Un-annotated books are filtered out.
-        assert_eq!(app.stor().count_books(), 0);
-        assert_eq!(app.stor().count_annotations(), 0);
+        assert_eq!(app.stor.count_books(), 0);
+        assert_eq!(app.stor.count_annotations(), 0);
     }
 
     /// Tests that a database with annotated books returns non-zero books and
     /// non-zero annotations.
     #[test]
     fn test_databases_books_annotated() {
-        let app = app_from_test_db("books-annotated");
+        let config = TestConfig::new("books-annotated");
+        let mut app = App::new(Box::new(config));
 
-        assert_eq!(app.stor().count_books(), 3);
-        assert_eq!(app.stor().count_annotations(), 10);
+        app.init().unwrap();
+
+        assert_eq!(app.stor.count_books(), 3);
+        assert_eq!(app.stor.count_annotations(), 10);
     }
 
     /// Tests that the annotations are sorted in the correct order.
     #[test]
     fn test_annotations_order() {
-        let app = app_from_test_db("books-annotated");
+        let config = TestConfig::new("books-annotated");
+        let mut app = App::new(Box::new(config));
 
-        for stor_item in app.stor().values() {
+        app.init().unwrap();
+
+        for stor_item in app.stor.values() {
             for annotations in stor_item.annotations.windows(2) {
                 assert!(annotations[0] < annotations[1]);
             }

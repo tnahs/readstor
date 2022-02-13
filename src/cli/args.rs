@@ -19,9 +19,9 @@ pub struct Args {
     #[clap(short, long, global = true)]
     pub force: bool,
 
-    /// Sets the logging verbosity
-    #[clap(short, global = true, parse(from_occurrences))]
-    pub verbosity: u64,
+    /// Silences output messages
+    #[clap(short, long, global = true)]
+    pub quiet: bool,
 
     #[clap(subcommand)]
     pub command: Command,

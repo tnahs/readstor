@@ -1,32 +1,39 @@
-#![warn(clippy::all, clippy::pedantic)]
-#![allow(clippy::module_name_repetitions, rustdoc::private_intra_doc_links)]
+#![warn(
+    clippy::all,
+    clippy::pedantic,
+    future_incompatible,
+    missing_copy_implementations,
+    missing_debug_implementations,
+    // missing_docs, // TEMP
+    rust_2018_idioms,
+    rust_2018_compatibility,
+    rust_2021_compatibility,
+)]
+#![allow(
+    clippy::single_match_else,
+    clippy::module_name_repetitions,
+    rustdoc::private_intra_doc_links
+)]
 
 mod cli;
 pub mod lib;
 
 use clap::Parser;
-use color_eyre::eyre::WrapErr;
-use loggerv::Logger;
 
-use crate::cli::app::App;
-use crate::cli::app::AppResult;
+use crate::cli::app::{App, AppResult};
 use crate::cli::args::Args;
-use crate::cli::args::Command;
-use crate::cli::config::Config;
+use crate::cli::config::app::AppConfig;
+use crate::cli::config::dev::{is_development_env, DevConfig};
+use crate::cli::config::Configuration;
 use crate::lib::applebooks::utils::applebooks_is_running;
 
 fn main() -> AppResult<()> {
+    cli::utils::init_logger();
     color_eyre::install()?;
 
     let args = Args::parse();
 
-    Logger::new()
-        .verbosity(args.verbosity)
-        .level(true)
-        .init()
-        .unwrap();
-
-    log::debug!("Running with `args`: {:#?}.", &args);
+    log::debug!("Args: {:#?}.", &args);
 
     if !args.force && applebooks_is_running() {
         println!(
@@ -36,36 +43,17 @@ fn main() -> AppResult<()> {
         return Ok(());
     }
 
-    let config = Config::new(&args);
-    let mut app = App::new(config);
+    // Selects the appropriate configuration depending on the environment.
+    // In a development environment this sets the databases to a local mock
+    // database and sets the location of the output directory to a temp
+    // directory on disk.
+    let config: Box<dyn Configuration> = if is_development_env() {
+        Box::new(DevConfig::default())
+    } else {
+        Box::new(AppConfig::new(&args))
+    };
 
-    println!("• Building stor...");
+    log::debug!("Configuration: {:#?}.", &config);
 
-    app.init()?;
-
-    match &args.command {
-        Command::Export => {
-            println!("• Exporting data...");
-            app.export_data().wrap_err("failed while exporting data")?;
-        }
-        Command::Render { ref template } => {
-            println!("• Rendering template...");
-            app.render_templates(template.as_ref())
-                .wrap_err("failed while rendering template")?;
-        }
-        Command::Backup => {
-            println!("• Backing up databases...");
-            app.backup_databases()
-                .wrap_err("failed while backing up databases")?;
-        }
-    }
-
-    println!(
-        "• Saved {} annotations from {} books to `{}`",
-        app.stor().count_annotations(),
-        app.stor().count_books(),
-        app.config().output().display()
-    );
-
-    Ok(())
+    App::new(config).run(&args)
 }

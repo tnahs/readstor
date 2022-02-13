@@ -40,7 +40,6 @@ USAGE:
 OPTIONS:
     -o, --output <OUTPUT>    Sets the OUTPUT path [default: ~/.readstor]
     -f, --force              Runs even if Apple Books is open
-    -v                       Sets the logging verbosity
     -h, --help               Print help information
     -V, --version            Print version information
 
@@ -142,7 +141,6 @@ USAGE:
 OPTIONS:
     -o, --output <OUTPUT>    Sets the OUTPUT path [default: ~/.readstor]
     -f, --force              Runs even if Apple Books is open
-    -v                       Sets the logging verbosity
     -h, --help               Print help information
     -V, --version            Print version information
 

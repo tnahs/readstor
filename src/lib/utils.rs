@@ -1,8 +1,8 @@
 use std::ffi::OsStr;
+use std::io;
 use std::ops::{Deref, DerefMut};
 use std::path::Path;
 use std::time::UNIX_EPOCH;
-use std::{fs, io};
 
 use chrono::{DateTime, Local, NaiveDateTime, Utc};
 use serde::Serialize;
@@ -25,7 +25,7 @@ use super::templates::Templates;
 /// structs or wrap `DateTime<Utc>` and provide a `Default` implementation.
 ///
 /// See [`Templates::add()`] for more information.
-#[derive(Debug, Clone, Serialize)]
+#[derive(Debug, Clone, Copy, Serialize)]
 pub struct DateTimeUTC(DateTime<Utc>);
 
 impl Default for DateTimeUTC {
@@ -77,44 +77,66 @@ impl From<f64> for DateTimeUTC {
 /// Will return `Err` if any IO errors are encountered.
 //
 // <https://stackoverflow.com/a/65192210/16968574>
-pub fn copy_dir(source: &Path, destination: &Path) -> io::Result<()> {
-    fs::create_dir_all(&destination)?;
+pub fn copy_dir<S, D>(source: S, destination: D) -> io::Result<()>
+where
+    S: AsRef<Path>,
+    D: AsRef<Path>,
+{
+    let source = source.as_ref();
+    let destination = destination.as_ref();
 
-    log::debug!(
-        "Copying `{}` to `{}`",
-        &source.display(),
-        &destination.display(),
-    );
+    std::fs::create_dir_all(&destination)?;
 
-    for entry in fs::read_dir(source)? {
+    for entry in std::fs::read_dir(source)? {
         let entry = entry?;
 
         if entry.path().is_dir() {
             copy_dir(&entry.path(), &destination.join(entry.file_name()))?;
         } else {
-            fs::copy(entry.path(), destination.join(entry.file_name()))?;
+            std::fs::copy(entry.path(), destination.join(entry.file_name()))?;
         }
     }
+
+    log::debug!(
+        "Copied directory `{}` to `{}`",
+        &source.display(),
+        &destination.display(),
+    );
 
     Ok(())
 }
 
-/// Returns the file extension of a path.
+/// Returns the file extension from a path.
+///
+/// Returns `None` if the `source` path terminates in `..` or is `/`.
 #[must_use]
-pub fn get_file_extension(path: &Path) -> Option<&str> {
-    path.extension().and_then(OsStr::to_str)
+pub fn get_file_extension<P>(path: &P) -> Option<&str>
+where
+    P: AsRef<Path>,
+{
+    path.as_ref().extension().and_then(OsStr::to_str)
 }
 
-/// Returns the file name of a path.
+/// Returns the file name from a path.
+///
+/// Returns `None` if the `source` path terminates in `..` or is `/`.
 #[must_use]
-pub fn get_file_name(path: &Path) -> Option<&str> {
-    path.file_name().and_then(OsStr::to_str)
+pub fn get_file_name<P>(path: &P) -> Option<&str>
+where
+    P: AsRef<Path>,
+{
+    path.as_ref().file_name().and_then(OsStr::to_str)
 }
 
 /// Returns the file stem of a path.
+///
+/// Returns `None` if the `source` path terminates in `..` or is `/`.
 #[must_use]
-pub fn get_file_stem(path: &Path) -> Option<&str> {
-    path.file_stem().and_then(OsStr::to_str)
+pub fn get_file_stem<P>(path: &P) -> Option<&str>
+where
+    P: AsRef<Path>,
+{
+    path.as_ref().file_stem().and_then(OsStr::to_str)
 }
 
 /// Returns today's date as a string.

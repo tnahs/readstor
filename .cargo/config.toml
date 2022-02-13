@@ -1,3 +1,7 @@
+[env]
+READSTOR_DEV = "1"
+READSTOR_LOG = "debug"
+
 [alias]
 lint = """\
     clippy \
@@ -8,6 +12,3 @@ lint = """\
         --warn clippy::cargo \
     """
 docs = "doc --no-deps --open"
-
-[env]
-DEV_READSTOR = "DEV_READSTOR"

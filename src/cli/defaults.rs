@@ -15,10 +15,13 @@ pub static OUTPUT: Lazy<PathBuf> = Lazy::new(|| lib_defaults::HOME.join(".readst
 /// Defines the environment variable key used to determine whether the
 /// application is being worked on. If so, the Apple Books database path is
 /// bypassed and redirected to a local testing/dev database.
-pub const DEV_READSTOR: &str = "DEV_READSTOR";
+pub const READSTOR_DEV: &str = "READSTOR_DEV";
 
-/// Defines the path to the testing/dev databases.
-pub static DEV_DATABASES: Lazy<PathBuf> = Lazy::new(|| {
+/// TODO Document
+pub const READSTOR_LOG: &str = "READSTOR_LOG";
+
+/// Defines the path to the mock databases.
+pub static MOCK_DATABASES: Lazy<PathBuf> = Lazy::new(|| {
     let mut path = lib_defaults::CRATE_ROOT.to_owned();
     path.extend(["tests", "data", "databases"].iter());
     path
