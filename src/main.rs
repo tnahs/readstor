@@ -24,7 +24,7 @@ use crate::cli::app::{App, AppResult};
 use crate::cli::args::Args;
 use crate::cli::config::app::AppConfig;
 use crate::cli::config::dev::{is_development_env, DevConfig};
-use crate::cli::config::Configuration;
+use crate::cli::config::Config;
 use crate::lib::applebooks::utils::applebooks_is_running;
 
 fn main() -> AppResult<()> {
@@ -33,7 +33,7 @@ fn main() -> AppResult<()> {
 
     let args = Args::parse();
 
-    log::debug!("Args: {:#?}.", &args);
+    log::debug!("{:#?}.", &args);
 
     if !args.force && applebooks_is_running() {
         println!(
@@ -43,17 +43,17 @@ fn main() -> AppResult<()> {
         return Ok(());
     }
 
-    // Selects the appropriate configuration depending on the environment.
+    // Selects the appropriate Config depending on the environment.
     // In a development environment this sets the databases to a local mock
     // database and sets the location of the output directory to a temp
     // directory on disk.
-    let config: Box<dyn Configuration> = if is_development_env() {
+    let config: Box<dyn Config> = if is_development_env() {
         Box::new(DevConfig::default())
     } else {
         Box::new(AppConfig::new(&args))
     };
 
-    log::debug!("Configuration: {:#?}.", &config);
+    log::debug!("{:#?}.", &config);
 
-    App::new(config).run(&args)
+    App::new(config).run(&args.command)
 }

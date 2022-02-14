@@ -1,6 +1,6 @@
 [package]
 name = "readstor"
-version = "0.2.0"
+version = "0.3.0"
 description = "A CLI for Apple Books annotations"
 readme = "README.md"
 license = "MIT OR Apache-2.0"
@@ -25,6 +25,7 @@ serde_json = "1.0.79"
 sysinfo = "0.23.2"
 tera = "1.15.0"
 thiserror = "1.0.30"
+walkdir = "2.3.2"
 
 [dependencies.chrono]
 version = "0.4.19"

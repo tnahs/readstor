@@ -31,21 +31,23 @@ $ cargo install readstor
 ```console
 $ readstor --help
 
-readstor 0.2.0
+readstor 0.3.0
 A CLI for Apple Books annotations
 
 USAGE:
     readstor [OPTIONS] <SUBCOMMAND>
 
 OPTIONS:
-    -o, --output <OUTPUT>    Sets the OUTPUT path [default: ~/.readstor]
-    -f, --force              Runs even if Apple Books is open
-    -h, --help               Print help information
-    -V, --version            Print version information
+    -o, --output <OUTPUT>          Sets the OUTPUT path [default: ~/.readstor]
+    -t, --templates <TEMPLATES>    Sets a custom templates directory
+    -f, --force                    Runs even if Apple Books is open
+    -i, --quiet                    Silences output messages
+    -h, --help                     Print help information
+    -V, --version                  Print version information
 
 SUBCOMMANDS:
     export    Exports Apple Books' data to OUTPUT
-    render    Renders annotations via a template to OUTPUT
+    render    Renders annotations via templates to OUTPUT
     backup    Backs-up Apple Books' databases to OUTPUT
     help      Print this message or the help of the given subcommand(s)
 ```

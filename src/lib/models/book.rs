@@ -11,13 +11,6 @@ pub struct Book {
     pub metadata: BookMetadata,
 }
 
-/// Represents the data that is not directly editable by the user.
-#[derive(Debug, Default, Clone, Serialize)]
-pub struct BookMetadata {
-    pub id: String,
-    pub last_opened: DateTimeUTC,
-}
-
 impl ABQuery for Book {
     const DATABASE_NAME: ABDatabaseName = ABDatabaseName::Books;
 
@@ -50,4 +43,11 @@ impl ABQuery for Book {
             },
         }
     }
+}
+
+/// Represents the data that is not directly editable by the user.
+#[derive(Debug, Default, Clone, Serialize)]
+pub struct BookMetadata {
+    pub id: String,
+    pub last_opened: DateTimeUTC,
 }

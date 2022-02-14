@@ -3,14 +3,14 @@ use std::path::PathBuf;
 
 use once_cell::sync::Lazy;
 
-use crate::lib::defaults as lib_defaults;
+use crate::lib;
+
+#[allow(unused_imports)] // For docs.
+use super::database::ABDatabase;
 #[allow(unused_imports)] // For docs.
 use crate::lib::models::annotation::Annotation;
 #[allow(unused_imports)] // For docs.
 use crate::lib::models::book::Book;
-
-#[allow(unused_imports)] // For docs.
-use super::database::ABDatabase;
 
 /// Defines the root databases directory.
 ///
@@ -22,7 +22,7 @@ use super::database::ABDatabase;
 /// /users/[user]/Library/Containers/com.apple.iBooksX/Data/Documents.
 /// ```
 pub static DATABASES: Lazy<PathBuf> = Lazy::new(|| {
-    let mut path = lib_defaults::HOME.to_owned();
+    let mut path = lib::defaults::HOME.to_owned();
     path.extend(
         [
             "Library",

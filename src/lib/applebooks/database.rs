@@ -1,17 +1,17 @@
 use std::path::{Path, PathBuf};
 
-use rusqlite::OpenFlags;
-use rusqlite::{Connection, Row};
+use rusqlite::{Connection, OpenFlags, Row};
 
+use crate::lib::result::{LibError, LibResult};
+
+use super::utils::APPLEBOOKS_VERSION;
+
+#[allow(unused_imports)] // For docs.
+use crate::lib::applebooks;
 #[allow(unused_imports)] // For docs.
 use crate::lib::models::annotation::Annotation;
 #[allow(unused_imports)] // For docs.
 use crate::lib::models::book::Book;
-use crate::lib::result::{LibError, LibResult};
-
-#[allow(unused_imports)] // For docs.
-use super::defaults as applebooks_defaults;
-use super::utils::APPLEBOOKS_VERSION;
 
 #[derive(Debug, Clone, Copy)]
 pub struct ABDatabase;
@@ -19,10 +19,12 @@ pub struct ABDatabase;
 impl ABDatabase {
     /// Queries an Apple Books database based on the `databases` path and `T`.
     ///
-    /// The `databases` path determines where the databases are located while
-    /// `T` determines which of the two databases will be queried. `T` should
-    /// be either [`Book`] or [`Annotation`] referring to `BKLibrary*.sqlite`
-    /// or `AEAnnotation*.sqlite`.
+    /// # Arguments
+    ///
+    /// * The `path` determines where the databases are located while `T`
+    /// determines which of the two databases will be queried. `T` should be
+    /// either [`Book`] or [`Annotation`] referring to `BKLibrary*.sqlite` or
+    /// `AEAnnotation*.sqlite`.
     ///
     /// See [`ABDatabase::get_database()`] for information on how the
     /// `databases` directory should be structured.
@@ -33,9 +35,9 @@ impl ABDatabase {
     /// schema has changed, meaning this application is out of sync with the
     /// latest version of Apple Books.
     #[allow(clippy::missing_panics_doc)]
-    pub fn query<T: ABQuery>(databases: &Path) -> LibResult<Vec<T>> {
+    pub fn query<T: ABQuery>(path: &Path) -> LibResult<Vec<T>> {
         // Returns the appropriate database based on `T`.
-        let path = Self::get_database::<T>(databases)?;
+        let path = Self::get_database::<T>(path)?;
 
         let connection =
             match Connection::open_with_flags(&path, OpenFlags::SQLITE_OPEN_READ_ONLY) {
@@ -77,7 +79,7 @@ impl ABDatabase {
 
     /// Returns a `PathBuf` to the `AEAnnotation` or `BKLibrary` database.
     ///
-    /// The `databases` directory should contains the following structure as
+    /// The databases directory should contains the following structure as
     /// this is the way Apple Books' `Documents` directory is set up.
     ///
     /// ```plaintext
@@ -93,53 +95,37 @@ impl ABDatabase {
     ///  │
     ///  └─ ...
     /// ```
-    fn get_database<T: ABQuery>(databases: &Path) -> LibResult<PathBuf> {
-        let mut root = databases.to_owned();
+    fn get_database<T: ABQuery>(path: &Path) -> LibResult<PathBuf> {
+        // (a) -> `/path/to/databases/DATABASE_NAME/`
+        let root = path.join(T::DATABASE_NAME.to_string());
 
-        // Appends `DATABASE_NAME` twice to the root path. Prepping the path
-        // for generating a glob string.
-        //
-        // [databases]
-        //  │
-        //  ├─ DATABASE_NAME
-        //  │  ├─ DATABASE_NAME*.sqlite
-        //  │  └─ ...
-        //  │
-        //  └─ ...
-        root.extend([T::DATABASE_NAME.to_string(), T::DATABASE_NAME.to_string()].iter());
-
+        // (b) -> `/path/to/databases/DATABASE_NAME/DATABASE_NAME*.sqlite`
+        let pattern = format!("{}*.sqlite", T::DATABASE_NAME);
+        let pattern = root.join(pattern);
         // The path should be valid and UTF-8 because we're targeting macOS.
         // TODO Is this actually the case? Run tests to see it break.
-        let path = root.display().to_string();
+        let pattern = pattern.to_string_lossy();
 
-        // Generates `/path/to/databases/DATABASE_NAME/DATABASE_NAME*.sqlite`
-        let glob_path = format!("{}*.sqlite", path);
-
-        let mut databases: Vec<PathBuf> = glob::glob(&glob_path)
+        let mut databases: Vec<PathBuf> = glob::glob(&pattern)
             .unwrap() // This is safe as we know the glob pattern is valid.
             .filter_map(std::result::Result::ok)
             .collect();
-
-        if databases.is_empty() {
-            return Err(LibError::DatabaseMissing {
-                name: T::DATABASE_NAME.to_string(),
-                path,
-            });
-        }
 
         // The default Apple Books' database directory contains only a single
         // database file that starts with the `DATABASE_NAME` and ends with
         // `.sqlite`. If there are more then we'd possibly run into unexpected
         // behaviors.
-        if databases.len() > 1 {
-            return Err(LibError::DatabaseUnresolvable {
+        match &databases[..] {
+            [_] => Ok(databases.pop().unwrap()),
+            [_, ..] => Err(LibError::DatabaseUnresolvable {
                 name: T::DATABASE_NAME.to_string(),
-                path,
-            });
+                path: root.display().to_string(),
+            }),
+            _ => Err(LibError::DatabaseMissing {
+                name: T::DATABASE_NAME.to_string(),
+                path: root.display().to_string(),
+            }),
         }
-
-        // This is safe because we know that databases vec is not empty.
-        Ok(databases.pop().unwrap())
     }
 }
 
@@ -147,7 +133,7 @@ impl ABDatabase {
 /// how [`Book`] and [`Annotation`] instances are created. Thus it should only
 /// have to be implemented by said structs. It allows instances to be created
 /// generically over the rows of their respective databases `BKLibrary*.sqlite`
-/// and `AEAnnotation*.sqlite`. See [`static@applebooks_defaults::DATABASES`]
+/// and `AEAnnotation*.sqlite`. See [`static@applebooks::defaults::DATABASES`]
 /// for path information.
 ///
 /// The [`ABQuery::from_row()`] and [`ABQuery::QUERY`] methods are strongly

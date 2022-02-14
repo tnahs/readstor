@@ -1,9 +1,20 @@
 # TODO
 
-- [ ] Add `--quiet` to silence output.
+## v0.3.0
+
+- [ ] `render -t/--template` has been removed.
+- [ ] `-t/--templates` is now global and accepts a path to a directory with templates.
+- [ ] Added `--quiet` to silence output.
+- [ ] Removed `-v` logging verbosity.
+- [ ] Switched to `Config` trait for more flexibility.
+- [ ] Switched from `loggerv` to `env_logger`.
+
+## v1.x
+
+- [ ] Add `# Arguments` to docs.
 - [ ] Fix `*_defaults` e.g. `applebooks_defaults` in docs.
-- [ ] Override `docs.rs` index page.
 - [ ] Add `dump` command to execute `export`, `render` and `backup`.
+- [ ] Override `docs.rs` index page.
 - [ ] Implement `Config` search paths
     - `$HOME/.readstor.toml`
     - `$HOME/.readstor/readstor.toml`

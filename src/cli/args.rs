@@ -15,34 +15,35 @@ pub struct Args {
     )]
     pub output: Option<PathBuf>,
 
+    /// Sets a custom templates directory
+    #[clap(
+        short,
+        long,
+        global = true,
+        parse(try_from_str = validate_path_exists),
+    )]
+    pub templates: Option<PathBuf>,
+
     /// Runs even if Apple Books is open
     #[clap(short, long, global = true)]
     pub force: bool,
 
     /// Silences output messages
-    #[clap(short, long, global = true)]
-    pub quiet: bool,
+    #[clap(short, long = "quiet", global = true)]
+    pub is_quiet: bool,
 
     #[clap(subcommand)]
     pub command: Command,
 }
 
-#[derive(Debug, Subcommand)]
+#[derive(Debug, Clone, Subcommand)]
 #[clap(setting(AppSettings::DeriveDisplayOrder))]
 pub enum Command {
     /// Exports Apple Books' data to OUTPUT
     Export,
 
-    /// Renders annotations via a template to OUTPUT
-    Render {
-        /// Sets a custom template
-        #[clap(
-            short,
-            long,
-            parse(try_from_str = validate_path_exists),
-        )]
-        template: Option<PathBuf>,
-    },
+    /// Renders annotations via templates to OUTPUT
+    Render,
 
     /// Backs-up Apple Books' databases to OUTPUT
     Backup,

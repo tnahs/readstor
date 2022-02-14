@@ -5,12 +5,13 @@ use std::path::{Path, PathBuf};
 use serde_json::{self, Value};
 use tera::{Context, Tera};
 
-use super::defaults as lib_defaults;
-use super::models::stor::StorItem;
+use crate::lib;
+
+use super::models::data::Entry;
 use super::result::{LibError, LibResult};
 use super::utils;
 
-/// Provides a simple interface to add templates and render [`StorItem`]s.
+/// Provides a simple interface to add templates and render [`Entry`]s.
 #[derive(Debug)]
 pub struct Templates {
     /// Template registry containing all the parsed templates.
@@ -31,8 +32,8 @@ impl Default for Templates {
         registry.register_filter("join_paragraph", join_paragraph);
         registry
             .add_raw_template(
-                lib_defaults::DEFAULT_TEMPLATE_NAME,
-                lib_defaults::DEFAULT_TEMPLATE,
+                lib::defaults::DEFAULT_TEMPLATE_NAME,
+                lib::defaults::DEFAULT_TEMPLATE,
             )
             // Should be safe here to unwrap seeing as this is the default
             // template and will be evaluated at compile-time.
@@ -40,7 +41,7 @@ impl Default for Templates {
 
         let default = Template {
             path: PathBuf::new(),
-            name: lib_defaults::DEFAULT_TEMPLATE_NAME.to_owned(),
+            name: lib::defaults::DEFAULT_TEMPLATE_NAME.to_owned(),
             stem: "default".to_owned(),
             extension: "txt".to_owned(),
         };
@@ -59,30 +60,27 @@ impl Templates {
     /// # Errors
     ///
     /// Will return `Err` if the template contains either syntax errors or
-    /// variables that reference non-existent fields in a [`StorItem`].
+    /// variables that reference non-existent fields in a [`Entry`].
     pub fn add(&mut self, template: Template) -> LibResult<()> {
         // Attempt to add a new template to the registry. This will fail if
         // the template has syntax errors.
         self.registry
             .add_template_file(&template.path, Some(&template.name))
-            .map_err(LibError::Template)?;
+            .map_err(LibError::InvalidTemplate)?;
 
-        // Run a test render of the new template using an dummy `StorItem` to
+        // Run a test render of the new template using an dummy `Entry` to
         // check that the template does not contain variables that reference
-        // non-existent fields in a `StorItem`.
+        // non-existent fields in a `Entry`.
         self.registry
-            .render(
-                &template.name,
-                &Context::from_serialize(StorItem::default())?,
-            )
-            .map_err(LibError::Template)?;
+            .render(&template.name, &Context::from_serialize(Entry::default())?)
+            .map_err(LibError::InvalidTemplate)?;
 
         self.templates.push(template);
 
         Ok(())
     }
 
-    /// Exports a [`StorItem`] to disk with the following structure:
+    /// Exports a [`Entry`] to disk with the following structure:
     ///
     /// ```plaintext
     /// [path]
@@ -98,16 +96,16 @@ impl Templates {
     ///
     /// Will return `Err` if any IO errors are encountered.
     // TODO add `serde_json::Error` as possible error.
-    pub fn render(&self, stor_item: &StorItem, path: &Path) -> LibResult<()> {
+    pub fn render(&self, entry: &Entry, path: &Path) -> LibResult<()> {
         // TODO Document
         if self.templates.is_empty() {
-            self.render_to_file(path, &self.default, stor_item)?;
+            self.render_to_file(path, &self.default, entry)?;
             return Ok(());
         }
 
         // TODO Document
         for template in &self.templates {
-            self.render_to_file(path, template, stor_item)?;
+            self.render_to_file(path, template, entry)?;
         }
 
         Ok(())
@@ -118,20 +116,20 @@ impl Templates {
         &self,
         path: &Path,
         template: &Template,
-        stor_item: &StorItem,
+        entry: &Entry,
     ) -> LibResult<()> {
         // -> [path]/[template-name]
         let template_path = path.join(&template.stem);
 
         std::fs::create_dir_all(&template_path)?;
 
-        let file_name = format!("{}.{}", stor_item.name(), template.extension);
+        let file_name = format!("{}.{}", entry.name(), template.extension);
         let file_path = template_path.join(file_name);
         let file = fs::File::create(&file_path)?;
 
         self.registry
-            .render_to(&template.name, &Context::from_serialize(stor_item)?, file)
-            .map_err(LibError::Template)?;
+            .render_to(&template.name, &Context::from_serialize(entry)?, file)
+            .map_err(LibError::InvalidTemplate)?;
 
         Ok(())
     }

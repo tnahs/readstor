@@ -2,13 +2,13 @@ use std::path::PathBuf;
 
 use once_cell::sync::Lazy;
 
-use crate::cli::defaults as cli_defaults;
+use crate::cli;
 
-use super::Configuration;
+use super::{Config, ConfigOptions};
 
 /// TODO Document
 pub static DEV_DATABASES: Lazy<PathBuf> =
-    Lazy::new(|| cli_defaults::MOCK_DATABASES.join("books-annotated"));
+    Lazy::new(|| cli::defaults::MOCK_DATABASES.join("books-annotated"));
 
 /// TODO Document
 /// Returns a path to a temp directory to use for reading and writing data
@@ -35,22 +35,36 @@ pub static DEV_OUTPUT: Lazy<PathBuf> = Lazy::new(|| {
     path
 });
 
-#[derive(Debug, Default)]
-pub struct DevConfig;
+#[derive(Debug)]
+pub struct DevConfig {
+    options: ConfigOptions,
+}
 
-impl Configuration for DevConfig {
+impl Config for DevConfig {
     fn databases(&self) -> &PathBuf {
         &DEV_DATABASES
     }
 
-    fn output(&self) -> &PathBuf {
-        &DEV_OUTPUT
+    fn options(&self) -> &ConfigOptions {
+        &self.options
+    }
+}
+
+impl Default for DevConfig {
+    fn default() -> Self {
+        Self {
+            options: ConfigOptions {
+                output: DEV_OUTPUT.to_owned(),
+                templates: Vec::new(),
+                is_quiet: true,
+            },
+        }
     }
 }
 
 /// TODO Document
 pub fn is_development_env() -> bool {
-    match std::env::var_os(cli_defaults::READSTOR_DEV) {
+    match std::env::var_os(cli::defaults::READSTOR_DEV) {
         // This ensures that if the variable exists but is an empty value, the
         // function will return false.
         Some(value) => !value.is_empty(),

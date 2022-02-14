@@ -12,36 +12,13 @@ use crate::lib::utils::DateTimeUTC;
 /// Captures a `#tag`.
 static RE_TAG: Lazy<Regex> = Lazy::new(|| Regex::new(r"#[^\s#]+").unwrap());
 
-#[derive(Debug, Default, Clone, Serialize)]
+#[derive(Debug, Default, Clone, Eq, Serialize)]
 pub struct Annotation {
     pub body: Vec<String>,
     pub style: String,
     pub notes: String,
     pub tags: Vec<String>,
     pub metadata: AnnotationMetadata,
-}
-
-/// Represents the data that is not directly editable by the user.
-#[derive(Debug, Default, Clone, Serialize)]
-pub struct AnnotationMetadata {
-    pub id: String,
-    pub book_id: String,
-    pub created: DateTimeUTC,
-    pub modified: DateTimeUTC,
-    pub location: String,
-    pub epubcfi: String,
-}
-
-impl PartialOrd for Annotation {
-    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
-        self.metadata.location.partial_cmp(&other.metadata.location)
-    }
-}
-
-impl PartialEq for Annotation {
-    fn eq(&self, other: &Self) -> bool {
-        self.metadata.location == other.metadata.location
-    }
 }
 
 impl Annotation {
@@ -156,6 +133,53 @@ impl ABQuery for Annotation {
                 epubcfi,
             },
         }
+    }
+}
+
+impl Ord for Annotation {
+    fn cmp(&self, other: &Self) -> Ordering {
+        self.metadata.cmp(&other.metadata)
+    }
+}
+
+impl PartialOrd for Annotation {
+    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+        self.metadata.partial_cmp(&other.metadata)
+    }
+}
+
+impl PartialEq for Annotation {
+    fn eq(&self, other: &Self) -> bool {
+        self.metadata == other.metadata
+    }
+}
+
+/// Represents the data that is not directly editable by the user.
+#[derive(Debug, Default, Clone, Eq, Serialize)]
+pub struct AnnotationMetadata {
+    pub id: String,
+    pub book_id: String,
+    pub created: DateTimeUTC,
+    pub modified: DateTimeUTC,
+    pub location: String,
+    pub epubcfi: String,
+}
+
+impl Ord for AnnotationMetadata {
+    fn cmp(&self, other: &Self) -> Ordering {
+        self.location.cmp(&other.location)
+    }
+}
+
+impl PartialOrd for AnnotationMetadata {
+    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+        self.location.partial_cmp(&other.location)
+    }
+}
+
+impl PartialEq for AnnotationMetadata {
+    fn eq(&self, other: &Self) -> bool {
+        self.location == other.location
     }
 }
 

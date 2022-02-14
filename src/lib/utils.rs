@@ -1,14 +1,14 @@
 use std::ffi::OsStr;
 use std::io;
 use std::ops::{Deref, DerefMut};
-use std::path::Path;
+use std::path::{Path, PathBuf};
 use std::time::UNIX_EPOCH;
 
 use chrono::{DateTime, Local, NaiveDateTime, Utc};
 use serde::Serialize;
 
 #[allow(unused_imports)] // For docs.
-use super::models::stor::StorItem;
+use super::models::data::Entry;
 #[allow(unused_imports)] // For docs.
 use super::templates::Templates;
 
@@ -18,14 +18,14 @@ use super::templates::Templates;
 /// Why do we need a `Default` implementation? When a new template is added to
 /// the [`Templates`] registry it needs to be validates both for its syntax
 /// and for the fields that its variables reference. In order to achieve the
-/// latter, a dummy [`StorItem`] struct---its `Default` implementation---is
+/// latter, a dummy [`Entry`] struct---its `Default` implementation---is
 /// passed to validate the template's variables. Seeing as `DateTime` does not
 /// have a `Default` implementation, it was either we implementation a hand
-/// written `Default` of [`StorItem`] which would include multiple nested
+/// written `Default` of [`Entry`] which would include multiple nested
 /// structs or wrap `DateTime<Utc>` and provide a `Default` implementation.
 ///
 /// See [`Templates::add()`] for more information.
-#[derive(Debug, Clone, Copy, Serialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize)]
 pub struct DateTimeUTC(DateTime<Utc>);
 
 impl Default for DateTimeUTC {
@@ -68,6 +68,34 @@ impl From<f64> for DateTimeUTC {
 
         DateTimeUTC(DateTime::from_utc(datetime, Utc))
     }
+}
+
+/// Helper function for [`walkdir`]. Filters out hidden/private directories.
+#[must_use]
+pub fn entry_is_hidden(entry: &walkdir::DirEntry) -> bool {
+    entry
+        .file_name()
+        .to_str()
+        .map_or(false, |s| !s.starts_with(|c| c == '_' || c == '.'))
+}
+
+/// Returns an iterator over all the directories in a path without recursing.
+///
+/// # Arguments
+///
+/// * `path` - The path to a directory to iterate.
+pub fn iter_dir<P>(path: &P) -> impl Iterator<Item = PathBuf>
+where
+    P: AsRef<Path>,
+{
+    walkdir::WalkDir::new(path)
+        .min_depth(1)
+        .max_depth(1)
+        .into_iter()
+        .filter_entry(entry_is_hidden)
+        .filter_map(std::result::Result::ok)
+        .filter(|e| e.path().is_dir())
+        .map(|e| e.path().to_owned())
 }
 
 /// Recursively copies all files in a directory.

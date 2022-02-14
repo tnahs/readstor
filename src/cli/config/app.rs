@@ -1,37 +1,54 @@
 use std::path::PathBuf;
 
+use crate::cli;
 use crate::cli::args::Args;
-use crate::cli::defaults as cli_defaults;
-use crate::lib::applebooks::defaults as applebooks_defaults;
+use crate::lib::applebooks;
+use crate::lib::utils;
 
 #[allow(unused_imports)] // For docs.
 use crate::lib::applebooks::database::ABDatabase;
 
-use super::Configuration;
+use super::{Config, ConfigOptions};
 
 #[derive(Debug)]
 pub struct AppConfig {
-    output: PathBuf,
+    options: ConfigOptions,
 }
 
-impl Configuration for AppConfig {
+impl Config for AppConfig {
     fn databases(&self) -> &PathBuf {
-        &applebooks_defaults::DATABASES
+        &applebooks::defaults::DATABASES
     }
 
-    fn output(&self) -> &PathBuf {
-        &self.output
+    fn options(&self) -> &ConfigOptions {
+        &self.options
     }
 }
 
 impl AppConfig {
     pub fn new(args: &Args) -> Self {
-        // If no output directory is supplied fall back to the default.
+        Self {
+            options: args.into(),
+        }
+    }
+}
+
+impl From<&Args> for ConfigOptions {
+    fn from(args: &Args) -> Self {
         let output = args
             .output
             .clone()
-            .unwrap_or_else(|| cli_defaults::OUTPUT.to_owned());
+            .unwrap_or_else(|| cli::defaults::OUTPUT.to_owned());
 
-        Self { output }
+        let templates = args
+            .templates
+            .clone()
+            .map_or_else(Vec::new, |path| utils::iter_dir(&path).collect());
+
+        Self {
+            output,
+            templates,
+            is_quiet: args.is_quiet,
+        }
     }
 }

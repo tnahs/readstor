@@ -2,23 +2,23 @@
 
 use std::path::PathBuf;
 
-use crate::cli::defaults as cli_defaults;
+use crate::cli;
 
-use super::Configuration;
+use super::{Config, ConfigOptions};
 
 #[derive(Debug)]
 pub struct TestConfig {
     databases: PathBuf,
-    output: PathBuf,
+    options: ConfigOptions,
 }
 
-impl Configuration for TestConfig {
+impl Config for TestConfig {
     fn databases(&self) -> &PathBuf {
         &self.databases
     }
 
-    fn output(&self) -> &PathBuf {
-        &self.output
+    fn options(&self) -> &ConfigOptions {
+        &self.options
     }
 }
 
@@ -26,8 +26,12 @@ impl TestConfig {
     /// TODO Document
     pub fn new(name: &str) -> Self {
         Self {
-            databases: cli_defaults::MOCK_DATABASES.join(name),
-            output: Self::build_output(name),
+            databases: cli::defaults::MOCK_DATABASES.join(name),
+            options: ConfigOptions {
+                output: Self::build_output(name),
+                templates: Vec::new(),
+                is_quiet: true,
+            },
         }
     }
 

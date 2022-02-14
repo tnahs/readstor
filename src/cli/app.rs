@@ -1,73 +1,89 @@
 use std::fs;
-use std::path::PathBuf;
 
 use color_eyre::eyre::WrapErr;
 
-use crate::cli::args::Command;
-use crate::cli::config::Configuration;
 use crate::lib::applebooks::database::ABDatabaseName;
 use crate::lib::applebooks::utils::APPLEBOOKS_VERSION;
-use crate::lib::models::stor::Stor;
+use crate::lib::models::data::Data;
 use crate::lib::templates::{Template, Templates};
 use crate::lib::utils;
 
-use super::args::Args;
+use super::args::Command;
+use super::config::Config;
 
 pub type AppResult<T> = color_eyre::Result<T>;
 
 #[derive(Debug)]
 pub struct App {
-    config: Box<dyn Configuration>,
-    stor: Stor,
-    templates: Templates,
+    data: Data,
+    config: Box<dyn Config>,
+    registry: Templates,
 }
 
 impl App {
-    pub fn new(config: Box<dyn Configuration>) -> Self {
+    pub fn new(config: Box<dyn Config>) -> Self {
         Self {
+            data: Data::default(),
             config,
-            stor: Stor::default(),
-            templates: Templates::default(),
+            registry: Templates::default(),
         }
+    }
+
+    pub fn run(&mut self, command: &Command) -> AppResult<()> {
+        self.print("• Building templates...");
+        self.init_templates()?;
+
+        self.print("• Building data...");
+        self.init_data()?;
+
+        match command {
+            Command::Export => {
+                self.print("• Exporting data...");
+                self.export_data().wrap_err("Failed while exporting data")?;
+            }
+            Command::Render => {
+                self.print("• Rendering template...");
+                self.render_templates()
+                    .wrap_err("Failed while rendering template")?;
+            }
+            Command::Backup => {
+                self.print("• Backing up databases...");
+                self.backup_databases()
+                    .wrap_err("Failed while backing up databases")?;
+            }
+        }
+
+        self.print(&format!(
+            "• Saved {} annotations from {} books to `{}`",
+            self.data.count_annotations(),
+            self.data.count_books(),
+            self.config.options().output().display()
+        ));
+
+        Ok(())
     }
 
     /// TODO Document
-    fn init(&mut self) -> AppResult<()> {
-        self.stor.build(self.config.databases()).map_err(From::from)
+    fn init_data(&mut self) -> AppResult<()> {
+        self.data
+            .build(self.config.databases())
+            .wrap_err("Failed while building data")
     }
 
-    pub fn run(&mut self, args: &Args) -> AppResult<()> {
-        println!("• Building stor...");
+    /// TODO Document
+    fn init_templates(&mut self) -> AppResult<()> {
+        let templates = self.config.options().templates();
 
-        self.init().wrap_err("failed while building stor")?;
-
-        match args.command {
-            Command::Export => {
-                println!("• Exporting data...");
-                self.export_data().wrap_err("failed while exporting data")?;
-            }
-            Command::Render { ref template } => {
-                println!("• Rendering template...");
-                self.render_templates(template.as_ref())
-                    .wrap_err("failed while rendering template")?;
-            }
-            Command::Backup => {
-                println!("• Backing up databases...");
-                self.backup_databases()
-                    .wrap_err("failed while backing up databases")?;
-            }
-        }
-
-        let message = format!(
-            "• Saved {} annotations from {} books to `{}`",
-            self.stor.count_annotations(),
-            self.stor.count_books(),
-            self.config.output().display()
-        );
-
-        log::debug!("{}", message);
-
-        Ok(())
+        templates.iter().try_for_each(|template| {
+            self.registry
+                .add(Template::from(template))
+                .wrap_err_with(|| {
+                    format!(
+                        "Failed while registering template: `{}`",
+                        template.display()
+                    )
+                })
+        })
     }
 
     /// Exports Apple Books' data with the following structure:
@@ -100,11 +116,11 @@ impl App {
     /// already exists and/or contains data.
     fn export_data(&self) -> AppResult<()> {
         // -> [output]/data/
-        let root = self.config.output().join("data");
+        let root = self.config.options().output().join("data");
 
-        for stor_item in self.stor.values() {
+        for entry in self.data.entries() {
             // -> [output]/data/Author - Title
-            let item = root.join(stor_item.name());
+            let item = root.join(entry.name());
             // -> [output]/data/Author - Title/data
             let data = item.join("data");
             // -> [output]/data/Author - Title/resources
@@ -118,13 +134,13 @@ impl App {
             let book_json = data.join("book").with_extension("json");
             let book_file = fs::File::create(book_json)?;
 
-            serde_json::to_writer_pretty(&book_file, &stor_item.book)?;
+            serde_json::to_writer_pretty(&book_file, &entry.book)?;
 
             // -> [output]/data/Author - Title/data/annotation.json
             let annotations_json = data.join("annotations").with_extension("json");
             let annotations_file = fs::File::create(annotations_json)?;
 
-            serde_json::to_writer_pretty(&annotations_file, &stor_item.annotations)?;
+            serde_json::to_writer_pretty(&annotations_file, &entry.annotations)?;
 
             // -> [output]/data/Author - Title/resources/.gitkeep
             let gitkeep = resources.join(".gitkeep");
@@ -151,26 +167,17 @@ impl App {
     /// ```
     ///
     /// See [`Templates::render()`] for more information.
-    fn render_templates(&mut self, template: Option<&PathBuf>) -> AppResult<()> {
-        // TODO Move template initialization into its own function when default
-        // template directories are implemented. For now, this should be fine
-        // as we're only dealing with a single template.
-        if let Some(template) = template {
-            self.templates
-                .add(Template::from(template))
-                .wrap_err("failed while parsing template")?;
-        }
-
+    fn render_templates(&mut self) -> AppResult<()> {
         // -> [output]/exports/
-        let root = self.config.output().join("exports");
+        let root = self.config.options().output().join("exports");
 
         std::fs::create_dir_all(&root)?;
 
-        // Renders each `StorItem` aka a book.
-        for stor_item in self.stor.values() {
-            self.templates
-                .render(stor_item, &root)
-                .wrap_err("failed while rendering template")?;
+        // Renders each `Entry` aka a book.
+        for entry in self.data.entries() {
+            self.registry
+                .render(entry, &root)
+                .wrap_err("Failed while rendering template")?;
         }
 
         Ok(())
@@ -200,7 +207,7 @@ impl App {
     /// ```
     fn backup_databases(&self) -> AppResult<()> {
         // -> [output]/backups/
-        let root = self.config.output().join("backups");
+        let root = self.config.options().output().join("backups");
 
         // -> [YYYY-MM-DD-HHMMSS] [VERSION]
         let today = format!(
@@ -236,6 +243,13 @@ impl App {
 
         Ok(())
     }
+
+    /// TODO Document
+    fn print(&self, message: &str) {
+        if !self.config.options().is_quiet() {
+            println!("{}", message);
+        }
+    }
 }
 
 #[cfg(test)]
@@ -251,10 +265,10 @@ mod test_app {
         let config = TestConfig::new("empty");
         let mut app = App::new(Box::new(config));
 
-        app.init().unwrap();
+        app.init_data().unwrap();
 
-        assert_eq!(app.stor.count_books(), 0);
-        assert_eq!(app.stor.count_annotations(), 0);
+        assert_eq!(app.data.count_books(), 0);
+        assert_eq!(app.data.count_annotations(), 0);
     }
 
     /// Tests that a database with un-annotated books returns zero books and
@@ -264,11 +278,11 @@ mod test_app {
         let config = TestConfig::new("books-new");
         let mut app = App::new(Box::new(config));
 
-        app.init().unwrap();
+        app.init_data().unwrap();
 
         // Un-annotated books are filtered out.
-        assert_eq!(app.stor.count_books(), 0);
-        assert_eq!(app.stor.count_annotations(), 0);
+        assert_eq!(app.data.count_books(), 0);
+        assert_eq!(app.data.count_annotations(), 0);
     }
 
     /// Tests that a database with annotated books returns non-zero books and
@@ -278,10 +292,10 @@ mod test_app {
         let config = TestConfig::new("books-annotated");
         let mut app = App::new(Box::new(config));
 
-        app.init().unwrap();
+        app.init_data().unwrap();
 
-        assert_eq!(app.stor.count_books(), 3);
-        assert_eq!(app.stor.count_annotations(), 10);
+        assert_eq!(app.data.count_books(), 3);
+        assert_eq!(app.data.count_annotations(), 10);
     }
 
     /// Tests that the annotations are sorted in the correct order.
@@ -290,10 +304,10 @@ mod test_app {
         let config = TestConfig::new("books-annotated");
         let mut app = App::new(Box::new(config));
 
-        app.init().unwrap();
+        app.init_data().unwrap();
 
-        for stor_item in app.stor.values() {
-            for annotations in stor_item.annotations.windows(2) {
+        for entry in app.data.entries() {
+            for annotations in entry.annotations.windows(2) {
                 assert!(annotations[0] < annotations[1]);
             }
         }

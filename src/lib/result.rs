@@ -14,12 +14,16 @@ pub enum LibError {
     #[error("Apple Books {version} unsupported")]
     UnsupportedVersion { version: String },
 
+    /// TODO
     #[error(transparent)]
-    Template(#[from] tera::Error),
+    GlobError(#[from] glob::PatternError),
 
     #[error(transparent)]
-    Serialization(#[from] serde_json::error::Error),
+    InvalidTemplate(#[from] tera::Error),
 
     #[error(transparent)]
-    IO(#[from] std::io::Error),
+    SerializationError(#[from] serde_json::error::Error),
+
+    #[error(transparent)]
+    IoError(#[from] std::io::Error),
 }

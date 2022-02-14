@@ -27,6 +27,7 @@
         "thiserror",
         "TMPDIR",
         "trunc",
+        "walkdir",
         "yrgg"
     ],
     "cSpell.ignoreWords": [

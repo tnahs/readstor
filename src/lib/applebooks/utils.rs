@@ -5,12 +5,12 @@ use once_cell::sync::Lazy;
 use plist::Value;
 use sysinfo::{System, SystemExt};
 
+use crate::lib::applebooks;
+
 #[allow(unused_imports)] // For docs.
 use crate::lib::models::annotation::Annotation;
 #[allow(unused_imports)] // For docs.
 use crate::lib::models::book::Book;
-
-use super::defaults as applebooks_defaults;
 
 /// Returns Apple Books' version as `v[short]-[long]` e.g. `v3.2-2217`.
 ///
@@ -78,5 +78,5 @@ pub fn applebooks_is_running() -> bool {
     // equivalent to checking for an empty intersection."
     //
     // https://doc.rust-lang.org/std/collections/hash_set/struct.HashSet.html#method.is_disjoint
-    !applebooks_defaults::APPLEBOOKS_NAMES.is_disjoint(&process_names)
+    !applebooks::defaults::APPLEBOOKS_NAMES.is_disjoint(&process_names)
 }
