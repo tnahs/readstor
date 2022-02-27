@@ -14,10 +14,6 @@ pub enum LibError {
     #[error("Apple Books {version} unsupported")]
     UnsupportedVersion { version: String },
 
-    /// TODO
-    #[error(transparent)]
-    GlobError(#[from] glob::PatternError),
-
     #[error(transparent)]
     InvalidTemplate(#[from] tera::Error),
 

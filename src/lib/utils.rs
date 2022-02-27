@@ -1,76 +1,14 @@
 use std::ffi::OsStr;
 use std::io;
-use std::ops::{Deref, DerefMut};
 use std::path::{Path, PathBuf};
-use std::time::UNIX_EPOCH;
 
-use chrono::{DateTime, Local, NaiveDateTime, Utc};
-use serde::Serialize;
+use chrono::Local;
+use deunicode::deunicode;
 
-#[allow(unused_imports)] // For docs.
-use super::models::data::Entry;
-#[allow(unused_imports)] // For docs.
-use super::templates::Templates;
+use crate::lib;
 
-/// Thin wrapper around `chrono`s `DateTime<Utc>` to allow for a `Default`
-/// implementation.
-///
-/// Why do we need a `Default` implementation? When a new template is added to
-/// the [`Templates`] registry it needs to be validates both for its syntax
-/// and for the fields that its variables reference. In order to achieve the
-/// latter, a dummy [`Entry`] struct---its `Default` implementation---is
-/// passed to validate the template's variables. Seeing as `DateTime` does not
-/// have a `Default` implementation, it was either we implementation a hand
-/// written `Default` of [`Entry`] which would include multiple nested
-/// structs or wrap `DateTime<Utc>` and provide a `Default` implementation.
-///
-/// See [`Templates::add()`] for more information.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize)]
-pub struct DateTimeUTC(DateTime<Utc>);
-
-impl Default for DateTimeUTC {
-    fn default() -> Self {
-        Self(DateTime::<Utc>::from(UNIX_EPOCH))
-    }
-}
-
-impl Deref for DateTimeUTC {
-    type Target = DateTime<Utc>;
-
-    fn deref(&self) -> &DateTime<Utc> {
-        &self.0
-    }
-}
-
-impl DerefMut for DateTimeUTC {
-    fn deref_mut(&mut self) -> &mut DateTime<Utc> {
-        &mut self.0
-    }
-}
-
-/// Converts a `Core Data` timestamp (f64) to `DateTime`.
-///
-/// A `Core Data` timestamp is the number of seconds (or nanoseconds) since
-/// midnight, January 1, 2001, GMT. The difference between a `Core Data`
-/// timestamp and a Unix timestamp (seconds since 1/1/1970) is
-/// 978307200 seconds.
-///
-/// <https://www.epochconverter.com/coredata>
-#[allow(clippy::cast_possible_truncation, clippy::cast_sign_loss)]
-impl From<f64> for DateTimeUTC {
-    fn from(f: f64) -> Self {
-        // Add the `Core Data` timestamp offset
-        let timestamp = f + 978_307_200_f64;
-
-        let seconds = timestamp.trunc() as i64;
-        let nanoseconds = timestamp.fract() * 1_000_000_000.0;
-        let datetime = NaiveDateTime::from_timestamp(seconds, nanoseconds as u32);
-
-        DateTimeUTC(DateTime::from_utc(datetime, Utc))
-    }
-}
-
-/// Helper function for [`walkdir`]. Filters out hidden/private directories.
+/// Helper function for `walkdir`. Filters out hidden/private directories e.g.
+/// `.hidden` or `_hidden`.
 #[must_use]
 pub fn entry_is_hidden(entry: &walkdir::DirEntry) -> bool {
     entry
@@ -167,8 +105,40 @@ where
     path.as_ref().file_stem().and_then(OsStr::to_str)
 }
 
-/// Returns today's date as a string.
+/// Returns today's date as a string using the `strftime` format.
+#[must_use]
+pub fn today() -> String {
+    Local::now().format(lib::defaults::DATE_FORMAT).to_string()
+}
+
+/// TODO Document
 #[must_use]
 pub fn today_format(format: &str) -> String {
     Local::now().format(format).to_string()
+}
+
+/// TODO Document
+#[must_use]
+pub fn to_safe_string(string: &str, allow: &[char]) -> String {
+    deunicode(string)
+        .chars()
+        .filter(|c| c.is_alphanumeric() || c == &' ' || allow.contains(c))
+        .collect()
+}
+
+/// TODO Document
+#[must_use]
+pub fn to_slug_string(string: &str, separator: char) -> String {
+    let slug = deunicode(string)
+        .trim()
+        .split(' ')
+        .filter(|s| !s.is_empty())
+        .collect::<Vec<&str>>()
+        .join(" ")
+        .to_lowercase()
+        .replace(' ', &separator.to_string());
+
+    slug.chars()
+        .filter(|c| c.is_alphanumeric() || c == &separator)
+        .collect()
 }

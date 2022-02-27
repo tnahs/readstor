@@ -2,7 +2,8 @@ use rusqlite::Row;
 use serde::Serialize;
 
 use crate::lib::applebooks::database::{ABDatabaseName, ABQuery};
-use crate::lib::utils::DateTimeUTC;
+
+use super::DateTimeUTC;
 
 #[derive(Debug, Default, Clone, Serialize)]
 pub struct Book {
@@ -26,9 +27,9 @@ impl ABQuery for Book {
 
     fn from_row(row: &Row<'_>) -> Self {
         // It's necessary to explicitly type all these variables as `rusqlite`
-        // needs the type information to convert the column value to `T`. If
-        // the types do not match `rusqlite` will return an `InvalidColumnType`
-        // when calling `get_unwrap`. Therefore it should be safe to call
+        // needs the type information to convert the column value to `T`. If the
+        // types do not match `rusqlite` will return an `InvalidColumnType` when
+        // calling `get_unwrap`. Therefore it should be safe to call
         // `get_unwrap` as we know both the types match and we can see the
         // column indices in the `query` method below.
 

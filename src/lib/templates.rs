@@ -2,59 +2,82 @@ use std::collections::HashMap;
 use std::fs;
 use std::path::{Path, PathBuf};
 
+use serde::Serialize;
 use serde_json::{self, Value};
 use tera::{Context, Tera};
 
+use crate::cli::config::{Config, RenderMode};
 use crate::lib;
 
-use super::models::data::Entry;
+use super::models::annotation::Annotation;
+use super::models::book::Book;
+use super::models::entry::Entry;
 use super::result::{LibError, LibResult};
 use super::utils;
 
 /// Provides a simple interface to add templates and render [`Entry`]s.
 #[derive(Debug)]
-pub struct Templates {
+pub struct Registry {
     /// Template registry containing all the parsed templates.
     registry: Tera,
 
     /// Stores the default template.
-    default: Template,
+    default_flat: Template,
+
+    /// Stores the default template.
+    default_split: Template,
 
     /// Stores a list of all [`Template`]s in the registry. See [`Template`]
-    /// and [`Templates::render()`] for more information.
+    /// and [`Registry::render()`] for more information.
     templates: Vec<Template>,
 }
 
-impl Default for Templates {
+impl Default for Registry {
     fn default() -> Self {
         let mut registry = Tera::default();
 
         registry.register_filter("join_paragraph", join_paragraph);
         registry
             .add_raw_template(
-                lib::defaults::DEFAULT_TEMPLATE_NAME,
-                lib::defaults::DEFAULT_TEMPLATE,
+                lib::defaults::DEFAULT_TEMPLATE_FLAT_NAME,
+                lib::defaults::DEFAULT_TEMPLATE_FLAT,
+            )
+            // Should be safe here to unwrap seeing as this is the default
+            // template and will be evaluated at compile-time.
+            .unwrap();
+        registry
+            .add_raw_template(
+                lib::defaults::DEFAULT_TEMPLATE_SPLIT_NAME,
+                lib::defaults::DEFAULT_TEMPLATE_SPLIT,
             )
             // Should be safe here to unwrap seeing as this is the default
             // template and will be evaluated at compile-time.
             .unwrap();
 
-        let default = Template {
+        let default_flat = Template {
             path: PathBuf::new(),
-            name: lib::defaults::DEFAULT_TEMPLATE_NAME.to_owned(),
-            stem: "default".to_owned(),
-            extension: "txt".to_owned(),
+            name: lib::defaults::DEFAULT_TEMPLATE_FLAT_NAME.to_owned(),
+            stem: "default-single".to_owned(),
+            extension: "md".to_owned(),
+        };
+
+        let default_split = Template {
+            path: PathBuf::new(),
+            name: lib::defaults::DEFAULT_TEMPLATE_SPLIT_NAME.to_owned(),
+            stem: "default-multi".to_owned(),
+            extension: "md".to_owned(),
         };
 
         Self {
             registry,
-            default,
+            default_flat,
+            default_split,
             templates: Vec::new(),
         }
     }
 }
 
-impl Templates {
+impl Registry {
     /// Adds a template to the registry.
     ///
     /// # Errors
@@ -62,14 +85,14 @@ impl Templates {
     /// Will return `Err` if the template contains either syntax errors or
     /// variables that reference non-existent fields in a [`Entry`].
     pub fn add(&mut self, template: Template) -> LibResult<()> {
-        // Attempt to add a new template to the registry. This will fail if
-        // the template has syntax errors.
+        // Attempt to add a new template to the registry. This will fail if the
+        // template has syntax errors.
         self.registry
             .add_template_file(&template.path, Some(&template.name))
             .map_err(LibError::InvalidTemplate)?;
 
-        // Run a test render of the new template using an dummy `Entry` to
-        // check that the template does not contain variables that reference
+        // Run a test render of the new template using an dummy `Entry` to check
+        // that the template does not contain variables that reference
         // non-existent fields in a `Entry`.
         self.registry
             .render(&template.name, &Context::from_serialize(Entry::default())?)
@@ -80,15 +103,48 @@ impl Templates {
         Ok(())
     }
 
-    /// Exports a [`Entry`] to disk with the following structure:
+    /// TODO Document
+    pub fn render(
+        &self,
+        config: &dyn Config,
+        entry: &Entry,
+        path: &Path,
+    ) -> LibResult<()> {
+        if self.templates.is_empty() {
+            match config.options().render_mode() {
+                RenderMode::Single => {
+                    self.render_flat(path, &self.default_flat, entry)?;
+                }
+                RenderMode::Multi => {
+                    self.render_split(path, &self.default_split, entry)?;
+                }
+            }
+        } else {
+            match config.options().render_mode() {
+                RenderMode::Single => {
+                    for template in &self.templates {
+                        self.render_flat(path, template, entry)?;
+                    }
+                }
+                RenderMode::Multi => {
+                    for template in &self.templates {
+                        self.render_split(path, template, entry)?;
+                    }
+                }
+            }
+        }
+
+        Ok(())
+    }
+
+    /// Renders an [`Entry`] to disk with the following structure:
     ///
     /// ```plaintext
     /// [path]
     ///  │
     ///  └─ [template-name]
-    ///      │
-    ///      ├─ Author - Title.ext
-    ///      ├─ Author - Title.ext
+    ///      ├─ [entry-name].[template-ext]
+    ///      ├─ [entry-name].[template-ext]
     ///      └─ ...
     /// ```
     ///
@@ -96,40 +152,81 @@ impl Templates {
     ///
     /// Will return `Err` if any IO errors are encountered.
     // TODO add `serde_json::Error` as possible error.
-    pub fn render(&self, entry: &Entry, path: &Path) -> LibResult<()> {
-        // TODO Document
-        if self.templates.is_empty() {
-            self.render_to_file(path, &self.default, entry)?;
-            return Ok(());
-        }
-
-        // TODO Document
-        for template in &self.templates {
-            self.render_to_file(path, template, entry)?;
-        }
-
-        Ok(())
-    }
-
-    /// TODO Document
-    fn render_to_file(
+    fn render_flat(
         &self,
         path: &Path,
         template: &Template,
         entry: &Entry,
     ) -> LibResult<()> {
         // -> [path]/[template-name]
-        let template_path = path.join(&template.stem);
+        let root = path.join(&template.stem);
 
-        std::fs::create_dir_all(&template_path)?;
+        std::fs::create_dir_all(&root)?;
 
-        let file_name = format!("{}.{}", entry.name(), template.extension);
-        let file_path = template_path.join(file_name);
-        let file = fs::File::create(&file_path)?;
+        let file = format!("{}.{}", entry.name(), template.extension);
+        let file = root.join(file);
+        let file = fs::File::create(&file)?;
+
+        let context = FlatContext {
+            book: &entry.book,
+            annotations: &entry.annotations,
+        };
 
         self.registry
-            .render_to(&template.name, &Context::from_serialize(entry)?, file)
+            .render_to(&template.name, &Context::from_serialize(context)?, file)
             .map_err(LibError::InvalidTemplate)?;
+
+        Ok(())
+    }
+
+    /// Renders an [`Entry`] to disk with the following structure:
+    ///
+    /// ```plaintext
+    /// [path]
+    ///  │
+    ///  └─ [template-name]
+    ///      │
+    ///      └─ [entry-name]
+    ///          ├─ [YYYY-MM-DD-HHMMSS]-[book-title].[template-ext]
+    ///          ├─ [YYYY-MM-DD-HHMMSS]-[book-title].[template-ext]
+    ///          └─ ...
+    /// ```
+    ///
+    /// # Errors
+    ///
+    /// Will return `Err` if any IO errors are encountered.
+    // TODO add `serde_json::Error` as possible error.
+    fn render_split(
+        &self,
+        path: &Path,
+        template: &Template,
+        entry: &Entry,
+    ) -> LibResult<()> {
+        // -> [path]/[template-name]/[entry-name]
+        let root = path.join(&template.stem).join(entry.name());
+
+        std::fs::create_dir_all(&root)?;
+
+        for annotation in &entry.annotations {
+            let date = annotation
+                .metadata
+                .created
+                .format(lib::defaults::DATE_FORMAT);
+            let name = utils::to_slug_string(&entry.book.title, '-');
+
+            let file = format!("{}-{}.{}", date, name, template.extension);
+            let file = root.join(file);
+            let file = fs::File::create(&file)?;
+
+            let context = SplitContext {
+                book: &entry.book,
+                annotation,
+            };
+
+            self.registry
+                .render_to(&template.name, &Context::from_serialize(context)?, file)
+                .map_err(LibError::InvalidTemplate)?;
+        }
 
         Ok(())
     }
@@ -141,7 +238,7 @@ impl Templates {
 /// template data from the registry and determine the path and file name of the
 /// rendered template.
 ///
-/// See [`Templates::render()`] for more information.
+/// See [`Registry::render()`] for more information.
 #[derive(Debug)]
 pub struct Template {
     /// The path to the template.
@@ -150,10 +247,10 @@ pub struct Template {
     /// The template's file stem e.g. `/path/to/default.md` -> `default.md`.
     ///
     /// This field is used to both to identify a template in the the
-    /// [`Templates`] `registry` and is the name given to the directory where
-    /// its respective template renders to.
+    /// [`Registry`] `registry` and is the name given to the directory where its
+    /// respective template renders to.
     ///
-    /// See [`Templates::render()`] for more information.
+    /// See [`Registry::render()`] for more information.
     pub name: String,
 
     /// The template's file name e.g. `/path/to/default.md` -> `default`.
@@ -211,6 +308,20 @@ where
             extension,
         }
     }
+}
+
+/// TODO Document
+#[derive(Serialize)]
+struct FlatContext<'a> {
+    book: &'a Book,
+    annotations: &'a Vec<Annotation>,
+}
+
+/// TODO Document
+#[derive(Serialize)]
+struct SplitContext<'a> {
+    book: &'a Book,
+    annotation: &'a Annotation,
 }
 
 /// Joins a list of paragraph blocks with double line-breaks.

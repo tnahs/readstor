@@ -7,7 +7,8 @@ use serde::Serialize;
 
 use crate::lib::applebooks::database::{ABDatabaseName, ABQuery};
 use crate::lib::parser;
-use crate::lib::utils::DateTimeUTC;
+
+use super::DateTimeUTC;
 
 /// Captures a `#tag`.
 static RE_TAG: Lazy<Regex> = Lazy::new(|| Regex::new(r"#[^\s#]+").unwrap());
@@ -22,7 +23,7 @@ pub struct Annotation {
 }
 
 impl Annotation {
-    /// Returns `Vec<String>` representing the a split and trimmed paragraph.
+    /// Returns `Vec<String>` representing a split and trimmed paragraph.
     fn process_body(body: &str) -> Vec<String> {
         body.lines()
             // Remove empty paragraphs.

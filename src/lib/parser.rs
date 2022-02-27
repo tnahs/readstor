@@ -55,8 +55,8 @@ static RE_SPACIAL_OFFSET: Lazy<Regex> =
 /// `epubcfi`.
 ///
 /// This is a super simple EPUB CFI parser with a focus on extracting location
-/// information. This result is stored inside an [`Annotation`] and used to
-/// sort itself from sibling [`Annotation`]s.
+/// information. This result is stored inside an [`Annotation`] and used to sort
+/// itself from sibling [`Annotation`]s.
 ///
 /// Examples:
 ///
@@ -118,8 +118,8 @@ pub fn parse_epubcfi(raw: &str) -> String {
     // -> C: /2/4!/6/44!/3
     location = RE_SPACIAL_OFFSET.replace_all(&location, "").into_owned();
 
-    // "EPUB CFIs allow the expression of simple ranges extending from a
-    // start location to an end location."
+    // "EPUB CFIs allow the expression of simple ranges extending from a start
+    // location to an end location."
     //
     // <https://w3c.github.io/epub-specs/epub33/epubcfi/#sec-ranges>
     //
@@ -127,8 +127,8 @@ pub fn parse_epubcfi(raw: &str) -> String {
     //
     //     epubcfi([parent-path],[range-start],[range-end])
     //
-    // We only care about the [parent-path] and [range-start] which gives
-    // us the absolute path to where an `Annotation` begins.
+    // We only care about the [parent-path] and [range-start] which gives us the
+    // absolute path to where an `Annotation` begins.
     let mut parts: Vec<&str> = location.split(',').collect();
     parts = match parts[..] {
         [parent_path, range_start, _] => {

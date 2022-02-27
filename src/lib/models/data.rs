@@ -1,19 +1,19 @@
 use std::collections::HashMap;
 use std::path::Path;
 
-use serde::Serialize;
-
 use crate::lib::applebooks::database::{ABDatabase, ABDatabaseName};
 use crate::lib::result::LibResult;
 #[allow(unused_imports)] // For docs.
-use crate::lib::templates::Templates;
+use crate::lib::templates::Registry;
 
 use super::annotation::Annotation;
 use super::book::Book;
+use super::entry::Entry;
 
 /// Defines the `Entries` type alias.
 ///
 /// A `Entries` is a `HashMap` composed of `key:value` pairs of `ID:Entry`.
+///
 /// For example:
 ///
 /// ```plaintext
@@ -25,8 +25,8 @@ use super::book::Book;
 /// ```
 ///
 /// The `ID` for each `Entry` is taken from its `Book`'s `BookMetadata::id`.
-/// field. See [`From<Book> for Entry`](struct@Entry#impl-From<Book>)
-/// for more information.
+/// field. See [`From<Book> for Entry`](struct@Entry#impl-From<Book>) for more
+/// information.
 type Entries = HashMap<String, Entry>;
 
 /// Defines a thin wrapper around the [`Entries`] type alias.
@@ -35,6 +35,7 @@ type Entries = HashMap<String, Entry>;
 /// provides a few specific convenience methods.
 ///
 /// The basic structure is as follows:
+///
 /// ```plaintext
 /// Data
 ///  │
@@ -80,9 +81,9 @@ impl Data {
             ABDatabaseName::Annotations.to_string()
         );
 
-        // `Entry`s are created from `Book`s. Note that `book.metadata.id`
-        // is set as the key for each entry into the `Data`. This is later used
-        // to compare with each `Annotation` to determine if the `Annotation`
+        // `Entry`s are created from `Book`s. Note that `book.metadata.id` is
+        // set as the key for each entry into the `Data`. This is later used to
+        // compare with each `Annotation` to determine if the `Annotation`
         // belongs to `Book` therefore its `Entry`.
         //
         // See https://stackoverflow.com/q/69274529/16968574
@@ -127,32 +128,5 @@ impl Data {
             .iter()
             .map(|(_, entry)| entry.annotations.len())
             .sum()
-    }
-}
-
-/// A container representing a [`Book`] and its respective [`Annotation`]s.
-#[derive(Debug, Default, Clone, Serialize)]
-pub struct Entry {
-    pub book: Book,
-    pub annotations: Vec<Annotation>,
-}
-
-impl Entry {
-    /// Formats a [`Entry`] into a friendly-human-readable string. Primarily
-    /// used for naming files or directories for its respective [`Book`].
-    #[must_use]
-    pub fn name(&self) -> String {
-        format!("{} - {}", self.book.author, self.book.title)
-    }
-}
-
-impl From<Book> for Entry {
-    /// Constructs an instance of [`Entry`] via a [`Book`] object. This is
-    /// the primary way [`Entry`]s are created.
-    fn from(book: Book) -> Self {
-        Self {
-            book,
-            annotations: Vec::new(),
-        }
     }
 }

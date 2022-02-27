@@ -12,6 +12,8 @@
 #![allow(
     clippy::single_match_else,
     clippy::module_name_repetitions,
+    clippy::missing_errors_doc, // TEMP
+    clippy::missing_panics_doc, // TEMP
     rustdoc::private_intra_doc_links
 )]
 
@@ -35,7 +37,7 @@ fn main() -> AppResult<()> {
 
     log::debug!("{:#?}.", &args);
 
-    if !args.force && applebooks_is_running() {
+    if !args.options.force && applebooks_is_running() {
         println!(
             "Apple Books is currently running. \
             To ignore this, use the `-f, --force` flag."
@@ -43,17 +45,16 @@ fn main() -> AppResult<()> {
         return Ok(());
     }
 
-    // Selects the appropriate Config depending on the environment.
-    // In a development environment this sets the databases to a local mock
-    // database and sets the location of the output directory to a temp
-    // directory on disk.
+    // Selects the appropriate Config depending on the environment. In a
+    // development environment this sets the `databases` to local mock databases
+    // and the `output` to a temp directory on disk.
     let config: Box<dyn Config> = if is_development_env() {
-        Box::new(DevConfig::default())
+        Box::new(DevConfig::from(&args.options))
     } else {
-        Box::new(AppConfig::new(&args))
+        Box::new(AppConfig::from(&args.options))
     };
 
     log::debug!("{:#?}.", &config);
 
-    App::new(config).run(&args.command)
+    App::new(config).run(args.command)
 }

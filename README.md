@@ -69,201 +69,90 @@ _Note that using iCloud to "Sync collections, bookmarks, and highlights across d
 ### `export`
 
 ```plaintext
-[output] ── [default: ~/.readstor]
+[output]
  │
- └─ data
-     │
-     ├─ Author - Title
-     │   │
-     │   ├─ data
-     │   │   ├─ book.json
-     │   │   └─ annotations.json
-     │   │
-     │   └─ resources
-     │       ├─ .gitkeep
-     │       ├─ Author - Title.epub   ─┐
-     │       ├─ cover.jpeg             ├─ These are not exported.
-     │       └─ ...                   ─┘
-     │
-     ├─ Author - Title
-     │   └─ ...
-     │
-     └─ ...
+ ├─ Author - Title
+ │   │
+ │   ├─ data
+ │   │   ├─ book.json
+ │   │   └─ annotations.json
+ │   │
+ │   └─ resources
+ │       ├─ .gitkeep
+ │       ├─ Author - Title.epub   ─┐
+ │       ├─ cover.jpeg             ├─ These are not exported.
+ │       └─ ...                   ─┘
+ │
+ ├─ Author - Title
+ │   └─ ...
+ └─ ...
 ```
 
-### `render`
+### `render` using `single` Render Mode
 
 ```plaintext
-[output] ── [default: ~/.readstor]
+[output]
  │
- └─ renders
-     │
-     ├─ default ── (omitted if a custom template is used)
-     │   ├─ Author - Title.[template-ext]
-     │   ├─ Author - Title.txt
-     │   └─ ...
-     │
-     ├─ [template-name]
-     │   ├─ Author - Title.[template-ext]
-     │   ├─ Author - Title.txt
-     │   └─ ...
-     │   
-     └─ ...
+ ├─ default ── (omitted if a custom template is used)
+ │   ├─ Author - Title.[template-ext]
+ │   ├─ Author - Title.[template-ext]
+ │   └─ ...
+ │
+ ├─ [template-name]
+ │   ├─ Author - Title.[template-ext]
+ │   ├─ Author - Title.[template-ext]
+ │   └─ ...
+ │ 
+ ├─ Author - Title
+ │   └─ ...
+ └─ ...
+```
+
+### `render` using `multi` Render Mode
+
+```plaintext
+[output]
+ │
+ ├─ default ── (omitted if a custom template is used)
+ │   │
+ │   ├─ Author - Title
+ │   │   ├─ [YYYY-MM-DD-HHMMSS]-[book-title].[template-ext]
+ │   │   ├─ [YYYY-MM-DD-HHMMSS]-[book-title].[template-ext]
+ │   │   └─ ...
+ │   │ 
+ │   ├─ Author - Title
+ │   │   └─ ...
+ │   └─ ...
+ │
+ ├─ [template-name]
+ │   │
+ │   ├─ Author - Title
+ │   │   ├─ [YYYY-MM-DD-HHMMSS]-[book-title].[template-ext]
+ │   │   ├─ [YYYY-MM-DD-HHMMSS]-[book-title].[template-ext]
+ │   │   └─ ...
+ │   │ 
+ │   ├─ Author - Title
+ │   │   └─ ...
+ │   └─ ...
+ └─ ...
 ```
 
 ### `backup`
 
 ```plaintext
-[output] ── [default: ~/.readstor]
+[output]
  │
- └─ backups
-     │
-     ├─ 2021-01-01-000000 v3.2-2217 ── [YYYY-MM-DD-HHMMSS VERSION]
-     │   │
-     │   ├─ AEAnnotation
-     │   │   ├─ AEAnnotation*.sqlite
-     │   │   └─ ...
-     │   │
-     │   └─ BKLibrary
-     │       ├─ BKLibrary*.sqlite
-     │       └─ ...
-     │
-     │─ 2021-01-02-000000 v3.2-2217
-     │   └─ ...
-     │
-     └─ ...
-```
-
-## 1.x Target
-
-``` plaintext
-USAGE:
-    readstor [OPTIONS] <SUBCOMMAND>
-
-OPTIONS:
-    -o, --output <OUTPUT>    Sets the OUTPUT path [default: ~/.readstor]
-    -f, --force              Runs even if Apple Books is open
-    -h, --help               Print help information
-    -V, --version            Print version information
-
-SUBCOMMANDS:
-    export            Exports Apple Books' data to OUTPUT
-    render            Renders annotations via a template to OUTPUT
-    backup            Backs-up Apple Books' databases to OUTPUT
-    help              Print this message or the help of the given subcommand(s)
-    dump              Runs 'save', 'export' and 'backup'
-    save              Saves Apple Books' database data to OUTPUT
-    export            Exports annotations/books via templates to OUTPUT
-    backup            Backs-up Apple Books' databases to OUTPUT
-    sync              Adds new annotations/books from AppleBooks to the USER-DATABASE
-    add               Adds an annotation/book to the USER-DATABASE
-    search <QUERY>    Searches the USER-DATABASE
-    random            Returns a random annotation from the USER-DATABASE
-    check             Prompts to delete unintentional annotations from the USER-DATABASE
-    info              Prints ReadStor info
-```
-
-```toml
-# `~/.readstor/config.toml`
-
-output = "./output"
-templates = "./templates"
-user-database = "./database.sqlite"
-backup = true
-extract-tags = true
-```
-
-## Creating a Custom Template
-
-### Syntax
-
-The templating syntax is based on Jinja2 and Django templates. In a nutshell, values are accessed by placing an attribute between `{{ }}` e.g. `{{ book.title }}`. [Filters](https://tera.netlify.app/docs/#filters) can manipulate the accessed values e.g. `{{ name | capitalize }}`. And [statements](https://tera.netlify.app/docs/#control-structures) placed between `{% %}` e.g. `{% if my_var %} ... {% else %} ... {% endif %}`, can be used for control flow. For more information, see the [Tera](https://tera.netlify.app/docs/#templates) documentation.
-
-### Attributes
-
-Every template has access to two object: the current book as `book` and its annotations as `annotations`.
-
-#### Book
-
-```plaintext
-book {
-    title
-    author
-    metadata {
-        id
-        last_opened
-    }
-}
-```
-
-#### Book Attributes
-
-|          Attribute          |          Description          |    Type    |
-| --------------------------- | ----------------------------- | ---------- |
-| `book.title`                | title of the book             | `string`   |
-| `book.author`               | author of the book            | `string`   |
-| `book.metadata.id`          | book's unique identifier      | `string`   |
-| `book.metadata.last_opened` | date the book was last opened | `datetime` |
-
-#### Book Example
-
-Here the [`date`](https://tera.netlify.app/docs/#date) filter is used to format a `datetime` object into a human-readable date.
-
-```jinja
-title: {{ book.title }}
-author: {{ book.author }}
-last-opened: {{ book.metadata.last_opened | date }}
-```
-
-### Annotations
-
-```plaintext
-annotations [
-    annotation {
-        body
-        style
-        notes
-        tags
-        metadata {
-            id
-            book_id
-            created
-            modified
-            location
-            epubcfi
-        }
-    },
-    ...
-]
-```
-
-#### Annotations Attributes
-
-|           Attribute            |               Description                |      Type      |
-| ------------------------------ | ---------------------------------------- | -------------- |
-| `annotations`                  | book's annotations                       | `[annotation]` |
-| `annotation.body`              | annotation's body                        | `[string]`     |
-| `annotation.style`             | annotation's style/color e.g. 'yellow'   | `string`       |
-| `annotation.notes`             | annotation's notes                       | `string`       |
-| `annotation.tags`              | annotation's tags                        | `[string]`     |
-| `annotation.metadata.id`       | annotation's unique identifier           | `string`       |
-| `annotation.metadata.book_id`  | book's unique identifier                 | `string`       |
-| `annotation.metadata.created`  | date the annotation was created          | `datetime`     |
-| `annotation.metadata.modified` | date the annotation was modified         | `datetime`     |
-| `annotation.metadata.location` | `epubcfi` parsed  into a location string | `string`       |
-| `annotation.metadata.epubcfi`  | `epubcfi`                                | `string`       |
-
-#### Annotation Example
-
-Here the `join_paragraph` filter concatenates a list of strings with line-breaks and the [`join`](https://tera.netlify.app/docs/#join) filter does the same but with a specific separator passed to the `sep` keyword. This example also shows how to loop over the `annotations` using the `{% for %} ... {% endfor %}` statement.
-
-```jinja
-{% for annotation in annotations %}
-
-{{ annotation.body | join_paragraph }}
-
-notes: {{ annotation.notes }}
-tags: {{ annotation.tags | join(sep=" ") }}
-
-{% endfor %}
+ ├─ 2021-01-01-000000-v3.2-2217 ── [YYYY-MM-DD-HHMMSS-VERSION]
+ │   │
+ │   ├─ AEAnnotation
+ │   │   ├─ AEAnnotation*.sqlite
+ │   │   └─ ...
+ │   │
+ │   └─ BKLibrary
+ │       ├─ BKLibrary*.sqlite
+ │       └─ ...
+ │
+ │─ 2021-01-02-000000-v3.2-2217
+ │   └─ ...
+ └─ ...
 ```
