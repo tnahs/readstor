@@ -1,6 +1,7 @@
 # Backup/Restore Apple Books' Library
 
-> This guide assumes that Apple Books syncing in iCloud Drive is disabled and the library exists on the local disk. For information on how to do this see [Disabling Apple Books iCloud Drive](#disabling-apple-books-icloud-drive)
+This guide assumes that Apple Books syncing in iCloud Drive is disabled and the
+library exists on the local disk.
 
 ## What to Archive
 
@@ -8,15 +9,15 @@ Apple Books stores the bulk of its data in two locations:
 
 1. The location of EPUBs, PDFs, Audiobooks, etc.:
 
-    ```plaintext
-    ~/Library/Containers/com.apple.BKAgentService
-    ```
+   ```plaintext
+   ~/Library/Containers/com.apple.BKAgentService
+   ```
 
 2. The location of the library's databases: `BKLibrary***.sqlite` and `AEAnnotation***.sqlite`:
 
-    ```plaintext
-    ~/Library/Containers/com.apple.iBooksX
-    ```
+   ```plaintext
+   ~/Library/Containers/com.apple.iBooksX
+   ```
 
 However, only archiving and restoring these directories might miss some of the metadata.
 
@@ -48,7 +49,8 @@ $ find ~/Library/Containers -type d -name "*BK*"
 ./com.apple.iBooksX/Data/Documents/BKBookstore
 ```
 
-So it's good to assume any directory with the string `Books` or `BK` is important. Therefore these two globs will be archived:
+So it's good to assume any directory with the string `Books` or `BK` is
+important. Therefore these two globs will be archived:
 
 ```plaintext
 ~/Library/Containers/com.apple.BK*
@@ -57,35 +59,17 @@ So it's good to assume any directory with the string `Books` or `BK` is importan
 
 ## Archiving The Library
 
-Run the following `tar` command:
+Run the following `rsync` command:
 
 ```console
-$ tar \
-    --create \
-    --gzip \
-    --file=$PATH_TO_ARCHIVE \
-    --directory=$HOME/Library/Containers \
-    com.apple.BK* \
-    com.apple.iBooksX*
-```
-
-> "Why `tar`?"
->
-> After some research, it was the only way to archive a full directory while preserving symlinks and xattrs (Extended Attributes). It's important the archive maintain as much metadata as possible.
-
-This will create an archive relative to `~/Library/Containers` i.e.:
-
-```plaintext
-[ARCHIVE_NAME]
-├── com.apple.BKAgentService
-│   ├── ...
-│   └── ...
-├── com.apple.iBooksX
-│   ├── ...
-│   └── ...
-└── com.apple.*
-    ├── ...
-    └── ...
+$ rsync \
+    --verbose \
+    --progress \
+    --archive \
+    --extended-attributes \
+    $HOME/Library/Containers/com.apple.BK* \
+    $HOME/Library/Containers/com.apple.iBooks* \
+    [PATH_TO_ARCHIVE]
 ```
 
 ## Restoring The Library
@@ -98,7 +82,7 @@ $ osascript -e 'tell application "Books" to quit'
 
 Delete the current library using the same globs.
 
-<!-- TODO Add note about `Group Containers` -->
+<!-- TODO: Add note about `Group Containers` -->
 
 ```console
 $ rm -rf $HOME/Library/Containers/com.apple.BK*
@@ -108,20 +92,31 @@ $ rm -rf $HOME/Library/Group\ Containers/group.com.apple.iBooks
 
 Extract the archive directly into `~/Library/Containers`.
 
+The trailing slash after `[PATH_TO_ARCHIVE]` here is important. It tells `rsync`
+to move the _contents_ of this directory into another. Otherwise it would move
+the directory as a whole.
+
 ```console
-$ tar \
-    --extract \
-    --file=$PATH_TO_ARCHIVE \
-    --directory=$HOME/Library/Containers
+$ rsync \
+    --verbose \
+    --progress \
+    --archive \
+    [PATH_TO_ARCHIVE]/ \
+    $HOME/Library/Containers/
 ```
 
 That's it! At this point the library should be fully restored.
 
 ## Important Note
 
-> This method will **only** work if the path to the user's home folder *does not change*. Doing a few quick searches through the Apple Books directories shows that the path to the user's home folder has been hard-coded. This is most evident in the `BKLibrary-***.sqlite` file which contains absolute paths to library files.
->
-> If the username *must* be changed, a search and replace can be attempted. Whether this will work or not is unconfirmed as of 2020-12-30.
+This method will work **only** if the path to the user's home folder _has not
+changed_. Doing a few quick searches through the Apple Books directories shows
+that the path to the user's home folder has been hard-coded. This is most
+evident in the `BKLibrary-***.sqlite` file which contains absolute paths to
+library files.
+
+If the username _must_ be changed, a search and replace can be attempted.
+Whether this will work or not is unconfirmed.
 
 ```console
 $ find ~/Library/Containers/com.apple.BKAgentService -type f \
@@ -149,21 +144,3 @@ $ find ~/Library/Containers/com.apple.iBooksX* -type f \
 .../com.apple.iBooksX.SharingExtension/.com.apple.containermanagerd.metadata.plist
 .../com.apple.iBooksX.SharingExtension/Container.plist
 ```
-
-## Disabling Apple Books iCloud Drive
-
-### Disable Sync in Apple Books
-
-- In Apple Books
-    - Go to `Books` > `Preferences...`
-        - In the `General` tab
-            - Un-check `Sync collections, bookmarks, and highlights across devices`
-
-### Disable and Clear iCloud Drive
-
-- `System Preferences` > `Apple ID`
-    - In the `iCloud` tab
-         1. Un-check `iCloud Drive`
-         2. Click `Manage...` at the bottom
-            1. Select `Apple Books`
-            2. Click `Delete all Files...` then `Delete`

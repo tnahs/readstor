@@ -1,10 +1,12 @@
+//! Defines the [`Data`] struct. A type that compiles and stores [`Entry`]s.
+
 use std::collections::HashMap;
 use std::path::Path;
 
 use crate::lib::applebooks::database::{ABDatabase, ABDatabaseName};
 use crate::lib::result::LibResult;
 #[allow(unused_imports)] // For docs.
-use crate::lib::templates::Registry;
+use crate::lib::templates::TemplateManager;
 
 use super::annotation::Annotation;
 use super::book::Book;
@@ -53,13 +55,13 @@ type Entries = HashMap<String, Entry>;
 pub struct Data(Entries);
 
 impl Data {
-    /// TODO Document
+    /// Returns an iterator of all [`Entry`]s.
     #[must_use]
     pub fn entries(&self) -> impl IntoIterator<Item = &Entry> {
         self.0.values()
     }
 
-    /// Builds [`Entries`] from the Apple Books database.
+    /// Builds [`Entry`]s from the Apple Books databases.
     ///
     /// # Errors
     ///

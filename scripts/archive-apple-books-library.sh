@@ -6,15 +6,16 @@ function quit_applebooks {
     osascript -e 'tell application "Books" to quit'
 }
 
+
 function archive_library {
-    echo "Archiving Apple Books library..."
-    tar \
-        --create \
-        --gzip \
-        --file="$1" \
-        --directory="$HOME/Library/Containers" \
-        "com.apple.BK*" \
-        "com.apple.iBooksX*"
+    rsync \
+        --verbose \
+        --progress \
+        --archive \
+        --extended-attributes \
+        $HOME/Library/Containers/com.apple.BK* \
+        $HOME/Library/Containers/com.apple.iBooks* \
+        "$1"
 }
 
 

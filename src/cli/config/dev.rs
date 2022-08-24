@@ -4,15 +4,14 @@ use once_cell::sync::Lazy;
 
 use crate::cli;
 use crate::cli::args::ArgOptions;
-use crate::lib::utils;
 
-use super::{Config, ConfigOptions, RenderMode};
+use super::{Config, ConfigOptions};
 
-/// TODO Document
+/// TODO: Document
 pub static DEV_DATABASES: Lazy<PathBuf> =
     Lazy::new(|| cli::defaults::MOCK_DATABASES.join("books-annotated"));
 
-/// TODO Document
+/// TODO: Document
 /// Returns a path to a temp directory to use for reading and writing data
 /// during testing.
 ///
@@ -48,38 +47,26 @@ impl Config for DevConfig {
     }
 }
 
-impl From<&ArgOptions> for DevConfig {
-    fn from(options: &ArgOptions) -> Self {
+impl From<ArgOptions> for DevConfig {
+    fn from(options: ArgOptions) -> Self {
         let databases = options
             .databases
-            .clone()
             .unwrap_or_else(|| DEV_DATABASES.to_owned());
 
-        let output = options
-            .output
-            .clone()
-            .unwrap_or_else(|| DEV_OUTPUT.to_owned());
-
-        let templates = options
-            .templates
-            .clone()
-            .map_or_else(Vec::new, |path| utils::iter_dir(&path).collect());
-
-        let render_mode = options.render_mode.unwrap_or(RenderMode::Single);
+        let output = options.output.unwrap_or_else(|| DEV_OUTPUT.to_owned());
 
         Self {
             options: ConfigOptions {
                 databases,
                 output,
-                templates,
-                render_mode,
+                templates: options.templates,
                 is_quiet: options.is_quiet,
             },
         }
     }
 }
 
-/// TODO Document
+/// TODO: Document
 pub fn is_development_env() -> bool {
     match std::env::var_os(cli::defaults::READSTOR_DEV) {
         // This ensures that if the variable exists but is an empty value, the

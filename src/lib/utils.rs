@@ -1,3 +1,5 @@
+//! Defines utilities for working with this library.
+
 use std::ffi::OsStr;
 use std::io;
 use std::path::{Path, PathBuf};
@@ -17,26 +19,31 @@ pub fn entry_is_hidden(entry: &walkdir::DirEntry) -> bool {
         .map_or(false, |s| !s.starts_with(|c| c == '_' || c == '.'))
 }
 
-/// Returns an iterator over all the directories in a path without recursing.
+/// Returns an iterator over all the files one layer deep in a directory. This includes all the
+/// files inside the directoy and all the files inside any directories within this first layer.
 ///
 /// # Arguments
 ///
-/// * `path` - The path to a directory to iterate.
-pub fn iter_dir<P>(path: &P) -> impl Iterator<Item = PathBuf>
+/// * `path` - A path to a directory to iterate.
+pub fn iter_dir_shallow<P>(path: P) -> impl Iterator<Item = PathBuf>
 where
     P: AsRef<Path>,
 {
     walkdir::WalkDir::new(path)
         .min_depth(1)
-        .max_depth(1)
         .into_iter()
-        .filter_entry(entry_is_hidden)
+        .filter_entry(entry_is_hidden) // Ignore hidden directories/files.
         .filter_map(std::result::Result::ok)
-        .filter(|e| e.path().is_dir())
+        .filter(|e| !e.path().is_dir()) // Ignore directories.
         .map(|e| e.path().to_owned())
 }
 
-/// Recursively copies all files in a directory.
+/// Recursively copies all files from one directory into another.
+///
+/// # Arguments
+///
+/// * `source` - The source directory.
+/// * `destination` - The destination directory.
 ///
 /// # Errors
 ///
@@ -74,6 +81,10 @@ where
 
 /// Returns the file extension from a path.
 ///
+/// # Arguments
+///
+/// * `path` - The path to extract the file extension from.
+///
 /// Returns `None` if the `source` path terminates in `..` or is `/`.
 #[must_use]
 pub fn get_file_extension<P>(path: &P) -> Option<&str>
@@ -84,6 +95,10 @@ where
 }
 
 /// Returns the file name from a path.
+///
+/// # Arguments
+///
+/// * `path` - The path to extract the file name from.
 ///
 /// Returns `None` if the `source` path terminates in `..` or is `/`.
 #[must_use]
@@ -96,6 +111,10 @@ where
 
 /// Returns the file stem of a path.
 ///
+/// # Arguments
+///
+/// * `path` - The path to extract the file stem from.
+///
 /// Returns `None` if the `source` path terminates in `..` or is `/`.
 #[must_use]
 pub fn get_file_stem<P>(path: &P) -> Option<&str>
@@ -105,19 +124,28 @@ where
     path.as_ref().file_stem().and_then(OsStr::to_str)
 }
 
-/// Returns today's date as a string using the `strftime` format.
+/// Returns today's date as a string using the default `strftime` format.
 #[must_use]
 pub fn today() -> String {
     Local::now().format(lib::defaults::DATE_FORMAT).to_string()
 }
 
-/// TODO Document
+/// Returns today's date as a string using a custom `strftime` format.
+///
+/// # Arguments
+///
+/// * `format` - An `strftime` format string.
 #[must_use]
 pub fn today_format(format: &str) -> String {
     Local::now().format(format).to_string()
 }
 
-/// TODO Document
+/// Converts a string to alphanumeric ASCII.
+///
+/// # Arguments
+///
+/// * `string` - The string to convert.
+/// * `allow` - List of allowed non-alphanumeric characters.
 #[must_use]
 pub fn to_safe_string(string: &str, allow: &[char]) -> String {
     deunicode(string)
@@ -126,9 +154,14 @@ pub fn to_safe_string(string: &str, allow: &[char]) -> String {
         .collect()
 }
 
-/// TODO Document
+/// Slugifies a string.
+///
+/// # Arguments
+///
+/// * `string` - The string to slugify.
+/// * `delimeter` - Allow list for non-alphanumeric characters.
 #[must_use]
-pub fn to_slug_string(string: &str, separator: char) -> String {
+pub fn to_slug_string(string: &str, delimiter: char) -> String {
     let slug = deunicode(string)
         .trim()
         .split(' ')
@@ -136,9 +169,9 @@ pub fn to_slug_string(string: &str, separator: char) -> String {
         .collect::<Vec<&str>>()
         .join(" ")
         .to_lowercase()
-        .replace(' ', &separator.to_string());
+        .replace(' ', &delimiter.to_string());
 
     slug.chars()
-        .filter(|c| c.is_alphanumeric() || c == &separator)
+        .filter(|c| c.is_alphanumeric() || c == &delimiter)
         .collect()
 }

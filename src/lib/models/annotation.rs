@@ -1,3 +1,5 @@
+//! Defines the [`Annotation`] struct and its trait implementations.
+
 use std::cmp::Ordering;
 
 use once_cell::sync::Lazy;
@@ -5,24 +7,44 @@ use regex::Regex;
 use rusqlite::Row;
 use serde::Serialize;
 
+use crate::lib;
 use crate::lib::applebooks::database::{ABDatabaseName, ABQuery};
 use crate::lib::parser;
 
-use super::DateTimeUTC;
+use super::datetime::DateTimeUtc;
 
 /// Captures a `#tag`.
 static RE_TAG: Lazy<Regex> = Lazy::new(|| Regex::new(r"#[^\s#]+").unwrap());
 
+/// A type representing an annotation and its metadata.
 #[derive(Debug, Default, Clone, Eq, Serialize)]
 pub struct Annotation {
+    /// The body of the annotation.
     pub body: Vec<String>,
+
+    /// The annotation's highlight style. This could `green`, `blue`, `yellow`, `pink` `purple` or `underline`.
     pub style: String,
+
+    /// The annotation's notes.
     pub notes: String,
+
+    /// The annotation's tags.
     pub tags: Vec<String>,
+
+    /// The annotation's metadata.
     pub metadata: AnnotationMetadata,
 }
 
 impl Annotation {
+    /// Returns the creation date formatted to `YYYY-MM-DD-HHMMSS` i.e. 1970-01-01-120000.
+    #[must_use]
+    pub fn date_created_pretty(&self) -> String {
+        self.metadata
+            .created
+            .format(lib::defaults::DATE_FORMAT)
+            .to_string()
+    }
+
     /// Returns `Vec<String>` representing a split and trimmed paragraph.
     fn process_body(body: &str) -> Vec<String> {
         body.lines()
@@ -64,8 +86,8 @@ impl Annotation {
             .collect()
     }
 
-    /// Returns a style/color string from Apple Books' id representation.
-    fn style_from_id(int: u8) -> String {
+    /// Returns a style/color string from Apple Books' integer representation.
+    fn int_to_style(int: u8) -> String {
         let style = match int {
             0 => "underline",
             1 => "green",
@@ -115,7 +137,7 @@ impl ABQuery for Annotation {
         let epubcfi: String = row.get_unwrap(7);
 
         let body = Self::process_body(&body);
-        let style = Self::style_from_id(style);
+        let style = Self::int_to_style(style);
         let notes = Self::process_notes(&r_notes);
         let tags = Self::process_tags(&r_notes);
         let location = parser::parse_epubcfi(&epubcfi);
@@ -155,14 +177,26 @@ impl PartialEq for Annotation {
     }
 }
 
-/// Represents the data that is not directly editable by the user.
+/// A type representing an annotation's metadata i.e. the data that is not directly editable by the user.
 #[derive(Debug, Default, Clone, Eq, Serialize)]
 pub struct AnnotationMetadata {
+    /// The annotation's unique id.
     pub id: String,
+
+    /// The book id this annotation belongs to.
     pub book_id: String,
-    pub created: DateTimeUTC,
-    pub modified: DateTimeUTC,
+
+    /// The date the annotation was created.
+    pub created: DateTimeUtc,
+
+    /// The date the annotation was last modified.
+    pub modified: DateTimeUtc,
+
+    /// A location string used for sorting annotations into their order of appearance inside their
+    /// respective book. This string is generated from the annotation's `epubcfi`.
     pub location: String,
+
+    /// The annotation's raw `epubcfi`.
     pub epubcfi: String,
 }
 
@@ -189,7 +223,7 @@ mod test_annotations {
 
     use super::*;
 
-    /// TODO Base function to start testing annotation order using `<` and `>`.
+    /// TODO: Base function to start testing annotation order using `<` and `>`.
     #[test]
     fn test_cmp_annotations() {
         let mut a1 = Annotation::default();

@@ -1,21 +1,20 @@
+//! ``ReadStor`` is a simple CLI for exporting user-generated data from Apple Books. The goal of this
+//! project is to facilitate data-migration from Apple Books to any other platform. Currently Apple
+//! Books provides no simple way to do this. Exporting is possible but not ideal and often times
+//! truncates long annotations.
+
 #![warn(
     clippy::all,
     clippy::pedantic,
     future_incompatible,
     missing_copy_implementations,
     missing_debug_implementations,
-    // missing_docs, // TEMP
+    missing_docs,
     rust_2018_idioms,
     rust_2018_compatibility,
-    rust_2021_compatibility,
+    rust_2021_compatibility
 )]
-#![allow(
-    clippy::single_match_else,
-    clippy::module_name_repetitions,
-    clippy::missing_errors_doc, // TEMP
-    clippy::missing_panics_doc, // TEMP
-    rustdoc::private_intra_doc_links
-)]
+#![allow(clippy::single_match_else, clippy::module_name_repetitions)]
 
 mod cli;
 pub mod lib;
@@ -47,11 +46,14 @@ fn main() -> AppResult<()> {
 
     // Selects the appropriate Config depending on the environment. In a
     // development environment this sets the `databases` to local mock databases
-    // and the `output` to a temp directory on disk.
+    // directory and the `output` to a temp directory on disk.
+    //
+    // Note that the appropriate environment variable to signal a development env
+    // should be set in the `.cargo/config.toml` file.
     let config: Box<dyn Config> = if is_development_env() {
-        Box::new(DevConfig::from(&args.options))
+        Box::new(DevConfig::from(args.options))
     } else {
-        Box::new(AppConfig::from(&args.options))
+        Box::new(AppConfig::from(args.options))
     };
 
     log::debug!("{:#?}.", &config);

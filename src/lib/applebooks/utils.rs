@@ -1,3 +1,5 @@
+//! Defines utilities for working with Apple Books.
+
 use std::collections::HashSet;
 use std::path::PathBuf;
 

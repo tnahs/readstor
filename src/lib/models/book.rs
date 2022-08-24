@@ -1,14 +1,22 @@
+//! Defines the [`Book`] struct and its trait implementations.
+
 use rusqlite::Row;
 use serde::Serialize;
 
 use crate::lib::applebooks::database::{ABDatabaseName, ABQuery};
 
-use super::DateTimeUTC;
+use super::datetime::DateTimeUtc;
 
+/// A type represening a book and its metadata.
 #[derive(Debug, Default, Clone, Serialize)]
 pub struct Book {
+    /// The title of the book.
     pub title: String,
+
+    /// The author of the book.
     pub author: String,
+
+    /// The book's metadata.
     pub metadata: BookMetadata,
 }
 
@@ -46,9 +54,12 @@ impl ABQuery for Book {
     }
 }
 
-/// Represents the data that is not directly editable by the user.
+/// A type representing a book's metadata.
 #[derive(Debug, Default, Clone, Serialize)]
 pub struct BookMetadata {
+    /// The book's unique id.
     pub id: String,
-    pub last_opened: DateTimeUTC,
+
+    /// The date the book was last opened.
+    pub last_opened: DateTimeUtc,
 }

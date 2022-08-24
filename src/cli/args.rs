@@ -3,11 +3,14 @@ use std::result::Result;
 
 use clap::{AppSettings, Parser, Subcommand};
 
-use super::config::RenderMode;
-
-// NOTE Global options will eventually be settable from a config file.
 #[derive(Debug, Parser)]
-#[clap(author, version, about, setting(AppSettings::DeriveDisplayOrder))]
+#[clap(
+    author,
+    version,
+    about,
+    setting(AppSettings::DeriveDisplayOrder),
+    after_help = super::defaults::CLI_HELP_TEXT
+)]
 pub struct Args {
     #[clap(flatten)]
     pub options: ArgOptions,
@@ -18,7 +21,7 @@ pub struct Args {
 
 #[derive(Debug, Parser)]
 pub struct ArgOptions {
-    /// TODO Document
+    /// Sets a custom databases directory
     #[clap(
             short,
             long,
@@ -27,7 +30,7 @@ pub struct ArgOptions {
         )]
     pub databases: Option<PathBuf>,
 
-    /// Sets the OUTPUT path [default: ~/.readstor]
+    /// Sets the OUTPUT directory [default: ~/.readstor]
     #[clap(
             short,
             long,
@@ -44,11 +47,6 @@ pub struct ArgOptions {
             parse(try_from_str = validate_path_exists),
         )]
     pub templates: Option<PathBuf>,
-
-    // TODO Can we add extra help text using `clap`?
-    /// Sets the template mode
-    #[clap(arg_enum, short = 'm', long, global = true)]
-    pub render_mode: Option<RenderMode>,
 
     /// Runs even if Apple Books is open
     #[clap(short, long, global = true)]
@@ -72,7 +70,6 @@ pub enum ArgCommand {
     Backup,
 }
 
-/// TODO Document
 pub fn validate_path_exists(value: &str) -> Result<PathBuf, String> {
     let path = PathBuf::from(value);
 

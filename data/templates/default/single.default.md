@@ -1,7 +1,7 @@
 ---
-title: {{ book.title }}
-author: {{ book.author }}
-last-opened: {{ book.metadata.last_opened | date(format="%Y-%m-%dT%H:%M") }}
+title: { { book.title } }
+author: { { book.author } }
+last-opened: { { book.metadata.last_opened | date(format="%Y-%m-%dT%H:%M") } }
 ---
 
 # [[{{ book.title }}]] - [[{{ book.author }}]]

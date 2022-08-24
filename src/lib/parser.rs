@@ -1,3 +1,6 @@
+//! Defines a single function [`parse_epubcfi`] used to convert an `epubcfi` into a string that can
+//! be used to sort annotations into their order of appearance inside  their respective book.
+
 use std::borrow::ToOwned;
 
 use once_cell::sync::Lazy;
@@ -149,8 +152,7 @@ pub fn parse_epubcfi(raw: &str) -> String {
         .find_iter(&location)
         .map(|m| m.as_str())
         .map(ToOwned::to_owned)
-        .collect::<Vec<String>>()
-        .join("");
+        .collect::<String>();
 
     // -> A: 6/4/4/10/2/1
     // -> B: 6/4/4/10/1
@@ -289,7 +291,7 @@ mod test_parser {
         ),
         test_parse_17: (
             "epubcfi(/6/28[chap06]!/4/24[para06]/1,:4,:44)",
-            // TODO Could this --------------------^^ cause an error? Should it
+            // TODO: Could this --------------------^^ cause an error? Should it
             // be padded with a `0` so it doesn't look like its attached to the
             // wrong step? -> '6.28.4.24.1.0:4'
             "6.28.4.24.1:4",

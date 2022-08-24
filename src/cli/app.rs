@@ -5,7 +5,7 @@ use color_eyre::eyre::WrapErr;
 use crate::lib::applebooks::database::ABDatabaseName;
 use crate::lib::applebooks::utils::APPLEBOOKS_VERSION;
 use crate::lib::models::data::Data;
-use crate::lib::templates::{Registry, Template};
+use crate::lib::templates::TemplateManager;
 use crate::lib::utils;
 
 use super::args::ArgCommand;
@@ -13,12 +13,15 @@ use super::config::Config;
 
 pub type AppResult<T> = color_eyre::Result<T>;
 
-/// TODO Document
+/// The main application struct.
+///
+/// Contains a single public method to run the application. A provided [`Config`] is used to change
+/// its behavior.
 #[derive(Debug)]
 pub struct App {
     data: Data,
     config: Box<dyn Config>,
-    registry: Registry,
+    template_manager: TemplateManager,
 }
 
 impl App {
@@ -26,36 +29,36 @@ impl App {
         Self {
             data: Data::default(),
             config,
-            registry: Registry::default(),
+            template_manager: TemplateManager::default(),
         }
     }
 
-    /// TODO Document
+    /// Runs the application with a specified command represented by an [`ArgCommand`].
     pub fn run(&mut self, command: ArgCommand) -> AppResult<()> {
-        self.print("• Building templates...");
-        self.init_templates()?;
-
-        self.print("• Building data...");
-        self.init_data()?;
+        self.print_msg("• Building data...");
+        self.build_data()?;
 
         match command {
             ArgCommand::Export => {
-                self.print("• Exporting data...");
+                self.print_msg("• Exporting data...");
                 self.export_data().wrap_err("Failed while exporting data")?;
             }
             ArgCommand::Render => {
-                self.print("• Rendering template...");
+                self.print_msg("• Building templates...");
+                self.build_templates()?;
+
+                self.print_msg("• Rendering template...");
                 self.render_templates()
-                    .wrap_err("Failed while rendering template")?;
+                    .wrap_err("Failed while rendering template(s)")?;
             }
             ArgCommand::Backup => {
-                self.print("• Backing up databases...");
+                self.print_msg("• Backing up databases...");
                 self.backup_databases()
                     .wrap_err("Failed while backing up databases")?;
             }
         }
 
-        self.print(&format!(
+        self.print_msg(&format!(
             "• Saved {} annotations from {} books to `{}`",
             self.data.count_annotations(),
             self.data.count_books(),
@@ -65,27 +68,20 @@ impl App {
         Ok(())
     }
 
-    /// TODO Document
-    fn init_data(&mut self) -> AppResult<()> {
+    /// Verifies, builds and registers all templates for rendering.
+    fn build_templates(&mut self) -> AppResult<()> {
+        self.template_manager
+            .build(self.config.options().templates())
+            .wrap_err("Failed while building template(s)")?;
+
+        Ok(())
+    }
+
+    /// Builds the application's data from the Apple Books databases.
+    fn build_data(&mut self) -> AppResult<()> {
         self.data
             .build(self.config.options().databases())
             .wrap_err("Failed while building data")
-    }
-
-    /// TODO Document
-    fn init_templates(&mut self) -> AppResult<()> {
-        let templates = self.config.options().templates();
-
-        templates.iter().try_for_each(|template| {
-            self.registry
-                .add(Template::from(template))
-                .wrap_err_with(|| {
-                    format!(
-                        "Failed while registering template: `{}`",
-                        template.display()
-                    )
-                })
-        })
     }
 
     /// Exports Apple Books' data with the following structure:
@@ -93,7 +89,7 @@ impl App {
     /// ```plaintext
     /// [output]
     ///  │
-    ///  ├─ [entry-name]
+    ///  ├─ [author-title]
     ///  │   │
     ///  │   ├─ data
     ///  │   │   ├─ book.json
@@ -101,11 +97,11 @@ impl App {
     ///  │   │
     ///  │   └─ resources
     ///  │       ├─ .gitkeep
-    ///  │       ├─ [entry-name].epub     ─┐
+    ///  │       ├─ [author-title].epub   ─┐
     ///  │       ├─ cover.jpeg             ├─ These are not exported.
     ///  │       └─ ...                   ─┘
     ///  │
-    ///  ├─ [entry-name]
+    ///  ├─ [author-title]
     ///  │   └─ ...
     ///  └─ ...
     /// ```
@@ -115,33 +111,33 @@ impl App {
     /// already exists and/or contains data.
     fn export_data(&self) -> AppResult<()> {
         // -> [output]
-        let root = self.config.options().output().join("data");
+        let path = self.config.options().output().join("data");
 
         for entry in self.data.entries() {
-            // -> [output]/[entry-name]
-            let item = root.join(entry.name());
-            // -> [output]/[entry-name]/data
+            // -> [output]/[author-title]
+            let item = path.join(entry.name());
+            // -> [output]/[author-title]/data
             let data = item.join("data");
-            // -> [output]/[entry-name]/resources
+            // -> [output]/[author-title]/resources
             let resources = item.join("resources");
 
             std::fs::create_dir_all(&item)?;
             std::fs::create_dir_all(&data)?;
             std::fs::create_dir_all(&resources)?;
 
-            // -> [output]/[entry-name]/data/book.json
+            // -> [output]/[author-title]/data/book.json
             let book_json = data.join("book").with_extension("json");
             let book_file = fs::File::create(book_json)?;
 
             serde_json::to_writer_pretty(&book_file, &entry.book)?;
 
-            // -> [output]/[entry-name]/data/annotation.json
+            // -> [output]/[author-title]/data/annotation.json
             let annotations_json = data.join("annotations").with_extension("json");
             let annotations_file = fs::File::create(annotations_json)?;
 
             serde_json::to_writer_pretty(&annotations_file, &entry.annotations)?;
 
-            // -> [output]/[entry-name]/resources/.gitkeep
+            // -> [output]/[author-title]/resources/.gitkeep
             let gitkeep = resources.join(".gitkeep");
             fs::File::create(gitkeep)?;
         }
@@ -157,8 +153,8 @@ impl App {
     /// [output]
     ///  │
     ///  ├─ [template-name]
-    ///  │   ├─ [entry-name].[template-ext]
-    ///  │   ├─ [entry-name].[template-ext]
+    ///  │   ├─ [author-title].[template-ext]
+    ///  │   ├─ [author-title].[template-ext]
     ///  │   └─ ...
     ///  │
     ///  ├─ [template-name]
@@ -173,38 +169,40 @@ impl App {
     ///  │
     ///  ├─ [template-name]
     ///  │   │
-    ///  │   ├─ [entry-name]
-    ///  │   │   ├─ [YYYY-MM-DD-HHMMSS]-[book-title].[template-ext]
-    ///  │   │   ├─ [YYYY-MM-DD-HHMMSS]-[book-title].[template-ext]
+    ///  │   ├─ [author-title]
+    ///  │   │   ├─ [author-title].[template.ext]
+    ///  │   │   ├─ [YYYY-MM-DD-HHMMSS]-[title].[template.ext]
+    ///  │   │   ├─ [YYYY-MM-DD-HHMMSS]-[title].[template.ext]
     ///  │   │   └─ ...
     ///  │   │
-    ///  │   ├─ [entry-name]
+    ///  │   ├─ [author-title]
     ///  │   │   └─ ...
     ///  │   └─ ...
     ///  │
     ///  ├─ [template-name]
     ///  │   │
-    ///  │   ├─ [entry-name]
-    ///  │   │   ├─ [YYYY-MM-DD-HHMMSS]-[book-title].[template-ext]
-    ///  │   │   ├─ [YYYY-MM-DD-HHMMSS]-[book-title].[template-ext]
+    ///  │   ├─ [author-title]
+    ///  │   │   ├─ [author-title].[template-ext]
+    ///  │   │   ├─ [YYYY-MM-DD-HHMMSS]-[title].[template.ext]
+    ///  │   │   ├─ [YYYY-MM-DD-HHMMSS]-[title].[template.ext]
     ///  │   │   └─ ...
     ///  │   │
-    ///  │   ├─ [entry-name]
+    ///  │   ├─ [author-title]
     ///  │   │   └─ ...
     ///  │   └─ ...
     ///  └─ ...
     /// ```
     fn render_templates(&mut self) -> AppResult<()> {
         // -> [output]
-        let root = self.config.options().output();
+        let path = self.config.options().output();
 
-        std::fs::create_dir_all(&root)?;
+        std::fs::create_dir_all(&path)?;
 
-        // Renders each `Entry` aka a book.
+        // Renders each `Entry` i.e. a `Book` and its `Annotation`s.
         for entry in self.data.entries() {
-            self.registry
-                .render(&*self.config, entry, root)
-                .wrap_err("Failed while rendering template")?;
+            self.template_manager
+                .render(entry, path)
+                .wrap_err("Failed while rendering template(s)")?;
         }
 
         Ok(())
@@ -231,13 +229,13 @@ impl App {
     /// ```
     fn backup_databases(&self) -> AppResult<()> {
         // -> [output]
-        let root = self.config.options().output();
+        let path = self.config.options().output();
 
         // -> [YYYY-MM-DD-HHMMSS]-[VERSION]
         let today = format!("{}-{}", utils::today(), *APPLEBOOKS_VERSION);
 
         // -> [output]/[YYYY-MM-DD-HHMMSS]-[VERSION]
-        let destination_root = root.join(&today);
+        let destination_root = path.join(&today);
 
         // -> [output]/[YYYY-MM-DD-HHMMSS]-[VERSION]/BKLibrary
         let destination_books = destination_root.join(ABDatabaseName::Books.to_string());
@@ -266,8 +264,8 @@ impl App {
         Ok(())
     }
 
-    /// TODO Document
-    fn print(&self, message: &str) {
+    /// Prints a message to the terminal.
+    fn print_msg(&self, message: &str) {
         if !self.config.options().is_quiet() {
             println!("{}", message);
         }
@@ -287,7 +285,7 @@ mod test_app {
         let config = TestConfig::new("empty");
         let mut app = App::new(Box::new(config));
 
-        app.init_data().unwrap();
+        app.build_data().unwrap();
 
         assert_eq!(app.data.count_books(), 0);
         assert_eq!(app.data.count_annotations(), 0);
@@ -300,7 +298,7 @@ mod test_app {
         let config = TestConfig::new("books-new");
         let mut app = App::new(Box::new(config));
 
-        app.init_data().unwrap();
+        app.build_data().unwrap();
 
         // Un-annotated books are filtered out.
         assert_eq!(app.data.count_books(), 0);
@@ -314,7 +312,7 @@ mod test_app {
         let config = TestConfig::new("books-annotated");
         let mut app = App::new(Box::new(config));
 
-        app.init_data().unwrap();
+        app.build_data().unwrap();
 
         assert_eq!(app.data.count_books(), 3);
         assert_eq!(app.data.count_annotations(), 10);
@@ -326,7 +324,7 @@ mod test_app {
         let config = TestConfig::new("books-annotated");
         let mut app = App::new(Box::new(config));
 
-        app.init_data().unwrap();
+        app.build_data().unwrap();
 
         for entry in app.data.entries() {
             for annotations in entry.annotations.windows(2) {

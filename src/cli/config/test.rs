@@ -4,7 +4,7 @@ use std::path::PathBuf;
 
 use crate::cli;
 
-use super::{Config, ConfigOptions, RenderMode};
+use super::{Config, ConfigOptions};
 
 #[derive(Debug)]
 pub struct TestConfig {
@@ -18,14 +18,13 @@ impl Config for TestConfig {
 }
 
 impl TestConfig {
-    /// TODO Document
+    /// TODO: Document
     pub fn new(name: &str) -> Self {
         Self {
             options: ConfigOptions {
                 databases: cli::defaults::MOCK_DATABASES.join(name),
                 output: Self::build_output_directory(name),
-                render_mode: RenderMode::Multi,
-                templates: Vec::new(),
+                templates: None,
                 is_quiet: true,
             },
         }

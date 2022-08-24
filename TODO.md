@@ -8,40 +8,46 @@
 - [x] Removed `-v` logging verbosity.
 - [x] Switched to `Config` trait for more flexibility.
 - [x] Switched from `loggerv` to `env_logger`.
-- [x] Added `render-mode`
-    - `single` renders all annotations to a single file.
-    - `multi` renders each annotation to a separate file.
+- [x] Added template types denoted by a prefix:
+  - `single.` renders a book and all its annotations to a single file.
+  - `multi.` renders a book and all its annotations to separate files.
+  - `partial.` renders as only a part of another themplate. Does not render on its own.
 - [x] Removed nested directory from output file structure i.e. `data`, `renders`, `backups`.
-- [x] Databases backup directories now have a `-` between the date and version `[YYYY-MM-DD-HHMMSS]-[VERSION]`
+- [x] Databases backup directories now have a `-` between the date and version
+      `[YYYY-MM-DD-HHMMSS]-[VERSION]`
+- [x] Added the option to use a custom `databases` path.
+- [ ] Rework how templates are managed.
+- [ ] Complete CLI help documentation in `cli-help.txt`.
 - [ ] Cleanup `README.md`'s directory structure documentation.
-- [ ] Add the option to use a custom `databases` path.
-- [ ] Expand `ConfigOptions` into `Config`. The nesting is no longer needed.
+- [ ] Rework backup and restore scripts to use `rsync`.
+- [ ] Update `creating-a-custom-template.md`.
+- [ ] Update `backup-restore-apple-books-library.md`
+- [ ] Compile to Apple Silicon and Intel.
 
 ## Internal Improvements
 
-- [ ] Rework how templates are managed.
+- [ ] Change line width to default rustfmt and update docstrings/comments.
+- [ ] Add `# Arguments` to public methods.
 - [ ] Maybe `book.author` should be `book.authors`?
-- [ ] Add `# Arguments` to docs.
-- [ ] Move from `chrono` > `time` crate
-- [ ] Implement `From<&'a Row> for T`
-- [ ] `termcolor` for pretty output
+- [ ] Move from `chrono` > `time` crate.
+- [ ] Implement `From<&'a Row> for T`.
+- [ ] `termcolor` for pretty output.
 
 ## Features
 
 - [ ] Extract annotations from iOS's `com.apple.ibooks-sync.plist` and `Books.plist` files.
-    - Add a guide on how to access/find these files.
-- [ ] Implement `Config` search paths
-    - `$HOME/.readstor.toml`
-    - `$HOME/.readstor/readstor.toml`
+  - Add a guide on how to access/find these files.
+- [ ] Implement `Config` search paths.
+  - `$HOME/.readstor.toml`
+  - `$HOME/.readstor/readstor.toml`
 
-```toml
-# `~/.readstor/readstor.toml`
+```yaml
+# `~/.readstor/readstor.yaml`
 
-output = "./output"
-templates = "./templates"
-template-mode = "multi"
-force = true
-quiet = true
+output: ./output
+templates: ./templates
+force: true
+quiet: true
 ```
 
 ## CLI 1.x Target
