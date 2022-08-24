@@ -1,4 +1,5 @@
-//! Defines the [`LibResult`] type and the [`LibError`] enum for working with this library.
+//! Defines the [`LibResult`] type and the [`LibError`] enum for working with
+//! this library.
 
 /// A generic result type used in this library.
 pub type LibResult<T> = std::result::Result<T, LibError>;
@@ -24,7 +25,8 @@ pub enum LibError {
         path: String,
     },
 
-    /// Error returned if there are any issues with connecting to an Apple Books database.
+    /// Error returned if there are any issues with connecting to an Apple Books
+    /// database.
     #[error("Unable to connect to `{name}*.sqlite` at `{path}`")]
     DatabaseConnection {
         /// The basename of the database: `BKLibrary` or `AEAnnotation`.
@@ -33,21 +35,23 @@ pub enum LibError {
         path: String,
     },
 
-    /// Error returned when querying the database fails. This means that the Apple Books database
-    /// schema is different than the one the query has been designed against. In that case the
-    /// currently installed version of Apple Books us unsupported.
+    /// Error returned when querying the database fails. This means that the
+    /// Apple Books database schema is different than the one the query has been
+    /// designed against. In that case the currently installed version of Apple
+    /// Books us unsupported.
     #[error("Apple Books {version} unsupported")]
     UnsupportedVersion {
         /// The currently installed Apple Books version number.
         version: String,
     },
 
-    /// Error returned when a template does not follow the proper naming convention.
-    // TODO: Add link guides when they are ready.
+    /// Error returned when a template does not follow the proper naming
+    /// convention.
     #[error(
         "Invalid template name for `{path}`. Templates follow a strict naming convention: \
         `[template-kind].[template-name].[template-ext]` where `[template-kind]` must either \
         `multi`, `single` or `partial`."
+        // TODO: Add link guides when they are ready.
     )]
     InvalidTemplateName {
         /// The full path to the invalid template.

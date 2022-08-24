@@ -19,8 +19,9 @@ pub fn entry_is_hidden(entry: &walkdir::DirEntry) -> bool {
         .map_or(false, |s| !s.starts_with(|c| c == '_' || c == '.'))
 }
 
-/// Returns an iterator over all the files one layer deep in a directory. This includes all the
-/// files inside the directoy and all the files inside any directories within this first layer.
+/// Returns an iterator over all the files one layer deep in a directory. This
+/// includes all the files inside the directoy and all the files inside any
+/// directories within this first layer.
 ///
 /// # Arguments
 ///
@@ -124,13 +125,13 @@ where
     path.as_ref().file_stem().and_then(OsStr::to_str)
 }
 
-/// Returns today's date as a string using the default `strftime` format.
+/// Returns today's date using the default `strftime` format string.
 #[must_use]
 pub fn today() -> String {
     Local::now().format(lib::defaults::DATE_FORMAT).to_string()
 }
 
-/// Returns today's date as a string using a custom `strftime` format.
+/// Returns today's date using a custom `strftime` format string.
 ///
 /// # Arguments
 ///

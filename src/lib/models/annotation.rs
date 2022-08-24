@@ -16,13 +16,16 @@ use super::datetime::DateTimeUtc;
 /// Captures a `#tag`.
 static RE_TAG: Lazy<Regex> = Lazy::new(|| Regex::new(r"#[^\s#]+").unwrap());
 
-/// A type representing an annotation and its metadata.
+/// A struct representing an annotation and its metadata.
 #[derive(Debug, Default, Clone, Eq, Serialize)]
 pub struct Annotation {
     /// The body of the annotation.
     pub body: Vec<String>,
 
-    /// The annotation's highlight style. This could `green`, `blue`, `yellow`, `pink` `purple` or `underline`.
+    /// The annotation's highlight style.
+    ///
+    /// Possible values are: `green`, `blue`, `yellow`, `pink` `purple` or
+    /// `underline`.
     pub style: String,
 
     /// The annotation's notes.
@@ -36,7 +39,8 @@ pub struct Annotation {
 }
 
 impl Annotation {
-    /// Returns the creation date formatted to `YYYY-MM-DD-HHMMSS` i.e. 1970-01-01-120000.
+    /// Returns the annotation's creation date using the default `strftime`
+    /// format string.
     #[must_use]
     pub fn date_created_pretty(&self) -> String {
         self.metadata
@@ -123,9 +127,9 @@ impl ABQuery for Annotation {
 
     fn from_row(row: &Row<'_>) -> Self {
         // It's necessary to explicitly type all these variables as `rusqlite`
-        // needs the type information to convert the column value to `T`. If
-        // the types do not match `rusqlite` will return an `InvalidColumnType`
-        // when calling `get_unwrap`. Therefore it should be safe to call
+        // needs the type information to convert the column value to `T`. If the
+        // types do not match `rusqlite` will return an `InvalidColumnType` when
+        // calling `get_unwrap`. Therefore it should be safe to call
         // `get_unwrap` as we know both the types match and we can see the
         // column indices in the `query` method below.
 
@@ -177,7 +181,9 @@ impl PartialEq for Annotation {
     }
 }
 
-/// A type representing an annotation's metadata i.e. the data that is not directly editable by the user.
+/// A struct representing an annotation's metadata.
+///
+/// This is all the data that is not directly editable by the user.
 #[derive(Debug, Default, Clone, Eq, Serialize)]
 pub struct AnnotationMetadata {
     /// The annotation's unique id.
@@ -192,8 +198,9 @@ pub struct AnnotationMetadata {
     /// The date the annotation was last modified.
     pub modified: DateTimeUtc,
 
-    /// A location string used for sorting annotations into their order of appearance inside their
-    /// respective book. This string is generated from the annotation's `epubcfi`.
+    /// A location string used for sorting annotations into their order of
+    /// appearance inside their respective book. This string is generated from
+    /// the annotation's `epubcfi`.
     pub location: String,
 
     /// The annotation's raw `epubcfi`.
@@ -227,12 +234,10 @@ mod test_annotations {
     #[test]
     fn test_cmp_annotations() {
         let mut a1 = Annotation::default();
-        a1.metadata.location =
-            parser::parse_epubcfi("epubcfi(/6/10[c01]!/4/10/3,:335,:749)");
+        a1.metadata.location = parser::parse_epubcfi("epubcfi(/6/10[c01]!/4/10/3,:335,:749)");
 
         let mut a2 = Annotation::default();
-        a2.metadata.location =
-            parser::parse_epubcfi("epubcfi(/6/12[c02]!/4/26/3,:68,:493)");
+        a2.metadata.location = parser::parse_epubcfi("epubcfi(/6/12[c02]!/4/26/3,:68,:493)");
 
         assert!(a1 < a2);
     }

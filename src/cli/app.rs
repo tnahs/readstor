@@ -15,8 +15,8 @@ pub type AppResult<T> = color_eyre::Result<T>;
 
 /// The main application struct.
 ///
-/// Contains a single public method to run the application. A provided [`Config`] is used to change
-/// its behavior.
+/// Contains a single public method to run the application. A provided
+/// [`Config`] is used to change its behavior.
 #[derive(Debug)]
 pub struct App {
     data: Data,
@@ -33,7 +33,8 @@ impl App {
         }
     }
 
-    /// Runs the application with a specified command represented by an [`ArgCommand`].
+    /// Runs the application with a specified command represented by an
+    /// [`ArgCommand`].
     pub fn run(&mut self, command: ArgCommand) -> AppResult<()> {
         self.print_msg("• Building data...");
         self.build_data()?;

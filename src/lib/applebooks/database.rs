@@ -1,5 +1,6 @@
-//! Defines the [`ABDatabase`] struct, used to interact with the Apple Books databases and the
-//! [`ABQuery`] trait, used for defining how to query each respective database.
+//! Defines the [`ABDatabase`] struct, used to interact with the Apple Books
+//! databases and the [`ABQuery`] trait, used for defining how to query each
+//! respective database.
 
 use std::path::{Path, PathBuf};
 
@@ -16,7 +17,8 @@ use crate::lib::models::annotation::Annotation;
 #[allow(unused_imports)] // For docs.
 use crate::lib::models::book::Book;
 
-/// A struct encapsulating the methods associated with interacting with the Apple Books databases.
+/// A struct encapsulating the methods associated with interacting with the
+/// Apple Books databases.
 #[derive(Debug, Clone, Copy)]
 pub struct ABDatabase;
 
@@ -26,35 +28,38 @@ impl ABDatabase {
     /// # Arguments
     ///
     /// * `path` - A path to a directory containing the Apple Books databases.
-    /// * `T` - Specifies which of the two databases will be queried. `T` should be either [`Book`]
-    /// or [`Annotation`] referring to `BKLibrary*.sqlite` or `AEAnnotation*.sqlite`.
+    /// * `T` - Specifies which of the two databases will be queried. `T` should
+    /// be either [`Book`] or [`Annotation`] referring to `BKLibrary*.sqlite` or
+    /// `AEAnnotation*.sqlite`.
     ///
-    /// See [`ABDatabase::get_database()`] for information on how the `databases` directory should
-    /// be structured.
+    /// See [`ABDatabase::get_database()`] for information on how the
+    /// `databases` directory should be structured.
     ///
     /// # Errors
     ///
-    /// Will return `Err` if the database cannot be opened or the underlying schema has changed,
-    /// meaning this application is out of sync with the latest version of Apple Books.
+    /// Will return `Err` if the database cannot be opened or the underlying
+    /// schema has changed, meaning this application is out of sync with the
+    /// latest version of Apple Books.
     #[allow(clippy::missing_panics_doc)]
     pub fn query<T: ABQuery>(path: &Path) -> LibResult<Vec<T>> {
         // Returns the appropriate database based on `T`.
         let path = Self::get_database::<T>(path)?;
 
-        let connection =
-            match Connection::open_with_flags(&path, OpenFlags::SQLITE_OPEN_READ_ONLY) {
-                Ok(connection) => connection,
-                Err(_) => {
-                    return Err(LibError::DatabaseConnection {
-                        name: T::DATABASE_NAME.to_string(),
-                        path: path.display().to_string(),
-                    });
-                }
-            };
+        let connection = match Connection::open_with_flags(&path, OpenFlags::SQLITE_OPEN_READ_ONLY)
+        {
+            Ok(connection) => connection,
+            Err(_) => {
+                return Err(LibError::DatabaseConnection {
+                    name: T::DATABASE_NAME.to_string(),
+                    path: path.display().to_string(),
+                });
+            }
+        };
 
-        // This will only fail if the database schema has changes.This means that the Apple Books
-        // database schema is different than the one the query has been designed against. In that
-        // case the currently installed version of Apple Books us unsupported.
+        // This will only fail if the database schema has changes.This means
+        // that the Apple Books database schema is different than the one the
+        // query has been designed against. In that case the currently installed
+        // version of Apple Books us unsupported.
         let mut statement = match connection.prepare(T::QUERY) {
             Ok(statement) => statement,
             Err(_) => {
@@ -66,13 +71,16 @@ impl ABDatabase {
 
         let items = statement
             .query_map([], |row| Ok(T::from_row(row)))
-            // The `rusqlite` documentation for `query_map` states 'Will return Err if binding
-            // parameters fails.' So this should be safe because `query_map` is given no parameters.
+            // The `rusqlite` documentation for `query_map` states 'Will return
+            // Err if binding parameters fails.' So this should be safe because
+            // `query_map` is given no parameters.
             .unwrap()
-            // Using `filter_map` here because we know from a few lines above that all the items are
-            // wrapped in an `Ok`. At this point the there should be nothing that would fail in
-            // regards to querying and creating an instance of T unless there's an error in the
-            // implementation of the [`ABQuery`] trait. See [`ABQuery`] for more information.
+            // Using `filter_map` here because we know from a few lines above
+            // that all the items are wrapped in an `Ok`. At this point the
+            // there should be nothing that would fail in regards to querying
+            // and creating an instance of T unless there's an error in the
+            // implementation of the [`ABQuery`] trait. See [`ABQuery`] for more
+            // information.
             .filter_map(std::result::Result::ok)
             .collect();
 
@@ -81,8 +89,8 @@ impl ABDatabase {
 
     /// Returns a [`PathBuf`] to the `AEAnnotation` or `BKLibrary` database.
     ///
-    /// The databases directory should contains the following structure as this is the way Apple
-    /// Books' `Documents` directory is set up.
+    /// The databases directory should contains the following structure as this
+    /// is the way Apple Books' `Documents` directory is set up.
     ///
     /// ```plaintext
     /// [databases]
@@ -106,16 +114,17 @@ impl ABDatabase {
         let pattern = pattern.to_string_lossy();
 
         let mut databases: Vec<PathBuf> = glob::glob(&pattern)
-            // This should be safe to unwrap seeing we know the pattern is valid and in production
-            // the path (b) will always be valid UTF-8 as it's a path to a default macOS
-            // application's container.
+            // This should be safe to unwrap seeing we know the pattern is valid
+            // and in production the path (b) will always be valid UTF-8 as it's
+            // a path to a default macOS application's container.
             .unwrap()
             .filter_map(std::result::Result::ok)
             .collect();
 
-        // The default Apple Books' database directory contains only a single database file that
-        // starts with the `DATABASE_NAME` and ends with `.sqlite`. If there are more then we'd
-        // possibly run into unexpected behaviors.
+        // The default Apple Books' database directory contains only a single
+        // database file that starts with the `DATABASE_NAME` and ends with
+        // `.sqlite`. If there are more then we'd possibly run into unexpected
+        // behaviors.
         match &databases[..] {
             [_] => Ok(databases.pop().unwrap()),
             [_, ..] => Err(LibError::DatabaseUnresolvable {
@@ -130,17 +139,18 @@ impl ABDatabase {
     }
 }
 
-/// This trait is an attempt at reducing code duplication and standardizing how [`Book`] and
-/// [`Annotation`] instances are created. Thus it should only have to be implemented by said
-/// structs. It allows instances to be created generically over the rows of their respective
-/// databases `BKLibrary*.sqlite` and `AEAnnotation*.sqlite`. See [`static@DATABASES`] for path
-/// information.
+/// This trait is an attempt at reducing code duplication and standardizing how
+/// [`Book`] and [`Annotation`] instances are created. Thus it should only have
+/// to be implemented by said structs. It allows instances to be created
+/// generically over the rows of their respective databases `BKLibrary*.sqlite`
+/// and `AEAnnotation*.sqlite`. See [`static@DATABASES`] for path information.
 ///
-/// The [`ABQuery::from_row()`] and [`ABQuery::QUERY`] methods are strongly coupled in that the
-/// declared rows in the `SELECT` statement *must* map directly to the `rusqlite`'s `Row::get()`
-/// method e.g. the first row of the `SELECT` statement maps to `row.get(0)` etc. The `unwrap` on
-/// the `Row::get()` methods will panic if the index is out of range or the there's a type mismatch
-/// to the struct field it's been mapped to.
+/// The [`ABQuery::from_row()`] and [`ABQuery::QUERY`] methods are strongly
+/// coupled in that the declared rows in the `SELECT` statement *must* map
+/// directly to the `rusqlite`'s `Row::get()` method e.g. the first row of the
+/// `SELECT` statement maps to `row.get(0)` etc. The `unwrap` on the
+/// `Row::get()` methods will panic if the index is out of range or the there's
+/// a type mismatch to the struct field it's been mapped to.
 ///
 /// The databases seem to be related via a UUID field.
 ///
@@ -160,14 +170,15 @@ pub trait ABQuery {
     fn from_row(row: &Row<'_>) -> Self;
 }
 
-/// Enumerates Apple Books' two databases. Primarily used to avoid using strings to refer to the
-/// databases.
+/// An enum representing Apple Books' two databases.
+///
+/// Primarily used to avoid using strings to refer to the databases.
 #[derive(Debug, Clone, Copy)]
 pub enum ABDatabaseName {
-    /// The books database. The database file's basename is `BKLibrary`.
+    /// The books database with a basename of `BKLibrary`.
     Books,
 
-    /// The annotations database. The database file's basename is `AEAnnotation`.
+    /// The annotations database with a basename of `AEAnnotation`.
     Annotations,
 }
 

@@ -1,4 +1,5 @@
-//! Defines the [`TemplateManager`] struct used to build and interact with templates.
+//! Defines the [`TemplateManager`] struct used to build and interact with
+//! templates.
 
 use std::collections::HashMap;
 use std::fs::{self, File};
@@ -31,15 +32,14 @@ const TEMPLATE_STR: &str = include_str!(concat!(
     "/data/templates/default/single.default.md"
 ));
 
-/// A type providing a simple interface to build and render [`Template`]s.
+/// A struct providing a simple interface to build and render [`Template`]s.
 ///
 /// Template data is stored in two different locations: the `registry` holds all
 /// the parsed templates ready for rendering while `templates` holds each
 /// template's metadata. When rendering, each template is rendered based on its
 /// [`TemplateKind`].
 //
-// TODO: Rename `registry`, `templates` and `Template`. The structure of this
-// is a bit confusing. Maybe better names will help?
+// TODO: Rename `registry`, `templates` and `Template`.
 #[derive(Debug)]
 pub struct TemplateManager {
     /// An instance of [`Tera`] containing all the parsed templates.
@@ -64,8 +64,9 @@ impl Default for TemplateManager {
 impl TemplateManager {
     /// Builds the [`TemplateManager`]'s [`Template`]s.
     ///
-    /// Delegates [`Template`] building depending on whether a templates directory is provided or
-    /// not. If none is provided then the default template is built.
+    /// Delegates [`Template`] building depending on whether a templates
+    /// directory is provided or not. If none is provided then the default
+    /// template is built.
     ///
     /// # Arguments
     ///
@@ -75,8 +76,8 @@ impl TemplateManager {
     ///
     /// Will return `Err` if:
     /// * A template's filename does not follow the proper naming convention.
-    /// * A template contains either syntax errors or variables that reference non-existent fields
-    /// in a [`Book`]/[`Annotation`].
+    /// * A template contains either syntax errors or variables that reference
+    /// non-existent fields in a [`Book`]/[`Annotation`].
     pub fn build(&mut self, path: &Option<PathBuf>) -> LibResult<()> {
         if let Some(path) = path {
             self.build_from_dir(path)?;
@@ -87,7 +88,8 @@ impl TemplateManager {
         Ok(())
     }
 
-    /// Iterates through all [`Template`]s renders them based on their [`TemplateKind`].
+    /// Iterates through all [`Template`]s renders them based on their
+    /// [`TemplateKind`].
     ///
     /// # Arguments
     ///
@@ -109,14 +111,15 @@ impl TemplateManager {
         Ok(())
     }
 
-    /// Builds [`Template`]s from a directory containing user created template files.
+    /// Builds [`Template`]s from a directory containing user created template
+    /// files.
     ///
     /// # Errors
     ///
     /// Will return `Err` if:
     /// * A template's filename does not follow the proper naming convention.
-    /// * A template contains either syntax errors or variables that reference non-existent fields
-    /// in a [`Book`]/[`Annotation`].
+    /// * A template contains either syntax errors or variables that reference
+    /// non-existent fields in a [`Book`]/[`Annotation`].
     fn build_from_dir(&mut self, path: &Path) -> LibResult<()> {
         let root = path;
 
@@ -138,15 +141,17 @@ impl TemplateManager {
     ///
     /// # Panics
     ///
-    /// Panics if the default template contains an inheritance chain that cannot be built. This
-    /// should not be an issue as the current default template contains no inheritance chains.
+    /// Panics if the default template contains an inheritance chain that cannot
+    /// be built. This should not be an issue as the current default template
+    /// contains no inheritance chains.
     fn build_default(&mut self) {
         // TODO: Is there a way to avoid this clone?
         let template = TEMPLATE.clone();
 
         self.registry
             .add_raw_template(&template.registry_name, TEMPLATE_STR)
-            // Unwrap should be okay here as were not building an template inheritance chain.
+            // Unwrap should be okay here as were not building a template
+            // inheritance chain.
             .unwrap();
 
         self.templates.push(template);
@@ -158,10 +163,12 @@ impl TemplateManager {
     ///
     /// # Errors
     ///
-    /// Will return `Err` if the template contains either syntax errors or variables that reference
-    /// non-existent fields in a [`Book`]/[`Annotation`].
+    /// Will return `Err` if the template contains either syntax errors or
+    /// variables that reference non-existent fields in a
+    /// [`Book`]/[`Annotation`].
     fn register(&mut self, template: Template) -> LibResult<()> {
-        // FIXME: This currently fails when trying to validate templates with inheritance chains.
+        // FIXME: This currently fails when trying to validate templates with
+        // inheritance chains.
         // Self::validate_template(&template)?;
 
         // TODO: Remove this unwrap.
@@ -175,17 +182,18 @@ impl TemplateManager {
         Ok(())
     }
 
-    /// Validates that a template does not contain variables that reference non-existent fields in
-    /// an [`Entry`]/[`Book`]/[`Annotation`].
+    /// Validates that a template does not contain variables that reference
+    /// non-existent fields in an [`Entry`]/[`Book`]/[`Annotation`].
     ///
-    /// Tera checks for invalid syntax when a new template is registered however the template's use
-    /// of variables can only be checked when a context is supplied. This method performs a test
-    /// render with a dummy context to check for valid use of variables.
+    /// Tera checks for invalid syntax when a new template is registered however
+    /// the template's use of variables can only be checked when a context is
+    /// supplied. This method performs a test render with a dummy context to
+    /// check for valid use of variables.
     ///
     /// # Errors
     //
-    /// Will return `Err` if the template contains variables that reference non-existent fields in
-    /// an [`Entry`]/[`Book`]/[`Annotation`].
+    /// Will return `Err` if the template contains variables that reference
+    /// non-existent fields in an [`Entry`]/[`Book`]/[`Annotation`].
     fn validate_template(template: &Template) -> Result<(), LibError> {
         // Caching values here to avoid lifetime issues.
         let entry = Entry::default();
@@ -231,12 +239,7 @@ impl TemplateManager {
     /// Will return `Err` if any IO errors are encountered.
     //
     // TODO: add `serde_json::Error` as possible error.
-    fn render_single(
-        &self,
-        path: &Path,
-        template: &Template,
-        entry: &Entry,
-    ) -> LibResult<()> {
+    fn render_single(&self, path: &Path, template: &Template, entry: &Entry) -> LibResult<()> {
         // -> [path]/[template-name]
         let root = path.join(&template.display_name);
 
@@ -276,12 +279,7 @@ impl TemplateManager {
     /// Will return `Err` if any IO errors are encountered.
     //
     // TODO: add `serde_json::Error` as possible error.
-    fn render_multi(
-        &self,
-        path: &Path,
-        template: &Template,
-        entry: &Entry,
-    ) -> LibResult<()> {
+    fn render_multi(&self, path: &Path, template: &Template, entry: &Entry) -> LibResult<()> {
         // -> [path]/[template-name]/[author-title]
         let root = path.join(&template.display_name).join(entry.name());
 
@@ -324,19 +322,21 @@ impl TemplateManager {
     }
 }
 
-/// A type representing a template's metadata e.g. its location on disk, its name, its extension
-/// etc.
+/// A struct representing a template's metadata e.g. its location on disk, its
+/// name, its extension etc.
 ///
-/// [`Template`]s are used to retrieve its respective parsed template data from the registry and
-/// determine the path and file name of the final rendered file on disk.
+/// [`Template`]s are used to retrieve its respective parsed template data from
+/// the registry and determine the path and file name of the final rendered file
+/// on disk.
 ///
 /// Templates follow a strict naming convention:
 ///
 /// ```plaintext
 /// [template-kind].[template-name].[template-ext]
 /// ```
-/// * `[template-kind]` - A string representing how a template will be rendered. It must be either
-/// `multi`, `single` or `partial`.  See [`TemplateKind`] for more information.
+/// * `[template-kind]` - A string representing how a template will be rendered.
+/// It must be either `multi`, `single` or `partial`.  See [`TemplateKind`] for
+/// more information.
 /// * `[template-name]` - The template's name.
 /// * `[temaplte-ext]` - The template's file extension.
 #[derive(Debug, Clone)]
@@ -346,8 +346,8 @@ struct Template {
     /// `[templates]/nested/single.default.md`
     path: PathBuf,
 
-    /// The template's registry name. The name used to uniquely identify a template in the registry
-    /// and within a template's `include` statement.
+    /// The template's registry name. The name used to uniquely identify a
+    /// template in the registry and within a template's `include` statement.
     ///
     /// `[templates]/nested/single.default.md` -> `nested/single.default.md`
     ///
@@ -356,9 +356,9 @@ struct Template {
     /// ```
     registry_name: String,
 
-    /// The template's display name. Used for naming the directory where the template's rendered
-    /// files go. See [`TemplateManager::render_single()`] or [`TemplateManager::render_multi()`]
-    /// for more information.
+    /// The template's display name. Used for naming the directory where the
+    /// template's rendered files go. See [`TemplateManager::render_single()`]
+    /// or [`TemplateManager::render_multi()`] for more information.
     ///
     /// `[templates]/nested/single.default.md` -> `default`
     display_name: String,
@@ -375,13 +375,15 @@ struct Template {
 }
 
 impl Template {
-    /// Constructs a new [`Template`] from the templates' root directory and a path to a template
-    /// within it. The template's relative path is necessary for both identifying a template within
-    /// the registry and building the template's inheritance chains.
+    /// Constructs a new [`Template`] from the templates' root directory and a
+    /// path to a template within it. The template's relative path is necessary
+    /// for both identifying a template within the registry and building the
+    /// template's inheritance chains.
     //
     // TODO: Can we reduce error handling code duplication?
     fn new(root: &Path, path: &Path) -> LibResult<Self> {
-        // Converts an absolute path to one relative to the `templates` directory.
+        // Converts an absolute path to one relative to the `templates`
+        // directory.
         //
         // `path/to/templates/nested/single.default.md` -> `nested/single.default.md`
         let registry_name = diff_paths(path, root)
@@ -390,18 +392,16 @@ impl Template {
             .to_string_lossy()
             .to_string();
 
-        let file_name =
-            utils::get_file_name(&path).ok_or(LibError::InvalidTemplateName {
-                path: path.display().to_string(),
-            })?;
+        let file_name = utils::get_file_name(&path).ok_or(LibError::InvalidTemplateName {
+            path: path.display().to_string(),
+        })?;
 
         // `single.default.md` -> (`single`, `default.md`)
-        let (kind, remainder) =
-            file_name
-                .split_once('.')
-                .ok_or(LibError::InvalidTemplateName {
-                    path: path.display().to_string(),
-                })?;
+        let (kind, remainder) = file_name
+            .split_once('.')
+            .ok_or(LibError::InvalidTemplateName {
+                path: path.display().to_string(),
+            })?;
 
         // `default.md` -> (`default`, `md`)
         let (name, extension) =
@@ -411,10 +411,9 @@ impl Template {
                     path: path.display().to_string(),
                 })?;
 
-        let kind: TemplateKind =
-            kind.parse().map_err(|_| LibError::InvalidTemplateName {
-                path: path.display().to_string(),
-            })?;
+        let kind: TemplateKind = kind.parse().map_err(|_| LibError::InvalidTemplateName {
+            path: path.display().to_string(),
+        })?;
 
         let template = Self {
             path: path.to_owned(),
@@ -493,7 +492,9 @@ impl<'a> TemplateContext<'a> {
     }
 }
 
-/// Custom template function for Tera. Joins a list of paragraph blocks with double line-breaks.
+/// Custom template function for Tera. Joins a list of paragraph blocks with
+/// double line-breaks.
+///
 /// <https://github.com/Keats/tera/blob/master/src/builtins/filters/array.rs>
 //
 // TODO: Should this have the option for different number of breaks?

@@ -1,7 +1,8 @@
-//! ``ReadStor`` is a simple CLI for exporting user-generated data from Apple Books. The goal of this
-//! project is to facilitate data-migration from Apple Books to any other platform. Currently Apple
-//! Books provides no simple way to do this. Exporting is possible but not ideal and often times
-//! truncates long annotations.
+//! ``ReadStor`` is a simple CLI for exporting user-generated data from Apple
+//! Books. The goal of this project is to facilitate data-migration from Apple
+//! Books to any other platform. Currently Apple Books provides no simple way to
+//! do this. Exporting is possible but not ideal and often times truncates long
+//! annotations.
 
 #![warn(
     clippy::all,
@@ -48,8 +49,8 @@ fn main() -> AppResult<()> {
     // development environment this sets the `databases` to local mock databases
     // directory and the `output` to a temp directory on disk.
     //
-    // Note that the appropriate environment variable to signal a development env
-    // should be set in the `.cargo/config.toml` file.
+    // Note that the appropriate environment variable to signal a development
+    // env should be set in the `.cargo/config.toml` file.
     let config: Box<dyn Config> = if is_development_env() {
         Box::new(DevConfig::from(args.options))
     } else {

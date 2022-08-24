@@ -16,8 +16,8 @@ use crate::lib::models::book::Book;
 
 /// Defines the root databases directory.
 ///
-/// This assembles the full path to Apple Books' directory containing `BKLibrary*.sqlite` and
-/// `AEAnnotation*.sqlite` databases.
+/// This assembles the full path to Apple Books' directory containing
+/// `BKLibrary*.sqlite` and `AEAnnotation*.sqlite` databases.
 ///
 /// The full path:
 /// ```plaintext

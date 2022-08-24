@@ -69,8 +69,8 @@ impl From<ArgOptions> for DevConfig {
 /// TODO: Document
 pub fn is_development_env() -> bool {
     match std::env::var_os(cli::defaults::READSTOR_DEV) {
-        // This ensures that if the variable exists but is an empty value, the
-        // function will return false.
+        // Ensures that if the variable exists but is an empty, the function
+        // will return false.
         Some(value) => !value.is_empty(),
         None => false,
     }

@@ -7,7 +7,7 @@ use crate::lib::applebooks::database::{ABDatabaseName, ABQuery};
 
 use super::datetime::DateTimeUtc;
 
-/// A type represening a book and its metadata.
+/// A struct represening a book and its metadata.
 #[derive(Debug, Default, Clone, Serialize)]
 pub struct Book {
     /// The title of the book.
@@ -54,7 +54,7 @@ impl ABQuery for Book {
     }
 }
 
-/// A type representing a book's metadata.
+/// A struct representing a book's metadata.
 #[derive(Debug, Default, Clone, Serialize)]
 pub struct BookMetadata {
     /// The book's unique id.

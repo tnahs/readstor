@@ -26,7 +26,7 @@
 
 ## Internal Improvements
 
-- [ ] Change line width to default rustfmt and update docstrings/comments.
+- [x] Change line width to default rustfmt and update docstrings/comments.
 - [ ] Add `# Arguments` to public methods.
 - [ ] Maybe `book.author` should be `book.authors`?
 - [ ] Move from `chrono` > `time` crate.

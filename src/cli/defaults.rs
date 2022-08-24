@@ -15,13 +15,13 @@ pub const CLI_HELP_TEXT: &str =
 /// ```
 pub static OUTPUT: Lazy<PathBuf> = Lazy::new(|| lib::defaults::HOME.join(".readstor"));
 
-/// Defines the environment variable key used to determine whether the application is being
-/// developed on or not. If so, the Apple Books databases path is bypassed and redirected to a local
-/// testing/dev database.
+/// Defines the environment variable key used to determine whether the
+/// application is being developed on or not. If so, the Apple Books databases
+/// path is bypassed and redirected to a local testing/dev database.
 pub const READSTOR_DEV: &str = "READSTOR_DEV";
 
-/// Defines the environment variable key used to set the application's log level. Valid values are:
-/// `error`, `warn`, `info`, `debug` and `trace`.
+/// Defines the environment variable key used to set the application's log
+/// level. Valid values are: `error`, `warn`, `info`, `debug` and `trace`.
 pub const READSTOR_LOG: &str = "READSTOR_LOG";
 
 /// Defines the root path to the mock databases. These are used when

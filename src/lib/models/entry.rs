@@ -1,5 +1,5 @@
-//! Defines the [`Entry`] struct. A container type that stores a [`Book`] and its respective
-//! [`Annotation`]s.
+//! Defines the [`Entry`] struct. A container type that stores a [`Book`] and
+//! its respective [`Annotation`]s.
 
 use serde::Serialize;
 
@@ -19,8 +19,8 @@ pub struct Entry {
 }
 
 impl Entry {
-    /// Formats a [`Entry`] into a friendly-human-readable string. Primarily used for naming files
-    /// or directories for its respective [`Book`].
+    /// Formats a [`Entry`] into a friendly-human-readable string. Primarily
+    /// used for naming files or directories for its respective [`Book`].
     #[must_use]
     pub fn name(&self) -> String {
         utils::to_safe_string(

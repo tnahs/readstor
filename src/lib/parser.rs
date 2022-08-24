@@ -1,5 +1,6 @@
-//! Defines a single function [`parse_epubcfi`] used to convert an `epubcfi` into a string that can
-//! be used to sort annotations into their order of appearance inside  their respective book.
+//! Defines a single function [`parse_epubcfi`] used to convert an `epubcfi`
+//! into a string that can be used to sort annotations into their order of
+//! appearance inside  their respective book.
 
 use std::borrow::ToOwned;
 
@@ -45,14 +46,12 @@ static RE_CHARACTER_OFFSET: Lazy<Regex> = Lazy::new(|| Regex::new(r":[0-9]+$").u
 /// Captures a 'Spacial Offset' e.g. `~23.5` `~42.43`
 ///
 /// <https://w3c.github.io/epub-specs/epub33/epubcfi/#sec-path-terminating-spatial>
-static RE_TEMPORAL_OFFSET: Lazy<Regex> =
-    Lazy::new(|| Regex::new(r"~[0-9]+\.[0-9]+").unwrap());
+static RE_TEMPORAL_OFFSET: Lazy<Regex> = Lazy::new(|| Regex::new(r"~[0-9]+\.[0-9]+").unwrap());
 
 /// Captures a 'Temporal Offset' e.g. `@100:100` `@5.75:97.6`
 ///
 /// <https://w3c.github.io/epub-specs/epub33/epubcfi/#sec-path-terminating-temporal>
-static RE_SPACIAL_OFFSET: Lazy<Regex> =
-    Lazy::new(|| Regex::new(r"@[0-9.]+:[0-9.]+").unwrap());
+static RE_SPACIAL_OFFSET: Lazy<Regex> = Lazy::new(|| Regex::new(r"@[0-9.]+:[0-9.]+").unwrap());
 
 /// Returns a simplified location representation of an [`Annotation`]'s
 /// `epubcfi`.
@@ -168,7 +167,7 @@ pub fn parse_epubcfi(raw: &str) -> String {
     //
     // -> A: :1
     // -> B: :3
-    // -> C: ...
+    // -> C: N/A
     let character_offset = RE_CHARACTER_OFFSET
         .find(&location)
         .map(|m| m.as_str())
