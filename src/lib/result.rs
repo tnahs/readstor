@@ -45,16 +45,15 @@ pub enum LibError {
         version: String,
     },
 
-    /// Error returned when a template does not follow the proper naming
-    /// convention.
     #[error(
-        "Invalid template name for `{path}`. Templates follow a strict naming convention: \
-        `[template-kind].[template-name].[template-ext]` where `[template-kind]` must either \
-        `multi`, `single` or `partial`."
-        // TODO: Add link guides when they are ready.
+        "Cannot read config for: `{path}`. Templates must have their config \
+        defined in yaml between an opening block: '<!-- readstor' and a closing \
+        block: '-->'. "
     )]
-    InvalidTemplateName {
-        /// The full path to the invalid template.
+    /// Error returned when a syntax error is detected in how a template's
+    /// config block is defined. This does not include yaml syntax error.
+    InvalidTemplateConfig {
+        /// The partial path to the template e.g. `nested/template.md`.
         path: String,
     },
 
@@ -62,9 +61,9 @@ pub enum LibError {
     #[error(transparent)]
     InvalidTemplate(#[from] tera::Error),
 
-    /// Error returned if [`serde`] encounters any errors.
+    /// Error returned if [`serde_yaml`] encounters any errors in deserialization.
     #[error(transparent)]
-    SerializationError(#[from] serde_json::error::Error),
+    DeserializationError(#[from] serde_yaml::Error),
 
     /// Error returned if any other IO errors are encountered.
     #[error(transparent)]

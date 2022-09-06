@@ -14,7 +14,7 @@ use crate::lib::models::annotation::Annotation;
 #[allow(unused_imports)] // For docs.
 use crate::lib::models::book::Book;
 
-/// Defines the root databases directory.
+/// The root databases directory.
 ///
 /// This assembles the full path to Apple Books' directory containing
 /// `BKLibrary*.sqlite` and `AEAnnotation*.sqlite` databases.
@@ -38,7 +38,7 @@ pub static DATABASES: Lazy<PathBuf> = Lazy::new(|| {
     path
 });
 
-/// Defines all the variants of the Apple Books application name.
+/// A set of all the variations of the Apple Books application name.
 pub static APPLEBOOKS_NAMES: Lazy<HashSet<String>> = Lazy::new(|| {
     ["Books", "iBooks", "Apple Books", "AppleBooks"]
         .into_iter()

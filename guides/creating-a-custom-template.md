@@ -1,5 +1,68 @@
 # Creating a Custom Template
 
+```plaintext
+[name].[template-kind].[extension]
+```
+
+```plaintext
+my-template1.entry.[extension]
+my-template2.book.[extension]
+my-template2.annotations.[extension]
+```
+
+```plaintext
+[name].single.[extension]
+[name].multi.[extension]
+[name].partial.[extension]
+```
+
+```plaintext
+[templates]
+ │
+ ├─ CUSTOM-TEMPLATE-A.single.[extension]
+ │
+ ├─ CUSTOM-TEMPLATE-B.multi.[extension]
+ │
+ ├─ CUSTOM-TEMPLATE-C
+ │   ├─ name.multi.[extension]
+ │   ├─ name-book.partial.[extension]
+ │   ├─ name-annotation.partial.[extension]
+ │   └─ ...
+ │
+ ├─ _HIDDEN-TEMPLATE-A.[extension]
+ │
+ ├─ .HIDDEN-TEMPLATE-B.[extension]
+ │
+ ├─ _HIDDEN-TEMPLATE-C.[extension]
+ │   └─ ...
+ │
+ └─ ...
+```
+
+```plaintext
+[output]
+ │
+ ├─ CUSTOM-TEMPLATE-A
+ │  ├─ [author-title].md
+ │  ├─ [author-title].md
+ │  └─ ...
+ │
+ ├─ CUSTOM-TEMPLATE-B
+ │  ├─ [author-title].md
+ │  ├─ [YYYY-MM-DD-HHMMSS]-[title].md
+ │  ├─ [YYYY-MM-DD-HHMMSS]-[title].md
+ │  └─ ...
+ │
+ ├─ CUSTOM-TEMPLATE-C
+ │  ├─ [YYYY-MM-DD-HHMMSS]-[title].md
+ │  ├─ [YYYY-MM-DD-HHMMSS]-[title].md
+ │  └─ ...
+ └─ ...
+```
+
+_Templates or directories prefixed with a dot (.) or an underscore (_) will be
+ignored.\_
+
 ## Syntax
 
 The templating syntax is based on Jinja2 and Django templates. In a nutshell, values are accessed by placing an attribute between `{{ }}` e.g. `{{ book.title }}`. [Filters](https://tera.netlify.app/docs/#filters) can manipulate the accessed values e.g. `{{ name | capitalize }}`. And [statements](https://tera.netlify.app/docs/#control-structures) placed between `{% %}` e.g. `{% if my_var %} ... {% else %} ... {% endif %}`, can be used for control flow. For more information, see the [Tera](https://tera.netlify.app/docs/#templates) documentation.
@@ -80,12 +143,10 @@ annotations [
 
 ### Annotation Example
 
-Here the `join_paragraph` filter concatenates a list of strings with line-breaks and the [`join`](https://tera.netlify.app/docs/#join) filter does the same but with a specific separator passed to the `sep` keyword. This example also shows how to loop over the `annotations` using the `{% for %} ... {% endfor %}` statement.
-
 ```jinja
 {% for annotation in annotations %}
 
-{{ annotation.body | join_paragraph }}
+{{ annotation.body }}
 
 notes: {{ annotation.notes }}
 tags: {{ annotation.tags | join(sep=" ") }}

@@ -28,6 +28,7 @@ sysinfo = "0.23.4"
 tera = "1.15.0"
 thiserror = "1.0.30"
 walkdir = "2.3.2"
+serde_yaml = "0.9.10"
 
 [dependencies.chrono]
 version = "0.4.19"

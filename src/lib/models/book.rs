@@ -4,11 +4,12 @@ use rusqlite::Row;
 use serde::Serialize;
 
 use crate::lib::applebooks::database::{ABDatabaseName, ABQuery};
+use crate::lib::utils;
 
 use super::datetime::DateTimeUtc;
 
 /// A struct represening a book and its metadata.
-#[derive(Debug, Default, Clone, Serialize)]
+#[derive(Debug, Default, Clone)]
 pub struct Book {
     /// The title of the book.
     pub title: String,
@@ -18,6 +19,48 @@ pub struct Book {
 
     /// The book's metadata.
     pub metadata: BookMetadata,
+}
+
+impl Book {
+    ///Returns a slugified string of the title. The string's case is dropped
+    ///and all special characters are removed, and replaced with dashes (`-`).
+    #[must_use]
+    pub fn slug_title(&self) -> String {
+        utils::to_slug_string(&self.title, '-')
+    }
+
+    ///Returns a slugified string of the author. The string's case is dropped
+    ///and all special characters are removed, and replaced with dashes (`-`).
+    #[must_use]
+    pub fn slug_author(&self) -> String {
+        utils::to_slug_string(&self.author, '-')
+    }
+}
+
+impl serde::Serialize for Book {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        #[derive(Serialize)]
+        struct _Book<'a> {
+            title: &'a str,
+            author: &'a str,
+            metadata: &'a BookMetadata,
+            slug_title: String,
+            slug_author: String,
+        }
+
+        let book = _Book {
+            title: &self.title,
+            author: &self.author,
+            metadata: &self.metadata,
+            slug_title: self.slug_title(),
+            slug_author: self.slug_author(),
+        };
+
+        book.serialize(serializer)
+    }
 }
 
 impl ABQuery for Book {

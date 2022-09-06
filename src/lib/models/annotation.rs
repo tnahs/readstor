@@ -7,7 +7,6 @@ use regex::Regex;
 use rusqlite::Row;
 use serde::Serialize;
 
-use crate::lib;
 use crate::lib::applebooks::database::{ABDatabaseName, ABQuery};
 use crate::lib::parser;
 
@@ -20,7 +19,7 @@ static RE_TAG: Lazy<Regex> = Lazy::new(|| Regex::new(r"#[^\s#]+").unwrap());
 #[derive(Debug, Default, Clone, Eq, Serialize)]
 pub struct Annotation {
     /// The body of the annotation.
-    pub body: Vec<String>,
+    pub body: String,
 
     /// The annotation's highlight style.
     ///
@@ -39,28 +38,20 @@ pub struct Annotation {
 }
 
 impl Annotation {
-    /// Returns the annotation's creation date using the default `strftime`
-    /// format string.
-    #[must_use]
-    pub fn date_created_pretty(&self) -> String {
-        self.metadata
-            .created
-            .format(lib::defaults::DATE_FORMAT)
-            .to_string()
-    }
-
-    /// Returns `Vec<String>` representing a split and trimmed paragraph.
-    fn process_body(body: &str) -> Vec<String> {
+    /// Returns a normalized string with extra line breaks removed and
+    /// whitespace trimmed.
+    fn process_body(body: &str) -> String {
         body.lines()
             // Remove empty paragraphs.
             .filter(|&s| !s.is_empty())
             // Trim whitespace.
             .map(str::trim)
             .map(ToOwned::to_owned)
-            .collect()
+            .collect::<Vec<_>>()
+            .join("\n\n")
     }
 
-    /// Returns a `String` with all `#tag`s removed.
+    /// Returns a string with all `#tag`s removed.
     fn process_notes(notes: &Option<String>) -> String {
         let notes = match notes {
             Some(notes) => notes.clone(),
@@ -75,7 +66,7 @@ impl Annotation {
             .to_owned()
     }
 
-    /// Returns a `Vec<String>` of `#tag`s extracted from the text.
+    /// Returns a vec of `#tag`s extracted from the text.
     fn process_tags(notes: &Option<String>) -> Vec<String> {
         let notes = match notes {
             Some(notes) => notes,

@@ -7,9 +7,7 @@ use std::path::PathBuf;
 #[allow(unused_imports)] // For docs.
 use crate::lib::applebooks::database::ABDatabase;
 
-/// TODO: Document
 pub trait Config: Send + Sync {
-    /// TODO: Document
     fn options(&self) -> &ConfigOptions;
 }
 
@@ -30,13 +28,10 @@ pub struct ConfigOptions {
     /// the directory is structured.
     databases: PathBuf,
 
-    /// TODO: Document
     output: PathBuf,
 
-    /// TODO: Document
     templates: Option<PathBuf>,
 
-    /// TODO: Document
     is_quiet: bool,
 }
 

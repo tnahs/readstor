@@ -9,7 +9,7 @@ use serde::Serialize;
 #[allow(unused_imports)] // For docs.
 use super::entry::Entry;
 #[allow(unused_imports)] // For docs.
-use crate::lib::templates::TemplateManager;
+use crate::lib::templates::manager::TemplateManager;
 
 /// Thin wrapper around [`chrono`]'s [`DateTime<Utc>`] to allow for a
 /// [`Default`] implementation.

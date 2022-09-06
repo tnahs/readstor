@@ -15,7 +15,7 @@
     rust_2018_compatibility,
     rust_2021_compatibility
 )]
-#![allow(clippy::single_match_else, clippy::module_name_repetitions)]
+#![allow(clippy::module_name_repetitions)]
 
 mod cli;
 pub mod lib;

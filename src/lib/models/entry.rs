@@ -23,10 +23,7 @@ impl Entry {
     /// used for naming files or directories for its respective [`Book`].
     #[must_use]
     pub fn name(&self) -> String {
-        utils::to_safe_string(
-            &format!("{} - {}", self.book.author, self.book.title),
-            &['!', '@', '#', '$', '%', '&', '(', ')', '-', ',', '.', '?'],
-        )
+        utils::to_safe_string(&format!("{} - {}", self.book.author, self.book.title))
     }
 }
 

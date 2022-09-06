@@ -5,7 +5,7 @@ use color_eyre::eyre::WrapErr;
 use crate::lib::applebooks::database::ABDatabaseName;
 use crate::lib::applebooks::utils::APPLEBOOKS_VERSION;
 use crate::lib::models::data::Data;
-use crate::lib::templates::TemplateManager;
+use crate::lib::templates::manager::TemplateManager;
 use crate::lib::utils;
 
 use super::args::ArgCommand;
@@ -72,7 +72,7 @@ impl App {
     /// Verifies, builds and registers all templates for rendering.
     fn build_templates(&mut self) -> AppResult<()> {
         self.template_manager
-            .build(self.config.options().templates())
+            .build(self.config.options().templates(), super::defaults::TEMPLATE)
             .wrap_err("Failed while building template(s)")?;
 
         Ok(())
@@ -122,9 +122,9 @@ impl App {
             // -> [output]/[author-title]/resources
             let resources = item.join("resources");
 
-            std::fs::create_dir_all(&item)?;
-            std::fs::create_dir_all(&data)?;
-            std::fs::create_dir_all(&resources)?;
+            fs::create_dir_all(&item)?;
+            fs::create_dir_all(&data)?;
+            fs::create_dir_all(&resources)?;
 
             // -> [output]/[author-title]/data/book.json
             let book_json = data.join("book").with_extension("json");
@@ -146,16 +146,16 @@ impl App {
         Ok(())
     }
 
-    /// Renders templates in one of two ways: `single` or `multi`.
+    /// Renders templates in one of two ways:
     ///
-    /// Single:
+    /// Flat:
     ///
     /// ```plaintext
     /// [output]
     ///  │
     ///  ├─ [template-name]
-    ///  │   ├─ [author-title].[template-ext]
-    ///  │   ├─ [author-title].[template-ext]
+    ///  │   ├─ [file-name].[file-extension]
+    ///  │   ├─ [file-name].[file-extension]
     ///  │   └─ ...
     ///  │
     ///  ├─ [template-name]
@@ -163,7 +163,7 @@ impl App {
     ///  └─ ...
     /// ```
     ///
-    /// Multi:
+    /// Nested:
     ///
     /// ```plaintext
     /// [output]
@@ -171,9 +171,8 @@ impl App {
     ///  ├─ [template-name]
     ///  │   │
     ///  │   ├─ [author-title]
-    ///  │   │   ├─ [author-title].[template.ext]
-    ///  │   │   ├─ [YYYY-MM-DD-HHMMSS]-[title].[template.ext]
-    ///  │   │   ├─ [YYYY-MM-DD-HHMMSS]-[title].[template.ext]
+    ///  │   │   ├─ [file-name].[file-extension]
+    ///  │   │   ├─ [file-name].[file-extension]
     ///  │   │   └─ ...
     ///  │   │
     ///  │   ├─ [author-title]
@@ -183,9 +182,8 @@ impl App {
     ///  ├─ [template-name]
     ///  │   │
     ///  │   ├─ [author-title]
-    ///  │   │   ├─ [author-title].[template-ext]
-    ///  │   │   ├─ [YYYY-MM-DD-HHMMSS]-[title].[template.ext]
-    ///  │   │   ├─ [YYYY-MM-DD-HHMMSS]-[title].[template.ext]
+    ///  │   │   ├─ [file-name].[file-extension]
+    ///  │   │   ├─ [file-name].[file-extension]
     ///  │   │   └─ ...
     ///  │   │
     ///  │   ├─ [author-title]
@@ -197,7 +195,7 @@ impl App {
         // -> [output]
         let path = self.config.options().output();
 
-        std::fs::create_dir_all(&path)?;
+        fs::create_dir_all(&path)?;
 
         // Renders each `Entry` i.e. a `Book` and its `Annotation`s.
         for entry in self.data.entries() {

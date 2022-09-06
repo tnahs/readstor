@@ -6,7 +6,7 @@ use std::path::Path;
 use crate::lib::applebooks::database::{ABDatabase, ABDatabaseName};
 use crate::lib::result::LibResult;
 #[allow(unused_imports)] // For docs.
-use crate::lib::templates::TemplateManager;
+use crate::lib::templates::manager::TemplateManager;
 
 use super::annotation::Annotation;
 use super::book::Book;

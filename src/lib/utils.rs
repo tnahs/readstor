@@ -1,42 +1,23 @@
 //! Defines utilities for working with this library.
 
 use std::ffi::OsStr;
+use std::fs;
 use std::io;
-use std::path::{Path, PathBuf};
+use std::path::Path;
 
 use chrono::Local;
 use deunicode::deunicode;
+use walkdir::DirEntry;
 
 use crate::lib;
 
-/// Helper function for `walkdir`. Filters out hidden/private directories e.g.
-/// `.hidden` or `_hidden`.
+/// Helper function for `walkdir`. Filters out hidden directories e.g. `.hidden`.
 #[must_use]
-pub fn entry_is_hidden(entry: &walkdir::DirEntry) -> bool {
+pub fn entry_is_hidden(entry: &DirEntry) -> bool {
     entry
         .file_name()
         .to_str()
-        .map_or(false, |s| !s.starts_with(|c| c == '_' || c == '.'))
-}
-
-/// Returns an iterator over all the files one layer deep in a directory. This
-/// includes all the files inside the directoy and all the files inside any
-/// directories within this first layer.
-///
-/// # Arguments
-///
-/// * `path` - A path to a directory to iterate.
-pub fn iter_dir_shallow<P>(path: P) -> impl Iterator<Item = PathBuf>
-where
-    P: AsRef<Path>,
-{
-    walkdir::WalkDir::new(path)
-        .min_depth(1)
-        .into_iter()
-        .filter_entry(entry_is_hidden) // Ignore hidden directories/files.
-        .filter_map(std::result::Result::ok)
-        .filter(|e| !e.path().is_dir()) // Ignore directories.
-        .map(|e| e.path().to_owned())
+        .map_or(false, |s| !s.starts_with('.'))
 }
 
 /// Recursively copies all files from one directory into another.
@@ -59,15 +40,15 @@ where
     let source = source.as_ref();
     let destination = destination.as_ref();
 
-    std::fs::create_dir_all(&destination)?;
+    fs::create_dir_all(&destination)?;
 
-    for entry in std::fs::read_dir(source)? {
+    for entry in fs::read_dir(source)? {
         let entry = entry?;
 
         if entry.path().is_dir() {
             copy_dir(&entry.path(), &destination.join(entry.file_name()))?;
         } else {
-            std::fs::copy(entry.path(), destination.join(entry.file_name()))?;
+            fs::copy(entry.path(), destination.join(entry.file_name()))?;
         }
     }
 
@@ -103,7 +84,7 @@ where
 ///
 /// Returns `None` if the `source` path terminates in `..` or is `/`.
 #[must_use]
-pub fn get_file_name<P>(path: &P) -> Option<&str>
+pub fn get_filename<P>(path: &P) -> Option<&str>
 where
     P: AsRef<Path>,
 {
@@ -141,17 +122,20 @@ pub fn today_format(format: &str) -> String {
     Local::now().format(format).to_string()
 }
 
-/// Converts a string to alphanumeric ASCII.
+/// Converts a string to ASCII.
 ///
 /// # Arguments
 ///
 /// * `string` - The string to convert.
-/// * `allow` - List of allowed non-alphanumeric characters.
 #[must_use]
-pub fn to_safe_string(string: &str, allow: &[char]) -> String {
+pub fn to_safe_string(string: &str) -> String {
+    // These characters can potentially cause problems in filenames.
+    let deny = &['/', ':', '\n', '\r', '\0'];
+
+    // TODO: Maybe we should allow unicode characters here...
     deunicode(string)
         .chars()
-        .filter(|c| c.is_alphanumeric() || c == &' ' || allow.contains(c))
+        .map(|c| if deny.contains(&c) { '_' } else { c })
         .collect()
 }
 

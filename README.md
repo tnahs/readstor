@@ -47,6 +47,7 @@ USAGE:
 OPTIONS:
     -o, --output <OUTPUT>          Sets the OUTPUT path [default: ~/.readstor]
     -t, --templates <TEMPLATES>    Sets a custom templates directory
+    -o, --databases <DATABASES>    Sets a custom databases directory
     -f, --force                    Runs even if Apple Books is open
     -i, --quiet                    Silences output messages
     -h, --help                     Print help information
@@ -102,13 +103,13 @@ devices" is currently unverified and might produce unexpected results._
 [output]
  │
  ├─ default ── (omitted if a custom template is used)
- │   ├─ Author - Title.[template-ext]
- │   ├─ Author - Title.[template-ext]
+ │   ├─ Author - Title.[extension]
+ │   ├─ Author - Title.[extension]
  │   └─ ...
  │
  ├─ [template-name]
- │   ├─ Author - Title.[template-ext]
- │   ├─ Author - Title.[template-ext]
+ │   ├─ Author - Title.[extension]
+ │   ├─ Author - Title.[extension]
  │   └─ ...
  │
  ├─ Author - Title
@@ -124,8 +125,8 @@ devices" is currently unverified and might produce unexpected results._
  ├─ default ── (omitted if a custom template is used)
  │   │
  │   ├─ Author - Title
- │   │   ├─ [YYYY-MM-DD-HHMMSS]-[title].[template-ext]
- │   │   ├─ [YYYY-MM-DD-HHMMSS]-[title].[template-ext]
+ │   │   ├─ [YYYY-MM-DD-HHMMSS]-[title].[extension]
+ │   │   ├─ [YYYY-MM-DD-HHMMSS]-[title].[extension]
  │   │   └─ ...
  │   │
  │   ├─ Author - Title
@@ -135,8 +136,8 @@ devices" is currently unverified and might produce unexpected results._
  ├─ [template-name]
  │   │
  │   ├─ Author - Title
- │   │   ├─ [YYYY-MM-DD-HHMMSS]-[title].[template-ext]
- │   │   ├─ [YYYY-MM-DD-HHMMSS]-[title].[template-ext]
+ │   │   ├─ [YYYY-MM-DD-HHMMSS]-[title].[extension]
+ │   │   ├─ [YYYY-MM-DD-HHMMSS]-[title].[extension]
  │   │   └─ ...
  │   │
  │   ├─ Author - Title

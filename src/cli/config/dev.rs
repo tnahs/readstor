@@ -7,11 +7,10 @@ use crate::cli::args::ArgOptions;
 
 use super::{Config, ConfigOptions};
 
-/// TODO: Document
+/// Defines the development databases path. See [`cli::defaults::MOCK_DATABASES`]
 pub static DEV_DATABASES: Lazy<PathBuf> =
     Lazy::new(|| cli::defaults::MOCK_DATABASES.join("books-annotated"));
 
-/// TODO: Document
 /// Returns a path to a temp directory to use for reading and writing data
 /// during testing.
 ///
@@ -66,7 +65,9 @@ impl From<ArgOptions> for DevConfig {
     }
 }
 
-/// TODO: Document
+/// Returns a `bool` representing if the application is being developed or not.
+/// The state is determined by whether or not an environment variable is set.
+/// See [`cli::defaults::READSTOR_DEV`] for more information.
 pub fn is_development_env() -> bool {
     match std::env::var_os(cli::defaults::READSTOR_DEV) {
         // Ensures that if the variable exists but is an empty, the function

@@ -18,7 +18,6 @@ impl Config for TestConfig {
 }
 
 impl TestConfig {
-    /// TODO: Document
     pub fn new(name: &str) -> Self {
         Self {
             options: ConfigOptions {

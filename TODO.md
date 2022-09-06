@@ -16,12 +16,30 @@
 - [x] Databases backup directories now have a `-` between the date and version
       `[YYYY-MM-DD-HHMMSS]-[VERSION]`
 - [x] Added the option to use a custom `databases` path.
-- [ ] Rework how templates are managed.
-- [ ] Complete CLI help documentation in `cli-help.txt`.
-- [ ] Cleanup `README.md`'s directory structure documentation.
+- [x] Overhauled templates workflow.
+- [x] Templates can now be optionally placed in their `group` folder. This was
+      previously hardcoded.
+- [x] A template's configuration is now set within the header of the file inside
+      an HTML-comment. As a result the filename of a template no longer matters.
+      The only exception to filenames is when naming a template partial, these
+      must begin with an underscore.
+
+      ```html
+      <!-- readstor
+      group: flat
+      output-mode: flat-grouped
+      render-context: book
+      filename-template-book: "{{ book.author }} - {{ book.title }}"
+      extension: md
+      -->
+      ```
+- [x] Template partials and `{% include %}` statements are now fully supported.
+- [ ] Replace CLI help documentation with an `mdBook`.
+    - [ ] Update/Add `creating-a-custom-template.md` to `mdBook`.
+    - [ ] Update/Add `backup-restore-apple-books-library.md` to `mdBook`.
+- [ ] Update `README.md`'s to reflect all changes.
 - [ ] Rework backup and restore scripts to use `rsync`.
-- [ ] Update `creating-a-custom-template.md`.
-- [ ] Update `backup-restore-apple-books-library.md`
+- [ ] Update crates.
 - [ ] Compile to Apple Silicon and Intel.
 
 ## Internal Improvements
@@ -36,19 +54,11 @@
 ## Features
 
 - [ ] Extract annotations from iOS's `com.apple.ibooks-sync.plist` and `Books.plist` files.
-  - Add a guide on how to access/find these files.
-- [ ] Implement `Config` search paths.
-  - `$HOME/.readstor.toml`
-  - `$HOME/.readstor/readstor.toml`
+  - [ ] Add a guide on how to access/find these files.
 
-```yaml
-# `~/.readstor/readstor.yaml`
+## Future
 
-output: ./output
-templates: ./templates
-force: true
-quiet: true
-```
+- [ ] Internationalization.
 
 ## CLI 1.x Target
 
