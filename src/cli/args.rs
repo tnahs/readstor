@@ -4,13 +4,7 @@ use std::result::Result;
 use clap::{AppSettings, Parser, Subcommand};
 
 #[derive(Debug, Parser)]
-#[clap(
-    author,
-    version,
-    about,
-    setting(AppSettings::DeriveDisplayOrder),
-    after_help = super::defaults::CLI_HELP_TEXT
-)]
+#[clap(author, version, about, setting(AppSettings::DeriveDisplayOrder))]
 pub struct Args {
     #[clap(flatten)]
     pub options: ArgOptions,

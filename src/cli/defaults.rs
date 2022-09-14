@@ -4,10 +4,6 @@ use once_cell::sync::Lazy;
 
 use crate::lib;
 
-/// Defines the CLI help text that's displayed when passing `-h/--help`.
-pub const CLI_HELP_TEXT: &str =
-    include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/docs/cli-help.txt"));
-
 /// Defines the environment variable key used to determine whether the
 /// application is being developed on or not. If so, the Apple Books databases
 /// path is bypassed and redirected to a local testing/dev database.
