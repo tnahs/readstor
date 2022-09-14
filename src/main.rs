@@ -35,7 +35,7 @@ fn main() -> AppResult<()> {
 
     let args = Args::parse();
 
-    log::debug!("{:#?}.", &args);
+    log::debug!("{:#?}", &args);
 
     if !args.options.force && applebooks_is_running() {
         println!(
