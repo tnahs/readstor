@@ -2,7 +2,7 @@
 
 ## v0.3.0
 
-- [x] `render -t/--template` has been removed.
+- [x] Removed `render -t/--template`.
 - [x] `-t/--templates` is now global and accepts a path to a directory with templates.
 - [x] Added `--quiet` to silence output.
 - [x] Removed `-v` logging verbosity.
@@ -10,28 +10,27 @@
 - [x] Switched from `loggerv` to `env_logger`.
 - [x] Removed nested directory from output file structure i.e. `data`,
       `renders`, `backups`.
-- [x] Databases backup directories now have a `-` between the date and version
+- [x] Databases backup directories now have a `-` between the date and version:
       `[YYYY-MM-DD-HHMMSS]-[VERSION]`
 - [x] Added the option to use a custom `databases` path.
 - [x] Overhauled templates workflow.
 - [x] Templates can now be optionally placed in their `group` folder. This was
-      previously hardcoded.
+      previously hard-coded.
 - [x] A template's configuration is now set within the header of the file inside
       an HTML-comment. As a result the filename of a template no longer matters.
       The only exception to filenames is when naming a template partial, these
       must begin with an underscore.
-- [x] Template partials and `{% include %}` statements are now fully supported.
+- [x] Template partials, inheritance and `{% include %}` statements are now
+      fully supported.
+- [x] Compile to Apple Silicon and Intel.
 - [ ] Clear extra spaces when rendering template.
 - [ ] Option to render only a single template from `templates` dir.
-- [ ] Replace CLI help documentation with an `mdBook`.
-  - [ ] Update/Add `creating-a-custom-template.md` to `mdBook`.
-  - [ ] Update/Add `backup-restore-apple-books-library.md` to `mdBook`.
+- [ ] Complete `mdBook`.
 - [ ] Update `README.md`'s to reflect all changes.
 - [ ] Use a shorter readme for crates.io.
-- [ ] What should be `exclude`d in `Cargo.toml`.
+- [ ] Revisit `exclude` in `Cargo.toml`.
 - [ ] Rework backup and restore scripts to use `rsync`.
 - [ ] Update crates.
-- [ ] Compile to Apple Silicon and Intel.
 
 ## Internal Improvements
 
@@ -51,36 +50,3 @@
 ## Future
 
 - [ ] Internationalization.
-
-## CLI 1.x Target
-
-```plaintext
-USAGE:
-    readstor [OPTIONS] <SUBCOMMAND>
-
-OPTIONS:
-    -o, --output <OUTPUT>          Sets the OUTPUT path [default: ~/.readstor]
-    -t, --templates <TEMPLATES>    Sets a custom templates directory
-    -f, --force                    Runs even if Apple Books is open
-    -i, --quiet                    Silences output messages
-    -h, --help                     Print help information
-    -V, --version                  Print version information
-
-SUBCOMMANDS:
-    export            Exports Apple Books' data to OUTPUT
-        macos
-        ios
-        user
-    render            Renders annotations via a template to OUTPUT
-        macos
-        ios
-        user
-    backup            Backs-up Apple Books' databases to OUTPUT
-    help              Print this message or the help of the given subcommand(s)
-    sync              Adds new annotations/books from AppleBooks to the USER-DATABASE
-    add               Adds an annotation/book to the USER-DATABASE
-    search <QUERY>    Searches the USER-DATABASE
-    random            Returns a random annotation from the USER-DATABASE
-    check             Prompts to delete unintentional annotations from the USER-DATABASE
-    info              Prints ReadStor info
-```
