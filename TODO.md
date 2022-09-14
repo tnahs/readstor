@@ -8,11 +8,8 @@
 - [x] Removed `-v` logging verbosity.
 - [x] Switched to `Config` trait for more flexibility.
 - [x] Switched from `loggerv` to `env_logger`.
-- [x] Added template types denoted by a prefix:
-  - `single.` renders a book and all its annotations to a single file.
-  - `multi.` renders a book and all its annotations to separate files.
-  - `partial.` renders as only a part of another themplate. Does not render on its own.
-- [x] Removed nested directory from output file structure i.e. `data`, `renders`, `backups`.
+- [x] Removed nested directory from output file structure i.e. `data`,
+      `renders`, `backups`.
 - [x] Databases backup directories now have a `-` between the date and version
       `[YYYY-MM-DD-HHMMSS]-[VERSION]`
 - [x] Added the option to use a custom `databases` path.
@@ -23,21 +20,15 @@
       an HTML-comment. As a result the filename of a template no longer matters.
       The only exception to filenames is when naming a template partial, these
       must begin with an underscore.
-
-      ```html
-      <!-- readstor
-      group: flat
-      output-mode: flat-grouped
-      render-context: book
-      filename-template-book: "{{ book.author }} - {{ book.title }}"
-      extension: md
-      -->
-      ```
 - [x] Template partials and `{% include %}` statements are now fully supported.
+- [ ] Clear extra spaces when rendering template.
+- [ ] Option to render only a single template from `templates` dir.
 - [ ] Replace CLI help documentation with an `mdBook`.
-    - [ ] Update/Add `creating-a-custom-template.md` to `mdBook`.
-    - [ ] Update/Add `backup-restore-apple-books-library.md` to `mdBook`.
+  - [ ] Update/Add `creating-a-custom-template.md` to `mdBook`.
+  - [ ] Update/Add `backup-restore-apple-books-library.md` to `mdBook`.
 - [ ] Update `README.md`'s to reflect all changes.
+- [ ] Use a shorter readme for crates.io.
+- [ ] What should be `exclude`d in `Cargo.toml`.
 - [ ] Rework backup and restore scripts to use `rsync`.
 - [ ] Update crates.
 - [ ] Compile to Apple Silicon and Intel.
@@ -53,7 +44,8 @@
 
 ## Features
 
-- [ ] Extract annotations from iOS's `com.apple.ibooks-sync.plist` and `Books.plist` files.
+- [ ] Extract annotations from iOS's `com.apple.ibooks-sync.plist` and
+      `Books.plist` files.
   - [ ] Add a guide on how to access/find these files.
 
 ## Future
