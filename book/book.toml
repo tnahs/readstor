@@ -1,0 +1,9 @@
+[book]
+title = "ReadStor"
+authors = [""]
+src = "src"
+multilingual = false
+language = "en"
+
+[output.html]
+additional-css = ["src/static/css/custom.css"]
