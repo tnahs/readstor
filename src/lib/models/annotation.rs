@@ -8,7 +8,7 @@ use rusqlite::Row;
 use serde::Serialize;
 
 use crate::lib::applebooks::database::{ABDatabaseName, ABQuery};
-use crate::lib::parser;
+use crate::lib::{self, parser};
 
 use super::datetime::DateTimeUtc;
 
@@ -175,7 +175,7 @@ impl PartialEq for Annotation {
 /// A struct representing an annotation's metadata.
 ///
 /// This is all the data that is not directly editable by the user.
-#[derive(Debug, Default, Clone, Eq, Serialize)]
+#[derive(Debug, Default, Clone, Eq)]
 pub struct AnnotationMetadata {
     /// The annotation's unique id.
     pub id: String,
@@ -196,6 +196,52 @@ pub struct AnnotationMetadata {
 
     /// The annotation's raw `epubcfi`.
     pub epubcfi: String,
+}
+
+impl AnnotationMetadata {
+    ///Returns a slugified string of the creation date.
+    #[must_use]
+    pub fn slug_created(&self) -> String {
+        self.created.format(lib::defaults::DATE_FORMAT).to_string()
+    }
+
+    ///Returns a slugified string of the modification date.
+    #[must_use]
+    pub fn slug_modified(&self) -> String {
+        self.created.format(lib::defaults::DATE_FORMAT).to_string()
+    }
+}
+
+impl serde::Serialize for AnnotationMetadata {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        #[derive(Serialize)]
+        struct _AnnotationMetadata<'a> {
+            pub id: &'a str,
+            pub book_id: &'a str,
+            pub created: &'a DateTimeUtc,
+            pub modified: &'a DateTimeUtc,
+            pub location: &'a str,
+            pub epubcfi: &'a str,
+            pub slug_created: String,
+            pub slug_modified: String,
+        }
+
+        let metadata = _AnnotationMetadata {
+            id: &self.id,
+            book_id: &self.book_id,
+            created: &self.created,
+            modified: &self.modified,
+            location: &self.location,
+            epubcfi: &self.epubcfi,
+            slug_created: self.slug_created(),
+            slug_modified: self.slug_modified(),
+        };
+
+        metadata.serialize(serializer)
+    }
 }
 
 impl Ord for AnnotationMetadata {

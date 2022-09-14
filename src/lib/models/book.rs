@@ -22,15 +22,13 @@ pub struct Book {
 }
 
 impl Book {
-    ///Returns a slugified string of the title. The string's case is dropped
-    ///and all special characters are removed, and replaced with dashes (`-`).
+    ///Returns a slugified string of the title.
     #[must_use]
     pub fn slug_title(&self) -> String {
         utils::to_slug_string(&self.title, '-')
     }
 
-    ///Returns a slugified string of the author. The string's case is dropped
-    ///and all special characters are removed, and replaced with dashes (`-`).
+    ///Returns a slugified string of the author.
     #[must_use]
     pub fn slug_author(&self) -> String {
         utils::to_slug_string(&self.author, '-')

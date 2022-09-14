@@ -17,6 +17,8 @@ use crate::lib::utils;
 use super::manager::TemplateManager;
 
 /// A struct representing a fully configured template.
+// TODO: Rename some of these fields. They are far too long in both the codebase
+// and in a template's configuration.
 #[derive(Clone, Deserialize)]
 #[serde(rename_all = "kebab-case")]
 pub struct Template {
@@ -44,42 +46,29 @@ pub struct Template {
 
     /// The template's group name.
     ///
-    /// This is used to identify and optionally sort templates into a single
-    /// directory i.e. when multiple templates are intended for a single output.
-    /// The most common case would be a template used to render a [`Book`] and
-    /// one to render each of its [`Annotation`]s separately. Used when the
-    /// template's output mode is either [`OutputMode::FlatGrouped`] or
-    /// [`OutputMode::NestedGrouped`].
+    /// See [`StructureMode::FlatGrouped`] and [`StructureMode::NestedGrouped`]
+    /// for more information.
     pub group: String,
 
-    /// The template's output mode i.e. how the output should be structured.
+    /// The template's context mode i.e what the template intends to render.
     ///
-    /// See [`OutputMode`] for more information.
-    pub output_mode: OutputMode,
+    /// See [`ContextMode`] for more information.
+    #[serde(rename = "context")]
+    pub context_mode: ContextMode,
 
-    /// The template's render context i.e what the template intends to render.
+    /// The template's structure mode i.e. how the output should be structured.
     ///
-    /// See [`RenderContext`] for more information.
-    pub render_context: RenderContext,
-
-    /// The default template used when generating an output filename for the
-    /// template when its render context is [`RenderContext::Book`].
-    #[serde(default = "Template::default_filename_template_book")]
-    pub filename_template_book: String,
-
-    /// The default template used when generating an output filename for the
-    /// template when its render context is [`RenderContext::Annotation`].
-    #[serde(default = "Template::default_filename_template_annotation")]
-    pub filename_template_annotation: String,
-
-    /// The default template used when generating a nested output directory for
-    /// the template when its output mode is either [`OutputMode::Nested`] or
-    /// [`OutputMode::NestedGrouped`].
-    #[serde(default = "Template::default_nested_directory_template")]
-    pub nested_directory_template: String,
+    /// See [`StructureMode`] for more information.
+    #[serde(rename = "structure")]
+    pub structure_mode: StructureMode,
 
     /// The template's file extension.
     pub extension: String,
+
+    /// The raw template strings for generating the output filenames and
+    /// directory. This is converted into a [`Names`] struct once an [`Entry`]
+    /// is provided.
+    name_templates: NameTemplates,
 }
 
 impl Template {
@@ -115,25 +104,12 @@ impl Template {
         Ok(template)
     }
 
-    /// See [`Template.filename_template_book`].
-    fn default_filename_template_book() -> String {
-        super::defaults::FILENAME_TEMPLATE_BOOK.to_owned()
-    }
-
-    /// See [`Template.filename_template_annotation`].
-    fn default_filename_template_annotation() -> String {
-        super::defaults::FILENAME_TEMPLATE_ANNOTATION.to_owned()
-    }
-
-    /// See [`Template.default_nested_directory_template`].
-    fn default_nested_directory_template() -> String {
-        super::defaults::NESTED_DIRECTORY_TEMPLATE.to_owned()
-    }
-
     /// Returns a tuple containing the template's configuration and its contents
     /// respectively.
     ///
     /// Returns `None` if the template's configuration is formatted incorrectly.
+    // TODO: Should we make this less strict? In other words, allow the config
+    // to come after other comment tags?
     fn split_template_config_contents(string: &str) -> Option<(&str, &str)> {
         let open = super::defaults::CONFIG_TAG_OPEN;
         let close = super::defaults::CONFIG_TAG_CLOSE;
@@ -163,8 +139,8 @@ impl std::fmt::Debug for Template {
         f.debug_struct("Template")
             .field("id", &self.id)
             .field("group", &self.group)
-            .field("output_mode", &self.output_mode)
-            .field("render_context", &self.render_context)
+            .field("context_mode", &self.context_mode)
+            .field("structure_mode", &self.structure_mode)
             .finish()
     }
 }
@@ -172,7 +148,7 @@ impl std::fmt::Debug for Template {
 /// An enum representing the ways to structure a template's rendered files.
 #[derive(Debug, Clone, Copy, Deserialize)]
 #[serde(rename_all = "kebab-case")]
-pub enum OutputMode {
+pub enum StructureMode {
     /// When selected, the template is rendered to the output directory without
     /// any structure.
     ///
@@ -190,8 +166,9 @@ pub enum OutputMode {
     Flat,
 
     /// When selected, the template is rendered to the output directory and
-    /// placed inside a directory named after its `template-group`. This useful
-    /// if there are multiple templates being rendered to the same directory.
+    /// placed inside a directory named after its `group`. This useful if there
+    /// are multiple related and unrelated templates being rendered to the same
+    /// directory.
     ///
     /// ```yaml
     /// output-mode: flat-grouped
@@ -237,10 +214,12 @@ pub enum OutputMode {
     Nested,
 
     /// When selected, the template is rendered to the output directory and
-    /// placed inside a directory named after its `template-group` and another
-    /// named after its `nested-directory-template`. This useful if multiple
-    /// templates are used to represent a single book i.e. a book template and
-    /// an annotation template.
+    /// placed inside a directory named after its `group` and another named
+    /// after its `nested-directory-template`. This useful if multiple templates
+    /// are used to represent a single book i.e. a book template and an
+    /// annotation template and there are multiple related and unrelated
+    /// templates being rendered to the same directory.
+    ///
     ///
     /// ```yaml
     /// output-mode: nested-grouped
@@ -274,7 +253,7 @@ pub enum OutputMode {
 /// An enum representing what a template intends to render.
 #[derive(Debug, Clone, Copy, Deserialize)]
 #[serde(rename_all = "lowercase")]
-pub enum RenderContext {
+pub enum ContextMode {
     /// When selected, the template rendered to a single file containing a
     /// [`Book`] and all its [`Annotation`]s.
     ///
@@ -305,6 +284,42 @@ pub enum RenderContext {
     Annotation,
 }
 
+#[derive(Debug, Clone, Deserialize)]
+struct NameTemplates {
+    /// The default template used when generating an output filename for the
+    /// template when its context mode is [`ContextMode::Book`].
+    #[serde(default = "NameTemplates::default_book")]
+    book: String,
+
+    /// The default template used when generating an output filename for the
+    /// template when its context mode is [`ContextMode::Annotation`].
+    #[serde(default = "NameTemplates::default_annotation")]
+    annotation: String,
+
+    /// The default template used when generating a nested output directory for
+    /// the template when its structure mode is either [`StructureMode::Nested`]
+    /// or [`StructureMode::NestedGrouped`].
+    #[serde(default = "NameTemplates::default_directory")]
+    directory: String,
+}
+
+impl NameTemplates {
+    /// See [`Template.filename_template_book`].
+    fn default_book() -> String {
+        super::defaults::FILENAME_TEMPLATE_BOOK.to_owned()
+    }
+
+    /// See [`Template.filename_template_annotation`].
+    fn default_annotation() -> String {
+        super::defaults::FILENAME_TEMPLATE_ANNOTATION.to_owned()
+    }
+
+    /// See [`Template.default_nested_directory_template`].
+    fn default_directory() -> String {
+        super::defaults::DIRECTORY_TEMPLATE.to_owned()
+    }
+}
+
 /// A struct representing all the output file and directory names for a given
 /// template.
 ///
@@ -315,25 +330,25 @@ pub enum RenderContext {
 /// See [`TemplateManager::render()`] for more information.
 #[derive(Debug, Default, Clone, Serialize)]
 pub struct Names {
-    /// The output filename for a template with [`RenderContext::Book`].
+    /// The output filename for a template with [`ContextMode::Book`].
     pub book: String,
 
-    /// The output filenames for a template with [`RenderContext::Annotation`].
+    /// The output filenames for a template with [`ContextMode::Annotation`].
     pub annotations: HashMap<String, String>,
 
-    /// The directory name for a template with [`OutputMode::Nested`] or
-    /// [`OutputMode::NestedGrouped`].
-    pub nested_directory: String,
+    /// The directory name for a template with [`StructureMode::Nested`] or
+    /// [`StructureMode::NestedGrouped`].
+    pub directory: String,
 }
 
 impl Names {
     /// Creates a new instance of [`Names`] given an [`Entry`] and a [`Template`].
     ///
     /// Note that all names are generated regardless of the template's
-    /// [`RenderContext`]. For example, when a separate template is used to
-    /// render a [`Book`] and another for its [`Annotation`]s, it's important
-    /// that both templates have access to the other's filenames so they can
-    /// link to one another if the user desires.
+    /// [`ContextMode`]. For example, when a separate template is used to render
+    /// a [`Book`] and another for its [`Annotation`]s, it's important that both
+    /// templates have access to the other's filenames so they can link to one
+    /// another if the user desires.
     ///
     /// # Arguments
     ///
@@ -343,25 +358,25 @@ impl Names {
     /// # Errors
     ///
     /// Will return `Err` if:
-    /// * Any filename templates have syntax errors or are referencing
-    /// non-existent fields in their respective contexts.
+    /// * Any name templates have syntax errors or are referencing non-existent
+    /// fields in their respective contexts.
     pub fn new(entry: &Entry, template: &Template) -> LibResult<Self> {
-        let book = Self::render_filename_book(entry, template)?;
-        let annotations = Self::render_filenames_annotation(entry, template)?;
-        let nested_directory = Self::render_name_nested_directory(entry, template)?;
+        let book = Self::render_name_book(entry, template)?;
+        let annotations = Self::render_names_annotation(entry, template)?;
+        let directory = Self::render_name_directory(entry, template)?;
 
         Ok(Self {
             book,
             annotations,
-            nested_directory,
+            directory,
         })
     }
 
-    fn render_filename_book(entry: &Entry, template: &Template) -> LibResult<String> {
-        let context = TemplateContext::filename_book(entry);
+    fn render_name_book(entry: &Entry, template: &Template) -> LibResult<String> {
+        let context = TemplateContext::name_book(entry);
 
         let name = Tera::one_off(
-            &template.filename_template_book,
+            &template.name_templates.book,
             &Context::from_serialize(context)?,
             false,
         )?;
@@ -371,17 +386,17 @@ impl Names {
         Ok(format!("{}.{}", name, template.extension))
     }
 
-    fn render_filenames_annotation(
+    fn render_names_annotation(
         entry: &Entry,
         template: &Template,
     ) -> LibResult<HashMap<String, String>> {
         let mut annotations = HashMap::new();
 
         for annotation in &entry.annotations {
-            let context = TemplateContext::filename_annotation(&entry.book, annotation);
+            let context = TemplateContext::name_annotation(&entry.book, annotation);
 
             let name = Tera::one_off(
-                &template.filename_template_annotation,
+                &template.name_templates.annotation,
                 &Context::from_serialize(context)?,
                 false,
             )?;
@@ -397,11 +412,11 @@ impl Names {
         Ok(annotations)
     }
 
-    fn render_name_nested_directory(entry: &Entry, template: &Template) -> LibResult<String> {
-        let context = TemplateContext::filename_book(entry);
+    fn render_name_directory(entry: &Entry, template: &Template) -> LibResult<String> {
+        let context = TemplateContext::name_book(entry);
 
         let name = Tera::one_off(
-            &template.nested_directory_template,
+            &template.name_templates.directory,
             &Context::from_serialize(context)?,
             false,
         )?;
@@ -447,8 +462,8 @@ pub enum TemplateContext<'a> {
         names: &'a Names,
     },
     /// Used when rendering the output filename for a template with
-    /// [`RenderContext::Book`].
-    FilenameBook {
+    /// [`ContextMode::Book`].
+    NameBook {
         /// The [`Book`] being injected into the template.
         book: &'a Book,
 
@@ -456,8 +471,8 @@ pub enum TemplateContext<'a> {
         annotations: &'a [Annotation],
     },
     /// Used when rendering the output filename for a template with
-    /// [`RenderContext::Annotation`].
-    FilnameAnnotation {
+    /// [`ContextMode::Annotation`].
+    NameAnnotation {
         /// The [`Book`] being injected into the template.
         book: &'a Book,
 
@@ -487,16 +502,16 @@ impl<'a> TemplateContext<'a> {
     }
 
     #[must_use]
-    pub fn filename_book(entry: &'a Entry) -> Self {
-        Self::FilenameBook {
+    pub fn name_book(entry: &'a Entry) -> Self {
+        Self::NameBook {
             book: &entry.book,
             annotations: &entry.annotations,
         }
     }
 
     #[must_use]
-    pub fn filename_annotation(book: &'a Book, annotation: &'a Annotation) -> Self {
-        Self::FilnameAnnotation { book, annotation }
+    pub fn name_annotation(book: &'a Book, annotation: &'a Annotation) -> Self {
+        Self::NameAnnotation { book, annotation }
     }
 }
 

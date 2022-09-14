@@ -1,11 +1,12 @@
 <!-- readstor
 group: nested
-output-mode: nested-grouped
-render-context: annotation
-nested-directory-template: "{{ book.author }} - {{ book.title }}"
-filename-template-book: "{{ book.author }} - {{ book.title }}"
-filename-template-annotation: "{{ annotation.metadata.created | date(format='%Y-%m-%d-%H%M%S') }}-{{ book.slug_title }}"
+context: annotation
+structure: nested-grouped
 extension: md
+name-templates:
+  book: "{{ book.author }} - {{ book.title }}"
+  annotation: "{{ annotation.metadata.slug_created }}-{{ book.slug_title }}"
+  directory: "{{ book.author }} - {{ book.title }}"
 -->
 
 ---

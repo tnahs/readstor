@@ -14,7 +14,7 @@ use crate::lib::result::{LibError, LibResult};
 use crate::lib::utils;
 
 use super::template::{
-    Names, OutputMode, PartialTemplate, RenderContext, Template, TemplateContext,
+    ContextMode, Names, PartialTemplate, StructureMode, Template, TemplateContext,
 };
 
 /// A struct providing a simple interface to build and render [`Template`]s.
@@ -62,7 +62,7 @@ impl TemplateManager {
     }
 
     /// Iterates through all [`Template`]s and renders them based on their
-    /// [`OutputMode`] and [`RenderContext`]. See respective enums for more
+    /// [`StructureMode`] and [`ContextMode`]. See respective enums for more
     /// details.
     ///
     /// # Arguments
@@ -79,33 +79,33 @@ impl TemplateManager {
         for template in &self.templates {
             let names = Names::new(entry, template)?;
 
-            let root = match template.output_mode {
-                OutputMode::Flat => {
+            let root = match template.structure_mode {
+                StructureMode::Flat => {
                     // -> [path]
                     path.to_owned()
                 }
-                OutputMode::FlatGrouped => {
+                StructureMode::FlatGrouped => {
                     // -> [path]/[template-name]
                     path.join(utils::to_safe_string(&template.group))
                 }
-                OutputMode::Nested => {
+                StructureMode::Nested => {
                     // -> [path]/[author-title]
-                    path.join(&names.nested_directory)
+                    path.join(&names.directory)
                 }
 
-                OutputMode::NestedGrouped => {
+                StructureMode::NestedGrouped => {
                     // -> [path]/[template-name]/[author-title]
-                    path.join(&template.group).join(&names.nested_directory)
+                    path.join(&template.group).join(&names.directory)
                 }
             };
 
             fs::create_dir_all(&root)?;
 
-            match template.render_context {
-                RenderContext::Book => {
+            match template.context_mode {
+                ContextMode::Book => {
                     self.render_book(entry, template, &names, &root)?;
                 }
-                RenderContext::Annotation => {
+                ContextMode::Annotation => {
                     self.render_annotations(entry, template, &names, &root)?;
                 }
             }
@@ -234,9 +234,9 @@ impl TemplateManager {
         let annotation = Annotation::default();
         let names = Names::default();
 
-        let context = match template.render_context {
-            RenderContext::Book => TemplateContext::book(&entry, &names),
-            RenderContext::Annotation => TemplateContext::annotation(&book, &annotation, &names),
+        let context = match template.context_mode {
+            ContextMode::Book => TemplateContext::book(&entry, &names),
+            ContextMode::Annotation => TemplateContext::annotation(&book, &annotation, &names),
         };
 
         self.registry

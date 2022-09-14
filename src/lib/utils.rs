@@ -133,7 +133,8 @@ pub fn to_safe_string(string: &str) -> String {
     let deny = &['/', ':', '\n', '\r', '\0'];
 
     // TODO: Maybe we should allow unicode characters here...
-    deunicode(string)
+    // deunicode(string)
+    string
         .chars()
         .map(|c| if deny.contains(&c) { '_' } else { c })
         .collect()
