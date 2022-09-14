@@ -15,7 +15,11 @@
     rust_2018_compatibility,
     rust_2021_compatibility
 )]
-#![allow(clippy::module_name_repetitions)]
+#![allow(
+    clippy::module_name_repetitions,
+    // TODO: How is this fixed?
+    clippy::multiple_crate_versions,
+)]
 
 mod cli;
 pub mod lib;
