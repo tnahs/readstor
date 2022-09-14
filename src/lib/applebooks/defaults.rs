@@ -1,18 +1,20 @@
+//! Defines defaults for working with Apple Books.
+
 use std::collections::HashSet;
 use std::path::PathBuf;
 
 use once_cell::sync::Lazy;
 
-use crate::lib::defaults as lib_defaults;
+use crate::lib;
+
+#[allow(unused_imports)] // For docs.
+use super::database::ABDatabase;
 #[allow(unused_imports)] // For docs.
 use crate::lib::models::annotation::Annotation;
 #[allow(unused_imports)] // For docs.
 use crate::lib::models::book::Book;
 
-#[allow(unused_imports)] // For docs.
-use super::database::ABDatabase;
-
-/// Defines the root databases directory.
+/// The root databases directory.
 ///
 /// This assembles the full path to Apple Books' directory containing
 /// `BKLibrary*.sqlite` and `AEAnnotation*.sqlite` databases.
@@ -22,7 +24,7 @@ use super::database::ABDatabase;
 /// /users/[user]/Library/Containers/com.apple.iBooksX/Data/Documents.
 /// ```
 pub static DATABASES: Lazy<PathBuf> = Lazy::new(|| {
-    let mut path = lib_defaults::HOME.to_owned();
+    let mut path = lib::defaults::HOME.to_owned();
     path.extend(
         [
             "Library",
@@ -36,7 +38,7 @@ pub static DATABASES: Lazy<PathBuf> = Lazy::new(|| {
     path
 });
 
-/// Defines all the variants of the Apple Books application name.
+/// A set of all the variations of the Apple Books application name.
 pub static APPLEBOOKS_NAMES: Lazy<HashSet<String>> = Lazy::new(|| {
     ["Books", "iBooks", "Apple Books", "AppleBooks"]
         .into_iter()

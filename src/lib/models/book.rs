@@ -1,21 +1,64 @@
+//! Defines the [`Book`] struct and its trait implementations.
+
 use rusqlite::Row;
 use serde::Serialize;
 
 use crate::lib::applebooks::database::{ABDatabaseName, ABQuery};
-use crate::lib::utils::DateTimeUTC;
+use crate::lib::utils;
 
-#[derive(Debug, Default, Clone, Serialize)]
+use super::datetime::DateTimeUtc;
+
+/// A struct represening a book and its metadata.
+#[derive(Debug, Default, Clone)]
 pub struct Book {
+    /// The title of the book.
     pub title: String,
+
+    /// The author of the book.
     pub author: String,
+
+    /// The book's metadata.
     pub metadata: BookMetadata,
 }
 
-/// Represents the data that is not directly editable by the user.
-#[derive(Debug, Default, Clone, Serialize)]
-pub struct BookMetadata {
-    pub id: String,
-    pub last_opened: DateTimeUTC,
+impl Book {
+    ///Returns a slugified string of the title.
+    #[must_use]
+    pub fn slug_title(&self) -> String {
+        utils::to_slug_string(&self.title, '-')
+    }
+
+    ///Returns a slugified string of the author.
+    #[must_use]
+    pub fn slug_author(&self) -> String {
+        utils::to_slug_string(&self.author, '-')
+    }
+}
+
+impl serde::Serialize for Book {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        #[derive(Serialize)]
+        struct _Book<'a> {
+            title: &'a str,
+            author: &'a str,
+            metadata: &'a BookMetadata,
+            slug_title: String,
+            slug_author: String,
+        }
+
+        let book = _Book {
+            title: &self.title,
+            author: &self.author,
+            metadata: &self.metadata,
+            slug_title: self.slug_title(),
+            slug_author: self.slug_author(),
+        };
+
+        book.serialize(serializer)
+    }
 }
 
 impl ABQuery for Book {
@@ -31,11 +74,11 @@ impl ABQuery for Book {
         ORDER BY ZBKLIBRARYASSET.ZTITLE;"
     };
 
-    fn from_row(row: &Row) -> Self {
+    fn from_row(row: &Row<'_>) -> Self {
         // It's necessary to explicitly type all these variables as `rusqlite`
-        // needs the type information to convert the column value to `T`. If
-        // the types do not match `rusqlite` will return an `InvalidColumnType`
-        // when calling `get_unwrap`. Therefore it should be safe to call
+        // needs the type information to convert the column value to `T`. If the
+        // types do not match `rusqlite` will return an `InvalidColumnType` when
+        // calling `get_unwrap`. Therefore it should be safe to call
         // `get_unwrap` as we know both the types match and we can see the
         // column indices in the `query` method below.
 
@@ -50,4 +93,14 @@ impl ABQuery for Book {
             },
         }
     }
+}
+
+/// A struct representing a book's metadata.
+#[derive(Debug, Default, Clone, Serialize)]
+pub struct BookMetadata {
+    /// The book's unique id.
+    pub id: String,
+
+    /// The date the book was last opened.
+    pub last_opened: DateTimeUtc,
 }

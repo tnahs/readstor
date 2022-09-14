@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>Books</key>
+	<array>
+		<dict>
+			<key>Artist</key>
+			<string>Merlin Sheldrake</string>
+			<key>Cover Hash</key>
+			<string>1D82445507FEC6BE9E756BC08914A549</string>
+			<key>Cover Path</key>
+			<string>OEBPS/images/9780525510338_cover.jpg</string>
+			<key>Extension</key>
+			<string>epub</string>
+			<key>Has Artwork</key>
+			<false/>
+			<key>Is Protected</key>
+			<false/>
+			<key>Kind</key>
+			<string>unknown</string>
+			<key>MIME Type</key>
+			<string>application/epub+zip</string>
+			<key>Name</key>
+			<string>Entangled Life</string>
+			<key>Package Hash</key>
+			<string>B9A8CE7F62064FD60E23C28D3E9387FB</string>
+			<key>Path</key>
+			<string>17346A64ECC16D0D.epub</string>
+			<key>Persistent ID</key>
+			<string>17346A64ECC16D0D</string>
+			<key>Publisher Unique ID</key>
+			<string>9780525510338</string>
+			<key>Unique ID</key>
+			<string>603E0F16C9BD90E2</string>
+		</dict>
+		<dict>
+			<key>Artist</key>
+			<string>Robert Henri</string>
+			<key>Cover Hash</key>
+			<string>D88E98870A2EAEE6E928CCF3AC812C72</string>
+			<key>Cover Path</key>
+			<string>OEBPS/images/cover.jpg</string>
+			<key>Extension</key>
+			<string>epub</string>
+			<key>Has Artwork</key>
+			<false/>
+			<key>Is Protected</key>
+			<false/>
+			<key>Kind</key>
+			<string>unknown</string>
+			<key>MIME Type</key>
+			<string>application/epub+zip</string>
+			<key>Name</key>
+			<string>The Art Spirit</string>
+			<key>Package Hash</key>
+			<string>1969AF0ECA8AE4965029A34316813924</string>
+			<key>Path</key>
+			<string>68CA7B7AB35366A7.epub</string>
+			<key>Persistent ID</key>
+			<string>68CA7B7AB35366A7</string>
+			<key>Publisher Unique ID</key>
+			<string>9780465008575</string>
+			<key>Sort Name</key>
+			<string>Art Spirit</string>
+			<key>Unique ID</key>
+			<string>07E043D22D54BC9D</string>
+		</dict>
+	</array>
+</dict>
+</plist>

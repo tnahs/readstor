@@ -1,90 +1,46 @@
+//! Defines utilities for working with this library.
+
 use std::ffi::OsStr;
-use std::ops::{Deref, DerefMut};
+use std::fs;
+use std::io;
 use std::path::Path;
-use std::time::UNIX_EPOCH;
-use std::{fs, io};
 
-use chrono::{DateTime, Local, NaiveDateTime, Utc};
-use serde::Serialize;
+use chrono::Local;
+use deunicode::deunicode;
+use walkdir::DirEntry;
 
-#[allow(unused_imports)] // For docs.
-use super::models::stor::StorItem;
-#[allow(unused_imports)] // For docs.
-use super::templates::Templates;
+use crate::lib;
 
-/// Thin wrapper around `chrono`s `DateTime<Utc>` to allow for a `Default`
-/// implementation.
-///
-/// Why do we need a `Default` implementation? When a new template is added to
-/// the [`Templates`] registry it needs to be validates both for its syntax
-/// and for the fields that its variables reference. In order to achieve the
-/// latter, a dummy [`StorItem`] struct---its `Default` implementation---is
-/// passed to validate the template's variables. Seeing as `DateTime` does not
-/// have a `Default` implementation, it was either we implementation a hand
-/// written `Default` of [`StorItem`] which would include multiple nested
-/// structs or wrap `DateTime<Utc>` and provide a `Default` implementation.
-///
-/// See [`Templates::add()`] for more information.
-#[derive(Debug, Clone, Serialize)]
-pub struct DateTimeUTC(DateTime<Utc>);
-
-impl Default for DateTimeUTC {
-    fn default() -> Self {
-        Self(DateTime::<Utc>::from(UNIX_EPOCH))
-    }
+/// Helper function for `walkdir`. Filters out hidden directories e.g. `.hidden`.
+#[must_use]
+pub fn entry_is_hidden(entry: &DirEntry) -> bool {
+    entry
+        .file_name()
+        .to_str()
+        .map_or(false, |s| !s.starts_with('.'))
 }
 
-impl Deref for DateTimeUTC {
-    type Target = DateTime<Utc>;
-
-    fn deref(&self) -> &DateTime<Utc> {
-        &self.0
-    }
-}
-
-impl DerefMut for DateTimeUTC {
-    fn deref_mut(&mut self) -> &mut DateTime<Utc> {
-        &mut self.0
-    }
-}
-
-/// Converts a `Core Data` timestamp (f64) to `DateTime`.
+/// Recursively copies all files from one directory into another.
 ///
-/// A `Core Data` timestamp is the number of seconds (or nanoseconds) since
-/// midnight, January 1, 2001, GMT. The difference between a `Core Data`
-/// timestamp and a Unix timestamp (seconds since 1/1/1970) is
-/// 978307200 seconds.
+/// # Arguments
 ///
-/// <https://www.epochconverter.com/coredata>
-#[allow(clippy::cast_possible_truncation, clippy::cast_sign_loss)]
-impl From<f64> for DateTimeUTC {
-    fn from(f: f64) -> Self {
-        // Add the `Core Data` timestamp offset
-        let timestamp = f + 978_307_200_f64;
-
-        let seconds = timestamp.trunc() as i64;
-        let nanoseconds = timestamp.fract() * 1_000_000_000.0;
-        let datetime = NaiveDateTime::from_timestamp(seconds, nanoseconds as u32);
-
-        DateTimeUTC(DateTime::from_utc(datetime, Utc))
-    }
-}
-
-/// Recursively copies all files in a directory.
+/// * `source` - The source directory.
+/// * `destination` - The destination directory.
 ///
 /// # Errors
 ///
 /// Will return `Err` if any IO errors are encountered.
 //
 // <https://stackoverflow.com/a/65192210/16968574>
-pub fn copy_dir(source: &Path, destination: &Path) -> io::Result<()> {
-    fs::create_dir_all(&destination)?;
+pub fn copy_dir<S, D>(source: S, destination: D) -> io::Result<()>
+where
+    S: AsRef<Path>,
+    D: AsRef<Path>,
+{
+    let source = source.as_ref();
+    let destination = destination.as_ref();
 
-    log::debug!(
-        "Copying `{}` to `{}`",
-        &source.display(),
-        &destination.display(),
-    );
+    fs::create_dir_all(&destination)?;
 
     for entry in fs::read_dir(source)? {
         let entry = entry?;
@@ -96,29 +52,112 @@ pub fn copy_dir(source: &Path, destination: &Path) -> io::Result<()> {
         }
     }
 
+    log::debug!(
+        "Copied directory `{}` to `{}`",
+        &source.display(),
+        &destination.display(),
+    );
+
     Ok(())
 }
 
-/// Returns the file extension of a path.
+/// Returns the file extension from a path.
+///
+/// # Arguments
+///
+/// * `path` - The path to extract the file extension from.
+///
+/// Returns `None` if the `source` path terminates in `..` or is `/`.
 #[must_use]
-pub fn get_file_extension(path: &Path) -> Option<&str> {
-    path.extension().and_then(OsStr::to_str)
+pub fn get_file_extension<P>(path: &P) -> Option<&str>
+where
+    P: AsRef<Path>,
+{
+    path.as_ref().extension().and_then(OsStr::to_str)
 }
 
-/// Returns the file name of a path.
+/// Returns the file name from a path.
+///
+/// # Arguments
+///
+/// * `path` - The path to extract the file name from.
+///
+/// Returns `None` if the `source` path terminates in `..` or is `/`.
 #[must_use]
-pub fn get_file_name(path: &Path) -> Option<&str> {
-    path.file_name().and_then(OsStr::to_str)
+pub fn get_filename<P>(path: &P) -> Option<&str>
+where
+    P: AsRef<Path>,
+{
+    path.as_ref().file_name().and_then(OsStr::to_str)
 }
 
 /// Returns the file stem of a path.
+///
+/// # Arguments
+///
+/// * `path` - The path to extract the file stem from.
+///
+/// Returns `None` if the `source` path terminates in `..` or is `/`.
 #[must_use]
-pub fn get_file_stem(path: &Path) -> Option<&str> {
-    path.file_stem().and_then(OsStr::to_str)
+pub fn get_file_stem<P>(path: &P) -> Option<&str>
+where
+    P: AsRef<Path>,
+{
+    path.as_ref().file_stem().and_then(OsStr::to_str)
 }
 
-/// Returns today's date as a string.
+/// Returns today's date using the default `strftime` format string.
+#[must_use]
+pub fn today() -> String {
+    Local::now().format(lib::defaults::DATE_FORMAT).to_string()
+}
+
+/// Returns today's date using a custom `strftime` format string.
+///
+/// # Arguments
+///
+/// * `format` - An `strftime` format string.
 #[must_use]
 pub fn today_format(format: &str) -> String {
     Local::now().format(format).to_string()
+}
+
+/// Converts a string to ASCII.
+///
+/// # Arguments
+///
+/// * `string` - The string to convert.
+#[must_use]
+pub fn to_safe_string(string: &str) -> String {
+    // These characters can potentially cause problems in filenames.
+    let deny = &['/', ':', '\n', '\r', '\0'];
+
+    // TODO: Maybe we should allow unicode characters here...
+    // deunicode(string)
+    string
+        .chars()
+        .map(|c| if deny.contains(&c) { '_' } else { c })
+        .collect()
+}
+
+/// Slugifies a string.
+///
+/// # Arguments
+///
+/// * `string` - The string to slugify.
+/// * `delimeter` - Allow list for non-alphanumeric characters.
+#[must_use]
+pub fn to_slug_string(string: &str, delimiter: char) -> String {
+    let slug = deunicode(string)
+        .trim()
+        .split(' ')
+        .filter(|s| !s.is_empty())
+        .collect::<Vec<&str>>()
+        .join(" ")
+        .to_lowercase()
+        .replace(' ', &delimiter.to_string());
+
+    slug.chars()
+        .filter(|c| c.is_alphanumeric() || c == &delimiter)
+        .collect()
 }

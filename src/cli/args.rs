@@ -6,43 +6,59 @@ use clap::{AppSettings, Parser, Subcommand};
 #[derive(Debug, Parser)]
 #[clap(author, version, about, setting(AppSettings::DeriveDisplayOrder))]
 pub struct Args {
-    /// Sets the OUTPUT path [default: ~/.readstor]
+    #[clap(flatten)]
+    pub options: ArgOptions,
+
+    #[clap(subcommand)]
+    pub command: ArgCommand,
+}
+
+#[derive(Debug, Parser)]
+pub struct ArgOptions {
+    /// Sets a custom databases directory
     #[clap(
-        short,
-        long,
-        global = true,
-        parse(try_from_str = validate_path_exists),
-    )]
+            short,
+            long,
+            global = true,
+            parse(try_from_str = validate_path_exists),
+        )]
+    pub databases: Option<PathBuf>,
+
+    /// Sets the OUTPUT directory [default: ~/.readstor]
+    #[clap(
+            short,
+            long,
+            global = true,
+            parse(try_from_str = validate_path_exists),
+        )]
     pub output: Option<PathBuf>,
+
+    /// Sets a custom templates directory
+    #[clap(
+            short,
+            long,
+            global = true,
+            parse(try_from_str = validate_path_exists),
+        )]
+    pub templates: Option<PathBuf>,
 
     /// Runs even if Apple Books is open
     #[clap(short, long, global = true)]
     pub force: bool,
 
-    /// Sets the logging verbosity
-    #[clap(short, global = true, parse(from_occurrences))]
-    pub verbosity: u64,
-
-    #[clap(subcommand)]
-    pub command: Command,
+    /// Silences output messages
+    #[clap(short, long = "quiet", global = true)]
+    pub is_quiet: bool,
 }
 
-#[derive(Debug, Subcommand)]
+#[derive(Debug, Clone, Copy, Subcommand)]
 #[clap(setting(AppSettings::DeriveDisplayOrder))]
-pub enum Command {
+pub enum ArgCommand {
     /// Exports Apple Books' data to OUTPUT
     Export,
 
-    /// Renders annotations via a template to OUTPUT
-    Render {
-        /// Sets a custom template
-        #[clap(
-            short,
-            long,
-            parse(try_from_str = validate_path_exists),
-        )]
-        template: Option<PathBuf>,
-    },
+    /// Renders annotations via templates to OUTPUT
+    Render,
 
     /// Backs-up Apple Books' databases to OUTPUT
     Backup,

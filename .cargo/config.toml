@@ -1,0 +1,14 @@
+[env]
+READSTOR_DEV = "1"
+READSTOR_LOG = "debug"
+
+[alias]
+lint = """\
+    clippy \
+        --all-targets \
+        --all-features \
+        -- \
+        --warn clippy::pedantic \
+        --warn clippy::cargo \
+    """
+docs = "doc --no-deps --open"

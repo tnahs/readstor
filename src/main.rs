@@ -1,34 +1,43 @@
-#![warn(clippy::all, clippy::pedantic)]
-#![allow(clippy::module_name_repetitions, rustdoc::private_intra_doc_links)]
+//! ``ReadStor`` is a simple CLI for exporting user-generated data from Apple
+//! Books. The goal of this project is to facilitate data-migration from Apple
+//! Books to any other platform. Currently Apple Books provides no simple way to
+//! do this. Exporting is possible but not ideal and often times truncates long
+//! annotations.
+
+#![warn(
+    clippy::all,
+    clippy::pedantic,
+    future_incompatible,
+    missing_copy_implementations,
+    missing_debug_implementations,
+    missing_docs,
+    rust_2018_idioms,
+    rust_2018_compatibility,
+    rust_2021_compatibility
+)]
+#![allow(clippy::module_name_repetitions)]
 
 mod cli;
 pub mod lib;
 
 use clap::Parser;
-use color_eyre::eyre::WrapErr;
-use loggerv::Logger;
 
-use crate::cli::app::App;
-use crate::cli::app::AppResult;
+use crate::cli::app::{App, AppResult};
 use crate::cli::args::Args;
-use crate::cli::args::Command;
+use crate::cli::config::app::AppConfig;
+use crate::cli::config::dev::{is_development_env, DevConfig};
 use crate::cli::config::Config;
 use crate::lib::applebooks::utils::applebooks_is_running;
 
 fn main() -> AppResult<()> {
+    cli::utils::init_logger();
     color_eyre::install()?;
 
     let args = Args::parse();
 
-    Logger::new()
-        .verbosity(args.verbosity)
-        .level(true)
-        .init()
-        .unwrap();
+    log::debug!("{:#?}", &args);
 
-    log::debug!("Running with `args`: {:#?}.", &args);
-
-    if !args.force && applebooks_is_running() {
+    if !args.options.force && applebooks_is_running() {
         println!(
             "Apple Books is currently running. \
             To ignore this, use the `-f, --force` flag."
@@ -36,36 +45,19 @@ fn main() -> AppResult<()> {
         return Ok(());
     }
 
-    let config = Config::new(&args);
-    let mut app = App::new(config);
+    // Selects the appropriate Config depending on the environment. In a
+    // development environment this sets the `databases` to local mock databases
+    // directory and the `output` to a temp directory on disk.
+    //
+    // Note that the appropriate environment variable to signal a development
+    // env should be set in the `.cargo/config.toml` file.
+    let config: Box<dyn Config> = if is_development_env() {
+        Box::new(DevConfig::from(args.options))
+    } else {
+        Box::new(AppConfig::from(args.options))
+    };
 
-    println!("• Building stor...");
+    log::debug!("{:#?}.", &config);
 
-    app.init()?;
-
-    match &args.command {
-        Command::Export => {
-            println!("• Exporting data...");
-            app.export_data().wrap_err("failed while exporting data")?;
-        }
-        Command::Render { ref template } => {
-            println!("• Rendering template...");
-            app.render_templates(template.as_ref())
-                .wrap_err("failed while rendering template")?;
-        }
-        Command::Backup => {
-            println!("• Backing up databases...");
-            app.backup_databases()
-                .wrap_err("failed while backing up databases")?;
-        }
-    }
-
-    println!(
-        "• Saved {} annotations from {} books to `{}`",
-        app.stor().count_annotations(),
-        app.stor().count_books(),
-        app.config().output().display()
-    );
-
-    Ok(())
+    App::new(config).run(args.command)
 }

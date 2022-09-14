@@ -1,1 +1,2 @@
-max_width = 90
+# Comments should be 80 characters wide.
+max_width = 100
