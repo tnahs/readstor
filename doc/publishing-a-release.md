@@ -1,72 +1,54 @@
 # Publishing a Release
 
-## GitHub
+1. Clone this repository.
+2. Add feature/patch.
+3. Bump `version` in `Cargo.toml`to `[VERSION]`.
+4. Check for packaging issues with:
 
-<!-- TODO: Add a version tag to the coimmit-->
-
-1. Merge feature branch or push any changes to
-   [readstor's](https://github.com/tnahs/readstor) `main`.
-2. Run `scripts/run-build-release.sh`. This creates the `release` directory and
-   places three items inside it:
-   - `readstor` - The binary.
-   - `readstor-mac.tar.gz` - An archive of the binary.
-   - `readstor-mac.sha256` - A hash of the archive.
-3. Create a [new release](https://github.com/tnahs/readstor/releases/new) in GitHub.
-4. Create a new tag with the latest version number e.g. `v0.2.0`.
-5. Set the release title to the latest version number e.g. `v0.2.0`.
-6. Use this template for the release notes:
-
-   ```markdown
-   ## Changes
-
-   ## Features
-
-   ## Bug Fixes
+   ```console
+   cargo publish --dry-run --allow-dirty
    ```
 
-7. Attach `readstor-mac.tar.gz` and `readstor-mac.sha256`.
-8. Publish.
+   > Note:
+   >
+   > - `--dry-run` runs checks without publishing.
+   > - `--allow-dirty` ignores any uncommitted changes.
 
-## Homebrew
+5. Push changes:
 
-1. Clone the [homebrew-readstor](https://github.com/tnahs/homebrew-readstor) repository.
-2. Open `readstor.rb`.
-
-   ```ruby
-   # readstor.rb
-
-   class Readstor < Formula
-     desc "A CLI for Apple Books annotations"
-     homepage "https://github.com/tnahs/readstor"
-     url # URL : string
-     sha256 # HASH : string
-     license any_of: ["MIT", "Apache-2.0"]
-     version # VERSION : string
-
-     def install
-       bin.install "readstor"
-     end
-   end
+   ```console
+   git add .
+   git commit -m "feat: shiny new things!"
+   git push origin main
    ```
 
-3. Replace `URL` with the direct link to the latest release on GitHub. It should
-   look something like:
+   > This will trigger a GitHub Actions to run some CI tests.
 
-   ```plaintext
-   https://github.com/tnahs/readstor/releases/download/v0.2.0/readstor-mac.tar.gz
+6. Tag the last commit:
+
+   ```console
+   git tag [VERSION]
+   git push origin [VERSION]
    ```
 
-4. Replace `HASH` with the hash from `readstor-mac.sha256`. It should have been
-   printed to the terminal after running the build script.
-5. Replace `VERSION` with the latest version number e.g. `v0.2.0`.
-6. Commit and push changes to
-   [homebrew-readstor's](https://github.com/tnahs/homebrew-readstor) `main`
-   branch.
+   > This will trigger GitHub Actions to:
+   >
+   > 1. Build binaries for Apple Silicon and Intel.
+   > 2. Create archives of them using `tar`.
+   > 3. Create a draft release in GitHub.
+   > 4. Upload the archives to the draft release.
 
-## crates.io
+7. Add release notes and publish the draft release.
 
-1. Run `cargo login`.
-2. If asked, input your [crates.io](https://crates.io) API Token or create a new
-   one one [here](https://crates.io/settings/tokens).
-3. Run `cargo publish --dry-run` to run all check without uploading.
-4. Finally publish with `cargo publish`.
+   ⚠️ The tag and title should be `[VERSION]`.
+
+8. Manually run the
+   [`publish`](https://github.com/tnahs/readstor/actions/workflows/publish.yml)
+   action.
+
+   ⚠️ Make sure to set `Use workflow from` to `[VERSION]`.
+
+   > This will publish `readstor` to:
+   >
+   > 1. `tnahs/homebrew-forumlas`
+   > 2. `crates.io`
