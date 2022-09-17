@@ -1,0 +1,58 @@
+name: build
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  ci:
+    uses: ./.github/workflows/ci.yml
+
+  build:
+    name: Build ${{ matrix.name }}
+    needs: ci
+    runs-on: macos-latest
+    strategy:
+      matrix:
+        include:
+          - name: Apple Silicon
+            arch: arm64
+            target: aarch64-apple-darwin
+          - name: Intel
+            arch: amd64
+            target: x86_64-apple-darwin
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+      - name: Install Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          target: ${{ matrix.target }}
+          override: true
+      - name: Build release
+        run: cargo build --release --target ${{ matrix.target }}
+      - name: Build archive name
+        id: archive_name
+        run: |
+          repo_name=${{ github.event.repository.name }}
+          version=${{ github.ref_name }}
+          arch=${{ matrix.arch }}
+          # [REPO_NAME]-[VERSION]-[OPERATING_SYSTEM]-[ARCHITECTURE].tar.gz
+          archive_name=${repo_name}-${version#v}-darwin-${arch}.tar.gz
+          echo "archive_name=${archive_name}" >> $GITHUB_ENV
+      - name: Archive release
+        run: >
+          tar
+          --create
+          --gzip
+          --file=${{ env.archive_name }}
+          --directory=./target/${{ matrix.target }}/release/
+          ${{ github.event.repository.name }}
+      - name: Create draft release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: ${{ env.archive_name }}
+          draft: true

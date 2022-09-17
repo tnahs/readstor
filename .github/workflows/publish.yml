@@ -1,0 +1,18 @@
+name: publish
+
+on:
+  workflow_dispatch:
+
+jobs:
+  homebrew:
+    name: Publish to `tnahs/homebrew-formulas`
+    runs-on: ubuntu-latest
+    steps:
+      - uses: Justintime50/homebrew-releaser@v1
+        with:
+          homebrew_owner: tnahs
+          homebrew_tap: homebrew-formulas
+          github_token: ${{ secrets.HOMEBREW_GITHUB_TOKEN }}
+          target_darwin_amd64: true
+          target_darwin_arm64: true
+          install: 'bin.install "test-readstor"'
