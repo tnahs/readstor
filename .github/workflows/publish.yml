@@ -16,3 +16,20 @@ jobs:
           target_darwin_amd64: true
           target_darwin_arm64: true
           install: 'bin.install "test-readstor"'
+
+  crates-io:
+    name: Publish to `crates.io`
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+      - name: Install Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          profile: minimal
+          override: true
+      - name: Publish to `crates.io`
+        run: cargo publish
+        env:
+          CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
