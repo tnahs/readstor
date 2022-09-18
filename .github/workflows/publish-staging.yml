@@ -1,0 +1,22 @@
+name: publish-staging
+
+on:
+  workflow_dispatch:
+
+jobs:
+  crates-io:
+    name: Publish to `staging.crates.io`
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+      - name: Install Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          profile: minimal
+          override: true
+      - name: Publish to `staging.crates.io`
+        run: cargo publish --registry=staging
+        env:
+          CARGO_REGISTRIES_STAGING_TOKEN: ${{ secrets.CARGO_REGISTRIES_STAGING_TOKEN }}

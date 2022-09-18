@@ -2,6 +2,9 @@
 READSTOR_DEV = "1"
 READSTOR_LOG = "debug"
 
+[registries]
+staging = { index = "https://github.com/rust-lang/staging.crates.io-index" }
+
 [alias]
 lint = """\
     clippy \
