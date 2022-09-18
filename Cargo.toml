@@ -9,7 +9,14 @@ repository = "https://github.com/tnahs/readstor"
 keywords = ["apple", "books", "ibooks", "highlights", "macos"]
 categories = ["command-line-utilities"]
 edition = "2021"
-exclude = ["docs/*", "guide/*", "scripts/*", "TODO.md"]
+include = [
+  "src/**/*.rs",
+  "templates/flat/template.jinja2", # Default template
+  "README.md",
+  "extra/logo/logo-256.png",
+  "LICENSE-APACHE",
+  "LICENSE-MIT",
+]
 
 [dependencies]
 color-eyre = "0.6.1"
