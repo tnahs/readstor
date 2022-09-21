@@ -7,13 +7,6 @@ use once_cell::sync::Lazy;
 
 use crate::lib;
 
-#[allow(unused_imports)] // For docs.
-use super::database::ABDatabase;
-#[allow(unused_imports)] // For docs.
-use crate::lib::models::annotation::Annotation;
-#[allow(unused_imports)] // For docs.
-use crate::lib::models::book::Book;
-
 /// The root databases directory.
 ///
 /// This assembles the full path to Apple Books' directory containing

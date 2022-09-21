@@ -9,11 +9,6 @@ use sysinfo::{System, SystemExt};
 
 use crate::lib::applebooks;
 
-#[allow(unused_imports)] // For docs.
-use crate::lib::models::annotation::Annotation;
-#[allow(unused_imports)] // For docs.
-use crate::lib::models::book::Book;
-
 /// Returns Apple Books' version as `v[short]-[long]` e.g. `v3.2-2217`.
 ///
 /// Returns `v?` if the Apple Books application cannot be found and returns

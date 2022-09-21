@@ -2,9 +2,6 @@ use crate::cli;
 use crate::cli::args::ArgOptions;
 use crate::lib::applebooks;
 
-#[allow(unused_imports)] // For docs.
-use crate::lib::applebooks::database::ABDatabase;
-
 use super::{Config, ConfigOptions};
 
 #[derive(Debug)]
