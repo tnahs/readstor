@@ -69,10 +69,10 @@ static RE_SPACIAL_OFFSET: Lazy<Regex> = Lazy::new(|| Regex::new(r"@[0-9.]+:[0-9.
 /// <https://w3c.github.io/epub-specs/epub33/epubcfi/#example-8>
 ///
 /// ```plaintext
-/// input: epubcfi(/6/4[chap01ref]!/4[body01]/10[para05],/2/1:1,/3:4)
+/// input:  epubcfi(/6/4[chap01ref]!/4[body01]/10[para05],/2/1:1,/3:4)
 /// output: 6.4.4.10.2.1:1
 /// ```
-///<https://w3c.github.io/epub-specs/epub33/epubcfi/#example-23>
+/// <https://w3c.github.io/epub-specs/epub33/epubcfi/#example-23>
 ///
 /// See <https://w3c.github.io/epub-specs/epub33/epubcfi/> for more
 /// information.

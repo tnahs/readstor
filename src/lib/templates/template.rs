@@ -157,7 +157,7 @@ pub enum StructureMode {
     /// ```
     ///
     /// ```plaintext
-    /// [output]
+    /// [ouput-directory]
     ///  │
     ///  ├─ [template-name-01].[extension]
     ///  ├─ [template-name-01].[extension]
@@ -175,7 +175,7 @@ pub enum StructureMode {
     /// ```
     ///
     /// ```plaintext
-    /// [output]
+    /// [ouput-directory]
     ///  │
     ///  ├─ [template-group-01]
     ///  │   ├─ [template-name-01].[extension]
@@ -200,7 +200,7 @@ pub enum StructureMode {
     /// ```
     ///
     /// ```plaintext
-    /// [output]
+    /// [ouput-directory]
     ///  │
     ///  ├─ [author-title-01]
     ///  │   ├─ [template-name-01].[extension]
@@ -226,7 +226,7 @@ pub enum StructureMode {
     /// ```
     ///
     /// ```plaintext
-    /// [output]
+    /// [ouput-directory]
     ///  │
     ///  ├─ [template-group-01]
     ///  │   │
@@ -254,7 +254,7 @@ pub enum StructureMode {
 #[derive(Debug, Clone, Copy, Deserialize)]
 #[serde(rename_all = "lowercase")]
 pub enum ContextMode {
-    /// When selected, the template rendered to a single file containing a
+    /// When selected, the template is rendered to a single file containing a
     /// [`Book`] and all its [`Annotation`]s.
     ///
     /// ```yaml
@@ -262,7 +262,7 @@ pub enum ContextMode {
     /// ```
     ///
     /// ```plaintext
-    /// [output]
+    /// [ouput-directory]
     ///  └─ [template-name].[extension]
     /// ```
     Book,
@@ -275,7 +275,7 @@ pub enum ContextMode {
     /// ```
     ///
     /// ```plaintext
-    /// [output]
+    /// [ouput-directory]
     ///  ├─ [template-name].[extension]
     ///  ├─ [template-name].[extension]
     ///  ├─ [template-name].[extension]
@@ -525,8 +525,8 @@ pub struct PartialTemplate {
     ///
     /// This is typically a file path relative to the templates directory. It
     /// serves to identify a partial template when called in an `{% include %}`
-    /// statement from within a normal template. This field is passed to Tera
-    /// when registering the template.
+    /// tag from within a normal template. This field is passed to Tera when
+    /// registering the template.
     ///
     /// ```plaintext
     /// --> /path/to/templates/nested/template.md

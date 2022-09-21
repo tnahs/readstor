@@ -88,7 +88,7 @@ impl App {
     /// Exports Apple Books' data with the following structure:
     ///
     /// ```plaintext
-    /// [output]
+    /// [ouput-directory]
     ///  │
     ///  ├─ [author-title]
     ///  │   │
@@ -111,34 +111,34 @@ impl App {
     /// example, the `resources` directory will not be deleted/recreated if it
     /// already exists and/or contains data.
     fn export_data(&self) -> AppResult<()> {
-        // -> [output]
+        // -> [ouput-directory]
         let path = self.config.options().output().join("data");
 
         for entry in self.data.entries() {
-            // -> [output]/[author-title]
-            // -> [output]/[author-title]/data
+            // -> [ouput-directory]/[author-title]
             let item = path.join(entry.slug_name());
+            // -> [ouput-directory]/[author-title]/data
             let data = item.join("data");
-            // -> [output]/[author-title]/resources
+            // -> [ouput-directory]/[author-title]/resources
             let resources = item.join("resources");
 
             fs::create_dir_all(&item)?;
             fs::create_dir_all(&data)?;
             fs::create_dir_all(&resources)?;
 
-            // -> [output]/[author-title]/data/book.json
+            // -> [ouput-directory]/[author-title]/data/book.json
             let book_json = data.join("book").with_extension("json");
             let book_file = fs::File::create(book_json)?;
 
             serde_json::to_writer_pretty(&book_file, &entry.book)?;
 
-            // -> [output]/[author-title]/data/annotation.json
+            // -> [ouput-directory]/[author-title]/data/annotation.json
             let annotations_json = data.join("annotations").with_extension("json");
             let annotations_file = fs::File::create(annotations_json)?;
 
             serde_json::to_writer_pretty(&annotations_file, &entry.annotations)?;
 
-            // -> [output]/[author-title]/resources/.gitkeep
+            // -> [ouput-directory]/[author-title]/resources/.gitkeep
             let gitkeep = resources.join(".gitkeep");
             fs::File::create(gitkeep)?;
         }
@@ -146,53 +146,9 @@ impl App {
         Ok(())
     }
 
-    /// Renders templates in one of two ways:
-    ///
-    /// Flat:
-    ///
-    /// ```plaintext
-    /// [output]
-    ///  │
-    ///  ├─ [template-name]
-    ///  │   ├─ [file-name].[file-extension]
-    ///  │   ├─ [file-name].[file-extension]
-    ///  │   └─ ...
-    ///  │
-    ///  ├─ [template-name]
-    ///  │   └─ ...
-    ///  └─ ...
-    /// ```
-    ///
-    /// Nested:
-    ///
-    /// ```plaintext
-    /// [output]
-    ///  │
-    ///  ├─ [template-name]
-    ///  │   │
-    ///  │   ├─ [author-title]
-    ///  │   │   ├─ [file-name].[file-extension]
-    ///  │   │   ├─ [file-name].[file-extension]
-    ///  │   │   └─ ...
-    ///  │   │
-    ///  │   ├─ [author-title]
-    ///  │   │   └─ ...
-    ///  │   └─ ...
-    ///  │
-    ///  ├─ [template-name]
-    ///  │   │
-    ///  │   ├─ [author-title]
-    ///  │   │   ├─ [file-name].[file-extension]
-    ///  │   │   ├─ [file-name].[file-extension]
-    ///  │   │   └─ ...
-    ///  │   │
-    ///  │   ├─ [author-title]
-    ///  │   │   └─ ...
-    ///  │   └─ ...
-    ///  └─ ...
-    /// ```
+    /// Renders all registered templates.
     fn render_templates(&mut self) -> AppResult<()> {
-        // -> [output]
+        // -> [ouput-directory]
         let path = self.config.options().output();
 
         fs::create_dir_all(&path)?;
@@ -210,7 +166,7 @@ impl App {
     /// Backs up Apple Books' databases with the following structure:
     ///
     /// ```plaintext
-    /// [output]
+    /// [ouput-directory]
     ///  │
     ///  ├─ [YYYY-MM-DD-HHMMSS-VERSION]
     ///  │   │
@@ -227,19 +183,19 @@ impl App {
     ///  └─ ...
     /// ```
     fn backup_databases(&self) -> AppResult<()> {
-        // -> [output]
+        // -> [ouput-directory]
         let path = self.config.options().output();
 
         // -> [YYYY-MM-DD-HHMMSS]-[VERSION]
         let today = format!("{}-{}", utils::today(), *APPLEBOOKS_VERSION);
 
-        // -> [output]/[YYYY-MM-DD-HHMMSS]-[VERSION]
+        // -> [ouput-directory]/[YYYY-MM-DD-HHMMSS]-[VERSION]
         let destination_root = path.join(&today);
 
-        // -> [output]/[YYYY-MM-DD-HHMMSS]-[VERSION]/BKLibrary
+        // -> [ouput-directory]/[YYYY-MM-DD-HHMMSS]-[VERSION]/BKLibrary
         let destination_books = destination_root.join(ABDatabaseName::Books.to_string());
 
-        // -> [output]/[YYYY-MM-DD-HHMMSS]-[VERSION]/AEAnnotation
+        // -> [ouput-directory]/[YYYY-MM-DD-HHMMSS]-[VERSION]/AEAnnotation
         let destination_annotations =
             destination_root.join(ABDatabaseName::Annotations.to_string());
 
