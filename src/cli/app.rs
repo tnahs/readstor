@@ -116,8 +116,8 @@ impl App {
 
         for entry in self.data.entries() {
             // -> [output]/[author-title]
-            let item = path.join(entry.name());
             // -> [output]/[author-title]/data
+            let item = path.join(entry.slug_name());
             let data = item.join("data");
             // -> [output]/[author-title]/resources
             let resources = item.join("resources");

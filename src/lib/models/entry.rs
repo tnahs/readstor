@@ -3,8 +3,6 @@
 
 use serde::Serialize;
 
-use crate::lib::utils;
-
 use super::annotation::Annotation;
 use super::book::Book;
 
@@ -19,11 +17,10 @@ pub struct Entry {
 }
 
 impl Entry {
-    /// Formats a [`Entry`] into a friendly-human-readable string. Primarily
-    /// used for naming files or directories for its respective [`Book`].
+    /// Formats an [`Entry`]' into a slugified string.
     #[must_use]
-    pub fn name(&self) -> String {
-        utils::to_safe_string(&format!("{} - {}", self.book.author, self.book.title))
+    pub fn slug_name(&self) -> String {
+        format!("{}-{}", self.book.slug_title(), self.book.slug_author())
     }
 }
 
