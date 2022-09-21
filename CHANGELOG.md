@@ -21,7 +21,7 @@
   HTML-comment. As a result the filename of a template no longer matters. The
   only exception to filenames is when naming a template partial, these must
   begin with an underscore (`_`).
-- Template partials, inheritance and `{% include %}` statements are now fully
+- Template partials, inheritance and `{% include %}` tags are now fully
   supported!
 - Added CI, build and publish actions.
 - Release will now have binaries for Apple Silicon and Intel.
