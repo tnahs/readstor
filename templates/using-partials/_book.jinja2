@@ -12,7 +12,7 @@ last-opened: {{ book.metadata.last_opened | date(format="%Y-%m-%dT%H:%M") }}
 
 {{ annotation.body }}
 
-{% if annotation.notes %}{{ annotation.notes }}{% endif -%}
-{%- if annotation.tags %}{{ annotation.tags | join(sep=" ") }}{% endif %}
+{%- if annotation.notes %}notes: {{ annotation.notes }}{% endif -%}
+{%- if annotation.tags %}tags: {{ annotation.tags | join(sep=" ") }}{% endif %}
 
 {% endfor %}
