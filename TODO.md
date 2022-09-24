@@ -4,11 +4,12 @@
 
 - [ ] Use less strict method to find template configuration.
 - [ ] Move `--templates` option into `render` command.
-- [ ] Add option to render only a single template from `templates` dir.
 - [ ] Add option to de-unicode text e.g. convert smart quotes to regular quotes.
 - [ ] Add option to extract tags or not.
+- [ ] Add option to trim blocks.
+- [ ] Add option to render only a single template from `templates` dir.
+- [ ] Add `book.tags` so we can have a list of all the tags within a book.
 - [ ] Rework backup and restore scripts to use `rsync`.
-- [ ] Clear extra spaces when rendering the default templates.
 
 ## Internal Improvements
 
