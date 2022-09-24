@@ -41,20 +41,27 @@ impl serde::Serialize for Book {
         S: serde::Serializer,
     {
         #[derive(Serialize)]
+        struct _Slugs {
+            title: String,
+            author: String,
+        }
+
+        #[derive(Serialize)]
         struct _Book<'a> {
             title: &'a str,
             author: &'a str,
             metadata: &'a BookMetadata,
-            slug_title: String,
-            slug_author: String,
+            slugs: _Slugs,
         }
 
         let book = _Book {
             title: &self.title,
             author: &self.author,
             metadata: &self.metadata,
-            slug_title: self.slug_title(),
-            slug_author: self.slug_author(),
+            slugs: _Slugs {
+                title: self.slug_title(),
+                author: self.slug_author(),
+            },
         };
 
         book.serialize(serializer)

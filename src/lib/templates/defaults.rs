@@ -26,7 +26,7 @@ pub const FILENAME_TEMPLATE_BOOK: &str = "{{ book.author }} - {{ book.title }}";
 /// The default template used to generate the output filename for a template
 /// with [`ContextMode::Annotation`].
 pub const FILENAME_TEMPLATE_ANNOTATION: &str =
-    "{{ annotation.metadata.slug_created }}-{{ book.slug_title }}";
+    "{{ annotation.metadata.slugs.created }}-{{ book.slugs.title }}";
 
 /// The default template used to generate the directory name for a template with
 /// [`StructureMode::Nested`] or [`StructureMode::NestedGrouped`].

@@ -218,15 +218,20 @@ impl serde::Serialize for AnnotationMetadata {
         S: serde::Serializer,
     {
         #[derive(Serialize)]
+        struct _Slugs {
+            created: String,
+            modified: String,
+        }
+
+        #[derive(Serialize)]
         struct _AnnotationMetadata<'a> {
-            pub id: &'a str,
-            pub book_id: &'a str,
-            pub created: &'a DateTimeUtc,
-            pub modified: &'a DateTimeUtc,
-            pub location: &'a str,
-            pub epubcfi: &'a str,
-            pub slug_created: String,
-            pub slug_modified: String,
+            id: &'a str,
+            book_id: &'a str,
+            created: &'a DateTimeUtc,
+            modified: &'a DateTimeUtc,
+            location: &'a str,
+            epubcfi: &'a str,
+            slugs: _Slugs,
         }
 
         let metadata = _AnnotationMetadata {
@@ -236,8 +241,10 @@ impl serde::Serialize for AnnotationMetadata {
             modified: &self.modified,
             location: &self.location,
             epubcfi: &self.epubcfi,
-            slug_created: self.slug_created(),
-            slug_modified: self.slug_modified(),
+            slugs: _Slugs {
+                created: self.slug_created(),
+                modified: self.slug_modified(),
+            },
         };
 
         metadata.serialize(serializer)
