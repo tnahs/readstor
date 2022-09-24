@@ -17,7 +17,7 @@ pub struct Entry {
 }
 
 impl Entry {
-    /// Formats an [`Entry`]' into a slugified string.
+    /// Formats an [`Entry`]'s title and author into a slugified string.
     #[must_use]
     pub fn slug_name(&self) -> String {
         format!("{}-{}", self.book.slug_title(), self.book.slug_author())

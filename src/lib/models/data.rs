@@ -84,7 +84,7 @@ impl Data {
         // `Entry`s are created from `Book`s. Note that `book.metadata.id` is
         // set as the key for each entry into the `Data`. This is later used to
         // compare with each `Annotation` to determine if the `Annotation`
-        // belongs to `Book` therefore its `Entry`.
+        // belongs to a `Book` and therefore its `Entry`.
         //
         // See https://stackoverflow.com/q/69274529/16968574
         let mut data: Entries = books
