@@ -1,0 +1,10 @@
+{% for annotation in annotations -%}
+
+---
+
+{{ annotation.body }}
+
+{%- if annotation.notes %}notes: {{ annotation.notes }}{% endif -%}
+{%- if annotation.tags %}tags: {{ annotation.tags | join(sep=" ") }}{% endif %}
+
+{% endfor %}

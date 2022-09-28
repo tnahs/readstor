@@ -25,7 +25,7 @@ pub static OUTPUT: Lazy<PathBuf> = Lazy::new(|| lib::defaults::HOME.join(".reads
 /// doesn't supply a templates directory.
 pub static TEMPLATE: &str = include_str!(concat!(
     env!("CARGO_MANIFEST_DIR"),
-    "/templates/flat/template.jinja2"
+    "/templates/basic/basic.jinja2"
 ));
 
 /// Defines the root path to the mock databases. These are used when
