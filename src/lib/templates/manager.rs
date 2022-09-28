@@ -312,9 +312,11 @@ impl TemplateManager {
 
         walkdir::WalkDir::new(path)
             .into_iter()
-            .filter_entry(utils::entry_is_hidden) // Ignore hidden directories/files.
+            // Ignore hidden directories/files.
+            .filter_entry(utils::entry_is_hidden)
             .filter_map(std::result::Result::ok)
-            .filter(|e| !e.path().is_dir()) // Ignore directories.
+            // Ignore directories.
+            .filter(|e| !e.path().is_dir())
             .filter(predicate)
             .map(|e| e.path().to_owned())
     }

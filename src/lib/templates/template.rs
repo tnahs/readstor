@@ -66,9 +66,8 @@ pub struct Template {
     /// The template's file extension.
     pub extension: String,
 
-    /// The raw template strings for generating the output filenames and
-    /// directory. This is converted into a [`Names`] struct once an [`Entry`]
-    /// is provided.
+    /// The template strings for generating output file and directory names.
+    /// This is converted into a [`Names`] struct once an [`Entry`] is provided.
     name_templates: NameTemplates,
 }
 
@@ -294,6 +293,8 @@ pub enum ContextMode {
     Annotation,
 }
 
+/// A struct representing the template strings for generating output file and
+/// directory names.
 #[derive(Debug, Clone, Deserialize)]
 struct NameTemplates {
     /// The default template used when generating an output filename for the
