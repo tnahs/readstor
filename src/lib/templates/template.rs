@@ -4,7 +4,7 @@
 use std::collections::HashMap;
 use std::path::Path;
 
-use serde::{Deserialize, Serialize};
+use serde::{de, Deserialize, Serialize};
 use tera::{Context, Tera};
 
 use crate::lib::models::annotation::Annotation;
@@ -48,6 +48,7 @@ pub struct Template {
     ///
     /// See [`StructureMode::FlatGrouped`] and [`StructureMode::NestedGrouped`]
     /// for more information.
+    #[serde(deserialize_with = "Template::deserialize_and_sanitize")]
     pub group: String,
 
     /// The template's context mode i.e what the template intends to render.
@@ -131,6 +132,15 @@ impl Template {
         }
 
         Some((config, contents))
+    }
+
+    /// Helper method for `serde` to deserialize a string and sanitize it.
+    fn deserialize_and_sanitize<'de, D>(deserializer: D) -> Result<String, D::Error>
+    where
+        D: de::Deserializer<'de>,
+    {
+        let s: &str = Deserialize::deserialize(deserializer)?;
+        Ok(utils::sanitize_string(s))
     }
 }
 
@@ -381,7 +391,7 @@ impl Names {
             false,
         )?;
 
-        let name = utils::to_safe_string(&name);
+        let name = utils::sanitize_string(&name);
 
         Ok(format!("{}.{}", name, template.extension))
     }
@@ -401,7 +411,7 @@ impl Names {
                 false,
             )?;
 
-            let name = utils::to_safe_string(&name);
+            let name = utils::sanitize_string(&name);
 
             annotations.insert(
                 annotation.metadata.id.clone(),
@@ -421,7 +431,7 @@ impl Names {
             false,
         )?;
 
-        let name = utils::to_safe_string(&name);
+        let name = utils::sanitize_string(&name);
 
         Ok(name)
     }

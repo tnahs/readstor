@@ -73,8 +73,6 @@ impl TemplateManager {
     /// # Errors
     ///
     /// Will return `Err` if any IO errors are encountered.
-    // TODO: Make sure `to_safe_string` is doing the right thing and that it
-    // won't hammer filenames too badly.
     pub fn render(&self, entry: &Entry, path: &Path) -> LibResult<()> {
         for template in &self.templates {
             let names = Names::new(entry, template)?;
@@ -86,7 +84,7 @@ impl TemplateManager {
                 }
                 StructureMode::FlatGrouped => {
                     // -> [path]/[template-name]
-                    path.join(utils::to_safe_string(&template.group))
+                    path.join(&template.group)
                 }
                 StructureMode::Nested => {
                     // -> [path]/[author-title]

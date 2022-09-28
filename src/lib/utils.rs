@@ -122,21 +122,29 @@ pub fn today_format(format: &str) -> String {
     Local::now().format(format).to_string()
 }
 
-/// Removes problematic characters from a string.
+/// Removes/replaces problematic characters from a string.
 ///
 /// # Arguments
 ///
-/// * `string` - The string to convert.
+/// * `string` - The string to sanitize.
 // TODO: Test to make sure output strings don't cause issues on the filesystem.
 #[must_use]
-pub fn to_safe_string(string: &str) -> String {
+pub fn sanitize_string(string: &str) -> String {
     // These characters can potentially cause problems in filenames.
-    let deny = &['/', ':', '\n', '\r', '\0'];
+    let remove = &['\n', '\r', '\0'];
+    let replace = &['/', ':'];
 
-    string
+    let sanitized: String = string
         .chars()
-        .map(|c| if deny.contains(&c) { '_' } else { c })
-        .collect()
+        .filter(|c| !remove.contains(c))
+        .map(|c| if replace.contains(&c) { '_' } else { c })
+        .collect();
+
+    if sanitized != string {
+        log::warn!("String `{}` contained invalid characters.", string);
+    };
+
+    sanitized
 }
 
 /// Slugifies a string.
