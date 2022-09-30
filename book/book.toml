@@ -2,8 +2,16 @@
 title = "ReadStor"
 authors = [""]
 src = "src"
+description = ""
 multilingual = false
 language = "en"
 
+[build]
+build-dir = "build"
+
 [output.html]
-additional-css = ["src/static/css/custom.css"]
+default-theme = "ayu"
+preferred-dark-theme = "ayu"
+git-repository-url = "https://www.github.com/tnahs/readstor"
+edit-url-template = "https://github.com/tnahs/readstor/edit/main/book/{path}"
+additional-css = ["src/css/custom.css"]

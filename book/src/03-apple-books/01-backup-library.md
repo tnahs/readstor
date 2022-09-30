@@ -1,8 +1,5 @@
 # Backup Apple Books' Library
 
-This guide assumes that Apple Books syncing in iCloud Drive is disabled and the
-library exists on the local disk.
-
 ## What to Archive
 
 Apple Books stores the bulk of its data in two locations:

@@ -1,11 +1,9 @@
 # Backup
 
-`backup`
-
 ```plaintext
-[output]
+[ouput-directory]
  │
- ├─ 2021-01-01-000000-v3.2-2217 ── [YYYY-MM-DD-HHMMSS-VERSION]
+ ├─ [YYYY-MM-DD-HHMMSS-VERSION]
  │   │
  │   ├─ AEAnnotation
  │   │   ├─ AEAnnotation*.sqlite
@@ -15,7 +13,7 @@
  │       ├─ BKLibrary*.sqlite
  │       └─ ...
  │
- │─ 2021-01-02-000000-v3.2-2217
+ │─ [YYYY-MM-DD-HHMMSS-VERSION]
  │   └─ ...
  └─ ...
 ```

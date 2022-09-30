@@ -1,50 +1,13 @@
 # Render
 
-`render` using `single` Render Mode
+## Options
 
-```plaintext
-[output]
- │
- ├─ default ── (omitted if a custom template is used)
- │   ├─ Author - Title.[extension]
- │   ├─ Author - Title.[extension]
- │   └─ ...
- │
- ├─ [template-name]
- │   ├─ Author - Title.[extension]
- │   ├─ Author - Title.[extension]
- │   └─ ...
- │
- ├─ Author - Title
- │   └─ ...
- └─ ...
-```
+### `--templates`
 
-`render` using `multi` Render Mode
+### `--template`
 
-```plaintext
-[output]
- │
- ├─ default ── (omitted if a custom template is used)
- │   │
- │   ├─ Author - Title
- │   │   ├─ [YYYY-MM-DD-HHMMSS]-[title].[extension]
- │   │   ├─ [YYYY-MM-DD-HHMMSS]-[title].[extension]
- │   │   └─ ...
- │   │
- │   ├─ Author - Title
- │   │   └─ ...
- │   └─ ...
- │
- ├─ [template-name]
- │   │
- │   ├─ Author - Title
- │   │   ├─ [YYYY-MM-DD-HHMMSS]-[title].[extension]
- │   │   ├─ [YYYY-MM-DD-HHMMSS]-[title].[extension]
- │   │   └─ ...
- │   │
- │   ├─ Author - Title
- │   │   └─ ...
- │   └─ ...
- └─ ...
-```
+### `--extract-tags`
+
+### `--deunicode`
+
+### `--trim-blocks`

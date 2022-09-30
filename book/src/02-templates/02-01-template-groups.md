@@ -1,24 +1,28 @@
 # Template Groups
 
-|              |         |
-| ------------ | ------- |
-| Name         | `group` |
-| Type         | string  |
-| Valid Values | any     |
-| Required     | true    |
-| Default      | n/a     |
+|              |                             |
+| ------------ | --------------------------- |
+| Name         | `group`                     |
+| Type         | string                      |
+| Valid Values | any                         |
+| Required     | <i class="fa fa-check"></i> |
+| Default      | -                           |
 
-Groups are used to identify multiple templates that are intended to be part of a
-single output. The most common use case would be when using a pair templates:
-one used to render a book and the other to render each of its annotations
-separately. Conversely, they also provide a way to separate unrelated templates
-rendered to the same output directory.
+Groups are used to identify multiple templates that are intended to be part
+of a single output. Conversely, they also provide a way to separate unrelated
+templates rendered to the same output directory. The most common use case would
+be when using a pair of templates where one is used to render a book and the
+other to render each of its annotations separately.
+
+> <i class="fa fa-exclamation-circle"></i> Group names are sanitized to make sure
+> they interact well with the file system. See
+> [String Sanitization][string-sanitization] for more information.
 
 Grouping is triggered when one or more templates are set to either the
-`flat-grouped` or the `nested-grouped` structure modes. The output files are
-placed within a directory named after the `group`.
+`flat-grouped` or the `nested-grouped` [Structure Mode][structure-modes].
+The output files are placed within a directory named after the `group`.
 
-For example, if two templates share these fields in their configurations:
+For example, if two templates share these values in their configurations:
 
 ```yaml
 group: my-vault
@@ -44,12 +48,12 @@ The output will be:
  │    ├── Richard P. Feynman - "Surely You're Joking, Mr. Feynman!".md
  │    └── Robert Henri - The Art Spirit.md
  │
- ├── [group]
+ ├── [other-group]
  │    └── ...
  └── ...
 ```
 
-And, if two templates share these fields in their configurations:
+And, if two templates share these values in their configurations:
 
 ```yaml
 group: my-vault
@@ -78,7 +82,10 @@ The output will be:
  │         ├── 2021-11-02-181510-the-art-spirit.md
  │         └── Robert Henri - The Art Spirit.md`
  │
- ├── [group]
+ ├── [other-group]
  │    └── ...
  └── ...
 ```
+
+[string-sanitization]: ./05-string-sanitization.md
+[structure-modes]: ./02-03-structure-modes.md

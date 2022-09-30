@@ -1,11 +1,9 @@
 # Export
 
-`export`
-
 ```plaintext
-[output]
+[ouput-directory]
  │
- ├─ Author - Title
+ ├─ [author-title]
  │   │
  │   ├─ data
  │   │   ├─ book.json
@@ -13,11 +11,11 @@
  │   │
  │   └─ resources
  │       ├─ .gitkeep
- │       ├─ Author - Title.epub   ─┐
+ │       ├─ [author-title].epub   ─┐
  │       ├─ cover.jpeg             ├─ These are not exported.
  │       └─ ...                   ─┘
  │
- ├─ Author - Title
+ ├─ [author-title]
  │   └─ ...
  └─ ...
 ```

@@ -5,17 +5,16 @@
 | Name         | `ouput`                                         |
 | Type         | string                                          |
 | Valid Values | `flat` `flat-grouped` `nested` `nested-grouped` |
-| Required     | true                                            |
+| Required     | <i class="fa fa-check"></i>                     |
 | Default      | -                                               |
 
-The structure mode determines how the output directories and files are structured.
-ReaStor provides four output modes: `flat`, `flat-grouped`, `nested` and
-`nested-grouped`.
+The structure mode determines how the output directories and files are
+structured. ReadStor provides four structure modes: `flat`, `flat-grouped`,
+`nested` and `nested-grouped`.
 
 ## Flat Mode
 
 ```yaml
-group: my-vault
 structure: flat
 ```
 
@@ -39,9 +38,8 @@ structure: flat-grouped
 ```
 
 When selected, the template is rendered to the output directory and placed
-inside a directory named after its `group`. This useful if there are multiple
-templates being rendered to the same directory or when multiple templates are
-intended to be part of a single ouput.
+inside a directory named after its `group`. This is useful if multiple template
+groups are being rendered to the same directory.
 
 ```plaintext
 [output-directory]
@@ -55,15 +53,13 @@ intended to be part of a single ouput.
 ## Nested Mode
 
 ```yaml
-group: my-vault
 structure: nested
 ```
 
-When selected, the template is rendered to the output directory and placed
-inside a directory named after the `name-templates.directory` field. This useful
-if multiple templates are used to represent a single book i.e. a book template
-used to render a book's information to a separate file and an annotation
-template used to render each annotation to a separate file.
+When selected, the template is rendered to the
+[output directory][output-directory] and placed inside a directory named after
+the `name-templates.directory` key. This is useful if a template group contains
+multiple templates.
 
 ```plaintext
 [output-directory]
@@ -77,12 +73,13 @@ template used to render each annotation to a separate file.
  ├── Richard P. Feynman - "Surely You're Joking, Mr. Feynman!"
  │    ├── 2021-11-02-182059-surely-youre-joking-mr-feynman.md
  │    └── Richard P. Feynman - "Surely You're Joking, Mr. Feynman!".md
- └── Robert Henri - The Art Spirit
-      ├── 2021-11-02-180445-the-art-spirit.md
-      ├── 2021-11-02-181250-the-art-spirit.md
-      ├── 2021-11-02-181325-the-art-spirit.md
-      ├── 2021-11-02-181510-the-art-spirit.md
-      └── Robert Henri - The Art Spirit.md`
+ ├── Robert Henri - The Art Spirit
+ │    ├── 2021-11-02-180445-the-art-spirit.md
+ │    ├── 2021-11-02-181250-the-art-spirit.md
+ │    ├── 2021-11-02-181325-the-art-spirit.md
+ │    ├── 2021-11-02-181510-the-art-spirit.md
+ │    └── Robert Henri - The Art Spirit.md`
+ └── ...
 ```
 
 ## Nested & Grouped Mode
@@ -92,10 +89,11 @@ group: my-vault
 structure: nested-grouped
 ```
 
-When selected, the template is rendered to the output directory and placed
-inside a directory named after its `group` and another named after the
-`name-templates.directory` field. This useful if multiple templates are used to
-represent a single book i.e. a book template and an annotation template.
+When selected, the template is rendered to the
+[output directory][output-directory] and placed inside a directory named after
+its `group` and another named after the `name-templates.directory` key. This is
+useful if multiple template groups are being rendered to the same directory and
+if a template group contains multiple templates.
 
 ```plaintext
 [output-directory]
@@ -117,3 +115,7 @@ represent a single book i.e. a book template and an annotation template.
            ├── 2021-11-02-181510-the-art-spirit.md
            └── Robert Henri - The Art Spirit.md
 ```
+
+<!-- TODO: Update `output-directory` when the usage docs are completed. -->
+
+[output-directory]: ../01-usage/02-render.md
