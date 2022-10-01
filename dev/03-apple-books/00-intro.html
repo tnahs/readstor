@@ -1,0 +1,219 @@
+<!DOCTYPE HTML>
+<html lang="en" class="sidebar-visible no-js ayu">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Apple Books - ReadStor</title>
+        <!-- Custom HTML head -->
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff" />
+
+        <link rel="icon" href="../favicon.svg">
+        <link rel="shortcut icon" href="../favicon.png">
+        <link rel="stylesheet" href="../css/variables.css">
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/chrome.css">
+        <link rel="stylesheet" href="../css/print.css" media="print">
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../fonts/fonts.css">
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="../highlight.css">
+        <link rel="stylesheet" href="../tomorrow-night.css">
+        <link rel="stylesheet" href="../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        <link rel="stylesheet" href="../src/css/custom.css">
+    </head>
+    <body>
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "../";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "ayu" : "ayu";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script type="text/javascript">
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script type="text/javascript">
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('no-js')
+            html.classList.remove('ayu')
+            html.classList.add(theme);
+            html.classList.add('js');
+        </script>
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script type="text/javascript">
+            var html = document.querySelector('html');
+            var sidebar = 'hidden';
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            }
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item expanded affix "><a href="../00-intro/00-intro.html">Introduction</a></li><li class="chapter-item expanded "><a href="../01-usage/00-usage.html"><strong aria-hidden="true">1.</strong> Usage</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../01-usage/01-export.html"><strong aria-hidden="true">1.1.</strong> Export</a></li><li class="chapter-item expanded "><a href="../01-usage/02-render.html"><strong aria-hidden="true">1.2.</strong> Render</a></li><li class="chapter-item expanded "><a href="../01-usage/03-backup.html"><strong aria-hidden="true">1.3.</strong> Backup</a></li><li class="chapter-item expanded "><a href="../01-usage/04-options.html"><strong aria-hidden="true">1.4.</strong> Options</a></li></ol></li><li class="chapter-item expanded "><a href="../02-templates/00-templates.html"><strong aria-hidden="true">2.</strong> Templates</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../02-templates/01-an-example-template.html"><strong aria-hidden="true">2.1.</strong> An Example Template</a></li><li class="chapter-item expanded "><a href="../02-templates/02-00-configuration.html"><strong aria-hidden="true">2.2.</strong> Configuration</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../02-templates/02-01-template-groups.html"><strong aria-hidden="true">2.2.1.</strong> Template Groups</a></li><li class="chapter-item expanded "><a href="../02-templates/02-02-context-modes.html"><strong aria-hidden="true">2.2.2.</strong> Context Modes</a></li><li class="chapter-item expanded "><a href="../02-templates/02-03-structure-modes.html"><strong aria-hidden="true">2.2.3.</strong> Structure Modes</a></li><li class="chapter-item expanded "><a href="../02-templates/02-04-file-extensions.html"><strong aria-hidden="true">2.2.4.</strong> File Extensions</a></li><li class="chapter-item expanded "><a href="../02-templates/02-05-name-templates.html"><strong aria-hidden="true">2.2.5.</strong> Name Templates</a></li></ol></li><li class="chapter-item expanded "><a href="../02-templates/03-partial-templates.html"><strong aria-hidden="true">2.3.</strong> Partial Templates</a></li><li class="chapter-item expanded "><a href="../02-templates/04-backlinks.html"><strong aria-hidden="true">2.4.</strong> Backlinks</a></li><li class="chapter-item expanded "><a href="../02-templates/05-string-sanitization.html"><strong aria-hidden="true">2.5.</strong> String Sanitization</a></li><li class="chapter-item expanded "><a href="../02-templates/06-00-context-reference.html"><strong aria-hidden="true">2.6.</strong> Context Reference</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../02-templates/06-01-book.html"><strong aria-hidden="true">2.6.1.</strong> Book</a></li><li class="chapter-item expanded "><a href="../02-templates/06-02-annotation.html"><strong aria-hidden="true">2.6.2.</strong> Annotation</a></li><li class="chapter-item expanded "><a href="../02-templates/06-03-links.html"><strong aria-hidden="true">2.6.3.</strong> Links</a></li></ol></li></ol></li><li class="chapter-item expanded "><a href="../03-apple-books/00-intro.html" class="active"><strong aria-hidden="true">3.</strong> Apple Books</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../03-apple-books/01-backup-library.html"><strong aria-hidden="true">3.1.</strong> Backup Apple Books' Library</a></li><li class="chapter-item expanded "><a href="../03-apple-books/02-restore-library.html"><strong aria-hidden="true">3.2.</strong> Restore Apple Books' Library</a></li></ol></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky bordered">
+                    <div class="left-buttons">
+                        <button id="sidebar-toggle" class="icon-button" type="button" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </button>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu (default)</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">ReadStor</h1>
+
+                    <div class="right-buttons">
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://www.github.com/tnahs/readstor" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+                        <a href="https://github.com/tnahs/readstor/edit/main/book/src/03-apple-books/00-intro.md" title="Suggest an edit" aria-label="Suggest an edit">
+                            <i id="git-edit-button" class="fa fa-edit"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script type="text/javascript">
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="apple-books"><a class="header" href="#apple-books">Apple Books</a></h1>
+<blockquote>
+<p><i class="fa fa-exclamation-circle"></i> This guide assumes that Apple Books
+syncing in iCloud Drive is disabled!</p>
+</blockquote>
+<h2 id="important-note"><a class="header" href="#important-note"><i class="fa fa-exclamation-circle"></i> Important Note</a></h2>
+<p>This method will work <strong>only</strong> if the path to the user's home folder <em>has not
+changed</em> from when the library was backed up to when its restored.</p>
+<p>Doing a few quick searches through the Apple Books directories shows that the
+path to the user's home folder has been hard-coded. This is most evident in the
+<code>BKLibrary-***.sqlite</code> file which contains absolute paths to files.</p>
+<p>If the username <em>must</em> be changed, a search and replace can be attempted.
+Whether this will work or not is unconfirmed.</p>
+<pre><code class="language-console">$ find ~/Library/Containers/com.apple.BKAgentService -type f \
+    -a -exec grep -l --exclude=\*.{htm,html,xhtml} $USER {} +
+
+.../.com.apple.containermanagerd.metadata.plist
+.../Container.plist
+.../Data/Documents/iBooks/Books/Books.plist
+</code></pre>
+<pre><code class="language-console">$ find ~/Library/Containers/com.apple.iBooksX* -type f \
+    -a -exec grep -l --exclude=\*.{htm,html,xhtml} $USER {} +
+
+.../com.apple.iBooksX/.com.apple.containermanagerd.metadata.plist
+.../com.apple.iBooksX/Container.plist
+.../com.apple.iBooksX/Data/Documents/BKLibrary/BKLibrary-1-091020131601.sqlite-wal
+.../com.apple.iBooksX/Data/Documents/BKLibrary/BKLibrary-1-091020131601.sqlite
+.../com.apple.iBooksX-SecureUserDefaults/.com.apple.containermanagerd.metadata.plist
+.../com.apple.iBooksX-SecureUserDefaults/Container.plist
+.../com.apple.iBooksX.CacheDelete/.com.apple.containermanagerd.metadata.plist
+.../com.apple.iBooksX.CacheDelete/Container.plist
+.../com.apple.iBooksX.DiskSpaceEfficiency/.com.apple.containermanagerd.metadata.plist
+.../com.apple.iBooksX.DiskSpaceEfficiency/Container.plist
+.../com.apple.iBooksX.SharingExtension/.com.apple.containermanagerd.metadata.plist
+.../com.apple.iBooksX.SharingExtension/Container.plist
+</code></pre>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../02-templates/06-03-links.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+                            <a rel="next" href="../03-apple-books/01-backup-library.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../02-templates/06-03-links.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+                    <a rel="next" href="../03-apple-books/01-backup-library.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+        <script type="text/javascript">
+            window.playground_copyable = true;
+        </script>
+        <script src="../elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../mark.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../searcher.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../clipboard.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../highlight.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../book.js" type="text/javascript" charset="utf-8"></script>
+
+        <!-- Custom JS scripts -->
+    </body>
+</html>
