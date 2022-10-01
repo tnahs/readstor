@@ -17,8 +17,6 @@ use crate::lib::utils;
 use super::manager::TemplateManager;
 
 /// A struct representing a fully configured template.
-// TODO: Rename some of these fields. They are far too long in both the codebase
-// and in a template's configuration.
 #[derive(Clone, Deserialize)]
 #[serde(rename_all = "kebab-case")]
 pub struct Template {
