@@ -40,7 +40,7 @@ pub enum ArgCommand {
     /// Renders annotations via templates to OUTPUT
     Render {
         /// Sets a custom templates directory
-        #[arg(short, long, global = true, value_parser(validate_path_exists))]
+        #[arg(short, long, value_parser(validate_path_exists))]
         templates: Option<PathBuf>,
     },
 
