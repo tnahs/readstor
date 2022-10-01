@@ -17,3 +17,19 @@ pub static HOME: Lazy<PathBuf> = Lazy::new(|| home::home_dir().unwrap());
 /// The default date format string. Translates to: `YYYY-MM-DD-HHMMSS` i.e.
 /// `1970-01-01-120000`.
 pub const DATE_FORMAT: &str = "%Y-%m-%d-%H%M%S";
+
+/// Defines the root path to the default templates.
+#[cfg(test)]
+pub static EXAMPLE_TEMPLATES: Lazy<PathBuf> = Lazy::new(|| {
+    let mut path = CRATE_ROOT.to_owned();
+    path.push("templates");
+    path
+});
+
+/// Defines the root path to the testing templates.
+#[cfg(test)]
+pub static TEST_TEMPLATES: Lazy<PathBuf> = Lazy::new(|| {
+    let mut path = CRATE_ROOT.to_owned();
+    path.extend(["data", "templates"].iter());
+    path
+});

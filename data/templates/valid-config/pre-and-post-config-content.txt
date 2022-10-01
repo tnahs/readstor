@@ -1,0 +1,7 @@
+<!-- pre-config-content -->
+
+<!-- readstor
+...
+-->
+
+<!-- post-config-content -->

@@ -13,6 +13,7 @@ use crate::lib::models::entry::Entry;
 use crate::lib::result::{LibError, LibResult};
 use crate::lib::utils;
 
+use super::defaults::{CONFIG_TAG_CLOSE, CONFIG_TAG_OPEN};
 #[allow(unused_imports)] // For docs.
 use super::manager::TemplateManager;
 
@@ -88,16 +89,15 @@ impl Template {
     {
         let path = path.as_ref();
 
-        let (config, contents) = Self::split_template_config_contents(string).ok_or(
-            LibError::InvalidTemplateConfig {
+        let (config, contents) =
+            Self::parse_raw_template(string).ok_or(LibError::InvalidTemplateConfig {
                 path: path.display().to_string(),
-            },
-        )?;
+            })?;
 
         let mut template: Self = serde_yaml::from_str(config)?;
 
         template.id = path.display().to_string();
-        template.contents = contents.to_owned();
+        template.contents = contents;
 
         Ok(template)
     }
@@ -105,28 +105,36 @@ impl Template {
     /// Returns a tuple containing the template's configuration and its contents
     /// respectively.
     ///
-    /// Returns `None` if the template's configuration is formatted incorrectly.
-    // TODO: Should we make this less strict? In other words, allow the config
-    // to come after other comment tags?
-    fn split_template_config_contents(string: &str) -> Option<(&str, &str)> {
-        let open = super::defaults::CONFIG_TAG_OPEN;
-        let close = super::defaults::CONFIG_TAG_CLOSE;
+    /// Returns `None` if the template's config block is formatted incorrectly.
+    fn parse_raw_template(string: &str) -> Option<(&str, String)> {
+        // Find where the opening tag starts...
+        let mut config_start = string.find(&CONFIG_TAG_OPEN)?;
 
-        if !string.starts_with(open) {
-            return None;
-        }
+        // (Save the pre-config contents.)
+        let pre_config_contents = &string[0..config_start];
 
-        let config_start = open.len();
-        let config_end = string.find(close)?;
+        // ...and offset it by the length of the config opening tag.
+        config_start += CONFIG_TAG_OPEN.len();
 
-        let contents_start = config_end + close.len();
+        // Starting from where we found the opening tag, search for a closing
+        // tag. If we don't offset the starting point we might find another
+        // closing tag located before the opening tag.
+        let mut config_end = string[config_start..].find(CONFIG_TAG_CLOSE)?;
+        // Remove the offset we just used.
+        config_end += config_start;
 
         let config = &string[config_start..config_end];
-        let mut contents = &string[contents_start..];
 
-        if contents.starts_with('\n') {
-            contents = &contents[1..];
+        // The template's post-config contents start after the closiong tag.
+        let post_config_contents = config_end + CONFIG_TAG_CLOSE.len();
+        let mut post_config_contents = &string[post_config_contents..];
+
+        // Trim a single linebreak if its present.
+        if post_config_contents.starts_with('\n') {
+            post_config_contents = &post_config_contents[1..];
         }
+
+        let contents = format!("{}{}", pre_config_contents, post_config_contents,);
 
         Some((config, contents))
     }
@@ -575,5 +583,141 @@ impl std::fmt::Debug for PartialTemplate {
         f.debug_struct("PartialTemplate")
             .field("id", &self.id)
             .finish()
+    }
+}
+
+#[cfg(test)]
+mod test_templates {
+
+    use crate::lib::defaults::TEST_TEMPLATES;
+
+    use super::*;
+
+    fn test_template_config(directory: &str, name: &str) {
+        let path = TEST_TEMPLATES.join(directory).join(name);
+        let string = std::fs::read_to_string(path).unwrap();
+        Template::parse_raw_template(&string).unwrap();
+    }
+
+    mod invalid_config {
+
+        use super::test_template_config;
+
+        const DIRECTORY: &str = "invalid-config";
+
+        // Tests that a missing config block returns an error.
+        #[test]
+        #[should_panic]
+        fn test_missing_config() {
+            test_template_config(DIRECTORY, "missing-config.txt");
+        }
+
+        // Tests that a missing closing tag returns an error.
+        #[test]
+        #[should_panic]
+        fn test_missing_closing_tag() {
+            test_template_config(DIRECTORY, "missing-closing-tag.txt");
+        }
+
+        // Tests that missing `readstor` in the opening tag returns an error.
+        #[test]
+        #[should_panic]
+        fn test_incomplete_opening_tag_01() {
+            test_template_config(DIRECTORY, "incomplete-opening-tag-01.txt");
+        }
+
+        // Tests that missing the `!` in the opening tag returns an error.
+        #[test]
+        #[should_panic]
+        fn test_incomplete_opening_tag_02() {
+            test_template_config(DIRECTORY, "incomplete-opening-tag-02.txt");
+        }
+
+        // Tests that no linebreak after `readstor` returns an error.
+        #[test]
+        #[should_panic]
+        fn test_missing_linebreak_01() {
+            test_template_config(DIRECTORY, "missing-linebreak-01.txt");
+        }
+
+        // Tests that no linebreak after the config body returns an error.
+        #[test]
+        #[should_panic]
+        fn test_missing_linebreak_02() {
+            test_template_config(DIRECTORY, "missing-linebreak-02.txt");
+        }
+
+        // Tests that no linebreak after the closing tag returns an error.
+        #[test]
+        #[should_panic]
+        fn test_missing_linebreak_03() {
+            test_template_config(DIRECTORY, "missing-linebreak-03.txt");
+        }
+
+        // Tests that no linebreak before the opening tag returns an error.
+        #[test]
+        #[should_panic]
+        fn test_missing_linebreak_04() {
+            test_template_config(DIRECTORY, "missing-linebreak-04.txt");
+        }
+    }
+
+    mod valid_config {
+
+        use super::test_template_config;
+
+        const DIRECTORY: &str = "valid-config";
+
+        // Tests that a template with pre- and post-config-content returns no error.
+        #[test]
+        fn test_pre_and_post_config_content() {
+            test_template_config(DIRECTORY, "pre-and-post-config-content.txt");
+        }
+
+        // Tests that a template with pre-config-content returns no error.
+        #[test]
+        fn test_pre_config_content() {
+            test_template_config(DIRECTORY, "pre-config-content.txt");
+        }
+
+        // Tests that a template with post-config-content returns no error.
+        #[test]
+        fn test_post_config_content() {
+            test_template_config(DIRECTORY, "post-config-content.txt");
+        }
+    }
+
+    // Test that each example template is valid.
+    mod examples {
+
+        use crate::lib::defaults::EXAMPLE_TEMPLATES;
+
+        use super::*;
+
+        fn test_example_template(directory: &str, name: &str) {
+            let path = EXAMPLE_TEMPLATES.join(directory).join(name);
+            let string = std::fs::read_to_string(&path).unwrap();
+            Template::new(&path, &string).unwrap();
+        }
+
+        #[test]
+        fn test_basic() {
+            test_example_template("basic", "basic.jinja2");
+        }
+
+        #[test]
+        fn test_using_backlins_book() {
+            test_example_template("using-backlinks", "book.jinja2");
+        }
+
+        #[test]
+        fn test_using_backlins_annotation() {
+            test_example_template("using-backlinks", "annotation.jinja2");
+        }
+
+        #[test]
+        fn test_using_partials() {
+            test_example_template("using-partials", "using-partials.jinja2");
+        }
     }
 }

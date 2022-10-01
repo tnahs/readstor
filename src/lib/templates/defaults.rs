@@ -13,11 +13,11 @@ use super::template::{ContextMode, StructureMode};
 /// ...
 /// -->
 /// ```
-pub const CONFIG_TAG_OPEN: &str = "<!-- readstor";
+pub const CONFIG_TAG_OPEN: &str = "<!-- readstor\n";
 
 /// The closing tag for defining a config block in a template. See
 /// [`CONFIG_TAG_OPEN`] for more information.
-pub const CONFIG_TAG_CLOSE: &str = "-->\n";
+pub const CONFIG_TAG_CLOSE: &str = "\n-->\n";
 
 /// The default template used to generate the output filename for a template
 /// with [`ContextMode::Book`].
