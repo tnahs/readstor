@@ -23,7 +23,6 @@ impl TestConfig {
             options: ConfigOptions {
                 databases: cli::defaults::MOCK_DATABASES.join(name),
                 output: Self::build_output_directory(name),
-                templates: None,
                 is_quiet: true,
             },
         }

@@ -58,7 +58,6 @@ impl From<ArgOptions> for DevConfig {
             options: ConfigOptions {
                 databases,
                 output,
-                templates: options.templates,
                 is_quiet: options.is_quiet,
             },
         }

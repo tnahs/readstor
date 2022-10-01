@@ -1,4 +1,5 @@
 use std::fs;
+use std::path::PathBuf;
 
 use color_eyre::eyre::WrapErr;
 
@@ -44,9 +45,9 @@ impl App {
                 self.print_msg("• Exporting data...");
                 self.export_data().wrap_err("Failed while exporting data")?;
             }
-            ArgCommand::Render => {
+            ArgCommand::Render { templates } => {
                 self.print_msg("• Building templates...");
-                self.build_templates()?;
+                self.build_templates(&templates)?;
 
                 self.print_msg("• Rendering template...");
                 self.render_templates()
@@ -70,9 +71,9 @@ impl App {
     }
 
     /// Verifies, builds and registers all templates for rendering.
-    fn build_templates(&mut self) -> AppResult<()> {
+    fn build_templates(&mut self, templates: &Option<PathBuf>) -> AppResult<()> {
         self.template_manager
-            .build(self.config.options().templates(), super::defaults::TEMPLATE)
+            .build(templates, super::defaults::TEMPLATE)
             .wrap_err("Failed while building template(s)")?;
 
         Ok(())

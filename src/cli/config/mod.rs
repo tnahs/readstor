@@ -30,8 +30,7 @@ pub struct ConfigOptions {
 
     output: PathBuf,
 
-    templates: Option<PathBuf>,
-
+    // templates: Option<PathBuf>,
     is_quiet: bool,
 }
 
@@ -42,10 +41,6 @@ impl ConfigOptions {
 
     pub fn output(&self) -> &PathBuf {
         &self.output
-    }
-
-    pub fn templates(&self) -> &Option<PathBuf> {
-        &self.templates
     }
 
     pub fn is_quiet(&self) -> bool {

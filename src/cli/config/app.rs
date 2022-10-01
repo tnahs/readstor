@@ -29,7 +29,6 @@ impl From<ArgOptions> for AppConfig {
             options: ConfigOptions {
                 databases,
                 output,
-                templates: options.templates,
                 is_quiet: options.is_quiet,
             },
         }
