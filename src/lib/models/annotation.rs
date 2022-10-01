@@ -274,7 +274,7 @@ mod test_annotations {
 
     use super::*;
 
-    /// TODO: Base function to start testing annotation order using `<` and `>`.
+    // TODO: Base function to start testing annotation order using `<` and `>`.
     #[test]
     fn test_cmp_annotations() {
         let mut a1 = Annotation::default();

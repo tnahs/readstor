@@ -139,7 +139,7 @@ impl Template {
         Some((config, contents))
     }
 
-    /// Helper method for `serde` to deserialize a string and sanitize it.
+    /// Helper method for `serde` to deserialize and sanitize a string.
     fn deserialize_and_sanitize<'de, D>(deserializer: D) -> Result<String, D::Error>
     where
         D: de::Deserializer<'de>,

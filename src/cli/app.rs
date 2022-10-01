@@ -235,7 +235,7 @@ mod test_app {
 
     use super::*;
 
-    /// Tests that an empty database returns zero books and zero annotations.
+    // Tests that an empty database returns zero books and zero annotations.
     #[test]
     fn test_databases_empty() {
         let config = TestConfig::new("empty");
@@ -247,8 +247,8 @@ mod test_app {
         assert_eq!(app.data.count_annotations(), 0);
     }
 
-    /// Tests that a database with un-annotated books returns zero books and
-    /// zero annotations.
+    // Tests that a database with un-annotated books returns zero books and
+    // zero annotations.
     #[test]
     fn test_databases_books_new() {
         let config = TestConfig::new("books-new");
@@ -261,8 +261,8 @@ mod test_app {
         assert_eq!(app.data.count_annotations(), 0);
     }
 
-    /// Tests that a database with annotated books returns non-zero books and
-    /// non-zero annotations.
+    // Tests that a database with annotated books returns non-zero books and
+    // non-zero annotations.
     #[test]
     fn test_databases_books_annotated() {
         let config = TestConfig::new("books-annotated");
@@ -274,7 +274,7 @@ mod test_app {
         assert_eq!(app.data.count_annotations(), 10);
     }
 
-    /// Tests that the annotations are sorted in the correct order.
+    // Tests that the annotations are sorted in the correct order.
     #[test]
     fn test_annotations_order() {
         let config = TestConfig::new("books-annotated");

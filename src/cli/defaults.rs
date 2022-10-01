@@ -28,7 +28,7 @@ pub static TEMPLATE: &str = include_str!(concat!(
     "/templates/basic/basic.jinja2"
 ));
 
-/// Defines the root path to the mock databases. These are used when
+/// Defines the root path to the mock databases.
 pub static MOCK_DATABASES: Lazy<PathBuf> = Lazy::new(|| {
     let mut path = lib::defaults::CRATE_ROOT.to_owned();
     path.extend(["data", "databases"].iter());
