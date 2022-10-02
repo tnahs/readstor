@@ -16,19 +16,19 @@ pub struct Args {
 #[derive(Debug, Parser)]
 pub struct ArgOptions {
     /// Sets a custom databases directory
-    #[arg(short, long, global = true, value_parser(validate_path_exists))]
+    #[arg(short, long, value_parser(validate_path_exists))]
     pub databases: Option<PathBuf>,
 
     /// Sets the OUTPUT directory [default: ~/.readstor]
-    #[arg(short, long, global = true, value_parser(validate_path_exists))]
+    #[arg(short, long, value_parser(validate_path_exists))]
     pub output: Option<PathBuf>,
 
     /// Runs even if Apple Books is open
-    #[arg(short, long, global = true)]
+    #[arg(short, long)]
     pub force: bool,
 
     /// Silences output messages
-    #[arg(short, long = "quiet", global = true)]
+    #[arg(short, long = "quiet")]
     pub is_quiet: bool,
 }
 
