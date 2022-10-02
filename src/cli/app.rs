@@ -21,12 +21,12 @@ pub type AppResult<T> = color_eyre::Result<T>;
 #[derive(Debug)]
 pub struct App {
     data: Data,
-    config: Box<dyn Config>,
+    config: Config,
     template_manager: TemplateManager,
 }
 
 impl App {
-    pub fn new(config: Box<dyn Config>) -> Self {
+    pub fn new(config: Config) -> Self {
         Self {
             data: Data::default(),
             config,
@@ -64,7 +64,7 @@ impl App {
             "• Saved {} annotations from {} books to `{}`",
             self.data.count_annotations(),
             self.data.count_books(),
-            self.config.options().output().display()
+            self.config.output.display()
         ));
 
         Ok(())
@@ -82,7 +82,7 @@ impl App {
     /// Builds the application's data from the Apple Books databases.
     fn build_data(&mut self) -> AppResult<()> {
         self.data
-            .build(self.config.options().databases())
+            .build(&self.config.databases)
             .wrap_err("Failed while building data")
     }
 
@@ -113,7 +113,7 @@ impl App {
     /// already exists and/or contains data.
     fn export_data(&self) -> AppResult<()> {
         // -> [ouput-directory]
-        let path = self.config.options().output().join("data");
+        let path = self.config.output.join("data");
 
         for entry in self.data.entries() {
             // -> [ouput-directory]/[author-title]
@@ -150,9 +150,9 @@ impl App {
     /// Renders all registered templates.
     fn render_templates(&mut self) -> AppResult<()> {
         // -> [ouput-directory]
-        let path = self.config.options().output();
+        let path = &self.config.output;
 
-        fs::create_dir_all(&path)?;
+        fs::create_dir_all(path)?;
 
         // Renders each `Entry` i.e. a `Book` and its `Annotation`s.
         for entry in self.data.entries() {
@@ -185,7 +185,7 @@ impl App {
     /// ```
     fn backup_databases(&self) -> AppResult<()> {
         // -> [ouput-directory]
-        let path = self.config.options().output();
+        let path = &self.config.output;
 
         // -> [YYYY-MM-DD-HHMMSS]-[VERSION]
         let today = format!("{}-{}", utils::today(), *APPLEBOOKS_VERSION);
@@ -203,15 +203,13 @@ impl App {
         // -> [DATABASES]/BKLibrary
         let source_books = &self
             .config
-            .options()
-            .databases()
+            .databases
             .join(ABDatabaseName::Books.to_string());
 
         // -> [DATABASES]/AEAnnotation
         let source_annotations = &self
             .config
-            .options()
-            .databases()
+            .databases
             .join(ABDatabaseName::Annotations.to_string());
 
         utils::copy_dir(source_books, &destination_books)?;
@@ -222,7 +220,7 @@ impl App {
 
     /// Prints a message to the terminal.
     fn print_msg(&self, message: &str) {
-        if !self.config.options().is_quiet() {
+        if !self.config.is_quiet {
             println!("{}", message);
         }
     }
@@ -231,15 +229,15 @@ impl App {
 #[cfg(test)]
 mod test_app {
 
-    use crate::cli::config::test::TestConfig;
+    use crate::cli::config::Config;
 
     use super::*;
 
     // Tests that an empty database returns zero books and zero annotations.
     #[test]
     fn test_databases_empty() {
-        let config = TestConfig::new("empty");
-        let mut app = App::new(Box::new(config));
+        let config = Config::test("empty");
+        let mut app = App::new(config);
 
         app.build_data().unwrap();
 
@@ -251,8 +249,8 @@ mod test_app {
     // zero annotations.
     #[test]
     fn test_databases_books_new() {
-        let config = TestConfig::new("books-new");
-        let mut app = App::new(Box::new(config));
+        let config = Config::test("books-new");
+        let mut app = App::new(config);
 
         app.build_data().unwrap();
 
@@ -265,8 +263,8 @@ mod test_app {
     // non-zero annotations.
     #[test]
     fn test_databases_books_annotated() {
-        let config = TestConfig::new("books-annotated");
-        let mut app = App::new(Box::new(config));
+        let config = Config::test("books-annotated");
+        let mut app = App::new(config);
 
         app.build_data().unwrap();
 
@@ -277,8 +275,8 @@ mod test_app {
     // Tests that the annotations are sorted in the correct order.
     #[test]
     fn test_annotations_order() {
-        let config = TestConfig::new("books-annotated");
-        let mut app = App::new(Box::new(config));
+        let config = Config::test("books-annotated");
+        let mut app = App::new(config);
 
         app.build_data().unwrap();
 

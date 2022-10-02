@@ -28,9 +28,8 @@ use clap::Parser;
 
 use crate::cli::app::{App, AppResult};
 use crate::cli::args::Args;
-use crate::cli::config::app::AppConfig;
-use crate::cli::config::dev::{is_development_env, DevConfig};
 use crate::cli::config::Config;
+use crate::cli::utils::is_development_env;
 use crate::lib::applebooks::utils::applebooks_is_running;
 
 fn main() -> AppResult<()> {
@@ -55,10 +54,10 @@ fn main() -> AppResult<()> {
     //
     // Note that the appropriate environment variable to signal a development
     // env should be set in the `.cargo/config.toml` file.
-    let config: Box<dyn Config> = if is_development_env() {
-        Box::new(DevConfig::from(args.options))
+    let config: Config = if is_development_env() {
+        Config::dev(args.options)
     } else {
-        Box::new(AppConfig::from(args.options))
+        Config::app(args.options)
     };
 
     log::debug!("{:#?}.", &config);
