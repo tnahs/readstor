@@ -92,7 +92,7 @@ impl Data {
             .map(|book| (book.metadata.id.clone(), Entry::from(book)))
             .collect();
 
-        // `Annotation`s are pushed onto a `Entry` based on its `book_id`.
+        // `Annotation`s are pushed onto an `Entry` based on their `book_id`.
         for annotation in annotations {
             if let Some(entry) = data.get_mut(&annotation.metadata.book_id) {
                 entry.annotations.push(annotation);
