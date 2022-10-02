@@ -57,7 +57,6 @@ grouped under the name `my-vault`, will render a single file for each book and
 place them all directly into the output directory. Each output filename will
 follow the pattern of `Author - Title.md`.
 
-<!-- prettier-ignore -->
 ```plaintext
 <!-- readstor
 group: my-vault
@@ -86,7 +85,7 @@ last-opened: {{ book.metadata.last_opened | date(format="%Y-%m-%dT%H:%M") }}
 {%- if annotation.tags %}tags: {{ annotation.tags | join(sep=" ") }}{% endif %}
 
 {% endfor %}
-````
+```
 
 ## Output Structure
 
