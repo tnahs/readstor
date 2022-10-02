@@ -43,6 +43,12 @@ name-templates:
 ...
 ```
 
+> <i class="fa fa-exclamation-circle"></i> Note that the final rendered output
+> file will not include its template's configuration. Additionally, if the
+> configuration ended with trailing linebreaks, a single one of them is
+> removed. This allow for some extra whitespace while working with a template
+> without affecting final rendered output.
+
 A quick rundown of each configuration key:
 
 | Key              | Description                                                                       |
