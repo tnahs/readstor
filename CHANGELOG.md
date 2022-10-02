@@ -2,29 +2,30 @@
 
 ## v0.3.0 (UNRELEASED)
 
+- Overhauled templates workflow.
+  - A template's config is now set within the header of the file inside an HTML-
+    comment. As a result, the filename of a template no longer matters. The
+    only exception is when naming a template partial, these must begin with an
+    underscore (`_`).
+  - Nested rendered template outputs are now optional via the `structure` key in
+    the template's config and can be customized via the
+    `name-templates.directory` key.
+  - Template output filenames are now customizable via the `name-templates.book`
+    and `name-templates.annotation` keys in the template's config.
+  - All [Tera](https://tera.netlify.app/docs/) features are now supported!
+- Added `--quiet` flag to silence terminal output.
+- Added `--databases` option to use a custom databases path.
+- Moved `-t/--templates` option under `render` command.
 - Removed `render -t/--template`.
-- `-t/--templates` is now global and accepts a path to a directory with
-  templates.
-- Added `--quiet` to silence output.
 - Removed `-v` logging verbosity.
-- Switched to `Config` trait for more flexibility.
-- Switched from `loggerv` to `env_logger`.
 - Removed nested directory from output file structure i.e. `data`, `renders`,
   `backups`.
 - Databases backup directories now have a `-` between the date and version:
   `[YYYY-MM-DD-HHMMSS]-[VERSION]`
-- Added the option to use a custom `databases` path.
-- Overhauled templates workflow.
-- Templates can now be optionally placed in a `group` directory. This was
-  previously hard-coded.
-- A template's configuration is now set within the header of the file inside an
-  HTML-comment. As a result the filename of a template no longer matters. The
-  only exception to filenames is when naming a template partial, these must
-  begin with an underscore (`_`).
-- Template partials, inheritance and `{% include %}` tags are now fully
-  supported!
-- Added CI, build and publish actions.
-- Release will now have binaries for Apple Silicon and Intel.
+- Releases will now have binaries for Apple Silicon and Intel.
+- Added CI, build, docs and publish actions.
+- Switched to `Config` trait for more flexibility.
+- Switched from `loggerv` to `env_logger`.
 
 ## v0.2.0
 
