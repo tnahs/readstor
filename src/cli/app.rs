@@ -113,7 +113,7 @@ impl App {
     /// already exists and/or contains data.
     fn export_data(&self) -> AppResult<()> {
         // -> [ouput-directory]
-        let path = self.config.output.join("data");
+        let path = &self.config.output;
 
         for entry in self.data.entries() {
             // -> [ouput-directory]/[author-title]
