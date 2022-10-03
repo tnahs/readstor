@@ -23,8 +23,7 @@ pub struct Annotation {
 
     /// The annotation's highlight style.
     ///
-    /// Possible values are: `green`, `blue`, `yellow`, `pink` `purple` or
-    /// `underline`.
+    /// Possible values are: `green`, `blue`, `yellow`, `pink` `purple` or `underline`.
     pub style: String,
 
     /// The annotation's notes.

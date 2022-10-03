@@ -27,7 +27,7 @@ impl ABDatabase {
     ///
     /// # Arguments
     ///
-    /// * `path` - A path to a directory containing the Apple Books databases.
+    /// * `path` - The path to a directory containing the Apple Books databases.
     /// * `T` - Specifies which of the two databases will be queried. `T` should
     /// be either [`Book`] or [`Annotation`] referring to `BKLibrary*.sqlite` or
     /// `AEAnnotation*.sqlite`.

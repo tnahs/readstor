@@ -41,7 +41,7 @@ impl TemplateManager {
     ///
     /// # Arguments
     ///
-    /// * `path` - A path to a directory containing templates.
+    /// * `path` - The path to a directory containing templates.
     ///
     /// # Errors
     ///
@@ -68,7 +68,7 @@ impl TemplateManager {
     /// # Arguments
     ///
     /// * `entry` - The [`Entry`] to be rendered.
-    /// * `path` - A path to a directory to save the rendered file.
+    /// * `path` - The path to a directory to save the rendered file.
     ///
     /// # Errors
     ///
@@ -298,8 +298,8 @@ impl TemplateManager {
     ///
     /// # Arguments
     ///
-    /// * `path` - A path to a directory to iterate.
-    /// * `hidden` - Display only hidden or visible.
+    /// * `path` - The path to to iterate.
+    /// * `kind` - The kind of template the iterator should return.
     fn iter_templates_directory<P>(path: P, kind: TemplateKind) -> impl Iterator<Item = PathBuf>
     where
         P: AsRef<Path>,
