@@ -53,12 +53,6 @@ type Entries = HashMap<String, Entry>;
 pub struct Data(Entries);
 
 impl Data {
-    /// Returns an iterator of all [`Entry`]s.
-    #[must_use]
-    pub fn entries(&self) -> impl IntoIterator<Item = &Entry> {
-        self.0.values()
-    }
-
     /// Builds [`Entry`]s from the Apple Books databases.
     ///
     /// # Errors
@@ -113,6 +107,18 @@ impl Data {
         log::debug!("Created {} annotation(s).", self.count_annotations());
 
         Ok(())
+    }
+
+    /// Returns an iterator over all [`Entry`]s.
+    #[must_use]
+    pub fn entries(&self) -> impl IntoIterator<Item = &Entry> {
+        self.0.values()
+    }
+
+    /// Returns a mutable iterator over all [`Entry`]s.
+    #[must_use]
+    pub fn entries_mut(&mut self) -> impl IntoIterator<Item = &mut Entry> {
+        self.0.values_mut()
     }
 
     /// Returns the number of books.
