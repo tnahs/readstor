@@ -2,18 +2,15 @@
 
 use std::cmp::Ordering;
 
-use once_cell::sync::Lazy;
-use regex::Regex;
 use rusqlite::Row;
 use serde::Serialize;
 
+use crate::lib;
 use crate::lib::applebooks::database::{ABDatabaseName, ABQuery};
-use crate::lib::{self, parser};
 
 use super::datetime::DateTimeUtc;
-
-/// Captures a `#tag`.
-static RE_TAG: Lazy<Regex> = Lazy::new(|| Regex::new(r"#[^\s#]+").unwrap());
+use super::epubcfi;
+use super::utils;
 
 /// A struct representing an annotation and its metadata.
 #[derive(Debug, Default, Clone, Eq, Serialize)]
@@ -37,47 +34,28 @@ pub struct Annotation {
 }
 
 impl Annotation {
-    /// Returns a normalized string with extra line breaks removed and
-    /// whitespace trimmed.
-    fn process_body(body: &str) -> String {
-        body.lines()
-            // Remove empty paragraphs.
-            .filter(|&s| !s.is_empty())
-            // Trim whitespace.
-            .map(str::trim)
-            .map(ToOwned::to_owned)
-            .collect::<Vec<_>>()
-            .join("\n\n")
+    /// Normalizes line breaks in `Annotation.body`.
+    pub fn normalize_linebreaks(&mut self) {
+        self.body = utils::normalize_linebreaks(&self.body);
     }
 
-    /// Returns a string with all `#tag`s removed.
-    fn process_notes(notes: &Option<String>) -> String {
-        let notes = match notes {
-            Some(notes) => notes.clone(),
-            None => return "".to_owned(),
-        };
-
-        RE_TAG
-            // Remove all occurrences of `#tag`.
-            .replace_all(&notes, "")
-            // Trim whitespace.
-            .trim()
-            .to_owned()
+    /// Extracts `#tags` from `Annotation.notes` and places them into
+    /// `Annotation.tags`. The `#tags` are removed from `Annotation.notes`.
+    pub fn extract_tags(&mut self) {
+        self.tags = utils::extract_tags(&self.notes);
+        self.notes = utils::remove_tags(&self.notes);
     }
 
-    /// Returns a vec of `#tag`s extracted from the text.
-    fn process_tags(notes: &Option<String>) -> Vec<String> {
-        let notes = match notes {
-            Some(notes) => notes,
-            None => return Vec::new(),
-        };
+    /// Converts all Unicode characters found in `Annotation.body` to their
+    /// ASCII equivalents.
+    pub fn convert_to_ascii(&mut self) {
+        self.body = utils::convert_to_ascii(&self.body);
+    }
 
-        RE_TAG
-            // Find all occurrences of `#tag`.
-            .find_iter(notes)
-            .map(|m| m.as_str())
-            .map(ToOwned::to_owned)
-            .collect()
+    /// Converts a subset of "smart" Unicode symbols found in `Annotation.body`
+    /// to their ASCII equivalents.
+    pub fn convert_symbols_to_ascii(&mut self) {
+        self.body = utils::convert_symbols_to_ascii(&self.body);
     }
 
     /// Returns a style/color string from Apple Books' integer representation.
@@ -116,37 +94,25 @@ impl ABQuery for Annotation {
     };
 
     fn from_row(row: &Row<'_>) -> Self {
-        // It's necessary to explicitly type all these variables as `rusqlite`
-        // needs the type information to convert the column value to `T`. If the
-        // types do not match `rusqlite` will return an `InvalidColumnType` when
-        // calling `get_unwrap`. Therefore it should be safe to call
-        // `get_unwrap` as we know both the types match and we can see the
-        // column indices in the `query` method below.
+        // TODO: Can we return a `Result<Self>` here instead?
 
-        let body: String = row.get_unwrap(0);
-        let r_notes: Option<String> = row.get_unwrap(1);
+        let notes: Option<String> = row.get_unwrap(1);
         let style: u8 = row.get_unwrap(2);
         let created: f64 = row.get_unwrap(5);
         let modified: f64 = row.get_unwrap(6);
         let epubcfi: String = row.get_unwrap(7);
 
-        let body = Self::process_body(&body);
-        let style = Self::int_to_style(style);
-        let notes = Self::process_notes(&r_notes);
-        let tags = Self::process_tags(&r_notes);
-        let location = parser::parse_epubcfi(&epubcfi);
-
         Self {
-            body,
-            style,
-            notes,
-            tags,
+            body: row.get_unwrap(0),
+            style: Self::int_to_style(style),
+            notes: notes.unwrap_or_else(|| "".to_string()),
+            tags: Vec::new(),
             metadata: AnnotationMetadata {
                 id: row.get_unwrap(3),
                 book_id: row.get_unwrap(4),
                 created: created.into(),
                 modified: modified.into(),
-                location,
+                location: epubcfi::parse(&epubcfi),
                 epubcfi,
             },
         }
@@ -277,10 +243,10 @@ mod test_annotations {
     #[test]
     fn test_cmp_annotations() {
         let mut a1 = Annotation::default();
-        a1.metadata.location = parser::parse_epubcfi("epubcfi(/6/10[c01]!/4/10/3,:335,:749)");
+        a1.metadata.location = epubcfi::parse("epubcfi(/6/10[c01]!/4/10/3,:335,:749)");
 
         let mut a2 = Annotation::default();
-        a2.metadata.location = parser::parse_epubcfi("epubcfi(/6/12[c02]!/4/26/3,:68,:493)");
+        a2.metadata.location = epubcfi::parse("epubcfi(/6/12[c02]!/4/26/3,:68,:493)");
 
         assert!(a1 < a2);
     }

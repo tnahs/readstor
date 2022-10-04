@@ -1,14 +1,13 @@
-//! Defines a single function [`parse_epubcfi`] used to convert an `epubcfi`
-//! into a string that can be used to sort annotations into their order of
-//! appearance inside  their respective book.
+//! Defines a parser to convert an [`epubcfi`][epubcfi] into a string used to
+//! sort annotations into their order of appearance inside their respective
+//! book.
+//!
+//! [epubcfi]: https://w3c.github.io/epub-specs/epub33/epubcfi/
 
 use std::borrow::ToOwned;
 
 use once_cell::sync::Lazy;
 use regex::Regex;
-
-#[allow(unused_imports)] // For docs.
-use super::models::annotation::Annotation;
 
 /// Capture a 'Step Reference' e.g. `/6` `/4`
 ///
@@ -53,12 +52,10 @@ static RE_TEMPORAL_OFFSET: Lazy<Regex> = Lazy::new(|| Regex::new(r"~[0-9]+\.[0-9
 /// <https://w3c.github.io/epub-specs/epub33/epubcfi/#sec-path-terminating-temporal>
 static RE_SPACIAL_OFFSET: Lazy<Regex> = Lazy::new(|| Regex::new(r"@[0-9.]+:[0-9.]+").unwrap());
 
-/// Returns a simplified location representation of an [`Annotation`]'s
-/// `epubcfi`.
+/// Returns a simplified location string from a `epubcfi`.
 ///
 /// This is a super simple EPUB CFI parser with a focus on extracting location
-/// information. This result is stored inside an [`Annotation`] and used to sort
-/// itself from sibling [`Annotation`]s.
+/// information for sorting [`Annotation`][annotation]s.
 ///
 /// Examples:
 ///
@@ -76,8 +73,10 @@ static RE_SPACIAL_OFFSET: Lazy<Regex> = Lazy::new(|| Regex::new(r"@[0-9.]+:[0-9.
 ///
 /// See <https://w3c.github.io/epub-specs/epub33/epubcfi/> for more
 /// information.
+///
+/// [annotation]: super::annotation::Annotation
 #[must_use]
-pub fn parse_epubcfi(raw: &str) -> String {
+pub fn parse(raw: &str) -> String {
     // Check that the incoming string is an `epubcfi`.
     if !raw.starts_with("epubcfi(") && !raw.ends_with(')') {
         return "".to_string();
@@ -193,7 +192,7 @@ mod test_parser {
                 #[test]
                 fn $name() {
                     let (raw, expected) = $value;
-                    let parsed = parse_epubcfi(raw);
+                    let parsed = parse(raw);
                     assert_eq!(parsed, expected);
                 }
             )*
@@ -206,8 +205,8 @@ mod test_parser {
             $(
                 #[test]
                 fn $name() {
-                    let lhs_parsed = parse_epubcfi($lhs);
-                    let rhs_parsed = parse_epubcfi($rhs);
+                    let lhs_parsed = parse($lhs);
+                    let rhs_parsed = parse($rhs);
                     assert!(lhs_parsed $cmp rhs_parsed);
                 }
             )*

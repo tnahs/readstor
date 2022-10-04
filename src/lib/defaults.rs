@@ -1,4 +1,4 @@
-//! Defines defaults for working with the library.
+//! Defaults for the library module.
 
 use std::path::PathBuf;
 
@@ -32,4 +32,24 @@ pub static TEST_TEMPLATES: Lazy<PathBuf> = Lazy::new(|| {
     let mut path = CRATE_ROOT.to_owned();
     path.extend(["data", "templates"].iter());
     path
+});
+
+/// A list of "smart" Unicode symbols and their ASCII eqivalents. Based on:
+///
+/// * [Daring Fireball - SmartyPants](https://daringfireball.net/projects/smartypants/)
+/// * [Python-Markdown - SmartyPants](https://python-markdown.github.io/extensions/smarty/)
+pub static UNICODE_TO_ASCII_SYMBOLS: Lazy<Vec<(char, &str)>> = Lazy::new(|| {
+    [
+        ('‘', "'"),
+        ('’', "'"),
+        ('“', "\""),
+        ('”', "\""),
+        ('»', "<<"),
+        ('«', ">>"),
+        ('…', "..."),
+        ('–', "--"),
+        ('—', "---"),
+    ]
+    .into_iter()
+    .collect()
 });

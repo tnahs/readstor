@@ -6,26 +6,26 @@ use std::time::UNIX_EPOCH;
 use chrono::{DateTime, NaiveDateTime, Utc};
 use serde::Serialize;
 
-#[allow(unused_imports)] // For docs.
-use super::entry::Entry;
-#[allow(unused_imports)] // For docs.
-use crate::lib::templates::manager::TemplateManager;
-
-/// Thin wrapper around [`chrono`]'s [`DateTime<Utc>`] to allow for a
-/// [`Default`] implementation.
+/// A Newtype wrapper around [`chrono`]'s [`DateTime<Utc>`] to allow for a
+/// Default implementation.
 ///
-/// Why do we need a [`Default`] implementation?
+/// Why do we need a Default implementation?
 ///
-/// When a new template is added to the [`TemplateManager`] it needs to be
-/// validated both for its syntax and for the fields that its variables
-/// reference. In order to achieve the latter, a dummy [`Entry`] struct---its
-/// [`Default`] implementation---is passed to validate the template's variables.
-/// Seeing as `DateTime` does not have a [`Default`] implementation, it was
-/// either we implementation a hand written [`Default`] of [`Entry`] which would
-/// include multiple nested structs or wrap [`DateTime<Utc>`] and provide a
-/// [`Default`] implementation.
+/// When a new template is added to the [`TemplateManager`][template-manager]
+/// it needs to be validated both for its syntax and for the fields that its
+/// variables reference. In order to achieve the latter, a dummy
+/// [`Entry`][entry] struct---its Default implementation---is passed to
+/// validate the template's variables. Seeing as `DateTime` does not have a
+/// Default implementation, it was either we implement a hand written Default
+/// of [`Entry`][entry] which would include multiple nested structs or wrap
+/// [`DateTime<Utc>`] and provide a Default implementation.
 ///
-/// See [`TemplateManager::validate_template()`] for more information.
+/// See [`TemplateManager::validate_template()`][validate-template] for more
+/// information.
+///
+/// [entry]: super::entry::Entry
+/// [template-manager]: crate::lib::templates::manager::TemplateManager
+/// [validate-template]: crate::lib::templates::manager::TemplateManager::validate_template()
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize)]
 pub struct DateTimeUtc(DateTime<Utc>);
 

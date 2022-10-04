@@ -17,6 +17,8 @@
 )]
 #![allow(
     clippy::module_name_repetitions,
+    // Produces some false positives in docs.
+    clippy::doc_markdown,
     // TODO: How is this fixed?
     clippy::multiple_crate_versions,
 )]
