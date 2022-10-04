@@ -248,7 +248,6 @@ the full list of available <a href="https://tera.netlify.app/docs/#built-in-filt
 grouped under the name <code>my-vault</code>, will render a single file for each book and
 place them all directly into the output directory. Each output filename will
 follow the pattern of <code>Author - Title.md</code>.</p>
-<!-- prettier-ignore -->
 <pre><code class="language-plaintext">&lt;!-- readstor
 group: my-vault
 context: book
@@ -445,6 +444,13 @@ name-templates:
 
 ...
 </code></pre>
+<blockquote>
+<p><i class="fa fa-exclamation-circle"></i> Note that the final rendered output
+file will not include its template's configuration. Additionally, if the
+configuration ended with trailing linebreaks, a single one of them is
+removed. This allow for some extra whitespace while working with a template
+without affecting final rendered output.</p>
+</blockquote>
 <p>A quick rundown of each configuration key:</p>
 <div class="table-wrapper"><table><thead><tr><th>Key</th><th>Description</th></tr></thead><tbody>
 <tr><td><code>group</code></td><td>The <a href="02-templates/./02-01-template-groups.html">Template Group</a> name.</td></tr>
