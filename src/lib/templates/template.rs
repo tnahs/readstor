@@ -14,8 +14,6 @@ use crate::lib::result::{LibError, LibResult};
 use crate::lib::utils;
 
 use super::defaults::{CONFIG_TAG_CLOSE, CONFIG_TAG_OPEN};
-#[allow(unused_imports)] // For docs.
-use super::manager::TemplateManager;
 
 /// A struct representing a fully configured template.
 #[derive(Clone, Deserialize)]
@@ -321,17 +319,14 @@ struct NameTemplates {
 }
 
 impl NameTemplates {
-    /// See [`Template.filename_template_book`].
     fn default_book() -> String {
         super::defaults::FILENAME_TEMPLATE_BOOK.to_owned()
     }
 
-    /// See [`Template.filename_template_annotation`].
     fn default_annotation() -> String {
         super::defaults::FILENAME_TEMPLATE_ANNOTATION.to_owned()
     }
 
-    /// See [`Template.default_nested_directory_template`].
     fn default_directory() -> String {
         super::defaults::DIRECTORY_TEMPLATE.to_owned()
     }
@@ -344,7 +339,9 @@ impl NameTemplates {
 /// disk and (2) is included in the template's context so that files/direcories
 /// related to the template can be references within the tenplate.
 ///
-/// See [`TemplateManager::render()`] for more information.
+/// See [`TemplateManager::render()`][render] for more information.
+///
+/// [render]: super::manager::TemplateManager::render()
 #[derive(Debug, Default, Clone, Serialize)]
 pub struct Names {
     /// The output filename for a template with [`ContextMode::Book`].

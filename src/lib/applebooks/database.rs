@@ -10,13 +10,6 @@ use crate::lib::result::{LibError, LibResult};
 
 use super::utils::APPLEBOOKS_VERSION;
 
-#[allow(unused_imports)] // For docs.
-use crate::lib::applebooks::defaults::DATABASES;
-#[allow(unused_imports)] // For docs.
-use crate::lib::models::annotation::Annotation;
-#[allow(unused_imports)] // For docs.
-use crate::lib::models::book::Book;
-
 /// A struct encapsulating the methods associated with interacting with the
 /// Apple Books databases.
 #[derive(Debug, Clone, Copy)]
@@ -29,8 +22,8 @@ impl ABDatabase {
     ///
     /// * `path` - The path to a directory containing the Apple Books databases.
     /// * `T` - Specifies which of the two databases will be queried. `T` should
-    /// be either [`Book`] or [`Annotation`] referring to `BKLibrary*.sqlite` or
-    /// `AEAnnotation*.sqlite`.
+    /// be either [`Book`][book] or [`Annotation`][annotation] referring to
+    /// `BKLibrary*.sqlite` or `AEAnnotation*.sqlite`.
     ///
     /// See [`ABDatabase::get_database()`] for information on how the
     /// `databases` directory should be structured.
@@ -40,6 +33,9 @@ impl ABDatabase {
     /// Will return `Err` if the database cannot be opened or the underlying
     /// schema has changed, meaning this application is out of sync with the
     /// latest version of Apple Books.
+    ///
+    /// [annotation]: crate::lib::models::annotation::Annotation
+    /// [book]: crate::lib::models::book::Book
     #[allow(clippy::missing_panics_doc)]
     pub fn query<T: ABQuery>(path: &Path) -> LibResult<Vec<T>> {
         // Returns the appropriate database based on `T`.
@@ -139,11 +135,12 @@ impl ABDatabase {
     }
 }
 
-/// This trait is an attempt at reducing code duplication and standardizing how
-/// [`Book`] and [`Annotation`] instances are created. Thus it should only have
-/// to be implemented by said structs. It allows instances to be created
-/// generically over the rows of their respective databases `BKLibrary*.sqlite`
-/// and `AEAnnotation*.sqlite`. See [`static@DATABASES`] for path information.
+/// This trait is an attempt at reducing code duplication and standardizing
+/// how [`Book`][book] and [`Annotation`][annotation] instances are created.
+/// Thus it should only have to be implemented by said structs. It allows
+/// instances to be created generically over the rows of their respective
+/// databases `BKLibrary*.sqlite` and `AEAnnotation*.sqlite`. See
+/// [`DATABASES`][databases] for path information.
 ///
 /// The [`ABQuery::from_row()`] and [`ABQuery::QUERY`] methods are strongly
 /// coupled in that the declared rows in the `SELECT` statement *must* map
@@ -158,6 +155,10 @@ impl ABDatabase {
 /// Book         ZBKLIBRARYASSET.ZASSETID ─────────┐
 /// Annotation   ZAEANNOTATION.ZANNOTATIONASSETID ─┘
 /// ```
+///
+/// [annotation]: crate::lib::models::annotation::Annotation
+/// [book]: crate::lib::models::book::Book
+/// [databases]: crate::lib::applebooks::defaults::DATABASES
 pub trait ABQuery {
     /// The database's name being either `BKLibrary` or `AEAnnotation`.
     const DATABASE_NAME: ABDatabaseName;

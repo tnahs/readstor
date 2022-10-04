@@ -5,9 +5,6 @@ use std::path::PathBuf;
 
 use once_cell::sync::Lazy;
 
-#[allow(unused_imports)] // For docs.
-use crate::lib::applebooks::database::ABDatabase;
-
 use super::args::ArgOptions;
 
 /// Returns a path to a temp directory to use for reading and writing data
@@ -34,8 +31,10 @@ pub static TEMP_OUTPUT: Lazy<PathBuf> = Lazy::new(|| std::env::temp_dir().join("
 pub struct Config {
     /// The path to the root databases directory. This value can either point
     /// to the official Apple Books directory or one used in development or
-    /// testing. See [`ABDatabase::get_database()`] for information on how the
-    /// directory is structured.
+    /// testing. See [`ABDatabase::get_database()`][get-database] for
+    /// information on how the directory is structured.
+    ///
+    /// [get-database]: crate::lib::applebooks::database::ABDatabase::get_database()
     pub databases: PathBuf,
 
     /// The path to the output directory.
