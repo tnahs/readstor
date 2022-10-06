@@ -181,7 +181,7 @@ pub fn parse(raw: &str) -> String {
 }
 
 #[cfg(test)]
-mod test_parser {
+mod test_epubcfi_parser {
 
     use super::*;
 
