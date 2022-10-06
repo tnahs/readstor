@@ -24,8 +24,11 @@
   - `--ascii-only` to convert all Unicode characters to ASCII.
   - `--ascii-symbols` to convert only a subset of "smart" Unicode symbols to ASCII.
 - Added `--quiet` flag to silence terminal output.
-- Added `--databases` option to use a custom databases path.
-- Moved `-t/--templates` option under `render` command.
+- Added `--databases-directory` option to use a custom databases path.
+- Moved `--templates-directory` option under `render` command.
+- Renamed `--templates` -> `--templates-directory`.
+- Renamed `--databases` -> `--databases-directory`.
+- Renamed `--output` -> `--output-directory`.
 - Removed logging verbosity.
 - Removed nested directory from output file structure i.e. `data`, `renders`,
   `backups`.
