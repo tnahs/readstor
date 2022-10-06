@@ -65,6 +65,7 @@ pub struct Template {
 
     /// The template strings for generating output file and directory names.
     /// This is converted into a [`Names`] struct once an [`Entry`] is provided.
+    #[serde(default)]
     name_templates: NameTemplates,
 }
 
@@ -316,6 +317,16 @@ struct NameTemplates {
     /// or [`StructureMode::NestedGrouped`].
     #[serde(default = "NameTemplates::default_directory")]
     directory: String,
+}
+
+impl Default for NameTemplates {
+    fn default() -> Self {
+        Self {
+            book: Self::default_book(),
+            annotation: Self::default_annotation(),
+            directory: Self::default_directory(),
+        }
+    }
 }
 
 impl NameTemplates {
