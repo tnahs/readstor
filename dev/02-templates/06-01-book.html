@@ -149,6 +149,7 @@ the template's <a href="./02-02-context-modes.html">Context Mode</a>.</p>
 <tr><td><code>book</code></td><td>dictionary</td><td>book object</td></tr>
 <tr><td><code>book.title</code></td><td>string</td><td>title</td></tr>
 <tr><td><code>book.author</code></td><td>string</td><td>author</td></tr>
+<tr><td><code>book.tags</code></td><td>list[string]</td><td>the book's tags</td></tr>
 <tr><td><code>book.metadata</code></td><td>dictionary</td><td>metadata</td></tr>
 <tr><td><code>book.metadata.id</code></td><td>string</td><td>unique id</td></tr>
 <tr><td><code>book.metadata.last_opened</code></td><td>datetime</td><td>date last opened</td></tr>
@@ -161,6 +162,7 @@ the template's <a href="./02-02-context-modes.html">Context Mode</a>.</p>
 <pre><code class="language-json">{
   &quot;title&quot;: &quot;The Art Spirit&quot;,
   &quot;author&quot;: &quot;Robert Henri&quot;,
+  &quot;tags&quot;: [&quot;#artist&quot;, &quot;#being&quot;, &quot;#inspiration&quot;],
   &quot;metadata&quot;: {
     &quot;id&quot;: &quot;1969AF0ECA8AE4965029A34316813924&quot;,
     &quot;last_opened&quot;: &quot;2021-11-02T18:27:04.781938076Z&quot;
@@ -175,6 +177,7 @@ the template's <a href="./02-02-context-modes.html">Context Mode</a>.</p>
 <pre><code class="language-jinja2">---
 title: {{ book.title }}
 author: {{ book.author }}
+tags: {{ book.tags | join(sep=&quot; &quot;) }}
 id: {{ book.metadata.id }}
 last-opened: {{ book.metadata.last_opened | date(format=&quot;%Y-%m-%d-%H:%M&quot;) }}
 ---
