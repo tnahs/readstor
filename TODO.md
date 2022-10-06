@@ -2,19 +2,20 @@
 
 ## v0.3.0
 
-- [ ] Use less strict method to find template configuration.
-- [ ] Move `--templates` option into `render` command.
-- [ ] Add option to de-unicode text e.g. convert smart quotes to regular quotes.
-- [ ] Add option to extract tags or not.
-- [ ] Add option to trim blocks.
-- [ ] Add option to render only a single template from `templates` dir.
+- [ ] Sort `links.annotations` by filename.
 - [ ] Add `book.tags` so we can have a list of all the tags within a book.
 - [ ] Rework backup and restore scripts to use `rsync`.
+- [ ] Improve error messages.
+- [ ] Add test for template validation: syntax and variables.
+- [ ] Add redirection from docs root.
 
 ## Internal Improvements
 
-- [ ] Update crates.
+- [ ] Add `PostprocessOptions` for `Processor`.
+- [ ] Refactor `TemplateManager::render` and its sibling rendering methods. It's
+      currently a bit overloaded.
 - [ ] Add `# Arguments` to public methods.
+- [ ] After mdbook is complete, update internal docs.
 - [ ] Maybe `book.author` should be `book.authors`?
 - [ ] Move from `chrono` > `time` crate.
 - [ ] Implement `From<&'a Row> for T`.

@@ -6,4 +6,3 @@ pub mod data;
 pub mod datetime;
 pub mod entry;
 pub mod epubcfi;
-pub mod utils;

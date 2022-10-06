@@ -4,6 +4,7 @@
 pub mod applebooks;
 pub mod defaults;
 pub mod models;
+pub mod processor;
 pub mod result;
 pub mod templates;
 pub mod utils;

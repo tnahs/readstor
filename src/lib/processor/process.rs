@@ -1,9 +1,10 @@
-//! Utilities for working with [`Entry`][entry] [`Book`][book] and
-//! [`Annotation`][annotation] types.
+//! Pre-processors for manipulating [`Entry`][entry], [`Book`][book] and
+//! [`Annotation`][annotation] types before they are rendered and
+//! post-processors for manipulating a template after it's been rendered.
 //!
-//! [annotation]: super::annotation::Annotation
-//! [book]: super::book::Book
-//! [entry]: super::entry::Entry
+//! [annotation]: crate::lib::models::annotation::Annotation
+//! [book]: crate::lib::models::book::Book
+//! [entry]: crate::lib::models::entry::Entry
 
 use deunicode::deunicode;
 use once_cell::sync::Lazy;
@@ -14,6 +15,9 @@ use crate::lib;
 /// Captures a `#tag`. Tags *must* start with a hash symbol `#` followed by a
 /// letter `[a-zA-Z]`.
 static RE_TAG: Lazy<Regex> = Lazy::new(|| Regex::new(r"#[a-zA-Z][^\s#]+\s?").unwrap());
+
+/// Captures three or more consecutive linebreaks.
+static RE_BLOCKS: Lazy<Regex> = Lazy::new(|| Regex::new(r"\n{3,}").unwrap());
 
 /// Normalizes linebreaks to: `\n\n`.
 ///
@@ -67,7 +71,7 @@ pub fn remove_tags(string: &str) -> String {
 ///
 /// * `string` - The string to convert.
 #[must_use]
-pub fn convert_to_ascii(string: &str) -> String {
+pub fn convert_all_to_ascii(string: &str) -> String {
     deunicode(string)
 }
 
@@ -89,6 +93,25 @@ pub fn convert_symbols_to_ascii(string: &str) -> String {
     }
 
     string
+}
+
+/// Normalizes linebreaks by replacing three or more consecutive linebreaks with
+/// two consecutive linebreaks.
+///
+/// NOTE: This is a temporary solution that naively mimicks what [`tera`][tera]
+/// would do if/when it adds [`trim_blocks`][github-tera]. It is by no means
+/// smart and will just normalize whitespace regardless of what the themplate
+/// requested.
+///
+/// # Arguments
+///
+/// * `string` - The string to normalize.
+///
+/// [github-tera]: https://github.com/Keats/tera/issues/637
+/// [tera]: https://docs.rs/tera/latest/tera/
+#[must_use]
+pub fn trim_blocks(string: &str) -> String {
+    RE_BLOCKS.replace_all(string, "\n\n").to_string()
 }
 
 #[cfg(test)]

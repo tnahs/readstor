@@ -29,16 +29,15 @@ pub mod lib;
 use clap::Parser;
 
 use crate::cli::app::{App, AppResult};
-use crate::cli::args::Args;
 use crate::cli::config::Config;
-use crate::cli::utils::is_development_env;
+use crate::cli::Cli;
 use crate::lib::applebooks::utils::applebooks_is_running;
 
 fn main() -> AppResult<()> {
     cli::utils::init_logger();
     color_eyre::install()?;
 
-    let args = Args::parse();
+    let args = Cli::parse();
 
     log::debug!("{:#?}", &args);
 
@@ -50,17 +49,7 @@ fn main() -> AppResult<()> {
         return Ok(());
     }
 
-    // Selects the appropriate Config depending on the environment. In a
-    // development environment this sets the `databases` to local mock databases
-    // directory and the `output` to a temp directory on disk.
-    //
-    // Note that the appropriate environment variable to signal a development
-    // env should be set in the `.cargo/config.toml` file.
-    let config: Config = if is_development_env() {
-        Config::dev(args.options)
-    } else {
-        Config::app(args.options)
-    };
+    let config = Config::from(args.options);
 
     log::debug!("{:#?}.", &config);
 

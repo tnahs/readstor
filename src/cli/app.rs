@@ -1,16 +1,16 @@
 use std::fs;
-use std::path::PathBuf;
 
 use color_eyre::eyre::WrapErr;
 
 use crate::lib::applebooks::database::ABDatabaseName;
 use crate::lib::applebooks::utils::APPLEBOOKS_VERSION;
 use crate::lib::models::data::Data;
+use crate::lib::processor::{self, Processor};
 use crate::lib::templates::manager::TemplateManager;
 use crate::lib::utils;
 
-use super::args::ArgCommand;
 use super::config::Config;
+use super::{Command, PreprocessOptions, TemplateOptions};
 
 pub type AppResult<T> = color_eyre::Result<T>;
 
@@ -20,70 +20,76 @@ pub type AppResult<T> = color_eyre::Result<T>;
 /// [`Config`] is used to change its behavior.
 #[derive(Debug)]
 pub struct App {
-    data: Data,
     config: Config,
-    template_manager: TemplateManager,
+    data: Data,
 }
 
 impl App {
     pub fn new(config: Config) -> Self {
         Self {
-            data: Data::default(),
             config,
-            template_manager: TemplateManager::default(),
+            data: Data::default(),
         }
     }
 
-    /// Runs the application with a specified command represented by an
-    /// [`ArgCommand`].
-    pub fn run(&mut self, command: ArgCommand) -> AppResult<()> {
-        self.print_msg("• Building data...");
-        self.build_data()?;
-
+    /// Runs the application based off of the given [`Command`].
+    pub fn run(&mut self, command: Command) -> AppResult<()> {
         match command {
-            ArgCommand::Export => {
-                self.print_msg("• Exporting data...");
+            Command::Export { preprocess_options } => {
+                self.print("-> Building data");
+                self.init_data()?;
+                self.print("-> Running pre-processor");
+                self.run_preprocessor(preprocess_options);
+                self.print("-> Exporting data");
                 self.export_data().wrap_err("Failed while exporting data")?;
+                self.print_summary();
             }
-            ArgCommand::Render { templates } => {
-                self.print_msg("• Building templates...");
-                self.build_templates(&templates)?;
-
-                self.print_msg("• Rendering template...");
-                self.render_templates()
+            Command::Render {
+                template_options,
+                preprocess_options,
+            } => {
+                self.print("-> Building data");
+                self.init_data()?;
+                self.print("-> Running pre-processor");
+                self.run_preprocessor(preprocess_options);
+                self.print("-> Rendering templates");
+                self.render_templates(template_options)
                     .wrap_err("Failed while rendering template(s)")?;
+                self.print_summary();
             }
-            ArgCommand::Backup => {
-                self.print_msg("• Backing up databases...");
+            Command::Backup => {
+                self.print("-> Backing-up databases");
                 self.backup_databases()
                     .wrap_err("Failed while backing up databases")?;
             }
         }
 
-        self.print_msg(&format!(
-            "• Saved {} annotations from {} books to `{}`",
-            self.data.count_annotations(),
-            self.data.count_books(),
-            self.config.output.display()
-        ));
-
-        Ok(())
-    }
-
-    /// Verifies, builds and registers all templates for rendering.
-    fn build_templates(&mut self, templates: &Option<PathBuf>) -> AppResult<()> {
-        self.template_manager
-            .build(templates, super::defaults::TEMPLATE)
-            .wrap_err("Failed while building template(s)")?;
-
         Ok(())
     }
 
     /// Builds the application's data from the Apple Books databases.
-    fn build_data(&mut self) -> AppResult<()> {
+    fn init_data(&mut self) -> AppResult<()> {
         self.data
-            .build(&self.config.databases)
+            .build(&self.config.databases_directory)
             .wrap_err("Failed while building data")
+    }
+
+    /// Runs pre-processor on all [`Entry`]s.
+    fn run_preprocessor(&mut self, options: PreprocessOptions) {
+        let options = processor::PreprocessOptions::from(options);
+        for entry in self.data.entries_mut() {
+            Processor::preprocess(options, entry);
+        }
+    }
+
+    /// Prints export/render summary.
+    fn print_summary(&self) {
+        self.print(&format!(
+            "-> Saved {} annotations from {} books to `{}`",
+            self.data.count_annotations(),
+            self.data.count_books(),
+            self.config.output_directory.display()
+        ));
     }
 
     /// Exports Apple Books' data with the following structure:
@@ -113,7 +119,7 @@ impl App {
     /// already exists and/or contains data.
     fn export_data(&self) -> AppResult<()> {
         // -> [ouput-directory]
-        let path = &self.config.output;
+        let path = &self.config.output_directory;
 
         for entry in self.data.entries() {
             // -> [ouput-directory]/[author-title]
@@ -148,15 +154,22 @@ impl App {
     }
 
     /// Renders all registered templates.
-    fn render_templates(&mut self) -> AppResult<()> {
+    fn render_templates(&self, options: TemplateOptions) -> AppResult<()> {
         // -> [ouput-directory]
-        let path = &self.config.output;
+        let path = &self.config.output_directory;
 
         fs::create_dir_all(path)?;
 
+        let mut template_manager =
+            TemplateManager::new(options.into(), super::defaults::TEMPLATE.into());
+
+        template_manager
+            .build_templates()
+            .wrap_err("Failed while building template(s)")?;
+
         // Renders each `Entry` i.e. a `Book` and its `Annotation`s.
         for entry in self.data.entries() {
-            self.template_manager
+            template_manager
                 .render(entry, path)
                 .wrap_err("Failed while rendering template(s)")?;
         }
@@ -185,7 +198,7 @@ impl App {
     /// ```
     fn backup_databases(&self) -> AppResult<()> {
         // -> [ouput-directory]
-        let path = &self.config.output;
+        let path = &self.config.output_directory;
 
         // -> [YYYY-MM-DD-HHMMSS]-[VERSION]
         let today = format!("{}-{}", utils::today(), *APPLEBOOKS_VERSION);
@@ -203,13 +216,13 @@ impl App {
         // -> [DATABASES]/BKLibrary
         let source_books = &self
             .config
-            .databases
+            .databases_directory
             .join(ABDatabaseName::Books.to_string());
 
         // -> [DATABASES]/AEAnnotation
         let source_annotations = &self
             .config
-            .databases
+            .databases_directory
             .join(ABDatabaseName::Annotations.to_string());
 
         utils::copy_dir(source_books, &destination_books)?;
@@ -218,8 +231,8 @@ impl App {
         Ok(())
     }
 
-    /// Prints a message to the terminal.
-    fn print_msg(&self, message: &str) {
+    /// Prints to the terminal. Allows muting.
+    fn print(&self, message: &str) {
         if !self.config.is_quiet {
             println!("{}", message);
         }
@@ -239,7 +252,7 @@ mod test_app {
         let config = Config::test("empty");
         let mut app = App::new(config);
 
-        app.build_data().unwrap();
+        app.init_data().unwrap();
 
         assert_eq!(app.data.count_books(), 0);
         assert_eq!(app.data.count_annotations(), 0);
@@ -252,7 +265,7 @@ mod test_app {
         let config = Config::test("books-new");
         let mut app = App::new(config);
 
-        app.build_data().unwrap();
+        app.init_data().unwrap();
 
         // Un-annotated books are filtered out.
         assert_eq!(app.data.count_books(), 0);
@@ -266,7 +279,7 @@ mod test_app {
         let config = Config::test("books-annotated");
         let mut app = App::new(config);
 
-        app.build_data().unwrap();
+        app.init_data().unwrap();
 
         assert_eq!(app.data.count_books(), 3);
         assert_eq!(app.data.count_annotations(), 10);
@@ -278,7 +291,7 @@ mod test_app {
         let config = Config::test("books-annotated");
         let mut app = App::new(config);
 
-        app.build_data().unwrap();
+        app.init_data().unwrap();
 
         for entry in app.data.entries() {
             for annotations in entry.annotations.windows(2) {

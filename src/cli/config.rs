@@ -5,7 +5,7 @@ use std::path::PathBuf;
 
 use once_cell::sync::Lazy;
 
-use super::args::ArgOptions;
+use super::Options;
 
 /// Returns a path to a temp directory to use for reading and writing data
 /// during development/testing.
@@ -35,42 +35,60 @@ pub struct Config {
     /// information on how the directory is structured.
     ///
     /// [get-database]: crate::lib::applebooks::database::ABDatabase::get_database()
-    pub databases: PathBuf,
+    pub databases_directory: PathBuf,
 
     /// The path to the output directory.
-    pub output: PathBuf,
+    pub output_directory: PathBuf,
 
     /// Flag to enable/disable terminal output.
     pub is_quiet: bool,
 }
 
+impl From<crate::cli::Options> for Config {
+    fn from(options: crate::cli::Options) -> Self {
+        // Selects the appropriate Config depending on the environment. In a
+        // development environment this sets the `databases` to local mock databases
+        // directory and the `output` to a temp directory on disk.
+        //
+        // Note that the appropriate environment variable to signal a development
+        // env should be set in the `.cargo/config.toml` file.
+        if cli::utils::is_development_env() {
+            Self::dev(options)
+        } else {
+            Self::app(options)
+        }
+    }
+}
+
 impl Config {
-    pub fn app(options: ArgOptions) -> Self {
+    pub fn app(options: Options) -> Self {
         let databases = options
-            .databases
+            .databases_directory
             .unwrap_or_else(|| applebooks::defaults::DATABASES.to_owned());
 
         let output = options
-            .output
+            .output_directory
             .unwrap_or_else(|| cli::defaults::OUTPUT.to_owned());
 
         Self {
-            databases,
-            output,
+            databases_directory: databases,
+            output_directory: output,
             is_quiet: options.is_quiet,
         }
     }
 
-    pub fn dev(options: ArgOptions) -> Self {
+    pub fn dev(options: Options) -> Self {
         let databases = options
-            .databases
+            .databases_directory
             .unwrap_or_else(|| cli::defaults::MOCK_DATABASES.join("books-annotated"));
 
-        let output = options.output.unwrap_or_else(|| TEMP_OUTPUT.join("dev"));
+        let output = options
+            .output_directory
+            .unwrap_or_else(|| TEMP_OUTPUT.join("dev"));
 
         Self {
-            databases,
-            output,
+            databases_directory: databases,
+            output_directory: output,
             is_quiet: options.is_quiet,
         }
     }
@@ -78,8 +96,8 @@ impl Config {
     #[cfg(test)]
     pub fn test(name: &str) -> Self {
         Self {
-            databases: cli::defaults::MOCK_DATABASES.join(name),
-            output: TEMP_OUTPUT.join("tests").join(name),
+            databases_directory: cli::defaults::MOCK_DATABASES.join(name),
+            output_directory: TEMP_OUTPUT.join("tests").join(name),
             is_quiet: true,
         }
     }

@@ -1,4 +1,4 @@
-//! Defines utilities for working with this library.
+//! Common utilities for working with this library.
 
 use std::ffi::OsStr;
 use std::fs;
@@ -7,18 +7,8 @@ use std::path::Path;
 
 use chrono::Local;
 use deunicode::deunicode;
-use walkdir::DirEntry;
 
 use crate::lib;
-
-/// Helper function for `walkdir`. Filters out hidden directories e.g. `.hidden`.
-#[must_use]
-pub fn entry_is_hidden(entry: &DirEntry) -> bool {
-    entry
-        .file_name()
-        .to_str()
-        .map_or(false, |s| !s.starts_with('.'))
-}
 
 /// Recursively copies all files from one directory into another.
 ///

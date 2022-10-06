@@ -10,7 +10,6 @@ use crate::lib::applebooks::database::{ABDatabaseName, ABQuery};
 
 use super::datetime::DateTimeUtc;
 use super::epubcfi;
-use super::utils;
 
 /// A struct representing an annotation and its metadata.
 #[derive(Debug, Default, Clone, Eq, Serialize)]
@@ -34,30 +33,6 @@ pub struct Annotation {
 }
 
 impl Annotation {
-    /// Normalizes line breaks in `Annotation.body`.
-    pub fn normalize_linebreaks(&mut self) {
-        self.body = utils::normalize_linebreaks(&self.body);
-    }
-
-    /// Extracts `#tags` from `Annotation.notes` and places them into
-    /// `Annotation.tags`. The `#tags` are removed from `Annotation.notes`.
-    pub fn extract_tags(&mut self) {
-        self.tags = utils::extract_tags(&self.notes);
-        self.notes = utils::remove_tags(&self.notes);
-    }
-
-    /// Converts all Unicode characters found in `Annotation.body` to their
-    /// ASCII equivalents.
-    pub fn convert_to_ascii(&mut self) {
-        self.body = utils::convert_to_ascii(&self.body);
-    }
-
-    /// Converts a subset of "smart" Unicode symbols found in `Annotation.body`
-    /// to their ASCII equivalents.
-    pub fn convert_symbols_to_ascii(&mut self) {
-        self.body = utils::convert_symbols_to_ascii(&self.body);
-    }
-
     /// Returns a style/color string from Apple Books' integer representation.
     fn int_to_style(int: u8) -> String {
         let style = match int {

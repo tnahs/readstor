@@ -1,6 +1,8 @@
 # Options
 
-## Databases
+## Global
+
+### `--databases-directory`
 
 Setting a custom database directory:
 
@@ -20,3 +22,30 @@ directories are created when backing up databases with ReadStor.
  │  └─ ...
  └─ ...
 ```
+
+### `--output-directory`
+
+### `--force`
+
+### `--quiet`
+
+## Template Options
+
+### `--templates-directory`
+
+### `--template-group`
+
+### `--trim-blocks`
+
+## Pre-process Options
+
+### `--extract-tags`
+
+### `--normalize-linebreaks`
+
+### `--ascii-all`
+
+### `--ascii-symbols`
+
+<!-- [Daring Fireball - SmartyPants](https://daringfireball.net/projects/smartypants/) -->
+<!-- [Python-Markdown - SmartyPants](https://python-markdown.github.io/extensions/smarty/) -->

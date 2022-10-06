@@ -12,12 +12,21 @@
     `name-templates.directory` key.
   - Template output filenames are now customizable via the `name-templates.book`
     and `name-templates.annotation` keys in the template's config.
-  - All [Tera](https://tera.netlify.app/docs/) features are now supported!
+    rendered template. This is only a temporary solition until [Tera][tera] implements
+    this internally.
+  - All [Tera][tera] features are now supported!
+  - Added `--trim-blocks` to naively remove extra linebreaks from the final
+  - Added `--template-group` option to render only subset of templates found in
+    the templates directory.
+- Added preprocessing options to `render` and `export`.
+  - `--extract-tags` to extract `#tags` from notes.
+  - `--normalize-linbreaks` to reduce 3+ linebreaks to 2.
+  - `--ascii-only` to convert all Unicode characters to ASCII.
+  - `--ascii-symbols` to convert only a subset of "smart" Unicode symbols to ASCII.
 - Added `--quiet` flag to silence terminal output.
 - Added `--databases` option to use a custom databases path.
 - Moved `-t/--templates` option under `render` command.
-- Removed `render -t/--template`.
-- Removed `-v` logging verbosity.
+- Removed logging verbosity.
 - Removed nested directory from output file structure i.e. `data`, `renders`,
   `backups`.
 - Databases backup directories now have a `-` between the date and version:
@@ -49,10 +58,13 @@
 ## v0.1.1
 
 - Fixed minor issues with the `Cargo.toml` file to work better with
-  [crates.io](https://crates.io).
+  [crates.io][crates-io].
 
 ## v0.1.0
 
 - This initial release contains the core functionality: (1) save all annotations
   and notes as JSON (2) export them via a custom (or the default) template using
   the Tera syntax or (3) backup the current Apple Books databases.
+
+[crates-io]: https://crates.io
+[tera]: https://tera.netlify.app/

@@ -2,6 +2,7 @@
 //! templates.
 
 use std::fs::{self, File};
+use std::io::Write;
 use std::path::{Path, PathBuf};
 
 use tera::{Context, Tera};
@@ -10,38 +11,56 @@ use walkdir::DirEntry;
 use crate::lib::models::annotation::Annotation;
 use crate::lib::models::book::Book;
 use crate::lib::models::entry::Entry;
+use crate::lib::processor::Processor;
 use crate::lib::result::{LibError, LibResult};
-use crate::lib::utils;
 
 use super::template::{
     ContextMode, Names, PartialTemplate, StructureMode, Template, TemplateContext,
 };
+use super::utils;
 
 /// A struct providing a simple interface to build and render [`Template`]s.
 ///
 /// Template data is stored in two different locations: the `registry` holds all
 /// the parsed templates ready for rendering while `templates` holds each
-/// template's config along with raw template string.
+/// template's config along with the raw template string.
 #[derive(Debug, Default)]
 pub struct TemplateManager {
     /// An instance of [`Tera`] containing all the parsed templates.
     registry: Tera,
 
-    /// A list of all the registered [`Template`]s'.
+    /// A list of all the registered [`Template`]s.
     templates: Vec<Template>,
 
-    /// A list of all the registered [`PartialTemplate`]s. Currently these
-    /// are never accessed after they are created and stored.
+    /// A list of all the registered [`PartialTemplate`]s.
     partial_templates: Vec<PartialTemplate>,
+
+    /// The default template to use when no templates directory is specified.
+    default_template: String,
+
+    /// An instance of [`TemplateOptions`].
+    options: TemplateOptions,
 }
 
 impl TemplateManager {
-    /// Builds [`Template`]s depending on whether a templates directory is
-    /// provided or not. If none is provided then the default template is built.
+    /// Returns a new instance of [`TemplateManager`].
     ///
     /// # Arguments
     ///
-    /// * `path` - The path to a directory containing templates.
+    /// * `options` - An instance [`TemplateOptions`].
+    /// * `default_template` - A string representing the contents of a template
+    /// to build as the default. Used when no templates directory is specified.
+    #[must_use]
+    pub fn new(options: TemplateOptions, default_template: String) -> Self {
+        Self {
+            default_template,
+            options,
+            ..Default::default()
+        }
+    }
+
+    /// Builds [`Template`]s depending on whether a templates directory is
+    /// provided or not. If none is provided then the default template is built.
     ///
     /// # Errors
     ///
@@ -51,12 +70,16 @@ impl TemplateManager {
     /// * A template's config block isn't formatted correctly, has syntax errors
     /// or is missing required fields.
     /// * Any IO errors are encountered.
-    pub fn build(&mut self, path: &Option<PathBuf>, default_template: &str) -> LibResult<()> {
-        if let Some(path) = path {
-            self.build_from_directory(path)?;
+    pub fn build_templates(&mut self) -> LibResult<()> {
+        if let Some(path) = &self.options.templates_directory {
+            // FIXME: Cloning here to prevent mutable & immutable borrows.
+            self.build_templates_from_directory(&path.clone())?;
         } else {
-            self.build_default(default_template);
+            self.build_default_template();
         }
+
+        // TODO: Validate that the `self.options.template_groups` doesn't
+        // contain non-existing template groups.
 
         Ok(())
     }
@@ -74,7 +97,7 @@ impl TemplateManager {
     ///
     /// Will return `Err` if any IO errors are encountered.
     pub fn render(&self, entry: &Entry, path: &Path) -> LibResult<()> {
-        for template in &self.templates {
+        for template in self.active_templates() {
             let names = Names::new(entry, template)?;
 
             let root = match template.structure_mode {
@@ -111,7 +134,25 @@ impl TemplateManager {
         Ok(())
     }
 
-    /// Builds [`Template`]s from a directory containing user created templates.
+    /// Returns an iterator over all the currently active templates. Templates
+    /// can be activated through the [`TemplateOptions.template_groups`] field.
+    /// All templates are considered active if no groups are specified.
+    fn active_templates(&self) -> impl Iterator<Item = &Template> {
+        let templates: Vec<&Template> = self.templates.iter().collect();
+
+        if let Some(template_groups) = &self.options.template_groups {
+            return templates
+                .into_iter()
+                .filter(|template| template_groups.contains(&template.group))
+                .collect::<Vec<_>>()
+                .into_iter();
+        }
+
+        templates.into_iter()
+    }
+
+    /// Builds and registers [`Template`]s from a directory containing user
+    /// created templates.
     ///
     /// # Errors
     ///
@@ -121,13 +162,14 @@ impl TemplateManager {
     /// * A template's config block isn't formatted correctly, has syntax errors
     /// or is missing required fields.
     /// * Any IO errors are encountered.
-    fn build_from_directory(&mut self, path: &Path) -> LibResult<()> {
+    fn build_templates_from_directory(&mut self, path: &Path) -> LibResult<()> {
         // When a normal template is registered it's validated to make sure it
         // contains no syntax error or variables that reference non-existent
         // fields. Partial templates however are registered without directly
         // being validation as their validation happens when a normal template
         // includes them. Therefore it's important that partial templates are
         // registered before normal ones.
+
         for item in Self::iter_templates_directory(&path, TemplateKind::Partial) {
             // Returns the path to the template relative to the root templates
             // directory.
@@ -138,7 +180,8 @@ impl TemplateManager {
             //
             // This is used to uniquely identify each template.
             //
-            // This unwrap is safe seeing as both `item` and `path` are absolute.
+            // This unwrap is safe seeing as both `item` and `path` should both
+            // be absolute paths.
             let path = pathdiff::diff_paths(&item, path).unwrap();
 
             let partial_template = fs::read_to_string(&item)?;
@@ -160,7 +203,8 @@ impl TemplateManager {
         for item in Self::iter_templates_directory(&path, TemplateKind::Normal) {
             // See above.
             //
-            // This unwrap is safe seeing as both `item` and `path` are absolute.
+            // This unwrap is safe seeing as both `item` and `path` should both
+            // be absolute paths.
             let path = pathdiff::diff_paths(&item, path).unwrap();
 
             let template = fs::read_to_string(&item)?;
@@ -192,15 +236,10 @@ impl TemplateManager {
         Ok(())
     }
 
-    /// Builds a default [`Template`].
-    ///
-    /// # Arguments
-    ///
-    /// * `default_template` - A string representing the contents of a template
-    /// to  build as the default. Used when no templates directory is specified.
-    fn build_default(&mut self, default_template: &str) {
+    /// Builds and registers the default [`Template`].
+    fn build_default_template(&mut self) {
         // This should be safe as were building the default template.
-        let template = Template::new(default_template, "__default").unwrap();
+        let template = Template::new("__default", &self.default_template).unwrap();
 
         self.registry
             .add_raw_template(&template.id, &template.contents)
@@ -257,12 +296,20 @@ impl TemplateManager {
     ) -> LibResult<()> {
         let file = &names.book;
         let file = path.join(file);
-        let file = File::create(&file)?;
+        let mut file = File::create(&file)?;
 
         let context = TemplateContext::book(entry, names);
 
-        self.registry
-            .render_to(&template.id, &Context::from_serialize(context)?, file)?;
+        let mut render = self
+            .registry
+            .render(&template.id, &Context::from_serialize(context)?)?;
+
+        // TEMP: Temporary solution until Tera implements `trim_blocks`.
+        if self.options.trim_blocks {
+            render = Processor::postprocess(&render);
+        }
+
+        write!(file, "{}", render)?;
 
         Ok(())
     }
@@ -280,21 +327,35 @@ impl TemplateManager {
         path: &Path,
     ) -> LibResult<()> {
         for annotation in &entry.annotations {
-            // TODO: Document unwrap.
-            let file = names.annotations.get(&annotation.metadata.id).unwrap();
+            // This should theoretically never fail as the `Names` instance is
+            // created from the `Entry`. This means they contain the same exact
+            // keys and it should therefore be safe to unwrap. An error here
+            // would be critical and should fail.
+            let file = names
+                .annotations
+                .get(&annotation.metadata.id)
+                .expect("`Names` instance missing Annotation present in `Entry`");
             let file = path.join(file);
-            let file = File::create(&file)?;
+            let mut file = File::create(&file)?;
 
             let context = TemplateContext::annotation(&entry.book, annotation, names);
 
-            self.registry
-                .render_to(&template.id, &Context::from_serialize(context)?, file)?;
+            let mut render = self
+                .registry
+                .render(&template.id, &Context::from_serialize(context)?)?;
+
+            // TEMP: Temporary solution until Tera implements `trim_blocks`.
+            if self.options.trim_blocks {
+                render = Processor::postprocess(&render);
+            }
+
+            write!(file, "{}", render)?;
         }
 
         Ok(())
     }
 
-    /// Returns an iterator over all the files in a directory.
+    /// Returns an iterator over all template-like files in a directory.
     ///
     /// # Arguments
     ///
@@ -304,26 +365,47 @@ impl TemplateManager {
     where
         P: AsRef<Path>,
     {
-        let predicate: fn(&DirEntry) -> bool = match kind {
-            // TODO: Is there a more concise way of doing this?
-            TemplateKind::Normal => |entry| !entry.file_name().to_string_lossy().starts_with('_'),
-            TemplateKind::Partial => |entry| entry.file_name().to_string_lossy().starts_with('_'),
+        let template_filter: fn(&DirEntry) -> bool = match kind {
+            TemplateKind::Normal => utils::is_normal_template,
+            TemplateKind::Partial => utils::is_partial_template,
         };
 
+        // let predicate: fn(&DirEntry) -> bool = |entry| !utils::starts_with_underscore(entry);
+
+        // Avoids traversing hidden directories, ignores `.hidden` files,
+        // returns non-directory entries and filters the them by whether are
+        // normal or partial tempaltes.
         walkdir::WalkDir::new(path)
             .into_iter()
-            // Ignore hidden directories/files.
-            .filter_entry(utils::entry_is_hidden)
+            .filter_entry(utils::is_hidden)
             .filter_map(std::result::Result::ok)
-            // Ignore directories.
             .filter(|e| !e.path().is_dir())
-            .filter(predicate)
+            .filter(template_filter)
             .map(|e| e.path().to_owned())
     }
 }
 
+/// A struct for changing the rendering behavior of the [`TemplateManager`].
+#[derive(Debug, Default)]
+pub struct TemplateOptions {
+    /// The path to a directory containing user-generated templates.
+    pub templates_directory: Option<PathBuf>,
+
+    /// A list of template groups to render. If
+    pub template_groups: Option<Vec<String>>,
+
+    /// Trim any blocks left after rendering
+    pub trim_blocks: bool,
+}
+
+/// An enum representing the two different template types.
 #[derive(Debug, Clone, Copy)]
 enum TemplateKind {
+    /// A normal [`Template`]. Requires a configuration block. Should not start
+    /// with an underscore.
     Normal,
+
+    /// A [`PartialTemplate`]. Must start with an underscore `_` but does not
+    /// require a configuration block.
     Partial,
 }
