@@ -14,7 +14,7 @@ config. See [Name Templates][name-templates] for more information.
 | `links.annotations`           | dictionary | annotations object            |
 | `links.annotations - key:_`   | string     | annotation id                 |
 | `links.annotations - _:value` | string     | rendered annotation file name |
-| `links.directorty`            | string     | rendered directory name       |
+| `links.directory`             | string     | rendered directory name       |
 
 ## Example Data - Links
 
