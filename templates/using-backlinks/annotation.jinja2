@@ -26,4 +26,3 @@ epubcfi: {{ annotation.metadata.epubcfi }}
 {{ annotation.body }}
 
 {% if annotation.notes %}notes: {{ annotation.notes }}{% endif -%}
-{%- if annotation.tags %}tags: {{ annotation.tags | join(sep=" ") }}{% endif -%}
