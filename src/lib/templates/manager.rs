@@ -216,8 +216,6 @@ impl TemplateManager {
             // Templates are validated *after* being registered (1) because the
             // registry is used to retrieve templates because (2) this ensures
             // that any partial templates included can also be retrieved.
-            // Otherwise, if a one off render is done then partial templates
-            // cannot be included.
             self.validate_template(&template)?;
 
             self.templates.push(template);

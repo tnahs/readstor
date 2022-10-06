@@ -25,7 +25,7 @@ pub struct Annotation {
     /// The annotation's notes.
     pub notes: String,
 
-    /// The annotation's tags.
+    /// The annotation's `#tags`.
     pub tags: Vec<String>,
 
     /// The annotation's metadata.
