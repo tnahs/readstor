@@ -2,7 +2,7 @@
 
 ## Global
 
-### `--databases-directory`
+### `--databases-directory <PATH>`
 
 Setting a custom database directory:
 
@@ -23,7 +23,7 @@ directories are created when backing up databases with ReadStor.
  └─ ...
 ```
 
-### `--output-directory`
+### `--output-directory <PATH>`
 
 ### `--force`
 
@@ -31,9 +31,9 @@ directories are created when backing up databases with ReadStor.
 
 ## Template Options
 
-### `--templates-directory`
+### `--templates-directory <PATH>`
 
-### `--template-group`
+### `--template-group <GROUP>`
 
 ### `--trim-blocks`
 
