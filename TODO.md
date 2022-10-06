@@ -2,7 +2,6 @@
 
 ## v0.3.0
 
-- [ ] Add test for template validation: syntax and variables.
 - [ ] Improve error messages.
 - [ ] Rework backup and restore scripts to use `rsync`.
 - [ ] Add redirection from docs root.

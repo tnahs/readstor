@@ -1,0 +1,40 @@
+<!-- readstor
+group: valid-annotation
+context: annotation
+structure: flat
+extension: txt
+-->
+
+{{ book }}
+{{ book.title }}
+{{ book.author }}
+{{ book.tags }}
+{{ book.metadata }}
+{{ book.metadata.id }}
+{{ book.metadata.last_opened }}
+{{ book.slugs }}
+{{ book.slugs.title }}
+{{ book.slugs.author }}
+
+{{ annotation }}
+{{ annotation.body }}
+{{ annotation.style }}
+{{ annotation.notes }}
+{{ annotation.tags }}
+{{ annotation.metadata }}
+{{ annotation.metadata.id }}
+{{ annotation.metadata.book_id }}
+{{ annotation.metadata.created }}
+{{ annotation.metadata.modified }}
+{{ annotation.metadata.location }}
+{{ annotation.metadata.epubcfi }}
+{{ annotation.metadata.slugs }}
+{{ annotation.metadata.slugs.created }}
+{{ annotation.metadata.slugs.modified }}
+
+{{ links }}
+{{ links.book }}
+{% for id, link in links.annotations %}
+	{{ id }} {{ link }}
+{% endfor %}
+{{ links.directory }}

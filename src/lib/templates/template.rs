@@ -611,131 +611,108 @@ mod test_templates {
 
     use super::*;
 
-    fn test_template_config(directory: &str, name: &str) {
-        let path = TEST_TEMPLATES.join(directory).join(name);
-        let string = std::fs::read_to_string(path).unwrap();
-        Template::parse_raw_template(&string).unwrap();
+    // https://stackoverflow.com/a/68919527/16968574
+    fn test_invalid_template_config(directory: &str, filename: &str) {
+        let path = TEST_TEMPLATES.join(directory).join(filename);
+        let string = std::fs::read_to_string(&path).unwrap();
+        let result = Template::parse_raw_template(&string).ok_or(LibError::InvalidTemplateConfig {
+            path: path.display().to_string(),
+        });
+
+        assert!(matches!(
+            result,
+            Err(LibError::InvalidTemplateConfig { path: _ })
+        ));
+    }
+
+    // https://stackoverflow.com/a/68919527/16968574
+    fn test_valid_template_config(directory: &str, filename: &str) {
+        let path = TEST_TEMPLATES.join(directory).join(filename);
+        let string = std::fs::read_to_string(&path).unwrap();
+        let result = Template::parse_raw_template(&string).ok_or(LibError::InvalidTemplateConfig {
+            path: path.display().to_string(),
+        });
+
+        assert!(matches!(result, Ok(_)));
     }
 
     mod invalid_config {
 
-        use super::test_template_config;
+        use super::*;
 
         const DIRECTORY: &str = "invalid-config";
 
         // Tests that a missing config block returns an error.
         #[test]
-        #[should_panic]
-        fn test_missing_config() {
-            test_template_config(DIRECTORY, "missing-config.txt");
+        fn missing_config() {
+            test_invalid_template_config(DIRECTORY, "missing-config.txt");
         }
 
         // Tests that a missing closing tag returns an error.
         #[test]
-        #[should_panic]
-        fn test_missing_closing_tag() {
-            test_template_config(DIRECTORY, "missing-closing-tag.txt");
+        fn missing_closing_tag() {
+            test_invalid_template_config(DIRECTORY, "missing-closing-tag.txt");
         }
 
         // Tests that missing `readstor` in the opening tag returns an error.
         #[test]
-        #[should_panic]
-        fn test_incomplete_opening_tag_01() {
-            test_template_config(DIRECTORY, "incomplete-opening-tag-01.txt");
+        fn incomplete_opening_tag_01() {
+            test_invalid_template_config(DIRECTORY, "incomplete-opening-tag-01.txt");
         }
 
         // Tests that missing the `!` in the opening tag returns an error.
         #[test]
-        #[should_panic]
-        fn test_incomplete_opening_tag_02() {
-            test_template_config(DIRECTORY, "incomplete-opening-tag-02.txt");
+        fn incomplete_opening_tag_02() {
+            test_invalid_template_config(DIRECTORY, "incomplete-opening-tag-02.txt");
         }
 
         // Tests that no linebreak after `readstor` returns an error.
         #[test]
-        #[should_panic]
-        fn test_missing_linebreak_01() {
-            test_template_config(DIRECTORY, "missing-linebreak-01.txt");
+        fn missing_linebreak_01() {
+            test_invalid_template_config(DIRECTORY, "missing-linebreak-01.txt");
         }
 
         // Tests that no linebreak after the config body returns an error.
         #[test]
-        #[should_panic]
-        fn test_missing_linebreak_02() {
-            test_template_config(DIRECTORY, "missing-linebreak-02.txt");
+        fn missing_linebreak_02() {
+            test_invalid_template_config(DIRECTORY, "missing-linebreak-02.txt");
         }
 
         // Tests that no linebreak after the closing tag returns an error.
         #[test]
-        #[should_panic]
-        fn test_missing_linebreak_03() {
-            test_template_config(DIRECTORY, "missing-linebreak-03.txt");
+        fn missing_linebreak_03() {
+            test_invalid_template_config(DIRECTORY, "missing-linebreak-03.txt");
         }
 
         // Tests that no linebreak before the opening tag returns an error.
         #[test]
-        #[should_panic]
-        fn test_missing_linebreak_04() {
-            test_template_config(DIRECTORY, "missing-linebreak-04.txt");
+        fn missing_linebreak_04() {
+            test_invalid_template_config(DIRECTORY, "missing-linebreak-04.txt");
         }
     }
 
     mod valid_config {
 
-        use super::test_template_config;
+        use super::*;
 
         const DIRECTORY: &str = "valid-config";
 
         // Tests that a template with pre- and post-config-content returns no error.
         #[test]
-        fn test_pre_and_post_config_content() {
-            test_template_config(DIRECTORY, "pre-and-post-config-content.txt");
+        fn pre_and_post_config_content() {
+            test_valid_template_config(DIRECTORY, "pre-and-post-config-content.txt");
         }
 
         // Tests that a template with pre-config-content returns no error.
         #[test]
-        fn test_pre_config_content() {
-            test_template_config(DIRECTORY, "pre-config-content.txt");
+        fn pre_config_content() {
+            test_valid_template_config(DIRECTORY, "pre-config-content.txt");
         }
 
         // Tests that a template with post-config-content returns no error.
         #[test]
-        fn test_post_config_content() {
-            test_template_config(DIRECTORY, "post-config-content.txt");
-        }
-    }
-
-    // Test that each example template is valid.
-    mod examples {
-
-        use crate::lib::defaults::EXAMPLE_TEMPLATES;
-
-        use super::*;
-
-        fn test_example_template(directory: &str, name: &str) {
-            let path = EXAMPLE_TEMPLATES.join(directory).join(name);
-            let string = std::fs::read_to_string(&path).unwrap();
-            Template::new(&path, &string).unwrap();
-        }
-
-        #[test]
-        fn test_basic() {
-            test_example_template("basic", "basic.jinja2");
-        }
-
-        #[test]
-        fn test_using_backlins_book() {
-            test_example_template("using-backlinks", "book.jinja2");
-        }
-
-        #[test]
-        fn test_using_backlins_annotation() {
-            test_example_template("using-backlinks", "annotation.jinja2");
-        }
-
-        #[test]
-        fn test_using_partials() {
-            test_example_template("using-partials", "using-partials.jinja2");
+        fn post_config_content() {
+            test_valid_template_config(DIRECTORY, "post-config-content.txt");
         }
     }
 }

@@ -1,0 +1,8 @@
+<!-- readstor
+group: valid-syntax
+context: book
+structure: flat
+extension: txt
+-->
+
+{{ book }}

@@ -1,0 +1,8 @@
+<!-- readstor
+group: invalid-object
+context: book
+structure: flat
+extension: txt
+-->
+
+{{ invalid.title }}

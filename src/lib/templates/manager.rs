@@ -407,3 +407,139 @@ enum TemplateKind {
     /// require a configuration block.
     Partial,
 }
+
+#[cfg(test)]
+mod test_manager {
+
+    use crate::lib::defaults::{EXAMPLE_TEMPLATES, TEST_TEMPLATES};
+
+    use super::*;
+
+    fn read_template(directory: &str, filename: &str) -> Template {
+        let path = TEST_TEMPLATES.join(directory).join(filename);
+        let string = std::fs::read_to_string(path).unwrap();
+
+        Template::new(filename, &string).unwrap()
+    }
+
+    fn validate_context(directory: &str, filename: &str) -> LibResult<()> {
+        let template = read_template(directory, filename);
+
+        let mut manager = TemplateManager::default();
+
+        manager
+            .registry
+            .add_raw_template(&template.id, &template.contents)
+            .unwrap();
+
+        manager.validate_template(&template)
+    }
+
+    fn validate_syntax(directory: &str, filename: &str) -> LibResult<()> {
+        let template = read_template(directory, filename);
+
+        let mut manager = TemplateManager::default();
+
+        manager
+            .registry
+            .add_raw_template(&template.id, &template.contents)?;
+
+        Ok(())
+    }
+
+    // https://stackoverflow.com/a/68919527/16968574
+    fn test_invalid_context(directory: &str, filename: &str) {
+        let result = validate_context(directory, filename);
+
+        assert!(matches!(result, Err(LibError::InvalidTemplate(_))));
+    }
+
+    // https://stackoverflow.com/a/68919527/16968574
+    fn test_valid_context(directory: &str, filename: &str) {
+        let result = validate_context(directory, filename);
+
+        assert!(matches!(result, Ok(_)));
+    }
+
+    mod invalid_context {
+
+        use super::*;
+
+        const DIRECTORY: &str = "invalid-context";
+
+        // Tests that an invalid object (`invalid.title`) returns an error.
+        #[test]
+        fn invalid_object() {
+            test_invalid_context(DIRECTORY, "invalid-object.txt");
+        }
+
+        // Tests that an invalid attribute (`book.invalid`) returns an error.
+        #[test]
+        fn invalid_attribute() {
+            test_invalid_context(DIRECTORY, "invalid-attribute.txt");
+        }
+    }
+
+    mod valid_context {
+
+        use super::*;
+
+        const DIRECTORY: &str = "valid-context";
+
+        // Tests that all `Book` fields are valid.
+        #[test]
+        fn valid_book() {
+            test_valid_context(DIRECTORY, "valid-book.txt");
+        }
+
+        // Tests that all `Annotation` fields are valid.
+        #[test]
+        fn valid_annotation() {
+            test_valid_context(DIRECTORY, "valid-annotation.txt");
+        }
+    }
+
+    mod invalid_syntax {
+
+        use super::*;
+
+        const DIRECTORY: &str = "invalid-syntax";
+
+        // Tests that an invalid syntax returns an error.
+        #[test]
+        fn invalid_syntax() {
+            let result = validate_syntax(DIRECTORY, "invalid-syntax.txt");
+
+            assert!(matches!(result, Err(LibError::InvalidTemplate(_))));
+        }
+    }
+
+    mod valid_syntax {
+
+        use super::*;
+
+        const DIRECTORY: &str = "valid-syntax";
+
+        // Tests that a valid syntax returns no errors.
+        #[test]
+        fn valid_syntax() {
+            let result = validate_syntax(DIRECTORY, "valid-syntax.txt");
+
+            assert!(matches!(result, Ok(_)));
+        }
+    }
+
+    // Tests that all example templates return no errors.
+    mod example_templates {
+
+        use super::*;
+
+        #[test]
+        fn examples() {
+            let mut manager = TemplateManager::default();
+            manager
+                .build_templates_from_directory(&EXAMPLE_TEMPLATES)
+                .unwrap();
+        }
+    }
+}
