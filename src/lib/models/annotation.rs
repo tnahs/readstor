@@ -68,9 +68,8 @@ impl ABQuery for Annotation {
         ORDER BY ZANNOTATIONASSETID;"
     };
 
+    // TODO: Can we return a `Result<Self>` here instead?
     fn from_row(row: &Row<'_>) -> Self {
-        // TODO: Can we return a `Result<Self>` here instead?
-
         let notes: Option<String> = row.get_unwrap(1);
         let style: u8 = row.get_unwrap(2);
         let created: f64 = row.get_unwrap(5);

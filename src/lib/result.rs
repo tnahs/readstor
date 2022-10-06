@@ -47,11 +47,11 @@ pub enum LibError {
 
     #[error(
         "Cannot read config for: `{path}`. Templates must have their config \
-        defined in yaml between an opening block: '<!-- readstor' and a closing \
-        block: '-->'. "
+        defined in YAML between an opening tag: '<!-- readstor' and a closing \
+        tag: '-->'."
     )]
     /// Error returned when a syntax error is detected in how a template's
-    /// config block is defined. This does not include yaml syntax error.
+    /// config block is defined. This does not include YAML syntax error.
     InvalidTemplateConfig {
         /// The partial path to the template e.g. `nested/template.md`.
         path: String,

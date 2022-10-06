@@ -1,3 +1,5 @@
+//! Common utilities for working with the CLI.
+
 use crate::cli;
 
 pub fn init_logger() {
