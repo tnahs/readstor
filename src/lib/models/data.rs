@@ -110,14 +110,12 @@ impl Data {
     }
 
     /// Returns an iterator over all [`Entry`]s.
-    #[must_use]
-    pub fn entries(&self) -> impl IntoIterator<Item = &Entry> {
+    pub fn entries(&self) -> impl Iterator<Item = &Entry> {
         self.0.values()
     }
 
     /// Returns a mutable iterator over all [`Entry`]s.
-    #[must_use]
-    pub fn entries_mut(&mut self) -> impl IntoIterator<Item = &mut Entry> {
+    pub fn entries_mut(&mut self) -> impl Iterator<Item = &mut Entry> {
         self.0.values_mut()
     }
 
