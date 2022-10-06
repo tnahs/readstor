@@ -11,13 +11,15 @@ use crate::lib::models::entry::Entry;
 pub struct Processor {}
 
 impl Processor {
-    /// Runs all pre-processors on an `Entry`.
+    /// Runs all pre-processors on an [`Entry`].
     ///
     /// # Arguments
     ///
     /// * `options` - An instance of [`PreprocessOptions`].
     /// * `entry` - The [`Entry`] to process.
     pub fn preprocess(options: PreprocessOptions, entry: &mut Entry) {
+        Self::sort_annotations(entry);
+
         if options.extract_tags {
             Self::extract_tags(entry);
         }
@@ -41,36 +43,68 @@ impl Processor {
         process::trim_blocks(string)
     }
 
-    /// Normalizes line breaks in `Annotation.body`.
+    /// Sort annotations by [`AnnotationMetadata::location`][location].
     ///
     /// # Arguments
     ///
     /// * `entry` - The [`Entry`] to process.
+    ///
+    /// [location]: crate::lib::models::annotation::AnnotationMetadata::location
+    pub fn sort_annotations(entry: &mut Entry) {
+        // Sort `Annotation`s by their `location`.
+        entry.annotations.sort();
+    }
+
+    /// Extracts `#tags` from [`Annotation::notes`][annotation-notes] and
+    /// places them into [`Annotation::tags`][annotation-tags]. Additionally,
+    /// compiles all `#tags` and places them into [`Book::tags`][book-tags].
+    /// The `#tags` are removed from [`Annotation::notes`][annotation-notes].
+    ///
+    /// # Arguments
+    ///
+    /// * `entry` - The [`Entry`] to process.
+    ///
+    /// [annotation-notes]: crate::lib::models::annotation::Annotation::notes
+    /// [annotation-tags]: crate::lib::models::annotation::Annotation::tags
+    /// [book-tags]: crate::lib::models::book::Book::tags
+    fn extract_tags(entry: &mut Entry) {
+        for annotation in &mut entry.annotations {
+            annotation.tags = process::extract_tags(&annotation.notes);
+            annotation.notes = process::remove_tags(&annotation.notes);
+        }
+
+        // Compile/insert all `#tags` into `Book::tags`.
+        entry.book.tags = entry
+            .annotations
+            .iter()
+            .flat_map(|a| a.tags.clone())
+            .collect();
+    }
+
+    /// Normalizes line breaks in [`Annotation::body`][body].
+    ///
+    /// # Arguments
+    ///
+    /// * `entry` - The [`Entry`] to process.
+    ///
+    /// [body]: crate::lib::models::annotation::Annotation::body
     fn normalize_linebreaks(entry: &mut Entry) {
         for annotation in &mut entry.annotations {
             annotation.body = process::normalize_linebreaks(&annotation.body);
         }
     }
 
-    /// Extracts `#tags` from `Annotation.notes` and places them into
-    /// `Annotation.tags`. The `#tags` are removed from `Annotation.notes`.
+    /// Converts all Unicode characters found in [`Annotation::body`][body],
+    /// [`Book::title`][title] and [`Book::author`][author] to their ASCII
+    /// equivalents.
     ///
     /// # Arguments
     ///
     /// * `entry` - The [`Entry`] to process.
-    fn extract_tags(entry: &mut Entry) {
-        for annotation in &mut entry.annotations {
-            annotation.tags = process::extract_tags(&annotation.notes);
-            annotation.notes = process::remove_tags(&annotation.notes);
-        }
-    }
-
-    /// Converts all Unicode characters found in `Annotation.body`, `Book.title`
-    /// and `Book.author` to their ASCII equivalents.
     ///
-    /// # Arguments
-    ///
-    /// * `entry` - The [`Entry`] to process.
+    /// [author]: crate::lib::models::book::Book::author
+    /// [body]: crate::lib::models::annotation::Annotation::body
+    /// [title]: crate::lib::models::book::Book::title
     fn convert_all_to_ascii(entry: &mut Entry) {
         entry.book.title = process::convert_all_to_ascii(&entry.book.title);
         entry.book.author = process::convert_all_to_ascii(&entry.book.author);
@@ -80,12 +114,17 @@ impl Processor {
         }
     }
 
-    /// Converts a subset of "smart: Unicode symbols found in `Annotation.body`,
-    /// `Book.title` and `Book.author` to their ASCII equivalents.
+    /// Converts a subset of "smart" Unicode symbols found in
+    /// [`Annotation::body`][body], [`Book::title`][title] and
+    /// [`Book::author`][author] to their ASCII equivalents.
     ///
     /// # Arguments
     ///
     /// * `entry` - The [`Entry`] to process.
+    ///
+    /// [author]: crate::lib::models::book::Book::author
+    /// [body]: crate::lib::models::annotation::Annotation::body
+    /// [title]: crate::lib::models::book::Book::title
     fn convert_symbols_to_ascii(entry: &mut Entry) {
         entry.book.title = process::convert_symbols_to_ascii(&entry.book.title);
         entry.book.author = process::convert_symbols_to_ascii(&entry.book.author);

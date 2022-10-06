@@ -96,11 +96,6 @@ impl Data {
         // Remove `Entry`s that have no `Annotation`s.
         data.retain(|_, entry| !entry.annotations.is_empty());
 
-        // Sort `Annotation`s by their `location`s.
-        for entry in data.values_mut() {
-            entry.annotations.sort();
-        }
-
         self.0 = data;
 
         log::debug!("Created {} book(s).", self.count_books());

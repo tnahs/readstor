@@ -294,6 +294,7 @@ mod test_app {
         let mut app = App::new(config);
 
         app.init_data().unwrap();
+        app.run_preprocessor(PreprocessOptions::default());
 
         for entry in app.data.entries() {
             for annotations in entry.annotations.windows(2) {

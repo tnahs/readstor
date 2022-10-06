@@ -2,11 +2,14 @@
 
 ## v0.3.0
 
-- [ ] Add `book.tags` so we can have a list of all the tags within a book.
-- [ ] Rework backup and restore scripts to use `rsync`.
-- [ ] Improve error messages.
 - [ ] Add test for template validation: syntax and variables.
+- [ ] Improve error messages.
+- [ ] Rework backup and restore scripts to use `rsync`.
 - [ ] Add redirection from docs root.
+
+## Bonus
+
+- [ ] Add [`textwrap`][textwrap] post-processor. `--textwrap=80`
 
 ## Internal Improvements
 
@@ -29,3 +32,5 @@
 ## Future
 
 - [ ] Internationalization.
+
+[textwrap]: https://docs.rs/textwrap/latest/textwrap/

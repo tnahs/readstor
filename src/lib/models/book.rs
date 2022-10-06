@@ -17,6 +17,11 @@ pub struct Book {
     /// The author of the book.
     pub author: String,
 
+    /// The book's `#tags` compiled from its [`Annotation`][annotation]s.
+    ///
+    /// [annotation]: crate::lib::models::annotation::Annotation
+    pub tags: Vec<String>,
+
     /// The book's metadata.
     pub metadata: BookMetadata,
 }
@@ -50,6 +55,7 @@ impl serde::Serialize for Book {
         struct _Book<'a> {
             title: &'a str,
             author: &'a str,
+            tags: &'a Vec<String>,
             metadata: &'a BookMetadata,
             slugs: _Slugs,
         }
@@ -57,6 +63,7 @@ impl serde::Serialize for Book {
         let book = _Book {
             title: &self.title,
             author: &self.author,
+            tags: &self.tags,
             metadata: &self.metadata,
             slugs: _Slugs {
                 title: self.slug_title(),
@@ -88,6 +95,7 @@ impl ABQuery for Book {
         Self {
             title: row.get_unwrap(0),
             author: row.get_unwrap(1),
+            tags: Vec::new(),
             metadata: BookMetadata {
                 id: row.get_unwrap(2),
                 last_opened: last_opened.into(),

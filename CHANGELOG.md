@@ -29,6 +29,7 @@
 - Renamed `--templates` -> `--templates-directory`.
 - Renamed `--databases` -> `--databases-directory`.
 - Renamed `--output` -> `--output-directory`.
+- Added `Book.tags`, a compiled list of all the tags within a book's annotations.
 - Removed logging verbosity.
 - Removed nested directory from output file structure i.e. `data`, `renders`,
   `backups`.
