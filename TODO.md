@@ -2,7 +2,6 @@
 
 ## v0.3.0
 
-- [ ] Sort `links.annotations` by filename.
 - [ ] Add `book.tags` so we can have a list of all the tags within a book.
 - [ ] Rework backup and restore scripts to use `rsync`.
 - [ ] Improve error messages.

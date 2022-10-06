@@ -1,9 +1,9 @@
 //! Defines the [`Template`] and [`PartialTemplate`] structs and various helper
 //! structs and enums to represent a templates metadata.
 
-use std::collections::HashMap;
 use std::path::Path;
 
+use indexmap::IndexMap;
 use serde::{de, Deserialize, Serialize};
 use tera::{Context, Tera};
 
@@ -348,7 +348,17 @@ pub struct Names {
     pub book: String,
 
     /// The output filenames for a template with [`ContextMode::Annotation`].
-    pub annotations: HashMap<String, String>,
+    ///
+    /// Annotation filenames are inserted into the [`IndexMap`][indexmap] in
+    /// the order they appear in their respective books. In order to preserve
+    /// this order when rendering the template, we use an [`IndexMap`][indexmap]
+    /// and set the `preserve_order` feature flag for [`serde_json`][serde-json]
+    /// and [`tera`][tera].
+    ///
+    /// [indexmap]: https://docs.rs/indexmap/latest/indexmap/index.html
+    /// [serde-json]: https://docs.rs/serde_json/latest/serde_json/
+    /// [tera]: https://docs.rs/tera/latest/tera/
+    pub annotations: IndexMap<String, String>,
 
     /// The directory name for a template with [`StructureMode::Nested`] or
     /// [`StructureMode::NestedGrouped`].
@@ -403,8 +413,8 @@ impl Names {
     fn render_names_annotation(
         entry: &Entry,
         template: &Template,
-    ) -> LibResult<HashMap<String, String>> {
-        let mut annotations = HashMap::new();
+    ) -> LibResult<IndexMap<String, String>> {
+        let mut annotations = IndexMap::new();
 
         for annotation in &entry.annotations {
             let context = TemplateContext::name_annotation(&entry.book, annotation);
