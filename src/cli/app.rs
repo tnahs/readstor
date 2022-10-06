@@ -74,7 +74,9 @@ impl App {
             .wrap_err("Failed while building data")
     }
 
-    /// Runs pre-processor on all [`Entry`]s.
+    /// Runs pre-processor on all [`Entry`][entry]s.
+    ///
+    /// [entry]: crate::lib::models::entry::Entry
     fn run_preprocessor(&mut self, options: PreprocessOptions) {
         let options = processor::PreprocessOptions::from(options);
         for entry in self.data.entries_mut() {
