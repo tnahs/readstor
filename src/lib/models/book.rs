@@ -40,6 +40,35 @@ impl Book {
     }
 }
 
+impl ABQuery for Book {
+    const DATABASE_NAME: ABDatabaseName = ABDatabaseName::Books;
+
+    const QUERY: &'static str = {
+        "SELECT
+            ZBKLIBRARYASSET.ZTITLE,        -- 0 title
+            ZBKLIBRARYASSET.ZAUTHOR,       -- 1 author
+            ZBKLIBRARYASSET.ZASSETID,      -- 2 id
+            ZBKLIBRARYASSET.ZLASTOPENDATE  -- 3 last_opened
+        FROM ZBKLIBRARYASSET
+        ORDER BY ZBKLIBRARYASSET.ZTITLE;"
+    };
+
+    // TODO: Can we return a `Result<Self>` here instead?
+    fn from_row(row: &Row<'_>) -> Self {
+        let last_opened: f64 = row.get_unwrap(3);
+
+        Self {
+            title: row.get_unwrap(0),
+            author: row.get_unwrap(1),
+            tags: Vec::new(),
+            metadata: BookMetadata {
+                id: row.get_unwrap(2),
+                last_opened: last_opened.into(),
+            },
+        }
+    }
+}
+
 impl serde::Serialize for Book {
     fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
     where
@@ -72,35 +101,6 @@ impl serde::Serialize for Book {
         };
 
         book.serialize(serializer)
-    }
-}
-
-impl ABQuery for Book {
-    const DATABASE_NAME: ABDatabaseName = ABDatabaseName::Books;
-
-    const QUERY: &'static str = {
-        "SELECT
-            ZBKLIBRARYASSET.ZTITLE,        -- 0 title
-            ZBKLIBRARYASSET.ZAUTHOR,       -- 1 author
-            ZBKLIBRARYASSET.ZASSETID,      -- 2 id
-            ZBKLIBRARYASSET.ZLASTOPENDATE  -- 3 last_opened
-        FROM ZBKLIBRARYASSET
-        ORDER BY ZBKLIBRARYASSET.ZTITLE;"
-    };
-
-    // TODO: Can we return a `Result<Self>` here instead?
-    fn from_row(row: &Row<'_>) -> Self {
-        let last_opened: f64 = row.get_unwrap(3);
-
-        Self {
-            title: row.get_unwrap(0),
-            author: row.get_unwrap(1),
-            tags: Vec::new(),
-            metadata: BookMetadata {
-                id: row.get_unwrap(2),
-                last_opened: last_opened.into(),
-            },
-        }
     }
 }
 
