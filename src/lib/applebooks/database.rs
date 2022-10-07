@@ -75,7 +75,7 @@ impl ABDatabase {
             // that all the items are wrapped in an `Ok`. At this point the
             // there should be nothing that would fail in regards to querying
             // and creating an instance of T unless there's an error in the
-            // implementation of the [`ABQuery`] trait. See [`ABQuery`] for more
+            // implementation of the `ABQuery` trait. See `ABQuery` for more
             // information.
             .filter_map(std::result::Result::ok)
             .collect();
