@@ -4,7 +4,7 @@ use std::collections::HashMap;
 use std::path::Path;
 
 use crate::lib::applebooks::database::{ABDatabase, ABDatabaseName};
-use crate::lib::result::LibResult;
+use crate::lib::result::Result;
 
 use super::annotation::Annotation;
 use super::book::Book;
@@ -59,18 +59,18 @@ impl Data {
     ///
     /// See [`ABDatabase::query()`] for information on errors as these are the
     /// only sources of possible errors.
-    pub fn build(&mut self, path: &Path) -> LibResult<()> {
+    pub fn build(&mut self, path: &Path) -> Result<()> {
         let books = ABDatabase::query::<Book>(path)?;
         let annotations = ABDatabase::query::<Annotation>(path)?;
 
         log::debug!(
-            "Found {} book(s) in {}.",
+            "found {} book(s) in {}.",
             books.len(),
             ABDatabaseName::Books.to_string()
         );
 
         log::debug!(
-            "Found {} annotation(s) in {}.",
+            "found {} annotation(s) in {}.",
             annotations.len(),
             ABDatabaseName::Annotations.to_string()
         );
@@ -98,8 +98,8 @@ impl Data {
 
         self.0 = data;
 
-        log::debug!("Created {} book(s).", self.count_books());
-        log::debug!("Created {} annotation(s).", self.count_annotations());
+        log::debug!("created {} `Book`s", self.count_books());
+        log::debug!("created {} `Annotation`s", self.count_annotations());
 
         Ok(())
     }

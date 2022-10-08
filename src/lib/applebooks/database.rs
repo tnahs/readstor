@@ -6,7 +6,7 @@ use std::path::{Path, PathBuf};
 
 use rusqlite::{Connection, OpenFlags, Row};
 
-use crate::lib::result::{LibError, LibResult};
+use crate::lib::result::{Error, Result};
 
 use super::utils::APPLEBOOKS_VERSION;
 
@@ -37,7 +37,7 @@ impl ABDatabase {
     /// [annotation]: crate::lib::models::annotation::Annotation
     /// [book]: crate::lib::models::book::Book
     #[allow(clippy::missing_panics_doc)]
-    pub fn query<T: ABQuery>(path: &Path) -> LibResult<Vec<T>> {
+    pub fn query<T: ABQuery>(path: &Path) -> Result<Vec<T>> {
         // Returns the appropriate database based on `T`.
         let path = Self::get_database::<T>(path)?;
 
@@ -45,7 +45,7 @@ impl ABDatabase {
         {
             Ok(connection) => connection,
             Err(_) => {
-                return Err(LibError::DatabaseConnection {
+                return Err(Error::DatabaseConnection {
                     name: T::DATABASE_NAME.to_string(),
                     path: path.display().to_string(),
                 });
@@ -59,7 +59,7 @@ impl ABDatabase {
         let mut statement = match connection.prepare(T::QUERY) {
             Ok(statement) => statement,
             Err(_) => {
-                return Err(LibError::UnsupportedVersion {
+                return Err(Error::UnsupportedVersion {
                     version: APPLEBOOKS_VERSION.to_owned(),
                 });
             }
@@ -100,7 +100,7 @@ impl ABDatabase {
     ///  │  └─ ...
     ///  └─ ...
     /// ```
-    fn get_database<T: ABQuery>(path: &Path) -> LibResult<PathBuf> {
+    fn get_database<T: ABQuery>(path: &Path) -> Result<PathBuf> {
         // (a) -> `/path/to/databases/DATABASE_NAME/`
         let path = path.join(T::DATABASE_NAME.to_string());
 
@@ -123,14 +123,7 @@ impl ABDatabase {
         // behaviors.
         match &databases[..] {
             [_] => Ok(databases.pop().unwrap()),
-            [_, ..] => Err(LibError::DatabaseUnresolvable {
-                name: T::DATABASE_NAME.to_string(),
-                path: path.display().to_string(),
-            }),
-            _ => Err(LibError::DatabaseMissing {
-                name: T::DATABASE_NAME.to_string(),
-                path: path.display().to_string(),
-            }),
+            _ => Err(Error::MissingDefaultDatabase),
         }
     }
 }

@@ -12,7 +12,7 @@ use crate::lib::models::annotation::Annotation;
 use crate::lib::models::book::Book;
 use crate::lib::models::entry::Entry;
 use crate::lib::processor::Processor;
-use crate::lib::result::{LibError, LibResult};
+use crate::lib::result::Result;
 
 use super::template::{
     ContextMode, Names, PartialTemplate, StructureMode, Template, TemplateContext,
@@ -70,7 +70,7 @@ impl TemplateManager {
     /// * A template's config block isn't formatted correctly, has syntax errors
     /// or is missing required fields.
     /// * Any IO errors are encountered.
-    pub fn build_templates(&mut self) -> LibResult<()> {
+    pub fn build_templates(&mut self) -> Result<()> {
         if let Some(path) = &self.options.templates_directory {
             // FIXME: Cloning here to prevent mutable & immutable borrows.
             self.build_templates_from_directory(&path.clone())?;
@@ -86,7 +86,7 @@ impl TemplateManager {
 
     /// Iterates through all [`Template`]s and renders them based on their
     /// [`StructureMode`] and [`ContextMode`]. See respective enums for more
-    /// details.
+    /// information.
     ///
     /// # Arguments
     ///
@@ -96,7 +96,7 @@ impl TemplateManager {
     /// # Errors
     ///
     /// Will return `Err` if any IO errors are encountered.
-    pub fn render(&self, entry: &Entry, path: &Path) -> LibResult<()> {
+    pub fn render(&self, entry: &Entry, path: &Path) -> Result<()> {
         for template in self.active_templates() {
             let names = Names::new(entry, template)?;
 
@@ -162,7 +162,7 @@ impl TemplateManager {
     /// * A template's config block isn't formatted correctly, has syntax errors
     /// or is missing required fields.
     /// * Any IO errors are encountered.
-    fn build_templates_from_directory(&mut self, path: &Path) -> LibResult<()> {
+    fn build_templates_from_directory(&mut self, path: &Path) -> Result<()> {
         // When a normal template is registered it's validated to make sure it
         // contains no syntax error or variables that reference non-existent
         // fields. Partial templates however are registered without directly
@@ -192,11 +192,11 @@ impl TemplateManager {
 
             self.partial_templates.push(partial_template);
 
-            log::debug!("Added partial: `{}`", path.display());
+            log::debug!("added partial template: {}", path.display());
         }
 
         log::debug!(
-            "Currently registed partial templates: {:#?}",
+            "currently registed partial templates: {:#?}",
             self.partial_templates
         );
 
@@ -220,13 +220,13 @@ impl TemplateManager {
 
             self.templates.push(template);
 
-            log::debug!("Added template: `{}`", path.display());
+            log::debug!("added template: {}", path.display());
         }
 
-        log::debug!("Currently registed templates: {:#?}", self.templates);
+        log::debug!("currently registed templates: {:#?}", self.templates);
 
         log::debug!(
-            "Built {} template(s) from `{}`",
+            "built {} template(s) from {}",
             self.templates.len(),
             path.display()
         );
@@ -247,7 +247,7 @@ impl TemplateManager {
 
         self.templates.push(template);
 
-        log::debug!("Built the default template");
+        log::debug!("built the default template");
     }
 
     /// Validates that a template does not contain variables that reference
@@ -262,7 +262,7 @@ impl TemplateManager {
     ///
     /// Will return `Err` if the template contains variables that reference
     /// non-existent fields in an [`Entry`]/[`Book`]/[`Annotation`].
-    fn validate_template(&self, template: &Template) -> Result<(), LibError> {
+    fn validate_template(&self, template: &Template) -> Result<()> {
         // Caching values here to avoid lifetime issues.
         let entry = Entry::default();
         let book = Book::default();
@@ -291,7 +291,7 @@ impl TemplateManager {
         template: &Template,
         names: &Names,
         path: &Path,
-    ) -> LibResult<()> {
+    ) -> Result<()> {
         let file = &names.book;
         let file = path.join(file);
         let mut file = File::create(&file)?;
@@ -323,7 +323,7 @@ impl TemplateManager {
         template: &Template,
         names: &Names,
         path: &Path,
-    ) -> LibResult<()> {
+    ) -> Result<()> {
         for annotation in &entry.annotations {
             // This should theoretically never fail as the `Names` instance is
             // created from the `Entry`. This means they contain the same exact
@@ -332,7 +332,7 @@ impl TemplateManager {
             let file = names
                 .annotations
                 .get(&annotation.metadata.id)
-                .expect("`Names` instance missing Annotation present in `Entry`");
+                .expect("`Names` instance missing `Annotation` present in `Entry`");
             let file = path.join(file);
             let mut file = File::create(&file)?;
 
@@ -412,18 +412,19 @@ enum TemplateKind {
 mod test_manager {
 
     use crate::lib::defaults::{EXAMPLE_TEMPLATES, TEST_TEMPLATES};
+    use crate::lib::result::Error;
 
     use super::*;
 
-    fn read_template(directory: &str, filename: &str) -> Template {
+    fn load_template(directory: &str, filename: &str) -> Template {
         let path = TEST_TEMPLATES.join(directory).join(filename);
         let string = std::fs::read_to_string(path).unwrap();
 
         Template::new(filename, &string).unwrap()
     }
 
-    fn validate_context(directory: &str, filename: &str) -> LibResult<()> {
-        let template = read_template(directory, filename);
+    fn validate_context(directory: &str, filename: &str) -> Result<()> {
+        let template = load_template(directory, filename);
 
         let mut manager = TemplateManager::default();
 
@@ -435,8 +436,8 @@ mod test_manager {
         manager.validate_template(&template)
     }
 
-    fn validate_syntax(directory: &str, filename: &str) -> LibResult<()> {
-        let template = read_template(directory, filename);
+    fn validate_syntax(directory: &str, filename: &str) -> Result<()> {
+        let template = load_template(directory, filename);
 
         let mut manager = TemplateManager::default();
 
@@ -451,7 +452,7 @@ mod test_manager {
     fn test_invalid_context(directory: &str, filename: &str) {
         let result = validate_context(directory, filename);
 
-        assert!(matches!(result, Err(LibError::InvalidTemplate(_))));
+        assert!(matches!(result, Err(Error::InvalidTemplate(_))));
     }
 
     // https://stackoverflow.com/a/68919527/16968574
@@ -510,7 +511,7 @@ mod test_manager {
         fn invalid_syntax() {
             let result = validate_syntax(DIRECTORY, "invalid-syntax.txt");
 
-            assert!(matches!(result, Err(LibError::InvalidTemplate(_))));
+            assert!(matches!(result, Err(Error::InvalidTemplate(_))));
         }
     }
 

@@ -11,8 +11,9 @@ use crate::lib::applebooks;
 
 /// Returns Apple Books' version as `v[short]-[long]` e.g. `v3.2-2217`.
 ///
-/// Returns `v?` if the Apple Books application cannot be found and returns
-/// `v[short]-?`, `v?-[long]` or `v?-?` for possible partial versions.
+/// * Returns `v?` if the Apple Books application cannot be found.
+/// * Returns `v[short]-?`, `v?-[long]` or `v?-?` depending on what version
+/// numbers can be located.
 pub static APPLEBOOKS_VERSION: Lazy<String> = Lazy::new(|| {
     let path: PathBuf = [
         "/",
@@ -29,11 +30,7 @@ pub static APPLEBOOKS_VERSION: Lazy<String> = Lazy::new(|| {
         value
     } else {
         // This can happen if the user is on a non-macOS device.
-        log::warn!(
-            "Could not determine Apple Books version. \
-            `Info.plist` not found at `{}`",
-            &path.display()
-        );
+        log::warn!("could not determine Apple Books version");
         return "v?".to_owned();
     };
 
@@ -43,22 +40,22 @@ pub static APPLEBOOKS_VERSION: Lazy<String> = Lazy::new(|| {
         .and_then(|d| d.get("CFBundleShortVersionString"))
         .and_then(plist::Value::as_string)
         .unwrap_or_else(|| {
-            log::warn!("Could not determine `CFBundleShortVersionString`");
+            log::warn!("could not determine 'CFBundleShortVersionString'");
             "?"
         });
 
     // -> 2217
-    let version = value
+    let version_long = value
         .as_dictionary()
         .and_then(|d| d.get("CFBundleVersion"))
         .and_then(plist::Value::as_string)
         .unwrap_or_else(|| {
-            log::warn!("Could not determine `CFBundleVersion`");
+            log::warn!("could not determine 'CFBundleVersion'");
             "?"
         });
 
     // v3.2-2217
-    format!("v{}-{}", version_short, version)
+    format!("v{}-{}", version_short, version_long)
 });
 
 /// Returns a boolean based on if Apple Books is running or not.

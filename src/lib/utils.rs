@@ -43,7 +43,7 @@ where
     }
 
     log::debug!(
-        "Copied directory `{}` to `{}`",
+        "copied directory {} to {}",
         &source.display(),
         &destination.display(),
     );
@@ -131,7 +131,7 @@ pub fn sanitize_string(string: &str) -> String {
         .collect();
 
     if sanitized != string {
-        log::warn!("String `{}` contained invalid characters.", string);
+        log::warn!("the string '{}' contained invalid characters", string);
     };
 
     sanitized

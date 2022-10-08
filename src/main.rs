@@ -28,12 +28,12 @@ pub mod lib;
 
 use clap::Parser;
 
-use crate::cli::app::{App, AppResult};
+use crate::cli::app::{App, Result};
 use crate::cli::config::Config;
 use crate::cli::Cli;
 use crate::lib::applebooks::utils::applebooks_is_running;
 
-fn main() -> AppResult<()> {
+fn main() -> Result<()> {
     cli::utils::init_logger();
     color_eyre::install()?;
 

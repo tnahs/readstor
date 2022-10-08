@@ -1,67 +1,53 @@
-//! Defines the [`LibResult`] type and the [`LibError`] enum for working with
-//! this library.
+//! Defines the library's [`Result`] type and the [`Error`] enum.
 
-/// A generic result type used in this library.
-pub type LibResult<T> = std::result::Result<T, LibError>;
+/// A generic library result type.
+pub type Result<T> = std::result::Result<T, Error>;
 
-/// An enum representing all possible error's this library can run into.
+/// An enum representing all possible library errors.
 #[derive(Debug, thiserror::Error)]
-pub enum LibError {
-    /// Error returned when the Apple Books databse cannot be found.
-    #[error("Missing `{name}*.sqlite` in `{path}`")]
-    DatabaseMissing {
-        /// The basename of the database: `BKLibrary` or `AEAnnotation`.
-        name: String,
-        /// The full path to the missing database's parent folder.
-        path: String,
-    },
+pub enum Error {
+    /// Error returned when the default Apple Books database cannot be found.
+    #[error("missing default Apple Books databases.")]
+    MissingDefaultDatabase,
 
-    /// Error returned when the Apple Books databse path cannot be resolved.
-    #[error("Cannot resolve path to `{name}*.sqlite` in `{path}`")]
-    DatabaseUnresolvable {
-        /// The basename of the database: `BKLibrary` or `AEAnnotation`.
-        name: String,
-        /// The full path to the unresolvable database's parent folder.
-        path: String,
-    },
-
-    /// Error returned if there are any issues with connecting to an Apple Books
-    /// database.
-    #[error("Unable to connect to `{name}*.sqlite` at `{path}`")]
+    /// Error returned when there are issues connecting to a database.
+    #[error("unable to connect to '{name}*.sqlite' at {path}")]
     DatabaseConnection {
         /// The basename of the database: `BKLibrary` or `AEAnnotation`.
         name: String,
-        /// The path where the database was looked for.
+        /// The path to the database.
         path: String,
     },
 
-    /// Error returned when querying the database fails. This means that the
-    /// Apple Books database schema is different than the one the query has been
-    /// designed against. In that case the currently installed version of Apple
-    /// Books us unsupported.
-    #[error("Apple Books {version} unsupported")]
+    /// Error returned when querying a database fails.
+    ///
+    /// This most likely means that the database schema is different than
+    /// the one the query has been designed for. In that case, the currently
+    /// installed version of Apple Books is considered unsupported.
+    #[error("unsupported Apple Books version: {version}")]
     UnsupportedVersion {
         /// The currently installed Apple Books version number.
         version: String,
     },
 
-    #[error(
-        "Cannot read config for: `{path}`. Templates must have their config \
-        defined in YAML between an opening tag: '<!-- readstor' and a closing \
-        tag: '-->'."
-    )]
     /// Error returned when a syntax error is detected in how a template's
     /// config block is defined. This does not include YAML syntax error.
+    #[error("cannot read config for: {path}.")]
     InvalidTemplateConfig {
         /// The partial path to the template e.g. `nested/template.md`.
         path: String,
     },
 
-    /// Error returned if [`tera`] encounters any errors.
+    /// Error returned if [`tera`][tera] encounters any errors.
+    ///
+    /// [tera]: https://docs.rs/tera/latest/tera/
     #[error(transparent)]
     InvalidTemplate(#[from] tera::Error),
 
-    /// Error returned if [`serde_yaml`] encounters any errors in deserialization.
+    /// Error returned if [`serde_yaml`][serde-yaml] encounters any errors
+    /// during deserialization.
+    ///
+    /// [serde-yaml]: https://docs.rs/serde_yaml/latest/serde_yaml/
     #[error(transparent)]
     DeserializationError(#[from] serde_yaml::Error),
 

@@ -1,5 +1,5 @@
 //! Defines the [`Template`] and [`PartialTemplate`] structs and various helper
-//! structs and enums to represent a templates metadata.
+//! structs and enums to represent a template's content and metadata.
 
 use std::path::Path;
 
@@ -10,7 +10,7 @@ use tera::{Context, Tera};
 use crate::lib::models::annotation::Annotation;
 use crate::lib::models::book::Book;
 use crate::lib::models::entry::Entry;
-use crate::lib::result::{LibError, LibResult};
+use crate::lib::result::{Error, Result};
 use crate::lib::utils;
 
 use super::defaults::{CONFIG_TAG_CLOSE, CONFIG_TAG_OPEN};
@@ -28,7 +28,7 @@ pub struct Template {
     ///
     /// ```plaintext
     /// --> /path/to/templates/nested/template.md
-    /// --> nested/template.md
+    /// -->                    nested/template.md
     /// ```
     #[serde(skip_deserializing)]
     pub id: String,
@@ -82,14 +82,14 @@ impl Template {
     /// Will return `Err` if:
     /// * The template's opening and closing config tags have syntax errors.
     /// * The tempalte's config has syntax errors or is missing required fields.
-    pub fn new<P>(path: P, string: &str) -> LibResult<Self>
+    pub fn new<P>(path: P, string: &str) -> Result<Self>
     where
         P: AsRef<Path>,
     {
         let path = path.as_ref();
 
         let (config, contents) =
-            Self::parse_raw_template(string).ok_or(LibError::InvalidTemplateConfig {
+            Self::parse_raw_template(string).ok_or(Error::InvalidTemplateConfig {
                 path: path.display().to_string(),
             })?;
 
@@ -139,7 +139,7 @@ impl Template {
     }
 
     /// Helper method for `serde` to deserialize and sanitize a string.
-    fn deserialize_and_sanitize<'de, D>(deserializer: D) -> Result<String, D::Error>
+    fn deserialize_and_sanitize<'de, D>(deserializer: D) -> std::result::Result<String, D::Error>
     where
         D: de::Deserializer<'de>,
     {
@@ -395,7 +395,7 @@ impl Names {
     /// Will return `Err` if:
     /// * Any name templates have syntax errors or are referencing non-existent
     /// fields in their respective contexts.
-    pub fn new(entry: &Entry, template: &Template) -> LibResult<Self> {
+    pub fn new(entry: &Entry, template: &Template) -> Result<Self> {
         let book = Self::render_name_book(entry, template)?;
         let annotations = Self::render_names_annotation(entry, template)?;
         let directory = Self::render_name_directory(entry, template)?;
@@ -407,7 +407,7 @@ impl Names {
         })
     }
 
-    fn render_name_book(entry: &Entry, template: &Template) -> LibResult<String> {
+    fn render_name_book(entry: &Entry, template: &Template) -> Result<String> {
         let context = TemplateContext::name_book(entry);
 
         let name = Tera::one_off(
@@ -424,7 +424,7 @@ impl Names {
     fn render_names_annotation(
         entry: &Entry,
         template: &Template,
-    ) -> LibResult<IndexMap<String, String>> {
+    ) -> Result<IndexMap<String, String>> {
         let mut annotations = IndexMap::new();
 
         for annotation in &entry.annotations {
@@ -447,7 +447,7 @@ impl Names {
         Ok(annotations)
     }
 
-    fn render_name_directory(entry: &Entry, template: &Template) -> LibResult<String> {
+    fn render_name_directory(entry: &Entry, template: &Template) -> Result<String> {
         let context = TemplateContext::name_book(entry);
 
         let name = Tera::one_off(
@@ -461,7 +461,6 @@ impl Names {
         Ok(name)
     }
 }
-
 /// An enum representing all possible template contexts.
 ///
 /// This primarily used to shuffle data to fit a certain shape before it's
@@ -553,13 +552,13 @@ impl<'a> TemplateContext<'a> {
 /// A struct representing a unconfigured partial template.
 ///
 /// Partial templates get their configuration from the normal templates that
-/// `{% include %}` them.
+/// `include` them.
 #[derive(Clone)]
 pub struct PartialTemplate {
     /// The template's id.
     ///
-    /// This is typically a file path relative to the templates directory. It
-    /// serves to identify a partial template when called in an `{% include %}`
+    /// This is typically a file path relative to the templates directory.
+    /// It serves to identify a partial template when called in an `include`
     /// tag from within a normal template. This field is passed to Tera when
     /// registering the template.
     ///
@@ -611,26 +610,29 @@ mod test_templates {
 
     use super::*;
 
+    fn load_template_string(directory: &str, filename: &str) -> String {
+        let path = TEST_TEMPLATES.join(directory).join(filename);
+        std::fs::read_to_string(path).unwrap()
+    }
+
     // https://stackoverflow.com/a/68919527/16968574
     fn test_invalid_template_config(directory: &str, filename: &str) {
-        let path = TEST_TEMPLATES.join(directory).join(filename);
-        let string = std::fs::read_to_string(&path).unwrap();
-        let result = Template::parse_raw_template(&string).ok_or(LibError::InvalidTemplateConfig {
-            path: path.display().to_string(),
+        let string = load_template_string(directory, filename);
+        let result = Template::parse_raw_template(&string).ok_or(Error::InvalidTemplateConfig {
+            path: filename.to_string(),
         });
 
         assert!(matches!(
             result,
-            Err(LibError::InvalidTemplateConfig { path: _ })
+            Err(Error::InvalidTemplateConfig { path: _ })
         ));
     }
 
     // https://stackoverflow.com/a/68919527/16968574
     fn test_valid_template_config(directory: &str, filename: &str) {
-        let path = TEST_TEMPLATES.join(directory).join(filename);
-        let string = std::fs::read_to_string(&path).unwrap();
-        let result = Template::parse_raw_template(&string).ok_or(LibError::InvalidTemplateConfig {
-            path: path.display().to_string(),
+        let string = load_template_string(directory, filename);
+        let result = Template::parse_raw_template(&string).ok_or(Error::InvalidTemplateConfig {
+            path: filename.to_string(),
         });
 
         assert!(matches!(result, Ok(_)));

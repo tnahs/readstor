@@ -12,7 +12,7 @@ use crate::lib::utils;
 use super::config::Config;
 use super::{Command, PreprocessOptions, TemplateOptions};
 
-pub type AppResult<T> = color_eyre::Result<T>;
+pub type Result<T> = color_eyre::Result<T>;
 
 /// The main application struct.
 ///
@@ -33,7 +33,7 @@ impl App {
     }
 
     /// Runs the application based off of the given [`Command`].
-    pub fn run(&mut self, command: Command) -> AppResult<()> {
+    pub fn run(&mut self, command: Command) -> Result<()> {
         match command {
             Command::Export { preprocess_options } => {
                 self.print("-> Building data");
@@ -53,8 +53,7 @@ impl App {
                 self.print("-> Running pre-processor");
                 self.run_preprocessor(preprocess_options);
                 self.print("-> Rendering templates");
-                self.render_templates(template_options)
-                    .wrap_err("Failed while rendering template(s)")?;
+                self.render_templates(template_options)?;
                 self.print_summary();
             }
             Command::Backup => {
@@ -68,7 +67,7 @@ impl App {
     }
 
     /// Builds the application's data from the Apple Books databases.
-    fn init_data(&mut self) -> AppResult<()> {
+    fn init_data(&mut self) -> Result<()> {
         self.data
             .build(&self.config.databases_directory)
             .wrap_err("Failed while building data")
@@ -87,7 +86,7 @@ impl App {
     /// Prints export/render summary.
     fn print_summary(&self) {
         self.print(&format!(
-            "-> Saved {} annotations from {} books to `{}`",
+            "-> Saved {} annotations from {} books to {}",
             self.data.count_annotations(),
             self.data.count_books(),
             self.config.output_directory.display()
@@ -119,7 +118,7 @@ impl App {
     /// Existing files are left unaffected unless explicitly written to. For
     /// example, the `resources` directory will not be deleted/recreated if it
     /// already exists and/or contains data.
-    fn export_data(&self) -> AppResult<()> {
+    fn export_data(&self) -> Result<()> {
         // -> [ouput-directory]
         let path = &self.config.output_directory;
 
@@ -156,7 +155,7 @@ impl App {
     }
 
     /// Renders all registered templates.
-    fn render_templates(&self, options: TemplateOptions) -> AppResult<()> {
+    fn render_templates(&self, options: TemplateOptions) -> Result<()> {
         // -> [ouput-directory]
         let path = &self.config.output_directory;
 
@@ -198,7 +197,7 @@ impl App {
     ///  │   └─ ...
     ///  └─ ...
     /// ```
-    fn backup_databases(&self) -> AppResult<()> {
+    fn backup_databases(&self) -> Result<()> {
         // -> [ouput-directory]
         let path = &self.config.output_directory;
 
