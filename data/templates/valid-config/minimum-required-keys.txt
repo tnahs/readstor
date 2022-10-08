@@ -1,0 +1,8 @@
+<!-- readstor
+group: minimum-required-keys
+context: book
+structure: flat
+extension: txt
+-->
+
+<!-- post-config-content -->

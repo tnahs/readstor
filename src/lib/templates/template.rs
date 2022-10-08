@@ -699,6 +699,16 @@ mod test_templates {
 
         const DIRECTORY: &str = "valid-config";
 
+        // Test the minimum required keys.
+        #[test]
+        fn minimum_required_keys() {
+            let filename = "minimum-required-keys.txt";
+            let string = load_template_string(DIRECTORY, filename);
+            let result = Template::new(filename, &string);
+
+            assert!(matches!(result, Ok(_)));
+        }
+
         // Tests that a template with pre- and post-config-content returns no error.
         #[test]
         fn pre_and_post_config_content() {
