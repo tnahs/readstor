@@ -3,7 +3,6 @@
 ## v0.3.0
 
 - [ ] Finish mdbook.
-- [ ] Rework backup and restore scripts to use `rsync`.
 - [ ] Add redirection from docs root.
 
 ## Next
@@ -49,6 +48,7 @@
 - [ ] Refactor `TemplateManager::render` and its sibling rendering methods.
 - [ ] After mdbook is complete, update internal docs.
 - [ ] Add `# Arguments` to public methods.
+- [ ] Config file support.
 - [ ] Checkoutl [fern][fern] for stdout/stderr and file logging.
 
 ## Features
