@@ -20,13 +20,13 @@ pub struct Cli {
 
 #[derive(Debug, Clone, Parser)]
 pub struct Options {
-    /// Set a custom databses directory
-    #[arg(short, long, value_name = "PATH", value_parser(validate_path_exists))]
-    pub databases_directory: Option<PathBuf>,
-
     /// Set the output directory [default: ~/.readstor]
     #[arg(short, long, value_name = "PATH", value_parser(validate_path_exists))]
     pub output_directory: Option<PathBuf>,
+
+    /// Set a custom databses directory
+    #[arg(short, long, value_name = "PATH", value_parser(validate_path_exists))]
+    pub databases_directory: Option<PathBuf>,
 
     /// Run even if Apple Books is open
     #[arg(short, long)]
@@ -42,7 +42,7 @@ pub enum Command {
     /// Export Apple Books' data
     Export {
         #[clap(flatten)]
-        preprocess_options: PreprocessOptions,
+        preprocess_options: PreProcessOptions,
     },
 
     /// Render Apple Books' data via templates
@@ -51,40 +51,11 @@ pub enum Command {
         template_options: TemplateOptions,
 
         #[clap(flatten)]
-        preprocess_options: PreprocessOptions,
+        preprocess_options: PreProcessOptions,
     },
 
     /// Back-up Apple Books' databases
     Backup,
-}
-
-#[derive(Debug, Clone, Copy, Default, Parser)]
-#[allow(clippy::struct_excessive_bools)]
-pub struct PreprocessOptions {
-    /// Extract #tags from notes
-    #[arg(short, long)]
-    pub extract_tags: bool,
-
-    /// Normalize linebreaks
-    #[arg(short, long)]
-    pub normalize_linebreaks: bool,
-
-    /// Convert all Unicode characters ASCII
-    #[arg(
-        short = 'a',
-        long = "ascii-all",
-        conflicts_with = "convert_symbols_to_ascii"
-    )]
-    pub convert_all_to_ascii: bool,
-
-    /// Convert "smart" Unicode symbols to ASCII
-    // TODO: Add link to documentation here.
-    #[arg(
-        short = 's',
-        long = "ascii-symbols",
-        conflicts_with = "convert_all_to_ascii"
-    )]
-    pub convert_symbols_to_ascii: bool,
 }
 
 #[derive(Debug, Clone, Default, Parser)]
@@ -107,6 +78,35 @@ pub struct TemplateOptions {
     pub trim_blocks: bool,
 }
 
+#[derive(Debug, Clone, Copy, Default, Parser)]
+#[allow(clippy::struct_excessive_bools)]
+pub struct PreProcessOptions {
+    /// Extract #tags from annotation notes
+    #[arg(short, long)]
+    pub extract_tags: bool,
+
+    /// Normalize whitespace in annotation body
+    #[arg(short, long)]
+    pub normalize_whitespace: bool,
+
+    /// Convert all Unicode characters to ASCII
+    #[arg(
+        short = 'a',
+        long = "ascii-all",
+        conflicts_with = "convert_symbols_to_ascii"
+    )]
+    pub convert_all_to_ascii: bool,
+
+    /// Convert "smart" Unicode symbols to ASCII
+    // TODO: Add link to documentation here.
+    #[arg(
+        short = 's',
+        long = "ascii-symbols",
+        conflicts_with = "convert_all_to_ascii"
+    )]
+    pub convert_symbols_to_ascii: bool,
+}
+
 pub fn validate_path_exists(value: &str) -> Result<PathBuf, String> {
     std::fs::canonicalize(&value).map_err(|_| "path does not exist".into())
 }
@@ -121,11 +121,11 @@ impl From<TemplateOptions> for crate::lib::templates::manager::TemplateOptions {
     }
 }
 
-impl From<PreprocessOptions> for crate::lib::processor::PreprocessOptions {
-    fn from(options: PreprocessOptions) -> Self {
+impl From<PreProcessOptions> for crate::lib::processor::PreProcessOptions {
+    fn from(options: PreProcessOptions) -> Self {
         Self {
             extract_tags: options.extract_tags,
-            normalize_linebreaks: options.normalize_linebreaks,
+            normalize_whitespace: options.normalize_whitespace,
             convert_all_to_ascii: options.convert_all_to_ascii,
             convert_symbols_to_ascii: options.convert_symbols_to_ascii,
         }

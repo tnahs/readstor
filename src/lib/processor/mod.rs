@@ -15,17 +15,17 @@ impl Processor {
     ///
     /// # Arguments
     ///
-    /// * `options` - An instance of [`PreprocessOptions`].
+    /// * `options` - An instance of [`PreProcessOptions`].
     /// * `entry` - The [`Entry`] to process.
-    pub fn preprocess(options: PreprocessOptions, entry: &mut Entry) {
+    pub fn preprocess(options: PreProcessOptions, entry: &mut Entry) {
         Self::sort_annotations(entry);
 
         if options.extract_tags {
             Self::extract_tags(entry);
         }
 
-        if options.normalize_linebreaks {
-            Self::normalize_linebreaks(entry);
+        if options.normalize_whitespace {
+            Self::normalize_whitespace(entry);
         }
 
         if options.convert_all_to_ascii {
@@ -81,16 +81,16 @@ impl Processor {
             .collect();
     }
 
-    /// Normalizes line breaks in [`Annotation::body`][body].
+    /// Normalizes whitespace in [`Annotation::body`][body].
     ///
     /// # Arguments
     ///
     /// * `entry` - The [`Entry`] to process.
     ///
     /// [body]: crate::lib::models::annotation::Annotation::body
-    fn normalize_linebreaks(entry: &mut Entry) {
+    fn normalize_whitespace(entry: &mut Entry) {
         for annotation in &mut entry.annotations {
-            annotation.body = process::normalize_linebreaks(&annotation.body);
+            annotation.body = process::normalize_whitespace(&annotation.body);
         }
     }
 
@@ -138,14 +138,14 @@ impl Processor {
 /// A struct represting pre-process options for the [`Processor`] struct.
 #[derive(Debug, Default, Clone, Copy)]
 #[allow(clippy::struct_excessive_bools)]
-pub struct PreprocessOptions {
+pub struct PreProcessOptions {
     /// Enable running `#tag` extraction from notes.
     pub extract_tags: bool,
 
-    /// Enable running linebreak normalization.
-    pub normalize_linebreaks: bool,
+    /// Enable running whitespace normalization.
+    pub normalize_whitespace: bool,
 
-    /// Enable converting all Unicode characters ASCII.
+    /// Enable converting all Unicode characters to ASCII.
     pub convert_all_to_ascii: bool,
 
     /// Enable converting "smart" Unicode symbols to ASCII.

@@ -19,13 +19,13 @@ static RE_TAG: Lazy<Regex> = Lazy::new(|| Regex::new(r"#[a-zA-Z][^\s#]+\s?").unw
 /// Captures three or more consecutive linebreaks.
 static RE_BLOCKS: Lazy<Regex> = Lazy::new(|| Regex::new(r"\n{3,}").unwrap());
 
-/// Normalizes linebreaks to: `\n\n`.
+/// Trims whitespace and replaces all linebreaks with: `\n\n`.
 ///
 /// # Arguments
 ///
 /// * `string` - The string to normalize.
 #[must_use]
-pub fn normalize_linebreaks(string: &str) -> String {
+pub fn normalize_whitespace(string: &str) -> String {
     string
         .lines()
         .filter(|&s| !s.is_empty())
@@ -100,7 +100,7 @@ pub fn convert_symbols_to_ascii(string: &str) -> String {
 ///
 /// NOTE: This is a temporary solution that naively mimicks what [`tera`][tera]
 /// would do if/when it adds [`trim_blocks`][github-tera]. It is by no means
-/// smart and will just normalize whitespace regardless of what the themplate
+/// smart and will just normalize whitespace regardless of what the template
 /// requested.
 ///
 /// # Arguments

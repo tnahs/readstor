@@ -10,7 +10,7 @@ use crate::lib::templates::manager::TemplateManager;
 use crate::lib::utils;
 
 use super::config::Config;
-use super::{Command, PreprocessOptions, TemplateOptions};
+use super::{Command, PreProcessOptions, TemplateOptions};
 
 pub type Result<T> = color_eyre::Result<T>;
 
@@ -39,7 +39,7 @@ impl App {
                 self.print("-> Building data");
                 self.init_data()?;
                 self.print("-> Running pre-processor");
-                self.run_preprocessor(preprocess_options);
+                self.run_preprocess(preprocess_options);
                 self.print("-> Exporting data");
                 self.export_data().wrap_err("Failed while exporting data")?;
                 self.print_summary();
@@ -51,7 +51,7 @@ impl App {
                 self.print("-> Building data");
                 self.init_data()?;
                 self.print("-> Running pre-processor");
-                self.run_preprocessor(preprocess_options);
+                self.run_preprocess(preprocess_options);
                 self.print("-> Rendering templates");
                 self.render_templates(template_options)?;
                 self.print_summary();
@@ -73,11 +73,11 @@ impl App {
             .wrap_err("Failed while building data")
     }
 
-    /// Runs pre-processor on all [`Entry`][entry]s.
+    /// Runs pre-proces on all [`Entry`][entry]s.
     ///
     /// [entry]: crate::lib::models::entry::Entry
-    fn run_preprocessor(&mut self, options: PreprocessOptions) {
-        let options = processor::PreprocessOptions::from(options);
+    fn run_preprocess(&mut self, options: PreProcessOptions) {
+        let options = processor::PreProcessOptions::from(options);
         for entry in self.data.entries_mut() {
             Processor::preprocess(options, entry);
         }
@@ -293,7 +293,7 @@ mod test_app {
         let mut app = App::new(config);
 
         app.init_data().unwrap();
-        app.run_preprocessor(PreprocessOptions::default());
+        app.run_preprocess(PreProcessOptions::default());
 
         for entry in app.data.entries() {
             for annotations in entry.annotations.windows(2) {

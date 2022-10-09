@@ -62,33 +62,33 @@ impl From<crate::cli::Options> for Config {
 
 impl Config {
     pub fn app(options: Options) -> Self {
-        let databases = options
-            .databases_directory
-            .unwrap_or_else(|| applebooks::defaults::DATABASES.to_owned());
-
-        let output = options
+        let output_directory = options
             .output_directory
             .unwrap_or_else(|| cli::defaults::OUTPUT.to_owned());
 
+        let databases_directory = options
+            .databases_directory
+            .unwrap_or_else(|| applebooks::defaults::DATABASES.to_owned());
+
         Self {
-            databases_directory: databases,
-            output_directory: output,
+            databases_directory,
+            output_directory,
             is_quiet: options.is_quiet,
         }
     }
 
     pub fn dev(options: Options) -> Self {
-        let databases = options
-            .databases_directory
-            .unwrap_or_else(|| cli::defaults::MOCK_DATABASES.join("books-annotated"));
-
-        let output = options
+        let output_directory = options
             .output_directory
             .unwrap_or_else(|| TEMP_OUTPUT.join("dev"));
 
+        let databases_directory = options
+            .databases_directory
+            .unwrap_or_else(|| cli::defaults::MOCK_DATABASES.join("books-annotated"));
+
         Self {
-            databases_directory: databases,
-            output_directory: output,
+            databases_directory,
+            output_directory,
             is_quiet: options.is_quiet,
         }
     }
