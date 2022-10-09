@@ -1,34 +1,62 @@
-# Restore Apple Books' Library
+# Restore Library
 
-Make sure Apple Books is closed or run:
+> <i class="fa fa-info-circle"></i> The following snippets are taken from
+> [scripts/apple-books/restore.sh][script].
 
-```console
-osascript -e 'tell application "Books" to quit'
-```
+Restoring the library takes an extra step. First we need to clear out
+the current Apple Books library. We can delete all the library files and
+directories by using the paths we determined from
+[What To Archive/Restore?][what-to-archive-restore].
 
-Delete the current library using the same globs.
-
-<!-- TODO: Add note about `Group Containers` -->
-
-```console
+```sh
 rm -rf $HOME/Library/Containers/com.apple.BK*
 rm -rf $HOME/Library/Containers/com.apple.iBooks*
 rm -rf $HOME/Library/Group\ Containers/group.com.apple.iBooks
 ```
 
-Extract the archive directly into `~/Library/Containers`.
+Finally, we can run the reverse `rsync` commands and restore the archive we
+previously made. Make sure to replace `[PATH-TO-ARCHIVE]` with a valid path.
 
-The trailing slash after `[PATH_TO_ARCHIVE]` here is important. It tells `rsync`
-to move the _contents_ of this directory into another. Otherwise it would move
-the directory as a whole.
-
-```console
+```sh
 rsync \
-    --verbose \
-    --progress \
     --archive \
-    [PATH_TO_ARCHIVE]/ \
+    --extended-attributes \
+    [PATH-TO-ARCHIVE]/Containers/ \
     $HOME/Library/Containers/
+
+rsync \
+    --archive \
+    --extended-attributes \
+    [PATH-TO-ARCHIVE]/Group\ Containers/ \
+    $HOME/Library/Group\ Containers/
 ```
 
-That's it! At this point the library should be fully restored.
+> <i class="fa fa-exclamation-circle"></i> The trailing forward-slash after
+> `Containers` and `Group\ Containers` here is important. It tells `rsync` to
+> move the the archive directory's _contents_ into the target. Otherwise it
+> would move the archive _directory_ into the target.
+
+For example, if `[PATH-TO-ARCHIVE]` is:
+
+```plaintext
+~/archives/2022-10-08--apple-books-v4.4-5177--macos-v12.6
+```
+
+Our `rsync` command would be:
+
+```sh
+rsync \
+    --archive \
+    --extended-attributes \
+    ~/archives/2022-10-08--apple-books-v4.4-5177--macos-v12.6/Containers/ \
+    $HOME/Library/Containers/  # Note the forward-slash! ---------------^
+
+rsync \
+    --archive \
+    --extended-attributes \
+    ~/archives/2022-10-08--apple-books-v4.4-5177--macos-v12.6/Group\ Containers/ \
+    $HOME/Library/Group\ Containers/  # Note the forward-slash! ---------------^
+```
+
+[what-to-archive-restore]: ./00-apple-books.md#what-to-archiverestore
+[script]: https://github.com/tnahs/readstor/tree/main/scripts/apple-books/restore.sh
