@@ -12,22 +12,21 @@
     `name-templates.directory` key.
   - Template output filenames are now customizable via the `name-templates.book`
     and `name-templates.annotation` keys in the template's config.
-    rendered template. This is only a temporary solition until [Tera][tera] implements
-    this internally.
   - All [Tera][tera] features are now supported!
   - Added `--trim-blocks` to naively remove extra linebreaks from the final
+    rendered template. This is only a temporary solition until [Tera][tera]
+    implements this internally.
   - Added `--template-group` option to render only subset of templates found in
     the templates directory.
-- Added preprocessing options to `render` and `export`.
+- Added pre-processing options to `render` and `export`.
   - `--extract-tags` to extract `#tags` from notes.
-  - `--normalize-linbreaks` to reduce 3+ linebreaks to 2.
+  - `--normalize-whitespace` to reduce 3+ linebreaks to 2.
   - `--ascii-only` to convert all Unicode characters to ASCII.
   - `--ascii-symbols` to convert only a subset of "smart" Unicode symbols to ASCII.
 - Added `--quiet` flag to silence terminal output.
 - Added `--databases-directory` option to use a custom databases path.
 - Moved `--templates-directory` option under `render` command.
 - Renamed `--templates` -> `--templates-directory`.
-- Renamed `--databases` -> `--databases-directory`.
 - Renamed `--output` -> `--output-directory`.
 - Added `Book.tags`, a compiled list of all the tags within a book's annotations.
 - Removed logging verbosity.
@@ -40,7 +39,7 @@
 - Switched to `Config` trait for more flexibility.
 - Switched from `loggerv` to `env_logger`.
 
-## v0.2.0
+## v0.2.0 (2022-01-31)
 
 - Verified version support for Apple Books 4.1 on macOS Monterey 12.x.
 - Better handling of testing/dev databases.
@@ -48,7 +47,7 @@
 - A `.gitkeep` file is now added inside each `assets` folder.
 - `--backup` now copies only the `AEAnnotation` and `BKLibrary` directories.
 
-## v0.1.2
+## v0.1.2 (2021-11-04)
 
 - Reworked CLI commands.
 - Updated license to MIT/Apache-2.0.
@@ -59,12 +58,12 @@
 - Fixed [#3](https://github.com/tnahs/readstor/issues/3) Wrong default template
   location.
 
-## v0.1.1
+## v0.1.1 (2021-10-30)
 
 - Fixed minor issues with the `Cargo.toml` file to work better with
   [crates.io][crates-io].
 
-## v0.1.0
+## v0.1.0 (2021-10-30)
 
 - This initial release contains the core functionality: (1) save all annotations
   and notes as JSON (2) export them via a custom (or the default) template using
