@@ -39,7 +39,7 @@ pub struct Options {
 
 #[derive(Debug, Subcommand)]
 pub enum Command {
-    /// Export Apple Books' data
+    /// Export Apple Books' data as JSON
     Export {
         #[clap(flatten)]
         preprocess_options: PreProcessOptions,
