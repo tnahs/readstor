@@ -6,6 +6,7 @@ readme = "README.md"
 license = "MIT OR Apache-2.0"
 homepage = "https://github.com/tnahs/readstor"
 repository = "https://github.com/tnahs/readstor"
+documentation = "https://tnahs.github.io/readstor/"
 keywords = ["apple", "books", "ibooks", "highlights", "macos"]
 categories = ["command-line-utilities"]
 edition = "2021"
