@@ -58,7 +58,7 @@ features = ["preserve_order"]
 
 [dependencies.tera]
 version = "1.17.1"
-features = ["preserve_order"]
+features = ["builtins", "preserve_order"]
 
 [dev-dependencies]
 assert_cmd = "2.0.4"
