@@ -15,7 +15,7 @@ jobs:
           github_token: ${{ secrets.HOMEBREW_GITHUB_TOKEN }}
           target_darwin_amd64: true
           target_darwin_arm64: true
-          install: 'bin.install "test-readstor"'
+          install: 'bin.install "readstor"'
 
   crates-io:
     name: Publish to `crates.io`
