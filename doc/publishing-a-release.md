@@ -5,8 +5,8 @@
 3. Bump `version` in `Cargo.toml`to `[VERSION]`.
 4. Update `README.md` with relevant info.
 
-   💡 Use [`cargo-markdown`](https://crates.io/crates/cargo-markdown) to verify
-   that it renders correctly on [crates.io](https://crates.io)
+   💡 Use [`cargo-markdown`][cargo-markdown] to verify that it renders correctly
+   on [crates.io][crates-io]
 
 5. Check for packaging issues with:
 
@@ -47,12 +47,16 @@
 
    💡 The tag and title should be `[VERSION]`.
 
-9. Manually run the
-   [`publish`](https://github.com/tnahs/readstor/actions/workflows/publish.yml)
-   action.
+9. Manually run the [`publish`][publish] action.
 
    💡 Make sure to set `Use workflow from` to `[VERSION]`.
 
    > This will publish `readstor` to:
    >
-   > 1. [tnahs/homebrew-forumlas](https://github.com/tnahs/homebrew-forumlas) 2.[crates.io](https://crates.io)
+   > 1. [tnahs/homebrew-forumlas][formulas]
+   > 2. [crates.io][crates-io]
+
+[cargo-markdown]: https://crates.io/crates/cargo-markdown
+[crates-io]: https://crates.io
+[formulas]: https://github.com/tnahs/homebrew-forumlas
+[publish]: https://github.com/tnahs/readstor/actions/workflows/publish.yml
