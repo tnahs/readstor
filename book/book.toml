@@ -1,10 +1,10 @@
 [book]
 title = "ReadStor"
-authors = [""]
-src = "src"
-description = ""
+authors = ["Shant Ergenian"]
+description = "A CLI for Apple Books annotations"
 multilingual = false
 language = "en"
+src = "src"
 
 [build]
 build-dir = "build"
