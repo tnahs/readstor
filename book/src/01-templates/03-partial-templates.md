@@ -51,8 +51,6 @@ We would use the following `include` tags:
 > <i class="fa fa-info-circle"></i> See the documentation for [include][include]
 > for more information on its features and limitations.
 
-<!-- TODO: Update `templates-directory` when the usage docs are completed. -->
-
 [include]: https://tera.netlify.app/docs/#include
-[templates-directory]: /01-usage/02-render.md
+[templates-directory]: ../00-intro/02-options.md#--templates-directory-path
 [using-partials]: https://github.com/tnahs/readstor/tree/main/templates/using-partials

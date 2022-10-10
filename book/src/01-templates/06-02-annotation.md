@@ -45,7 +45,7 @@ objects, under the name `annotations`, are injected into the template's context.
     "created": "2021-11-02T18:04:45.184863090Z",
     "modified": "2021-11-02T18:12:30.355533123Z",
     "location": "6.26.4.2.446.2.1:0",
-    "epubcfi": "epubcfi(/6/26[c_9780465008575_ps_Part09_Split4]!/4/2/446/2/1,:0,:679)",
+    "epubcfi": "epubcfi(/6/26[Part09_Split4]!/4/2/446/2/1,:0,:679)",
     "slugs": {
       "created": "2021-11-02-180445",
       "modified": "2021-11-02-180445"

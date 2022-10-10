@@ -238,14 +238,12 @@ anyway.
 tags: #inspiration
 ```
 
-<!-- TODO: Update `output-directory` when the usage docs are completed. -->
-
 [context-modes]: ./02-02-context-modes.md
 [documentation]: https://tera.netlify.app/docs/
 [filters]: https://tera.netlify.app/docs/#built-in-filters
 [include]: https://tera.netlify.app/docs/#include
 [inheritance]: https://tera.netlify.app/docs/#inheritance
 [macros]: https://tera.netlify.app/docs/#macros
-[output-directory]: ../01-usage/02-render.md
+[output-directory]: ../00-intro/02-options.md#--output-directory-path
 [structure-modes]: ./02-03-structure-modes.md
 [tera]: https://tera.netlify.app/

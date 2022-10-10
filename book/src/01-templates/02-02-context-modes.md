@@ -49,7 +49,7 @@ annotations:
       created: 2021-11-02T18:12:50.826642036Z
       modified: 2021-11-02T18:12:51.831905841Z
       location: 6.18.4.2.20.2.1:0
-      epubcfi: epubcfi(/6/18[c_9780465008575_ps_Part09_Split0]!/4/2/20/2/1,:0,:49)
+      epubcfi: epubcfi(/6/18[Part09_Split0]!/4/2/20/2/1,:0,:49)
       slugs:
         created: 2021-11-02-181250
         modified: 2021-11-02-181250
@@ -65,7 +65,7 @@ annotations:
       created: 2021-11-02T18:13:25.905355930Z
       modified: 2021-11-02T18:14:12.444134950Z
       location: 6.24.4.2.296.2.1:0
-      epubcfi: epubcfi(/6/24[c_9780465008575_ps_Part09_Split3]!/4/2/296/2,/1:0,/7:257)
+      epubcfi: epubcfi(/6/24[Part09_Split3]!/4/2/296/2,/1:0,/7:257)
       slugs:
         created: 2021-11-02-181325
         modified: 2021-11-02-181325
@@ -115,7 +115,7 @@ annotation:
     created: 2021-11-02T18:12:50.826642036Z
     modified: 2021-11-02T18:12:51.831905841Z
     location: 6.18.4.2.20.2.1:0
-    epubcfi: epubcfi(/6/18[c_9780465008575_ps_Part09_Split0]!/4/2/20/2/1,:0,:49)
+    epubcfi: epubcfi(/6/18[Part09_Split0]!/4/2/20/2/1,:0,:49)
     slugs:
       created: 2021-11-02-181250
       modified: 2021-11-02-181250

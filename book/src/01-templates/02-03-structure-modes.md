@@ -116,6 +116,4 @@ if a template group contains multiple templates.
            └── Robert Henri - The Art Spirit.md
 ```
 
-<!-- TODO: Update `output-directory` when the usage docs are completed. -->
-
-[output-directory]: ../01-usage/02-render.md
+[output-directory]: ../00-intro/02-options.md#--output-directory-path

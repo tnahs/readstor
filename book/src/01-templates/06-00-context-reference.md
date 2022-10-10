@@ -14,5 +14,5 @@ context: `book`, `annotation` (or `annotations` depending on the
 
 [annotation]: ./06-02-annotation.md
 [book]: ./06-01-book.md
-[context-modes]: ../02-templates/02-02-context-modes.md
+[context-modes]: ../01-templates/02-02-context-modes.md
 [links]: ./06-03-links.md

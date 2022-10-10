@@ -69,7 +69,7 @@ So it's safe to assume any directory starting with `com.apple.Books` or
 Archving/restoring will work **only** if the path to the username **has not
 changed** since the library was archived. Doing a few searches shows that the
 the username has been hard-coded into some files. This is most evident in the
-`BKLibrary-***.sqlite` file which contains absolute paths to library files.
+`BKLibrary-*.sqlite` file which contains absolute paths to library files.
 
 For example:
 
