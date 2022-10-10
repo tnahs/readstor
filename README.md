@@ -13,28 +13,16 @@ notes as JSON (2) render them via a custom (or the default) template using the
 Note that this repository is a heavy work-in-progress and things are bound to
 change.
 
-<!-- TODO: Un-comment when v0.3.0 is live.
-
 ## Usage
 
 See the [documentation][documentation] for usage information.
-
--->
 
 ## Installation
 
 ### Using Homebrew
 
-<!-- TODO: Un-comment when v0.3.0 is live.
-
 ```console
 brew tap tnahs/formulas
-brew install readstor
-```
--->
-
-```console
-brew tap tnahs/readstor
 brew install readstor
 ```
 
@@ -63,5 +51,5 @@ listed, it doesn't necessarily mean it isn't supported.
 
 _Note that libraries that are synced with iCloud Drive are not supported!_
 
-[tera]: https://tera.netlify.app/
 [documentation]: https://tnahs.github.io/readstor/
+[tera]: https://tera.netlify.app/
