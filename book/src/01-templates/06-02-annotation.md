@@ -28,9 +28,6 @@ objects, under the name `annotations`, are injected into the template's context.
 | `annotation.metadata.slugs.created`  | string             | date created slugified  |
 | `annotation.metadata.slugs.modified` | string             | date modified slugified |
 
-<!-- TODO: Add a note on highlight style/color. -->
-<!-- TODO: Add a note on tags when tag extraction flag is implemented. -->
-
 ## Example Data - Annotation
 
 ```json
