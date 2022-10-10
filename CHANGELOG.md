@@ -1,6 +1,6 @@
 # Changelog
 
-## v0.3.0 (UNRELEASED)
+## v0.3.0 (2022-10-09)
 
 - Overhauled templates workflow.
   - A template's config is now set within the header of the file inside an HTML-
@@ -14,7 +14,7 @@
     and `name-templates.annotation` keys in the template's config.
   - All [Tera][tera] features are now supported!
   - Added `--trim-blocks` to naively remove extra linebreaks from the final
-    rendered template. This is only a temporary solition until [Tera][tera]
+    rendered template. This is only a temporary solution until [Tera][tera]
     implements this internally.
   - Added `--template-group` option to render only subset of templates found in
     the templates directory.
@@ -26,10 +26,10 @@
 - Added `--quiet` flag to silence terminal output.
 - Added `--databases-directory` option to use a custom databases path.
 - Moved `--templates-directory` option under `render` command.
-- Renamed `--templates` -> `--templates-directory`.
-- Renamed `--output` -> `--output-directory`.
+- Renamed `--templates` to `--templates-directory`.
+- Renamed `--output` to `--output-directory`.
 - Added `Book.tags`, a compiled list of all the tags within a book's annotations.
-- Removed logging verbosity.
+- Removed logging verbosity option from cli.
 - Removed nested directory from output file structure i.e. `data`, `renders`,
   `backups`.
 - Databases backup directories now have a `-` between the date and version:
