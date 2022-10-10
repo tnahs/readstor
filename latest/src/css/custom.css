@@ -1,0 +1,58 @@
+:root {
+  --content-max-width: 850px;
+  --font-size-code: 0.9em;
+}
+
+body {
+  /* default: 1.6rem */
+  font-size: 1.7rem;
+}
+
+code {
+  /* default: 0.875em */
+  font-size: var(--font-size-code);
+}
+
+pre code {
+  padding: 20px;
+  border-radius: 4px;
+  line-height: 1.5;
+}
+
+table {
+  width: 100%;
+  /* table-layout: fixed !important; */
+  border-bottom: 2px solid var(--table-header-bg);
+  font-size: var(--font-size-code);
+  font-family: "Source Code Pro", Consolas, "Ubuntu Mono", Menlo,
+    "DejaVu Sans Mono", monospace !important;
+}
+
+table code {
+  font-size: var(--font-size-code);
+}
+
+table td {
+  padding: 10px 20px;
+  border: none;
+}
+
+blockquote {
+  margin: 20px 0;
+  padding: 10px 25px;
+  border-radius: 4px;
+  border-top: 0;
+  border-right: 0;
+  border-bottom: 0;
+  border-left: 5px solid var(--quote-border);
+}
+
+.fa-info-circle {
+  padding-right: 3px;
+  color: #0096cf !important;
+}
+
+.fa-exclamation-circle {
+  padding-right: 3px;
+  color: #ffb454 !important;
+}
