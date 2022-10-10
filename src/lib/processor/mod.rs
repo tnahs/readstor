@@ -149,6 +149,5 @@ pub struct PreProcessOptions {
     pub convert_all_to_ascii: bool,
 
     /// Enable converting "smart" Unicode symbols to ASCII.
-    // TODO: Add link to documentation here.
     pub convert_symbols_to_ascii: bool,
 }

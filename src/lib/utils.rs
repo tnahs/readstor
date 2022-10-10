@@ -117,7 +117,6 @@ pub fn today_format(format: &str) -> String {
 /// # Arguments
 ///
 /// * `string` - The string to sanitize.
-// TODO: Test to make sure output strings don't cause issues on the filesystem.
 #[must_use]
 pub fn sanitize_string(string: &str) -> String {
     // These characters can potentially cause problems in filenames.

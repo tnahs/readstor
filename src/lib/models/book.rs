@@ -53,7 +53,6 @@ impl ABQuery for Book {
         ORDER BY ZBKLIBRARYASSET.ZTITLE;"
     };
 
-    // TODO: Can we return a `Result<Self>` here instead?
     fn from_row(row: &Row<'_>) -> Self {
         let last_opened: f64 = row.get_unwrap(3);
 

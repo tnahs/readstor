@@ -98,7 +98,6 @@ pub struct PreProcessOptions {
     pub convert_all_to_ascii: bool,
 
     /// Convert "smart" Unicode symbols to ASCII
-    // TODO: Add link to documentation here.
     #[arg(
         short = 's',
         long = "ascii-symbols",
