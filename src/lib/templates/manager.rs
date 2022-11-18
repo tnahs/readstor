@@ -368,8 +368,6 @@ impl TemplateManager {
             TemplateKind::Partial => utils::is_partial_template,
         };
 
-        // let predicate: fn(&DirEntry) -> bool = |entry| !utils::starts_with_underscore(entry);
-
         // Avoids traversing hidden directories, ignores `.hidden` files,
         // returns non-directory entries and filters the them by whether are
         // normal or partial tempaltes.
