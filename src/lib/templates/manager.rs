@@ -7,10 +7,10 @@ use std::path::{Path, PathBuf};
 use tera::{Context, Tera};
 use walkdir::DirEntry;
 
-use crate::lib::models::annotation::Annotation;
-use crate::lib::models::book::Book;
-use crate::lib::models::entry::Entry;
-use crate::lib::result::Result;
+use crate::models::annotation::Annotation;
+use crate::models::book::Book;
+use crate::models::entry::Entry;
+use crate::result::Result;
 
 use super::template::{
     ContextMode, Names, StructureMode, TemplateContext, TemplatePartialRaw, TemplateRaw,
@@ -462,8 +462,8 @@ enum TemplateKind {
 #[cfg(test)]
 mod test_manager {
 
-    use crate::lib::defaults::{EXAMPLE_TEMPLATES, TEST_TEMPLATES};
-    use crate::lib::result::Error;
+    use crate::defaults::{EXAMPLE_TEMPLATES, TEST_TEMPLATES};
+    use crate::result::Error;
 
     use super::*;
 

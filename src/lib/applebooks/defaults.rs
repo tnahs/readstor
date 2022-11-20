@@ -5,8 +5,6 @@ use std::path::PathBuf;
 
 use once_cell::sync::Lazy;
 
-use crate::lib;
-
 /// The root databases directory.
 ///
 /// This assembles the full path to Apple Books' directory containing
@@ -17,7 +15,7 @@ use crate::lib;
 /// /users/[user]/Library/Containers/com.apple.iBooksX/Data/Documents.
 /// ```
 pub static DATABASES: Lazy<PathBuf> = Lazy::new(|| {
-    let mut path = lib::defaults::HOME.to_owned();
+    let mut path = crate::defaults::HOME.to_owned();
     path.extend(
         [
             "Library",

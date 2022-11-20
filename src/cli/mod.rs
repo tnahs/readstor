@@ -116,7 +116,7 @@ pub fn validate_path_exists(value: &str) -> Result<PathBuf, String> {
     std::fs::canonicalize(value).map_err(|_| "path does not exist".into())
 }
 
-impl From<TemplateOptions> for crate::lib::templates::manager::TemplateOptions {
+impl From<TemplateOptions> for lib::templates::manager::TemplateOptions {
     fn from(options: TemplateOptions) -> Self {
         Self {
             templates_directory: options.templates_directory,
@@ -125,7 +125,7 @@ impl From<TemplateOptions> for crate::lib::templates::manager::TemplateOptions {
     }
 }
 
-impl From<PreProcessorOptions> for crate::lib::processor::PreProcessorOptions {
+impl From<PreProcessorOptions> for lib::processor::PreProcessorOptions {
     fn from(options: PreProcessorOptions) -> Self {
         Self {
             extract_tags: options.extract_tags,
@@ -136,7 +136,7 @@ impl From<PreProcessorOptions> for crate::lib::processor::PreProcessorOptions {
     }
 }
 
-impl From<PostProcessorOptions> for crate::lib::processor::PostProcessorOptions {
+impl From<PostProcessorOptions> for lib::processor::PostProcessorOptions {
     fn from(options: PostProcessorOptions) -> Self {
         Self {
             trim_blocks: options.trim_blocks,

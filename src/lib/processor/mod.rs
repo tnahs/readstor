@@ -3,8 +3,8 @@
 
 pub mod process;
 
-use crate::lib::models::entry::Entry;
-use crate::lib::templates::template::TemplateRender;
+use crate::models::entry::Entry;
+use crate::templates::template::TemplateRender;
 
 /// A struct for pre-processing [`Entry`]s.
 #[derive(Debug, Clone, Copy)]
@@ -48,7 +48,7 @@ impl PreProcessor {
     ///
     /// * `entry` - The [`Entry`] to process.
     ///
-    /// [location]: crate::lib::models::annotation::AnnotationMetadata::location
+    /// [location]: crate::models::annotation::AnnotationMetadata::location
     pub fn sort_annotations(entry: &mut Entry) {
         entry.annotations.sort();
     }
@@ -62,9 +62,9 @@ impl PreProcessor {
     ///
     /// * `entry` - The [`Entry`] to process.
     ///
-    /// [annotation-notes]: crate::lib::models::annotation::Annotation::notes
-    /// [annotation-tags]: crate::lib::models::annotation::Annotation::tags
-    /// [book-tags]: crate::lib::models::book::Book::tags
+    /// [annotation-notes]: crate::models::annotation::Annotation::notes
+    /// [annotation-tags]: crate::models::annotation::Annotation::tags
+    /// [book-tags]: crate::models::book::Book::tags
     fn extract_tags(entry: &mut Entry) {
         for annotation in &mut entry.annotations {
             annotation.tags = process::extract_tags(&annotation.notes);
@@ -85,7 +85,7 @@ impl PreProcessor {
     ///
     /// * `entry` - The [`Entry`] to process.
     ///
-    /// [body]: crate::lib::models::annotation::Annotation::body
+    /// [body]: crate::models::annotation::Annotation::body
     fn normalize_whitespace(entry: &mut Entry) {
         for annotation in &mut entry.annotations {
             annotation.body = process::normalize_whitespace(&annotation.body);
@@ -100,9 +100,9 @@ impl PreProcessor {
     ///
     /// * `entry` - The [`Entry`] to process.
     ///
-    /// [author]: crate::lib::models::book::Book::author
-    /// [body]: crate::lib::models::annotation::Annotation::body
-    /// [title]: crate::lib::models::book::Book::title
+    /// [author]: crate::models::book::Book::author
+    /// [body]: crate::models::annotation::Annotation::body
+    /// [title]: crate::models::book::Book::title
     fn convert_all_to_ascii(entry: &mut Entry) {
         entry.book.title = process::convert_all_to_ascii(&entry.book.title);
         entry.book.author = process::convert_all_to_ascii(&entry.book.author);
@@ -120,9 +120,9 @@ impl PreProcessor {
     ///
     /// * `entry` - The [`Entry`] to process.
     ///
-    /// [author]: crate::lib::models::book::Book::author
-    /// [body]: crate::lib::models::annotation::Annotation::body
-    /// [title]: crate::lib::models::book::Book::title
+    /// [author]: crate::models::book::Book::author
+    /// [body]: crate::models::annotation::Annotation::body
+    /// [title]: crate::models::book::Book::title
     fn convert_symbols_to_ascii(entry: &mut Entry) {
         entry.book.title = process::convert_symbols_to_ascii(&entry.book.title);
         entry.book.author = process::convert_symbols_to_ascii(&entry.book.author);

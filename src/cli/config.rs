@@ -1,5 +1,6 @@
 use crate::cli;
-use crate::lib::applebooks;
+
+use lib::applebooks;
 
 use std::path::PathBuf;
 
@@ -34,7 +35,7 @@ pub struct Config {
     /// testing. See [`ABDatabase::get_database()`][get-database] for
     /// information on how the directory is structured.
     ///
-    /// [get-database]: crate::lib::applebooks::database::ABDatabase::get_database()
+    /// [get-database]: lib::applebooks::database::ABDatabase::get_database()
     pub databases_directory: PathBuf,
 
     /// The path to the output directory.

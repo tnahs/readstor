@@ -5,6 +5,7 @@
 - [ ] Add [`textwrap`][textwrap] post-processor. `--textwrap=80`
 - [ ] We might be able to leverage [Tera][tera]'s [slugify][slugify] filter and
       remove slugs from the `Book` and `Annotation` structs.
+- [ ] Is there a way to consolidate clippy lints between bin/lib?
 - [ ] Drop `indexmap`, `serde_json/preserve_order` and `tera/preserve_order`
       dependency by using a `Vec` of something like the `NameAnnotation` struct.
       This would allow the user to use the `sort` filter to sort the links by

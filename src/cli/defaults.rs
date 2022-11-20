@@ -2,8 +2,6 @@ use std::path::PathBuf;
 
 use once_cell::sync::Lazy;
 
-use crate::lib;
-
 /// Defines the environment variable key used to determine whether the
 /// application is being developed on or not. If so, the Apple Books databases
 /// path is bypassed and redirected to a local testing/dev database.

@@ -6,7 +6,7 @@ use std::path::{Path, PathBuf};
 
 use rusqlite::{Connection, OpenFlags, Row};
 
-use crate::lib::result::{Error, Result};
+use crate::result::{Error, Result};
 
 use super::utils::APPLEBOOKS_VERSION;
 
@@ -34,8 +34,8 @@ impl ABDatabase {
     /// schema has changed, meaning this application is out of sync with the
     /// latest version of Apple Books.
     ///
-    /// [annotation]: crate::lib::models::annotation::Annotation
-    /// [book]: crate::lib::models::book::Book
+    /// [annotation]: crate::models::annotation::Annotation
+    /// [book]: crate::models::book::Book
     #[allow(clippy::missing_panics_doc)]
     pub fn query<T: ABQuery>(path: &Path) -> Result<Vec<T>> {
         // Returns the appropriate database based on `T`.
@@ -149,9 +149,9 @@ impl ABDatabase {
 /// Annotation   ZAEANNOTATION.ZANNOTATIONASSETID ─┘
 /// ```
 ///
-/// [annotation]: crate::lib::models::annotation::Annotation
-/// [book]: crate::lib::models::book::Book
-/// [databases]: crate::lib::applebooks::defaults::DATABASES
+/// [annotation]: crate::models::annotation::Annotation
+/// [book]: crate::models::book::Book
+/// [databases]: crate::applebooks::defaults::DATABASES
 pub trait ABQuery {
     /// The database's name being either `BKLibrary` or `AEAnnotation`.
     const DATABASE_NAME: ABDatabaseName;

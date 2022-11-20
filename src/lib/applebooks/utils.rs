@@ -7,8 +7,6 @@ use once_cell::sync::Lazy;
 use plist::Value;
 use sysinfo::{System, SystemExt};
 
-use crate::lib::applebooks;
-
 /// Returns Apple Books' version as `v[short]-[long]` e.g. `v3.2-2217`.
 ///
 /// * Returns `v?` if the Apple Books application cannot be found.
@@ -72,5 +70,5 @@ pub fn applebooks_is_running() -> bool {
     // equivalent to checking for an empty intersection."
     //
     // https://doc.rust-lang.org/std/collections/hash_set/struct.HashSet.html#method.is_disjoint
-    !applebooks::defaults::APPLEBOOKS_NAMES.is_disjoint(&process_names)
+    !super::defaults::APPLEBOOKS_NAMES.is_disjoint(&process_names)
 }

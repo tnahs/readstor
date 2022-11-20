@@ -3,8 +3,8 @@
 use rusqlite::Row;
 use serde::Serialize;
 
-use crate::lib::applebooks::database::{ABDatabaseName, ABQuery};
-use crate::lib::utils;
+use crate::applebooks::database::{ABDatabaseName, ABQuery};
+use crate::utils;
 
 use super::datetime::DateTimeUtc;
 
@@ -19,7 +19,7 @@ pub struct Book {
 
     /// The book's `#tags` compiled from its [`Annotation`][annotation]s.
     ///
-    /// [annotation]: crate::lib::models::annotation::Annotation
+    /// [annotation]: crate::models::annotation::Annotation
     pub tags: Vec<String>,
 
     /// The book's metadata.

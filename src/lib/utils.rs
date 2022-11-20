@@ -8,8 +8,6 @@ use std::path::Path;
 use chrono::Local;
 use deunicode::deunicode;
 
-use crate::lib;
-
 /// Recursively copies all files from one directory into another.
 ///
 /// # Arguments
@@ -99,7 +97,9 @@ where
 /// Returns today's date using the default `strftime` format string.
 #[must_use]
 pub fn today() -> String {
-    Local::now().format(lib::defaults::DATE_FORMAT).to_string()
+    Local::now()
+        .format(crate::defaults::DATE_FORMAT)
+        .to_string()
 }
 
 /// Returns today's date using a custom `strftime` format string.

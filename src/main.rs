@@ -24,14 +24,14 @@
 )]
 
 mod cli;
-pub mod lib;
 
 use clap::Parser;
 
 use crate::cli::app::{App, Result};
 use crate::cli::config::Config;
 use crate::cli::Cli;
-use crate::lib::applebooks::utils::applebooks_is_running;
+
+use lib::applebooks::utils::applebooks_is_running;
 
 fn main() -> Result<()> {
     cli::utils::init_logger();

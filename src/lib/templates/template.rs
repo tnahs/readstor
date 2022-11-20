@@ -7,11 +7,11 @@ use indexmap::IndexMap;
 use serde::{de, Deserialize, Serialize};
 use tera::{Context, Tera};
 
-use crate::lib::models::annotation::Annotation;
-use crate::lib::models::book::Book;
-use crate::lib::models::entry::Entry;
-use crate::lib::result::{Error, Result};
-use crate::lib::utils;
+use crate::models::annotation::Annotation;
+use crate::models::book::Book;
+use crate::models::entry::Entry;
+use crate::result::{Error, Result};
+use crate::utils;
 
 use super::defaults::{CONFIG_TAG_CLOSE, CONFIG_TAG_OPEN};
 
@@ -644,7 +644,7 @@ impl std::fmt::Debug for TemplateRender {
 #[cfg(test)]
 mod test_templates {
 
-    use crate::lib::defaults::TEST_TEMPLATES;
+    use crate::defaults::TEST_TEMPLATES;
 
     use super::*;
 

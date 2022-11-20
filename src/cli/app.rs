@@ -3,12 +3,12 @@ use std::fs;
 use color_eyre::eyre::WrapErr;
 
 use crate::cli;
-use crate::lib::applebooks::database::ABDatabaseName;
-use crate::lib::applebooks::utils::APPLEBOOKS_VERSION;
-use crate::lib::models::data::Data;
-use crate::lib::processor::{PostProcessor, PreProcessor};
-use crate::lib::templates::manager::Templates;
-use crate::lib::utils;
+use lib::applebooks::database::ABDatabaseName;
+use lib::applebooks::utils::APPLEBOOKS_VERSION;
+use lib::models::data::Data;
+use lib::processor::{PostProcessor, PreProcessor};
+use lib::templates::manager::Templates;
+use lib::utils;
 
 use super::config::Config;
 use super::Command;
@@ -87,7 +87,7 @@ impl App {
 
     /// Runs pre-processors on all [`Entry`][entry]s.
     ///
-    /// [entry]: crate::lib::models::entry::Entry
+    /// [entry]: lib::models::entry::Entry
     fn run_preprocessors(&mut self, options: cli::PreProcessorOptions) {
         for entry in self.data.entries_mut() {
             PreProcessor::run(options, entry);
@@ -96,7 +96,7 @@ impl App {
 
     /// Runs post-processors on all [`TemplateRender`][template-render]s.
     ///
-    /// [template-render]: crate::lib::templates::template::TemplateRender
+    /// [template-render]: lib::templates::template::TemplateRender
     fn run_postprocessors(&mut self, options: cli::PostProcessorOptions) {
         let templates = self
             .templates

@@ -2,15 +2,13 @@
 //! [`Annotation`][annotation] types before they are rendered and
 //! post-processors for manipulating a template after it's been rendered.
 //!
-//! [annotation]: crate::lib::models::annotation::Annotation
-//! [book]: crate::lib::models::book::Book
-//! [entry]: crate::lib::models::entry::Entry
+//! [annotation]: crate::models::annotation::Annotation
+//! [book]: crate::models::book::Book
+//! [entry]: crate::models::entry::Entry
 
 use deunicode::deunicode;
 use once_cell::sync::Lazy;
 use regex::Regex;
-
-use crate::lib;
 
 /// Captures a `#tag`. Tags *must* start with a hash symbol `#` followed by a
 /// letter `[a-zA-Z]`.
@@ -83,12 +81,12 @@ pub fn convert_all_to_ascii(string: &str) -> String {
 ///
 /// * `string` - The string to convert.
 ///
-/// [symbols]: lib::defaults::UNICODE_TO_ASCII_SYMBOLS
+/// [symbols]: crate::defaults::UNICODE_TO_ASCII_SYMBOLS
 #[must_use]
 pub fn convert_symbols_to_ascii(string: &str) -> String {
     let mut string = string.to_owned();
 
-    for (from, to) in &*lib::defaults::UNICODE_TO_ASCII_SYMBOLS {
+    for (from, to) in &*crate::defaults::UNICODE_TO_ASCII_SYMBOLS {
         string = string.replace(*from, to);
     }
 

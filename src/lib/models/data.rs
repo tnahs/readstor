@@ -3,8 +3,8 @@
 use std::collections::HashMap;
 use std::path::Path;
 
-use crate::lib::applebooks::database::{ABDatabase, ABDatabaseName};
-use crate::lib::result::Result;
+use crate::applebooks::database::{ABDatabase, ABDatabaseName};
+use crate::result::Result;
 
 use super::annotation::Annotation;
 use super::book::Book;
