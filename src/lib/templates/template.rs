@@ -1,5 +1,6 @@
-//! Defines the [`TemplateRaw`] and [`TemplatePartialRaw`] structs and various
-//helper ! structs and enums to represent a template's content and metadata.
+//! Defines the [`TemplateRaw`] and [`TemplatePartialRaw`] and
+//! [`TemplateRender`] structs and various helper structs and enums to
+//! represent a template's content and metadata.
 
 use std::path::{Path, PathBuf};
 
@@ -154,6 +155,97 @@ impl std::fmt::Debug for TemplateRaw {
             .field("group", &self.group)
             .field("context_mode", &self.context_mode)
             .field("structure_mode", &self.structure_mode)
+            .finish()
+    }
+}
+
+/// A struct representing a unconfigured partial template.
+///
+/// Partial templates get their configuration from the normal templates that
+/// `include` them.
+#[derive(Clone)]
+pub struct TemplatePartialRaw {
+    /// The template's id.
+    ///
+    /// This is typically a file path relative to the templates directory.
+    /// It serves to identify a partial template when called in an `include`
+    /// tag from within a normal template. This field is passed to Tera when
+    /// registering the template.
+    ///
+    /// ```plaintext
+    /// --> /path/to/templates/nested/template.md
+    /// --> nested/template.md
+    /// --> {% include "nested/template.md" %}
+    /// ````
+    pub id: String,
+
+    /// The unparsed contents of the template.
+    ///
+    /// This gets parsed and validated only when a normal template that includes
+    /// it is being parsed and valiated. This field is passed to Tera when
+    /// registering the template.
+    pub contents: String,
+}
+
+impl TemplatePartialRaw {
+    /// Creates a new instance of [`TemplatePartialRaw`].
+    ///
+    /// # Arguments
+    ///
+    /// * `path` - The path to the template relative to the templates directory.
+    /// * `string` - The contents of the template file.
+    pub fn new<P>(path: P, string: &str) -> Self
+    where
+        P: AsRef<Path>,
+    {
+        Self {
+            id: path.as_ref().display().to_string(),
+            contents: string.to_owned(),
+        }
+    }
+}
+
+impl std::fmt::Debug for TemplatePartialRaw {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("TemplatePartialRaw")
+            .field("id", &self.id)
+            .finish()
+    }
+}
+
+/// A struct representing a rendered template.
+#[derive(Default)]
+pub struct TemplateRender {
+    /// The path to where the template will be written to.
+    ///
+    /// This path should be relative to the final output directory as this path
+    /// is appended to it to determine the the full output path.
+    pub path: PathBuf,
+
+    /// The final output filename.
+    pub filename: String,
+
+    /// The rendered content.
+    pub contents: String,
+}
+
+impl TemplateRender {
+    /// Creates a new instance of [`TemplateRender`].
+    #[must_use]
+    pub fn new(path: PathBuf, filename: String, contents: String) -> Self {
+        Self {
+            path,
+            filename,
+            contents,
+        }
+    }
+}
+
+impl std::fmt::Debug for TemplateRender {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("TemplateRender")
+            .field("path", &self.path)
+            .field("filename", &self.filename)
             .finish()
     }
 }
@@ -547,97 +639,6 @@ impl<'a> TemplateContext<'a> {
     #[must_use]
     pub fn name_annotation(book: &'a Book, annotation: &'a Annotation) -> Self {
         Self::NameAnnotation { book, annotation }
-    }
-}
-
-/// A struct representing a unconfigured partial template.
-///
-/// Partial templates get their configuration from the normal templates that
-/// `include` them.
-#[derive(Clone)]
-pub struct TemplatePartialRaw {
-    /// The template's id.
-    ///
-    /// This is typically a file path relative to the templates directory.
-    /// It serves to identify a partial template when called in an `include`
-    /// tag from within a normal template. This field is passed to Tera when
-    /// registering the template.
-    ///
-    /// ```plaintext
-    /// --> /path/to/templates/nested/template.md
-    /// --> nested/template.md
-    /// --> {% include "nested/template.md" %}
-    /// ````
-    pub id: String,
-
-    /// The unparsed contents of the template.
-    ///
-    /// This gets parsed and validated only when a normal template that includes
-    /// it is being parsed and valiated. This field is passed to Tera when
-    /// registering the template.
-    pub contents: String,
-}
-
-impl TemplatePartialRaw {
-    /// Creates a new instance of [`TemplatePartialRaw`].
-    ///
-    /// # Arguments
-    ///
-    /// * `path` - The path to the template relative to the templates directory.
-    /// * `string` - The contents of the template file.
-    pub fn new<P>(path: P, string: &str) -> Self
-    where
-        P: AsRef<Path>,
-    {
-        Self {
-            id: path.as_ref().display().to_string(),
-            contents: string.to_owned(),
-        }
-    }
-}
-
-impl std::fmt::Debug for TemplatePartialRaw {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        f.debug_struct("TemplatePartialRaw")
-            .field("id", &self.id)
-            .finish()
-    }
-}
-
-/// A struct representing a rendered template.
-#[derive(Default)]
-pub struct TemplateRender {
-    /// The path to where the template will be written to.
-    ///
-    /// This path should be relative to the final output directory as this path
-    /// is appended to it to determine the the full output path.
-    pub path: PathBuf,
-
-    /// The final output filename.
-    pub filename: String,
-
-    /// The rendered content.
-    pub contents: String,
-}
-
-impl TemplateRender {
-    /// Creates a new instance of [`TemplateRender`].
-    #[must_use]
-    pub fn new(path: PathBuf, filename: String, contents: String) -> Self {
-        Self {
-            path,
-            filename,
-            contents,
-        }
-    }
-}
-
-impl std::fmt::Debug for TemplateRender {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        f.debug_struct("TemplateRender")
-            .field("path", &self.path)
-            .field("filename", &self.filename)
-            .finish()
     }
 }
 
