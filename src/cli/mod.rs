@@ -113,7 +113,7 @@ pub struct PostProcessorOptions {
 }
 
 pub fn validate_path_exists(value: &str) -> Result<PathBuf, String> {
-    std::fs::canonicalize(&value).map_err(|_| "path does not exist".into())
+    std::fs::canonicalize(value).map_err(|_| "path does not exist".into())
 }
 
 impl From<TemplateOptions> for crate::lib::templates::manager::TemplateOptions {

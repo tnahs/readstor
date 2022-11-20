@@ -78,7 +78,7 @@ impl ABQuery for Annotation {
         Self {
             body: row.get_unwrap(0),
             style: Self::int_to_style(style),
-            notes: notes.unwrap_or_else(|| "".to_string()),
+            notes: notes.unwrap_or_default(),
             tags: Vec::new(),
             metadata: AnnotationMetadata {
                 id: row.get_unwrap(3),

@@ -106,7 +106,7 @@ impl TemplateRaw {
     /// Returns `None` if the template's config block is formatted incorrectly.
     fn parse(string: &str) -> Option<(&str, String)> {
         // Find where the opening tag starts...
-        let mut config_start = string.find(&CONFIG_TAG_OPEN)?;
+        let mut config_start = string.find(CONFIG_TAG_OPEN)?;
 
         // (Save the pre-config contents.)
         let pre_config_contents = &string[0..config_start];

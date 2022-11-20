@@ -89,7 +89,7 @@ pub fn convert_symbols_to_ascii(string: &str) -> String {
     let mut string = string.to_owned();
 
     for (from, to) in &*lib::defaults::UNICODE_TO_ASCII_SYMBOLS {
-        string = string.replace(*from, *to);
+        string = string.replace(*from, to);
     }
 
     string

@@ -30,7 +30,7 @@ where
     let source = source.as_ref();
     let destination = destination.as_ref();
 
-    fs::create_dir_all(&destination)?;
+    fs::create_dir_all(destination)?;
 
     for entry in fs::read_dir(source)? {
         let entry = entry?;

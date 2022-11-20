@@ -79,7 +79,7 @@ static RE_SPACIAL_OFFSET: Lazy<Regex> = Lazy::new(|| Regex::new(r"@[0-9.]+:[0-9.
 pub fn parse(raw: &str) -> String {
     // Check that the incoming string is an `epubcfi`.
     if !raw.starts_with("epubcfi(") && !raw.ends_with(')') {
-        return "".to_string();
+        return String::new();
     }
 
     // Starting with:
@@ -170,7 +170,7 @@ pub fn parse(raw: &str) -> String {
     let character_offset = RE_CHARACTER_OFFSET
         .find(&location)
         .map(|m| m.as_str())
-        .map_or_else(|| "".to_owned(), ToOwned::to_owned);
+        .map_or_else(String::new, ToOwned::to_owned);
 
     // -> A: 6.4.4.10.2.1:1
     // -> B: 6.4.4.10.1:3
