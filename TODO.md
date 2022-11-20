@@ -2,43 +2,6 @@
 
 ## Next
 
-- [ ] Implement `Processor::postprocess`.
-- [ ] Add `PostprocessOptions` for `Processor`.
-
-  This will probably require that we save rendered templates and post-
-  process them back up at the application level in order to avoid sending
-  `PostprocessOptions` all the way down to the `TemplateManager::render_*`
-  methods.
-
-  ```rust
-  pub struct TemplateManager {
-    // ...
-    // Possible changes to struct names.
-    templates: Vec<TemplateRaw>,
-    partials: Vec<TemplatePartialRaw>,
-    renders: Vec<TemplateRendered>,
-    // ...
-  }
-
-  pub struct TemplateRendered {
-    path: PathBuf,
-    filename: String,
-    contents: String,
-  }
-
-  impl TemplateRendered {
-    pub fn write(&self) {
-      // Writes out self to disk.
-    }
-  }
-
-  impl TemplateManager {
-    pub fn write(&self) {
-      // Writes out all rendered templates to disk. Called after post-processing.
-    }
-  }
-  ```
-
 - [ ] Add [`textwrap`][textwrap] post-processor. `--textwrap=80`
 - [ ] We might be able to leverage [Tera][tera]'s [slugify][slugify] filter and
       remove slugs from the `Book` and `Annotation` structs.
@@ -71,11 +34,12 @@
   {% endfor %}
   ```
 
-- [ ] Refactor `TemplateManager::render` and its sibling rendering methods.
 - [ ] After mdbook is complete, update internal docs.
 - [ ] Add `# Arguments` to public methods.
 - [ ] Config file support.
+- [ ] Test [Tera][tera] macros and inheritances.
 - [ ] Checkout [fern][fern] for stdout/stderr and file logging.
+- [ ] Print `backup` summary.
 
 ## Features
 

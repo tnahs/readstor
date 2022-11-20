@@ -42,7 +42,7 @@ pub enum Command {
     /// Export Apple Books' data as JSON
     Export {
         #[clap(flatten)]
-        preprocess_options: PreProcessOptions,
+        preprocessor_options: PreProcessorOptions,
     },
 
     /// Render Apple Books' data via templates
@@ -51,7 +51,10 @@ pub enum Command {
         template_options: TemplateOptions,
 
         #[clap(flatten)]
-        preprocess_options: PreProcessOptions,
+        preprocessor_options: PreProcessorOptions,
+
+        #[clap(flatten)]
+        postprocessor_options: PostProcessorOptions,
     },
 
     /// Back-up Apple Books' databases
@@ -72,15 +75,11 @@ pub struct TemplateOptions {
     /// Render specified template groups
     #[arg(short = 'g', long = "template-group", value_name = "GROUP")]
     pub template_groups: Option<Vec<String>>,
-
-    /// Trim any blocks left after rendering
-    #[arg(short = 'b', long)]
-    pub trim_blocks: bool,
 }
 
 #[derive(Debug, Clone, Copy, Default, Parser)]
 #[allow(clippy::struct_excessive_bools)]
-pub struct PreProcessOptions {
+pub struct PreProcessorOptions {
     /// Extract #tags from annotation notes
     #[arg(short, long)]
     pub extract_tags: bool,
@@ -106,6 +105,13 @@ pub struct PreProcessOptions {
     pub convert_symbols_to_ascii: bool,
 }
 
+#[derive(Debug, Clone, Copy, Default, Parser)]
+pub struct PostProcessorOptions {
+    /// Trim any blocks left after rendering
+    #[arg(short = 'b', long)]
+    pub trim_blocks: bool,
+}
+
 pub fn validate_path_exists(value: &str) -> Result<PathBuf, String> {
     std::fs::canonicalize(&value).map_err(|_| "path does not exist".into())
 }
@@ -115,18 +121,25 @@ impl From<TemplateOptions> for crate::lib::templates::manager::TemplateOptions {
         Self {
             templates_directory: options.templates_directory,
             template_groups: options.template_groups,
-            trim_blocks: options.trim_blocks,
         }
     }
 }
 
-impl From<PreProcessOptions> for crate::lib::processor::PreProcessOptions {
-    fn from(options: PreProcessOptions) -> Self {
+impl From<PreProcessorOptions> for crate::lib::processor::PreProcessorOptions {
+    fn from(options: PreProcessorOptions) -> Self {
         Self {
             extract_tags: options.extract_tags,
             normalize_whitespace: options.normalize_whitespace,
             convert_all_to_ascii: options.convert_all_to_ascii,
             convert_symbols_to_ascii: options.convert_symbols_to_ascii,
+        }
+    }
+}
+
+impl From<PostProcessorOptions> for crate::lib::processor::PostProcessorOptions {
+    fn from(options: PostProcessorOptions) -> Self {
+        Self {
+            trim_blocks: options.trim_blocks,
         }
     }
 }

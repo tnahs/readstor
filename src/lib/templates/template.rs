@@ -1,7 +1,7 @@
-//! Defines the [`Template`] and [`PartialTemplate`] structs and various helper
-//! structs and enums to represent a template's content and metadata.
+//! Defines the [`TemplateRaw`] and [`TemplatePartialRaw`] structs and various
+//helper ! structs and enums to represent a template's content and metadata.
 
-use std::path::Path;
+use std::path::{Path, PathBuf};
 
 use indexmap::IndexMap;
 use serde::{de, Deserialize, Serialize};
@@ -18,7 +18,7 @@ use super::defaults::{CONFIG_TAG_CLOSE, CONFIG_TAG_OPEN};
 /// A struct representing a fully configured template.
 #[derive(Clone, Deserialize)]
 #[serde(rename_all = "kebab-case")]
-pub struct Template {
+pub struct TemplateRaw {
     /// The template's id.
     ///
     /// This is typically a file path relative to the templates directory. It
@@ -45,7 +45,7 @@ pub struct Template {
     ///
     /// See [`StructureMode::FlatGrouped`] and [`StructureMode::NestedGrouped`]
     /// for more information.
-    #[serde(deserialize_with = "Template::deserialize_and_sanitize")]
+    #[serde(deserialize_with = "TemplateRaw::deserialize_and_sanitize")]
     pub group: String,
 
     /// The template's context mode i.e what the template intends to render.
@@ -69,8 +69,8 @@ pub struct Template {
     name_templates: NameTemplates,
 }
 
-impl Template {
-    /// Creates a new instance of [`Template`].
+impl TemplateRaw {
+    /// Creates a new instance of [`TemplateRaw`].
     ///
     /// # Arguments
     ///
@@ -88,10 +88,9 @@ impl Template {
     {
         let path = path.as_ref();
 
-        let (config, contents) =
-            Self::parse_raw_template(string).ok_or(Error::InvalidTemplateConfig {
-                path: path.display().to_string(),
-            })?;
+        let (config, contents) = Self::parse(string).ok_or(Error::InvalidTemplateConfig {
+            path: path.display().to_string(),
+        })?;
 
         let mut template: Self = serde_yaml::from_str(config)?;
 
@@ -105,7 +104,7 @@ impl Template {
     /// respectively.
     ///
     /// Returns `None` if the template's config block is formatted incorrectly.
-    fn parse_raw_template(string: &str) -> Option<(&str, String)> {
+    fn parse(string: &str) -> Option<(&str, String)> {
         // Find where the opening tag starts...
         let mut config_start = string.find(&CONFIG_TAG_OPEN)?;
 
@@ -148,9 +147,9 @@ impl Template {
     }
 }
 
-impl std::fmt::Debug for Template {
+impl std::fmt::Debug for TemplateRaw {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        f.debug_struct("Template")
+        f.debug_struct("TemplateRaw")
             .field("id", &self.id)
             .field("group", &self.group)
             .field("context_mode", &self.context_mode)
@@ -350,9 +349,9 @@ impl NameTemplates {
 /// disk and (2) is included in the template's context so that files/direcories
 /// related to the template can be references within the tenplate.
 ///
-/// See [`TemplateManager::render()`][render] for more information.
+/// See [`Templates::render()`][render] for more information.
 ///
-/// [render]: super::manager::TemplateManager::render()
+/// [render]: super::manager::Templates::render()
 #[derive(Debug, Default, Clone, Serialize)]
 pub struct Names {
     /// The output filename for a template with [`ContextMode::Book`].
@@ -377,7 +376,8 @@ pub struct Names {
 }
 
 impl Names {
-    /// Creates a new instance of [`Names`] given an [`Entry`] and a [`Template`].
+    /// Creates a new instance of [`Names`] given an [`Entry`] and a
+    /// [`TemplateRaw`].
     ///
     /// Note that all names are generated regardless of the template's
     /// [`ContextMode`]. For example, when a separate template is used to render
@@ -388,14 +388,14 @@ impl Names {
     /// # Arguments
     ///
     /// * `entry` - The [`Entry`] injected into the filename templates.
-    /// * `template` - The [`Template`] containing the filename templates.
+    /// * `template` - The [`TemplateRaw`] containing the filename templates.
     ///
     /// # Errors
     ///
     /// Will return `Err` if:
     /// * Any name templates have syntax errors or are referencing non-existent
     /// fields in their respective contexts.
-    pub fn new(entry: &Entry, template: &Template) -> Result<Self> {
+    pub fn new(entry: &Entry, template: &TemplateRaw) -> Result<Self> {
         let book = Self::render_name_book(entry, template)?;
         let annotations = Self::render_names_annotation(entry, template)?;
         let directory = Self::render_name_directory(entry, template)?;
@@ -407,7 +407,7 @@ impl Names {
         })
     }
 
-    fn render_name_book(entry: &Entry, template: &Template) -> Result<String> {
+    fn render_name_book(entry: &Entry, template: &TemplateRaw) -> Result<String> {
         let context = TemplateContext::name_book(entry);
 
         let name = Tera::one_off(
@@ -423,7 +423,7 @@ impl Names {
 
     fn render_names_annotation(
         entry: &Entry,
-        template: &Template,
+        template: &TemplateRaw,
     ) -> Result<IndexMap<String, String>> {
         let mut annotations = IndexMap::new();
 
@@ -447,7 +447,7 @@ impl Names {
         Ok(annotations)
     }
 
-    fn render_name_directory(entry: &Entry, template: &Template) -> Result<String> {
+    fn render_name_directory(entry: &Entry, template: &TemplateRaw) -> Result<String> {
         let context = TemplateContext::name_book(entry);
 
         let name = Tera::one_off(
@@ -461,6 +461,7 @@ impl Names {
         Ok(name)
     }
 }
+
 /// An enum representing all possible template contexts.
 ///
 /// This primarily used to shuffle data to fit a certain shape before it's
@@ -554,7 +555,7 @@ impl<'a> TemplateContext<'a> {
 /// Partial templates get their configuration from the normal templates that
 /// `include` them.
 #[derive(Clone)]
-pub struct PartialTemplate {
+pub struct TemplatePartialRaw {
     /// The template's id.
     ///
     /// This is typically a file path relative to the templates directory.
@@ -577,8 +578,8 @@ pub struct PartialTemplate {
     pub contents: String,
 }
 
-impl PartialTemplate {
-    /// Creates a new instance of [`PartialTemplate`].
+impl TemplatePartialRaw {
+    /// Creates a new instance of [`TemplatePartialRaw`].
     ///
     /// # Arguments
     ///
@@ -595,10 +596,47 @@ impl PartialTemplate {
     }
 }
 
-impl std::fmt::Debug for PartialTemplate {
+impl std::fmt::Debug for TemplatePartialRaw {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        f.debug_struct("PartialTemplate")
+        f.debug_struct("TemplatePartialRaw")
             .field("id", &self.id)
+            .finish()
+    }
+}
+
+/// A struct representing a rendered template.
+#[derive(Default)]
+pub struct TemplateRender {
+    /// The path to where the template will be written to.
+    ///
+    /// This path should be relative to the final output directory as this path
+    /// is appended to it to determine the the full output path.
+    pub path: PathBuf,
+
+    /// The final output filename.
+    pub filename: String,
+
+    /// The rendered content.
+    pub contents: String,
+}
+
+impl TemplateRender {
+    /// Creates a new instance of [`TemplateRender`].
+    #[must_use]
+    pub fn new(path: PathBuf, filename: String, contents: String) -> Self {
+        Self {
+            path,
+            filename,
+            contents,
+        }
+    }
+}
+
+impl std::fmt::Debug for TemplateRender {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("TemplateRender")
+            .field("path", &self.path)
+            .field("filename", &self.filename)
             .finish()
     }
 }
@@ -618,7 +656,7 @@ mod test_templates {
     // https://stackoverflow.com/a/68919527/16968574
     fn test_invalid_template_config(directory: &str, filename: &str) {
         let string = load_template_string(directory, filename);
-        let result = Template::parse_raw_template(&string).ok_or(Error::InvalidTemplateConfig {
+        let result = TemplateRaw::parse(&string).ok_or(Error::InvalidTemplateConfig {
             path: filename.to_string(),
         });
 
@@ -631,7 +669,7 @@ mod test_templates {
     // https://stackoverflow.com/a/68919527/16968574
     fn test_valid_template_config(directory: &str, filename: &str) {
         let string = load_template_string(directory, filename);
-        let result = Template::parse_raw_template(&string).ok_or(Error::InvalidTemplateConfig {
+        let result = TemplateRaw::parse(&string).ok_or(Error::InvalidTemplateConfig {
             path: filename.to_string(),
         });
 
@@ -704,7 +742,7 @@ mod test_templates {
         fn minimum_required_keys() {
             let filename = "minimum-required-keys.txt";
             let string = load_template_string(DIRECTORY, filename);
-            let result = Template::new(filename, &string);
+            let result = TemplateRaw::new(filename, &string);
 
             assert!(matches!(result, Ok(_)));
         }

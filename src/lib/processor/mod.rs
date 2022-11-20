@@ -1,23 +1,28 @@
-//! Defines the [`Processor`] struct used for pre- and post-processing of
-//! template data.
+//! Defines the [`PreProcessor`] and [`PostProcessor`] structs used for pre- and
+//! post-processing of [`Entry`]s and [`TemplateRender`]s respectively.
 
 pub mod process;
 
 use crate::lib::models::entry::Entry;
+use crate::lib::templates::template::TemplateRender;
 
-/// A struct containing pre- and post-processing methods for [`Entry`]s and
-/// templates.
+/// A struct for pre-processing [`Entry`]s.
 #[derive(Debug, Clone, Copy)]
-pub struct Processor {}
+pub struct PreProcessor;
 
-impl Processor {
+impl PreProcessor {
     /// Runs all pre-processors on an [`Entry`].
     ///
     /// # Arguments
     ///
-    /// * `options` - An instance of [`PreProcessOptions`].
+    /// * `options` - The pre-processor's options.
     /// * `entry` - The [`Entry`] to process.
-    pub fn preprocess(options: PreProcessOptions, entry: &mut Entry) {
+    pub fn run<O>(options: O, entry: &mut Entry)
+    where
+        O: Into<PreProcessorOptions>,
+    {
+        let options = options.into();
+
         Self::sort_annotations(entry);
 
         if options.extract_tags {
@@ -37,12 +42,6 @@ impl Processor {
         }
     }
 
-    /// Temporary placeholder for post-processing methods.
-    #[must_use]
-    pub fn postprocess(string: &str) -> String {
-        process::trim_blocks(string)
-    }
-
     /// Sort annotations by [`AnnotationMetadata::location`][location].
     ///
     /// # Arguments
@@ -51,7 +50,6 @@ impl Processor {
     ///
     /// [location]: crate::lib::models::annotation::AnnotationMetadata::location
     pub fn sort_annotations(entry: &mut Entry) {
-        // Sort `Annotation`s by their `location`.
         entry.annotations.sort();
     }
 
@@ -135,19 +133,58 @@ impl Processor {
     }
 }
 
-/// A struct represting pre-process options for the [`Processor`] struct.
+/// A struct represting options for the [`PreProcessor`] struct.
 #[derive(Debug, Default, Clone, Copy)]
 #[allow(clippy::struct_excessive_bools)]
-pub struct PreProcessOptions {
-    /// Enable running `#tag` extraction from notes.
+pub struct PreProcessorOptions {
+    /// Toggles running `#tag` extraction from notes.
     pub extract_tags: bool,
 
-    /// Enable running whitespace normalization.
+    /// Toggles running whitespace normalization.
     pub normalize_whitespace: bool,
 
-    /// Enable converting all Unicode characters to ASCII.
+    /// Toggles converting all Unicode characters to ASCII.
     pub convert_all_to_ascii: bool,
 
-    /// Enable converting "smart" Unicode symbols to ASCII.
+    /// Toggles converting "smart" Unicode symbols to ASCII.
     pub convert_symbols_to_ascii: bool,
+}
+
+/// A struct for post-processing [`TemplateRender`]s.
+#[derive(Debug, Clone, Copy)]
+pub struct PostProcessor;
+
+impl PostProcessor {
+    /// Runs all post-processors on an [`TemplateRender`].
+    ///
+    /// # Arguments
+    ///
+    /// * `options` - The post-processor's options.
+    /// * `render` - The [`TemplateRender`] to process.
+    pub fn run<O>(options: O, render: &mut TemplateRender)
+    where
+        O: Into<PostProcessorOptions>,
+    {
+        let options = options.into();
+
+        if options.trim_blocks {
+            Self::trim_blocks(render);
+        }
+    }
+
+    /// Trim any blocks left after rendering.
+    ///
+    /// # Arguments
+    ///
+    /// * `render` - The [`TemplateRender`] to process.
+    fn trim_blocks(render: &mut TemplateRender) {
+        render.contents = process::trim_blocks(&render.contents);
+    }
+}
+
+/// A struct represting options for the [`PostProcessor`] struct.
+#[derive(Debug, Default, Clone, Copy)]
+pub struct PostProcessorOptions {
+    /// Toggles trimming blocks left after rendering.
+    pub trim_blocks: bool,
 }

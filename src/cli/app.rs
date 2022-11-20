@@ -2,15 +2,16 @@ use std::fs;
 
 use color_eyre::eyre::WrapErr;
 
+use crate::cli;
 use crate::lib::applebooks::database::ABDatabaseName;
 use crate::lib::applebooks::utils::APPLEBOOKS_VERSION;
 use crate::lib::models::data::Data;
-use crate::lib::processor::{self, Processor};
-use crate::lib::templates::manager::TemplateManager;
+use crate::lib::processor::{PostProcessor, PreProcessor};
+use crate::lib::templates::manager::Templates;
 use crate::lib::utils;
 
 use super::config::Config;
-use super::{Command, PreProcessOptions, TemplateOptions};
+use super::Command;
 
 pub type Result<T> = color_eyre::Result<T>;
 
@@ -22,6 +23,7 @@ pub type Result<T> = color_eyre::Result<T>;
 pub struct App {
     config: Config,
     data: Data,
+    templates: Option<Templates>,
 }
 
 impl App {
@@ -29,31 +31,41 @@ impl App {
         Self {
             config,
             data: Data::default(),
+            templates: None,
         }
     }
 
     /// Runs the application based off of the given [`Command`].
     pub fn run(&mut self, command: Command) -> Result<()> {
         match command {
-            Command::Export { preprocess_options } => {
+            Command::Export {
+                preprocessor_options,
+            } => {
                 self.print("-> Building data");
                 self.init_data()?;
-                self.print("-> Running pre-processor");
-                self.run_preprocess(preprocess_options);
+                self.print("-> Running pre-processors");
+                self.run_preprocessors(preprocessor_options);
                 self.print("-> Exporting data");
                 self.export_data().wrap_err("Failed while exporting data")?;
                 self.print_summary();
             }
             Command::Render {
                 template_options,
-                preprocess_options,
+                preprocessor_options,
+                postprocessor_options,
             } => {
                 self.print("-> Building data");
                 self.init_data()?;
-                self.print("-> Running pre-processor");
-                self.run_preprocess(preprocess_options);
+                self.print("-> Running pre-processors");
+                self.run_preprocessors(preprocessor_options);
+                self.print("-> Initializing templates");
+                self.init_templates(template_options)?;
                 self.print("-> Rendering templates");
-                self.render_templates(template_options)?;
+                self.render_templates()?;
+                self.print("-> Running post-processors");
+                self.run_postprocessors(postprocessor_options);
+                self.print("-> Writing templates");
+                self.write_templates()?;
                 self.print_summary();
             }
             Command::Backup => {
@@ -73,13 +85,26 @@ impl App {
             .wrap_err("Failed while building data")
     }
 
-    /// Runs pre-proces on all [`Entry`][entry]s.
+    /// Runs pre-processors on all [`Entry`][entry]s.
     ///
     /// [entry]: crate::lib::models::entry::Entry
-    fn run_preprocess(&mut self, options: PreProcessOptions) {
-        let options = processor::PreProcessOptions::from(options);
+    fn run_preprocessors(&mut self, options: cli::PreProcessorOptions) {
         for entry in self.data.entries_mut() {
-            Processor::preprocess(options, entry);
+            PreProcessor::run(options, entry);
+        }
+    }
+
+    /// Runs post-processors on all [`TemplateRender`][template-render]s.
+    ///
+    /// [template-render]: crate::lib::templates::template::TemplateRender
+    fn run_postprocessors(&mut self, options: cli::PostProcessorOptions) {
+        let templates = self
+            .templates
+            .as_mut()
+            .expect("attempted to run post-processors with un-initialized templates.");
+
+        for render in templates.renders_mut() {
+            PostProcessor::run(options, render);
         }
     }
 
@@ -154,26 +179,51 @@ impl App {
         Ok(())
     }
 
-    /// Renders all registered templates.
-    fn render_templates(&self, options: TemplateOptions) -> Result<()> {
+    /// Initializes templates.
+    fn init_templates(&mut self, options: cli::TemplateOptions) -> Result<()> {
+        let mut templates = Templates::new(options.into(), super::defaults::TEMPLATE.into());
+
+        templates
+            .init()
+            .wrap_err("Failed while initializing template(s)")?;
+
+        self.templates = Some(templates);
+
+        Ok(())
+    }
+
+    /// Renders templates.
+    fn render_templates(&mut self) -> Result<()> {
+        let templates = self
+            .templates
+            .as_mut()
+            .expect("attempted to render templates with un-initialized templates.");
+
+        // Renders each `Entry` i.e. a `Book` and its `Annotation`s.
+        for entry in self.data.entries() {
+            templates
+                .render(entry)
+                .wrap_err("Failed while rendering template(s)")?;
+        }
+
+        Ok(())
+    }
+
+    /// Writes all templates to disk.
+    fn write_templates(&self) -> Result<()> {
+        let templates = self
+            .templates
+            .as_ref()
+            .expect("attempted to write templates with un-initialized templates.");
+
         // -> [ouput-directory]
         let path = &self.config.output_directory;
 
         fs::create_dir_all(path)?;
 
-        let mut template_manager =
-            TemplateManager::new(options.into(), super::defaults::TEMPLATE.into());
-
-        template_manager
-            .build_templates()
-            .wrap_err("Failed while building template(s)")?;
-
-        // Renders each `Entry` i.e. a `Book` and its `Annotation`s.
-        for entry in self.data.entries() {
-            template_manager
-                .render(entry, path)
-                .wrap_err("Failed while rendering template(s)")?;
-        }
+        templates
+            .write(path)
+            .wrap_err("Failed while writing template(s)")?;
 
         Ok(())
     }
@@ -293,7 +343,9 @@ mod test_app {
         let mut app = App::new(config);
 
         app.init_data().unwrap();
-        app.run_preprocess(PreProcessOptions::default());
+
+        // The pre-processor sorts the annotations.
+        app.run_preprocessors(cli::PreProcessorOptions::default());
 
         for entry in app.data.entries() {
             for annotations in entry.annotations.windows(2) {

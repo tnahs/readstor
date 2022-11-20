@@ -63,15 +63,6 @@ readstor \
     # ..
 ```
 
-### `--trim-blocks`
-
-Trim any blocks left after rendering.
-
-> <i class="fa fa-exclamation-circle"></i> Currently this is a _very_ naive
-> implementation that mimics what [`tera`][tera] might do if/when it adds
-> [`trim_blocks`][github-tera]. It is by no means smart and will just normalize
-> whitespace regardless of what the template requested.
-
 ## Pre-process Options
 
 ### `--extract-tags`
@@ -122,6 +113,17 @@ Characters and transliterations taken from:
 
 - [Daring Fireball - SmartyPants][daring-fireball]
 - [Python-Markdown - SmartyPants][python-markdown]
+
+## Post-process Options
+
+### `--trim-blocks`
+
+Trim any blocks left after rendering.
+
+> <i class="fa fa-exclamation-circle"></i> Currently, this is a _very_ naive
+> implementation that mimics what [`tera`][tera] might do if/when it adds
+> [`trim_blocks`][github-tera]. It is by no means smart and will just normalize
+> whitespace regardless of what the template requested.
 
 [annotation]: ../01-templates/06-02-annotation.md
 [backup]: ./01-commands.md#backup

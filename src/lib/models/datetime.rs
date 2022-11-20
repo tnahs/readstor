@@ -11,21 +11,21 @@ use serde::Serialize;
 ///
 /// Why do we need a Default implementation?
 ///
-/// When a new template is added to the [`TemplateManager`][template-manager]
-/// it needs to be validated both for its syntax and for the fields that its
-/// variables reference. In order to achieve the latter, a dummy
-/// [`Entry`][entry] struct---its Default implementation---is passed to
-/// validate the template's variables. Seeing as `DateTime` does not have a
-/// Default implementation, it was either we implement a hand written Default
-/// of [`Entry`][entry] which would include multiple nested structs or wrap
-/// [`DateTime<Utc>`] and provide a Default implementation.
+/// When a new template is added to the [`Templates`][templates] struct needs
+/// to be validated both for its syntax and for the fields that its variables
+/// reference. In order to achieve the latter, a dummy [`Entry`][entry] struct
+/// ---its Default implementation---is passed to validate the template's
+/// variables. Seeing as `DateTime` does not have a Default implementation, it
+/// was either we implement a hand written Default of [`Entry`][entry] which
+/// would include multiple nested structs or wrap [`DateTime<Utc>`] and provide
+/// a Default implementation.
 ///
-/// See [`TemplateManager::validate_template()`][validate-template] for more
+/// See [`Templates::validate_template()`][validate-template] for more
 /// information.
 ///
 /// [entry]: super::entry::Entry
-/// [template-manager]: crate::lib::templates::manager::TemplateManager
-/// [validate-template]: crate::lib::templates::manager::TemplateManager::validate_template()
+/// [templates]: crate::lib::templates::manager::Templates
+/// [validate-template]: crate::lib::templates::manager::Templates::validate_template()
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize)]
 pub struct DateTimeUtc(DateTime<Utc>);
 
