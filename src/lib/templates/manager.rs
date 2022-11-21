@@ -179,6 +179,18 @@ impl Templates {
         self.renders.iter_mut()
     }
 
+    /// Returns the number of [`TemplateRaw`]s.
+    #[must_use]
+    pub fn count_templates(&self) -> usize {
+        self.raws.len()
+    }
+
+    /// Returns the number of [`TemplateRender`]s.
+    #[must_use]
+    pub fn count_renders(&self) -> usize {
+        self.renders.len()
+    }
+
     /// Returns an iterator over all the currently active templates. Templates
     /// can be activated through the [`TemplateOptions.template_groups`] field.
     /// All templates are considered active if no groups are specified.

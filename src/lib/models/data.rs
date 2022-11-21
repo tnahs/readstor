@@ -59,7 +59,7 @@ impl Data {
     ///
     /// See [`ABDatabase::query()`] for information on errors as these are the
     /// only sources of possible errors.
-    pub fn build(&mut self, path: &Path) -> Result<()> {
+    pub fn init(&mut self, path: &Path) -> Result<()> {
         let books = ABDatabase::query::<Book>(path)?;
         let annotations = ABDatabase::query::<Annotation>(path)?;
 
@@ -98,8 +98,8 @@ impl Data {
 
         self.0 = data;
 
-        log::debug!("created {} `Book`s", self.count_books());
-        log::debug!("created {} `Annotation`s", self.count_annotations());
+        log::debug!("created {} Book's", self.count_books());
+        log::debug!("created {} Annotation's", self.count_annotations());
 
         Ok(())
     }

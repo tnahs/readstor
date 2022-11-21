@@ -41,81 +41,123 @@ impl App {
             Command::Export {
                 preprocessor_options,
             } => {
-                self.print("-> Building data");
+                self.print("-> Initializing data");
                 self.init_data()?;
+
                 self.print("-> Running pre-processors");
                 self.run_preprocessors(preprocessor_options);
+
                 self.print("-> Exporting data");
                 self.export_data().wrap_err("Failed while exporting data")?;
-                self.print_summary();
+
+                self.print_export_summary();
             }
             Command::Render {
                 template_options,
                 preprocessor_options,
                 postprocessor_options,
             } => {
-                self.print("-> Building data");
+                self.print("-> Initializing data");
                 self.init_data()?;
+
                 self.print("-> Running pre-processors");
                 self.run_preprocessors(preprocessor_options);
+
                 self.print("-> Initializing templates");
                 self.init_templates(template_options)?;
+
                 self.print("-> Rendering templates");
                 self.render_templates()?;
+
                 self.print("-> Running post-processors");
                 self.run_postprocessors(postprocessor_options);
+
                 self.print("-> Writing templates");
                 self.write_templates()?;
-                self.print_summary();
+
+                self.print_render_summary();
             }
             Command::Backup => {
                 self.print("-> Backing-up databases");
                 self.backup_databases()
-                    .wrap_err("Failed while backing up databases")?;
+                    .wrap_err("Failed while backing-up databases")?;
+
+                self.print_backup_summary();
             }
         }
 
         Ok(())
     }
 
-    /// Builds the application's data from the Apple Books databases.
+    /// Initializes the application's data from the Apple Books databases.
     fn init_data(&mut self) -> Result<()> {
         self.data
-            .build(&self.config.databases_directory)
-            .wrap_err("Failed while building data")
+            .init(&self.config.databases_directory)
+            .wrap_err("Failed while initializing data")
+    }
+
+    /// Initializes templates.
+    fn init_templates(&mut self, options: cli::TemplateOptions) -> Result<()> {
+        let mut templates = Templates::new(options.into(), super::defaults::TEMPLATE.into());
+
+        templates
+            .init()
+            .wrap_err("Failed while initializing template(s)")?;
+
+        self.templates = Some(templates);
+
+        Ok(())
     }
 
     /// Runs pre-processors on all [`Entry`][entry]s.
     ///
     /// [entry]: lib::models::entry::Entry
     fn run_preprocessors(&mut self, options: cli::PreProcessorOptions) {
-        for entry in self.data.entries_mut() {
-            PreProcessor::run(options, entry);
-        }
+        self.data
+            .entries_mut()
+            .for_each(|entry| PreProcessor::run(options, entry));
     }
 
     /// Runs post-processors on all [`TemplateRender`][template-render]s.
     ///
     /// [template-render]: lib::templates::template::TemplateRender
     fn run_postprocessors(&mut self, options: cli::PostProcessorOptions) {
+        self.templates
+            .as_mut()
+            .expect("attempted to access un-initialized templates.")
+            .renders_mut()
+            .for_each(|render| PostProcessor::run(options, render));
+    }
+
+    /// Renders templates.
+    fn render_templates(&mut self) -> Result<()> {
         let templates = self
             .templates
             .as_mut()
-            .expect("attempted to run post-processors with un-initialized templates.");
+            .expect("attempted to access un-initialized templates.");
 
-        for render in templates.renders_mut() {
-            PostProcessor::run(options, render);
-        }
+        self.data.entries().try_for_each(|entry| {
+            templates
+                .render(entry)
+                .wrap_err("Failed while rendering template(s)")
+        })
     }
 
-    /// Prints export/render summary.
-    fn print_summary(&self) {
-        self.print(&format!(
-            "-> Saved {} annotations from {} books to {}",
-            self.data.count_annotations(),
-            self.data.count_books(),
-            self.config.output_directory.display()
-        ));
+    /// Writes templates to disk.
+    fn write_templates(&self) -> Result<()> {
+        let templates = self
+            .templates
+            .as_ref()
+            .expect("attempted to access un-initialized templates.");
+
+        // -> [ouput-directory]
+        let path = &self.config.output_directory;
+
+        fs::create_dir_all(path)?;
+
+        templates
+            .write(path)
+            .wrap_err("Failed while writing template(s)")
     }
 
     /// Exports Apple Books' data with the following structure:
@@ -179,55 +221,6 @@ impl App {
         Ok(())
     }
 
-    /// Initializes templates.
-    fn init_templates(&mut self, options: cli::TemplateOptions) -> Result<()> {
-        let mut templates = Templates::new(options.into(), super::defaults::TEMPLATE.into());
-
-        templates
-            .init()
-            .wrap_err("Failed while initializing template(s)")?;
-
-        self.templates = Some(templates);
-
-        Ok(())
-    }
-
-    /// Renders templates.
-    fn render_templates(&mut self) -> Result<()> {
-        let templates = self
-            .templates
-            .as_mut()
-            .expect("attempted to render templates with un-initialized templates.");
-
-        // Renders each `Entry` i.e. a `Book` and its `Annotation`s.
-        for entry in self.data.entries() {
-            templates
-                .render(entry)
-                .wrap_err("Failed while rendering template(s)")?;
-        }
-
-        Ok(())
-    }
-
-    /// Writes all templates to disk.
-    fn write_templates(&self) -> Result<()> {
-        let templates = self
-            .templates
-            .as_ref()
-            .expect("attempted to write templates with un-initialized templates.");
-
-        // -> [ouput-directory]
-        let path = &self.config.output_directory;
-
-        fs::create_dir_all(path)?;
-
-        templates
-            .write(path)
-            .wrap_err("Failed while writing template(s)")?;
-
-        Ok(())
-    }
-
     /// Backs up Apple Books' databases with the following structure:
     ///
     /// ```plaintext
@@ -280,6 +273,39 @@ impl App {
         utils::copy_dir(source_annotations, &destination_annotations)?;
 
         Ok(())
+    }
+
+    /// Prints the export summary.
+    fn print_export_summary(&self) {
+        self.print(&format!(
+            "-> Exported {} annotation(s) from {} book(s) to {}",
+            self.data.count_annotations(),
+            self.data.count_books(),
+            self.config.output_directory.display()
+        ));
+    }
+
+    /// Prints the render summary.
+    fn print_render_summary(&self) {
+        let templates = self
+            .templates
+            .as_ref()
+            .expect("attempted to access un-initialized templates.");
+
+        self.print(&format!(
+            "-> Rendered {} template(s) into {} file(s) to {}",
+            templates.count_templates(),
+            templates.count_renders(),
+            self.config.output_directory.display()
+        ));
+    }
+
+    /// Prints the back-up summary.
+    fn print_backup_summary(&self) {
+        self.print(&format!(
+            "-> Backed-up databases to {}",
+            self.config.output_directory.display()
+        ));
     }
 
     /// Prints to the terminal. Allows muting.
