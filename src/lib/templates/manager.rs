@@ -342,7 +342,7 @@ impl Templates {
         Ok(())
     }
 
-    /// Renders an [`Entry`]'s [`Book`] to disk.
+    /// Renders an [`Entry`]'s [`Book`] to a single [`TemplateRender`].
     ///
     /// # Arguments
     ///
@@ -374,7 +374,7 @@ impl Templates {
         Ok(TemplateRender::new(path, filename, contents))
     }
 
-    /// Renders an [`Entry`]'s [`Annotation`]s to disk.
+    /// Renders an [`Entry`]'s [`Annotation`]s to multiple [`TemplateRender`]s.
     ///
     /// # Arguments
     ///

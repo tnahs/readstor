@@ -64,11 +64,11 @@ where
     path.as_ref().extension().and_then(OsStr::to_str)
 }
 
-/// Returns the file name from a path.
+/// Returns the filename from a path.
 ///
 /// # Arguments
 ///
-/// * `path` - The path to extract the file name from.
+/// * `path` - The path to extract the filename from.
 ///
 /// Returns `None` if the `source` path terminates in `..` or is `/`.
 #[must_use]

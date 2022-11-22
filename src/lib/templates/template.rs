@@ -174,7 +174,7 @@ pub struct TemplatePartialRaw {
     ///
     /// ```plaintext
     /// --> /path/to/templates/nested/template.md
-    /// --> nested/template.md
+    /// -->                    nested/template.md
     /// --> {% include "nested/template.md" %}
     /// ````
     pub id: String,

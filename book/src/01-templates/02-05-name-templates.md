@@ -78,8 +78,8 @@ mode. See [Context Reference - Links][links] for more information.
 
 ## Book Name Template
 
-Defines the file name template to use when the parent template's `context`
-mode is set to `book`. This template only has access to the `book` context when
+Defines the filename template to use when the parent template's `context` mode
+is set to `book`. This template only has access to the `book` context when
 its rendered.
 
 |              |                                        |
@@ -92,7 +92,7 @@ its rendered.
 
 ## Annotation Name Template
 
-Defines the file name template to use when the parent template's `context` mode
+Defines the filename template to use when the parent template's `context` mode
 is set to `annotation`. This template has access to the `book` and `annotation`
 context when its rendered.
 
