@@ -3,7 +3,7 @@ group: using-backlinks
 context: annotation
 structure: nested-grouped
 extension: md
-name-templates:
+names:
   book: "{{ book.author }} - {{ book.title }}"
   annotation: "{{ annotation.metadata.slugs.created }}-{{ book.slugs.title }}"
   directory: "{{ book.author }} - {{ book.title }}"
@@ -21,7 +21,7 @@ location: {{ annotation.metadata.location }}
 epubcfi: {{ annotation.metadata.epubcfi }}
 ---
 
-# [[{{ links.book }}]]
+# [[{{ names.book }}]]
 
 {{ annotation.body }}
 

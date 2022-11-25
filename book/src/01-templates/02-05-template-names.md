@@ -1,26 +1,26 @@
-# Name Templates
+# Names
 
-| Key                         | Context      |
-| --------------------------- | ------------ |
-| `name-templates.book`       | `book`       |
-| `name-templates.annotation` | `annotation` |
-| `name-templates.directory`  | `book`       |
+| Key                | Context      |
+| ------------------ | ------------ |
+| `names.book`       | `book`       |
+| `names.annotation` | `annotation` |
+| `names.directory`  | `book`       |
 
 Output files and directory names can be customized using the same [Tera][tera]
-syntax. ReadStor will inject a different context into each `name-template`
-during render time and set the template's output file/directory name to the
-resulting string.
+syntax. ReadStor will inject a different context into each `names` during
+render time and set the template's output file/directory name to the resulting
+string.
 
 > <i class="fa fa-exclamation-circle"></i> The rendered book, annotation and
 > directory names are sanitized to make sure they interact well with the file
 > system. See [String Sanitization][string-sanitization] for more information.
 
 Additionally, all the rendered values from these keys are available within the
-template's context under the `links` variable regardless of the current context
-mode. See [Context Reference - Links][links] for more information.
+template's context under the `names` variable regardless of the current context
+mode. See [Context Reference - Names][names] for more information.
 
 > <i class="fa fa-exclamation-circle"></i> Note that the template's `context`
-> matters when setting `name-templates`.
+> matters when setting `names`.
 >
 > For example, if the template's `context` is set to `book`:
 >
@@ -29,13 +29,13 @@ mode. See [Context Reference - Links][links] for more information.
 > structure: flat
 > context: book # <- Here!
 > extension: md
-> name-templates:
+> names:
 >   book: "{{ book.author }} - {{ book.title }}"
 >   annotation: "{{ annotation.metadata.slugs.created }}-{{ book.slugs.title }}"
 > ```
 >
 > ReadStor will generate a single file for each book and name them using the
-> rendered result of `name-templates.book`. The resulting output would be:
+> rendered result of `names.book`. The resulting output would be:
 >
 > ```plaintext
 > [output-directory]
@@ -45,21 +45,21 @@ mode. See [Context Reference - Links][links] for more information.
 >  └── ...
 > ```
 >
-> However if the `context` is changed to `annotation`:
+> However, if the `context` is changed to `annotation`:
 >
 > ```yaml
 > group: my-vault
 > structure: flat
 > context: annotation # <- Here!
 > extension: md
-> name-templates:
+> names:
 >   book: "{{ book.author }} - {{ book.title }}"
 >   annotation: "{{ annotation.metadata.slugs.created }}-{{ book.slugs.title }}"
 > ```
 >
 > ReadStor will now generate a single file for each annotation in each book
-> and name them using the rendered result of `name-templates.annotation`. The
-> resulting output would be:
+> and name them using the rendered result of `names.annotation`. The resulting
+> output would be:
 >
 > ```plaintext
 > [output-directory]
@@ -76,21 +76,21 @@ mode. See [Context Reference - Links][links] for more information.
 >  └── ...
 > ```
 
-## Book Name Template
+## Book Names
 
 Defines the filename template to use when the parent template's `context` mode
 is set to `book`. This template only has access to the `book` context when
-its rendered.
+it's rendered.
 
 |              |                                        |
 | ------------ | -------------------------------------- |
-| Name         | `name-templates.book`                  |
+| Name         | `names.book`                           |
 | Type         | string                                 |
 | Valid Values | any                                    |
 | Required     | No                                     |
 | Default      | `{{ book.author }} - {{ book.title }}` |
 
-## Annotation Name Template
+## Annotation Names
 
 Defines the filename template to use when the parent template's `context` mode
 is set to `annotation`. This template has access to the `book` and `annotation`
@@ -98,13 +98,13 @@ context when its rendered.
 
 |              |                                                                  |
 | ------------ | ---------------------------------------------------------------- |
-| Name         | `name-templates.annotation`                                      |
+| Name         | `names.annotation`                                               |
 | Type         | string                                                           |
 | Valid Values | any                                                              |
 | Required     | No                                                               |
 | Default      | `{{ annotation.metadata.slugs.created }}-{{ book.slugs.title }}` |
 
-## Directory Name Template
+## Directory Names
 
 Defines the directory name template to use when the parent template's
 `structure` mode is set to `nested` or the `nested-grouped`. This template only
@@ -112,7 +112,7 @@ has access to the `book` context when its rendered.
 
 |              |                                        |
 | ------------ | -------------------------------------- |
-| Name         | `name-templates.directory`             |
+| Name         | `names.directory`                      |
 | Type         | string                                 |
 | Valid Values | any                                    |
 | Required     | No                                     |
@@ -120,25 +120,25 @@ has access to the `book` context when its rendered.
 
 ## <i class="fa fa-exclamation-circle"></i> Limitations
 
-Why does a single template have both a `name-templates.book` and
-`name-templates.annotation` key?
+Why does a single template have both a `names.book` and `names.annotation` key?
 
-This is mainly the result of a current limitation with ReadStor. Templates
-that are part of the same `group` have no relation internally. ReadStor just
-renders each template it finds. If multiple templates share the same value for
-`group` then they end up in the same directory when the `structure` mode is set
-to `grouped` or `nested-grouped`.
+This is mainly the result of a current limitation with ReadStor. Templates that
+are part of the same `group` have no relation internally. ReadStor just renders
+each template it finds. If multiple templates share the same value for `group`
+then they end up in the same directory when the `structure` mode is set to
+`grouped` or `nested-grouped`.
 
 As a result of this limitation, if a template requires awareness of its
-`group`'s sibling template names i.e. [`links`][links], they _must_ be defined
-in each template. This results in some duplication across templates. This
-should hopefully be resolved in future versions of ReadStor.
+`group`'s sibling names i.e. the value defined in the [`names`][names] field,
+they _must_ be defined in each template. This results in some duplication
+across templates. This should hopefully be resolved in future versions of
+ReadStor.
 
 > <i class="fa fa-info-circle"></i> For more information on how to generate and
-> use `links` see [Context Reference - Links][links] and [Backlinks][backlinks].
+> use `names` see [Context Reference - Names][names] and [Backlinks][backlinks].
 
 [backlinks]: ./04-backlinks.md
 [context-reference]: ./06-context-reference.md
-[links]: ./06-03-links.md
+[names]: ./06-03-names.md
 [string-sanitization]: ./05-string-sanitization.md
 [tera]: https://tera.netlify.app/

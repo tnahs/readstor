@@ -13,7 +13,7 @@ use crate::models::entry::Entry;
 use crate::result::Result;
 
 use super::template::{
-    ContextMode, Names, StructureMode, TemplateContext, TemplatePartialRaw, TemplateRaw,
+    ContextMode, NamesRender, StructureMode, TemplateContext, TemplatePartialRaw, TemplateRaw,
     TemplateRender,
 };
 use super::utils;
@@ -102,7 +102,7 @@ impl Templates {
         let mut renders = Vec::new();
 
         for template in self.iter_active_templates() {
-            let names = Names::new(entry, template)?;
+            let names = NamesRender::new(entry, template)?;
 
             // Builds a path, relative to the [output-directory], to where the
             // the rendered template will be written to.
@@ -112,7 +112,7 @@ impl Templates {
                     PathBuf::new()
                 }
                 StructureMode::FlatGrouped => {
-                    // -> [output-directory]/[template-name]
+                    // -> [output-directory]/[template-group]
                     PathBuf::from(&template.group)
                 }
                 StructureMode::Nested => {
@@ -121,7 +121,7 @@ impl Templates {
                 }
 
                 StructureMode::NestedGrouped => {
-                    // -> [output-directory]/[template-name]/[author-title]
+                    // -> [output-directory]/[template-group]/[author-title]
                     PathBuf::from(&template.group).join(&names.directory)
                 }
             };
@@ -309,7 +309,8 @@ impl Templates {
     }
 
     /// Validates that a template does not contain variables that reference
-    /// non-existent fields in an [`Entry`]/[`Book`]/[`Annotation`].
+    /// non-existent fields in an [`Entry`], [`Book`], [`Annotation`],
+    /// [`NamesRender`].
     ///
     /// Tera checks for invalid syntax when a new template is registered however
     /// the template's use of variables can only be checked when a context is
@@ -324,12 +325,17 @@ impl Templates {
     ///
     /// Will return `Err` if the template contains variables that reference
     /// non-existent fields in an [`Entry`]/[`Book`]/[`Annotation`].
+    //
+    // FIXME: There's a fundamental error in how this is validating templates.
+    // If the data type is a sequence, the defauly length is zero. This
+    // prevents the excecution of `for` loops within a template and therefore
+    // never gets a chance to validate the blocks inside said loops.
     fn validate_template(&self, template: &TemplateRaw) -> Result<()> {
         // Caching values here to avoid lifetime issues.
         let entry = Entry::default();
         let book = Book::default();
         let annotation = Annotation::default();
-        let names = Names::default();
+        let names = NamesRender::default();
 
         let context = match template.context_mode {
             ContextMode::Book => TemplateContext::book(&entry, &names),
@@ -348,8 +354,8 @@ impl Templates {
     ///
     /// * `entry` - The [`Entry`] containing the [`Book`] to render.
     /// * `template` - The [`TemplateRaw`] to render with.
-    /// * `names` - A [`Names`] instance generated from the [`Entry`] and a
-    /// [`TemplateRaw`].
+    /// * `names` - A [`NamesRender`] instance generated from the [`Entry`] and
+    /// a [`TemplateRaw`].
     /// * `path` - The path to where the template will be written to. This path
     /// should be relative to the final output directory.
     ///
@@ -360,7 +366,7 @@ impl Templates {
         &self,
         entry: &Entry,
         template: &TemplateRaw,
-        names: &Names,
+        names: &NamesRender,
         path: PathBuf,
     ) -> Result<TemplateRender> {
         let filename = names.book.clone();
@@ -380,8 +386,8 @@ impl Templates {
     ///
     /// * `entry` - The [`Entry`] containing the [`Annotation`]s to render.
     /// * `template` - The [`TemplateRaw`] to render with.
-    /// * `names` - A [`Names`] instance generated from the [`Entry`] and a
-    /// [`TemplateRaw`].
+    /// * `names` - A [`NamesRender`] instance generated from the [`Entry`] and
+    /// a [`TemplateRaw`].
     /// * `path` - The path to where the template will be written to. This path
     /// should be relative to the final output directory.
     ///
@@ -392,20 +398,21 @@ impl Templates {
         &self,
         entry: &Entry,
         template: &TemplateRaw,
-        names: &Names,
+        names: &NamesRender,
         path: &Path,
     ) -> Result<Vec<TemplateRender>> {
         let mut renders = Vec::with_capacity(entry.annotations.len());
 
         for annotation in &entry.annotations {
-            // This should theoretically never fail as the `Names` instance is
-            // created from the `Entry`. This means they contain the same exact
-            // keys and it should therefore be safe to unwrap. An error here
-            // would be critical and should fail.
+            // This should theoretically never fail as the `NamesRender`
+            // instance is created from the `Entry`. This means they contain
+            // the same exact keys and it should therefore be safe to unwrap.
+            // An error here would be critical and should fail.
             let filename = names
                 .annotations
                 .get(&annotation.metadata.id)
-                .expect("`Names` instance missing `Annotation` present in `Entry`")
+                .expect("`NamesRender` instance missing `Annotation` present in `Entry`")
+                .filename
                 .clone();
 
             let context = TemplateContext::annotation(&entry.book, annotation, names);

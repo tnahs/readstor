@@ -2,17 +2,17 @@
 //! [`TemplateRender`] structs and various helper structs and enums to
 //! represent a template's content and metadata.
 
+use std::collections::HashMap;
 use std::path::{Path, PathBuf};
 
-use indexmap::IndexMap;
-use serde::{de, Deserialize, Serialize};
+use serde::{Deserialize, Serialize};
 use tera::{Context, Tera};
 
 use crate::models::annotation::Annotation;
 use crate::models::book::Book;
+use crate::models::datetime::DateTimeUtc;
 use crate::models::entry::Entry;
 use crate::result::{Error, Result};
-use crate::utils;
 
 use super::defaults::{CONFIG_TAG_CLOSE, CONFIG_TAG_OPEN};
 
@@ -46,7 +46,7 @@ pub struct TemplateRaw {
     ///
     /// See [`StructureMode::FlatGrouped`] and [`StructureMode::NestedGrouped`]
     /// for more information.
-    #[serde(deserialize_with = "TemplateRaw::deserialize_and_sanitize")]
+    #[serde(deserialize_with = "super::utils::deserialize_and_sanitize")]
     pub group: String,
 
     /// The template's context mode i.e what the template intends to render.
@@ -65,9 +65,10 @@ pub struct TemplateRaw {
     pub extension: String,
 
     /// The template strings for generating output file and directory names.
-    /// This is converted into a [`Names`] struct once an [`Entry`] is provided.
+    /// This is converted into a [`NamesRender`] struct once an [`Entry`] is
+    /// provided.
     #[serde(default)]
-    name_templates: NameTemplates,
+    names: NamesRaw,
 }
 
 impl TemplateRaw {
@@ -136,15 +137,6 @@ impl TemplateRaw {
         let contents = format!("{}{}", pre_config_contents, post_config_contents,);
 
         Some((config, contents))
-    }
-
-    /// Helper method for `serde` to deserialize and sanitize a string.
-    fn deserialize_and_sanitize<'de, D>(deserializer: D) -> std::result::Result<String, D::Error>
-    where
-        D: de::Deserializer<'de>,
-    {
-        let s: &str = Deserialize::deserialize(deserializer)?;
-        Ok(utils::sanitize_string(s))
     }
 }
 
@@ -389,28 +381,28 @@ pub enum ContextMode {
     Annotation,
 }
 
-/// A struct representing the template strings for generating output file and
-/// directory names.
+/// A struct representing the raw template strings for generating output file
+/// and directory names.
 #[derive(Debug, Clone, Deserialize)]
-struct NameTemplates {
+struct NamesRaw {
     /// The default template used when generating an output filename for the
     /// template when its context mode is [`ContextMode::Book`].
-    #[serde(default = "NameTemplates::default_book")]
+    #[serde(default = "NamesRaw::default_book")]
     book: String,
 
     /// The default template used when generating an output filename for the
     /// template when its context mode is [`ContextMode::Annotation`].
-    #[serde(default = "NameTemplates::default_annotation")]
+    #[serde(default = "NamesRaw::default_annotation")]
     annotation: String,
 
     /// The default template used when generating a nested output directory for
     /// the template when its structure mode is either [`StructureMode::Nested`]
     /// or [`StructureMode::NestedGrouped`].
-    #[serde(default = "NameTemplates::default_directory")]
+    #[serde(default = "NamesRaw::default_directory")]
     directory: String,
 }
 
-impl Default for NameTemplates {
+impl Default for NamesRaw {
     fn default() -> Self {
         Self {
             book: Self::default_book(),
@@ -420,7 +412,7 @@ impl Default for NameTemplates {
     }
 }
 
-impl NameTemplates {
+impl NamesRaw {
     fn default_book() -> String {
         super::defaults::FILENAME_TEMPLATE_BOOK.to_owned()
     }
@@ -434,8 +426,8 @@ impl NameTemplates {
     }
 }
 
-/// A struct representing all the output file and directory names for a given
-/// template.
+/// A struct representing the rendered template strings for all the output file
+/// and directory names for a given template.
 ///
 /// This is used to (1) name files and directories when rendering templates to
 /// disk and (2) is included in the template's context so that files/direcories
@@ -445,31 +437,25 @@ impl NameTemplates {
 ///
 /// [render]: super::manager::Templates::render()
 #[derive(Debug, Default, Clone, Serialize)]
-pub struct Names {
+pub struct NamesRender {
     /// The output filename for a template with [`ContextMode::Book`].
     pub book: String,
 
     /// The output filenames for a template with [`ContextMode::Annotation`].
     ///
-    /// Annotation filenames are inserted into the [`IndexMap`][indexmap] in
-    /// the order they appear in their respective books. In order to preserve
-    /// this order when rendering the template, we use an [`IndexMap`][indexmap]
-    /// and set the `preserve_order` feature flag for [`serde_json`][serde-json]
-    /// and [`tera`][tera].
-    ///
-    /// [indexmap]: https://docs.rs/indexmap/latest/indexmap/index.html
-    /// [serde-json]: https://docs.rs/serde_json/latest/serde_json/
-    /// [tera]: https://docs.rs/tera/latest/tera/
-    pub annotations: IndexMap<String, String>,
+    /// Internally this field is stored as a `HashMap` but is converted into a
+    /// `Vec` before it's injected into a template.
+    #[serde(serialize_with = "super::utils::serialize_hashmap_to_vec")]
+    pub annotations: HashMap<String, AnnotationNameAttributes>,
 
     /// The directory name for a template with [`StructureMode::Nested`] or
     /// [`StructureMode::NestedGrouped`].
     pub directory: String,
 }
 
-impl Names {
-    /// Creates a new instance of [`Names`] given an [`Entry`] and a
-    /// [`TemplateRaw`].
+impl NamesRender {
+    /// Creates a new instance of [`NamesRender`] given an [`Entry`] and
+    /// a [`TemplateRaw`].
     ///
     /// Note that all names are generated regardless of the template's
     /// [`ContextMode`]. For example, when a separate template is used to render
@@ -485,72 +471,103 @@ impl Names {
     /// # Errors
     ///
     /// Will return `Err` if:
-    /// * Any name templates have syntax errors or are referencing non-existent
+    /// * Any templates have syntax errors or are referencing non-existent
     /// fields in their respective contexts.
     pub fn new(entry: &Entry, template: &TemplateRaw) -> Result<Self> {
-        let book = Self::render_name_book(entry, template)?;
-        let annotations = Self::render_names_annotation(entry, template)?;
-        let directory = Self::render_name_directory(entry, template)?;
+        let names = Self {
+            book: Self::render_book_filename(entry, template)?,
+            annotations: Self::render_annotation_filenames(entry, template)?,
+            directory: Self::render_directory_name(entry, template)?,
+        };
 
-        Ok(Self {
-            book,
-            annotations,
-            directory,
-        })
+        Ok(names)
     }
 
-    fn render_name_book(entry: &Entry, template: &TemplateRaw) -> Result<String> {
+    fn render_book_filename(entry: &Entry, template: &TemplateRaw) -> Result<String> {
         let context = TemplateContext::name_book(entry);
 
-        let name = Tera::one_off(
-            &template.name_templates.book,
+        let mut filename = Tera::one_off(
+            &template.names.book,
             &Context::from_serialize(context)?,
             false,
         )?;
 
-        let name = utils::sanitize_string(&name);
+        filename = crate::utils::sanitize_string(&filename);
 
-        Ok(format!("{}.{}", name, template.extension))
+        Ok(format!("{}.{}", filename, template.extension))
     }
 
-    fn render_names_annotation(
+    fn render_annotation_filenames(
         entry: &Entry,
         template: &TemplateRaw,
-    ) -> Result<IndexMap<String, String>> {
-        let mut annotations = IndexMap::new();
+    ) -> Result<HashMap<String, AnnotationNameAttributes>> {
+        let mut annotations = HashMap::new();
 
         for annotation in &entry.annotations {
             let context = TemplateContext::name_annotation(&entry.book, annotation);
 
-            let name = Tera::one_off(
-                &template.name_templates.annotation,
+            let mut filename = Tera::one_off(
+                &template.names.annotation,
                 &Context::from_serialize(context)?,
                 false,
             )?;
 
-            let name = utils::sanitize_string(&name);
+            filename = crate::utils::sanitize_string(&filename);
+            filename = format!("{}.{}", filename, template.extension);
 
             annotations.insert(
                 annotation.metadata.id.clone(),
-                format!("{}.{}", name, template.extension),
+                AnnotationNameAttributes::new(annotation, filename),
             );
         }
 
         Ok(annotations)
     }
 
-    fn render_name_directory(entry: &Entry, template: &TemplateRaw) -> Result<String> {
+    fn render_directory_name(entry: &Entry, template: &TemplateRaw) -> Result<String> {
         let context = TemplateContext::name_book(entry);
 
-        let name = Tera::one_off(
-            &template.name_templates.directory,
+        let mut directory_name = Tera::one_off(
+            &template.names.directory,
             &Context::from_serialize(context)?,
             false,
         )?;
 
-        let name = utils::sanitize_string(&name);
+        directory_name = crate::utils::sanitize_string(&directory_name);
 
-        Ok(name)
+        Ok(directory_name)
+    }
+}
+
+/// A struct representing the rendered filename for a template with
+/// [`ContextMode::Annotation`] along with various other fields used for
+/// sorting within a template. See [`NamesRender::annotations`][names-render]
+/// for more information.
+///
+/// See [`AnnotationMetadata`][annotation-metadata] for information on
+/// undocumented fields.
+///
+/// [annotation-metadata]: crate::models::annotation::AnnotationMetadata
+/// [names-render]: NamesRender#structfield.annotations
+#[allow(missing_docs)]
+#[derive(Debug, Default, Clone, Serialize)]
+pub struct AnnotationNameAttributes {
+    /// The rendered filename for a template with [`ContextMode::Annotation`].
+    pub filename: String,
+    pub created: DateTimeUtc,
+    pub modified: DateTimeUtc,
+    pub location: String,
+}
+
+impl AnnotationNameAttributes {
+    /// Creates a new instance of [`AnnotationNameAttributes`].
+    fn new(annotation: &Annotation, filename: String) -> Self {
+        Self {
+            filename,
+            created: annotation.metadata.created,
+            modified: annotation.metadata.modified,
+            location: annotation.metadata.location.clone(),
+        }
     }
 }
 
@@ -572,8 +589,7 @@ pub enum TemplateContext<'a> {
         annotations: &'a [Annotation],
 
         /// The filenames and nested directory name.
-        #[serde(rename = "links")]
-        names: &'a Names,
+        names: &'a NamesRender,
     },
     /// Used when rendering a single annotation in a template. Includes all the
     /// output filenames and the nested directory name.
@@ -585,8 +601,7 @@ pub enum TemplateContext<'a> {
         annotation: &'a Annotation,
 
         /// The filenames and nested directory name.
-        #[serde(rename = "links")]
-        names: &'a Names,
+        names: &'a NamesRender,
     },
     /// Used when rendering the output filename for a template with
     /// [`ContextMode::Book`].
@@ -611,7 +626,7 @@ pub enum TemplateContext<'a> {
 #[allow(missing_docs)]
 impl<'a> TemplateContext<'a> {
     #[must_use]
-    pub fn book(entry: &'a Entry, names: &'a Names) -> Self {
+    pub fn book(entry: &'a Entry, names: &'a NamesRender) -> Self {
         Self::Book {
             book: &entry.book,
             annotations: &entry.annotations,
@@ -620,7 +635,7 @@ impl<'a> TemplateContext<'a> {
     }
 
     #[must_use]
-    pub fn annotation(book: &'a Book, annotation: &'a Annotation, names: &'a Names) -> Self {
+    pub fn annotation(book: &'a Book, annotation: &'a Annotation, names: &'a NamesRender) -> Self {
         Self::Annotation {
             book,
             annotation,

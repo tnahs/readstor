@@ -14,8 +14,8 @@ removed or replaced with an underscore `_`.
 
 This following values are sanitized:
 
-- [Template Group][template-groups] names
-- The rendered values from [Name Templates][name-templates]
+- [Template Group][template-groups] set in the `group` config key.
+- The rendered values from [Names][names] set in the `names` config key.
 
-[name-templates]: ./02-05-name-templates.md
+[names]: ./02-05-names.md
 [template-groups]: ./02-01-template-groups.md

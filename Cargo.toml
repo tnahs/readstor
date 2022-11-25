@@ -48,21 +48,16 @@ features = ["serde"]
 version = "4.0"
 features = ["derive"]
 
-[dependencies.indexmap]
-version = "1.9.1"
-features = ["serde"]
-
 [dependencies.serde]
 version = "1.0.145"
 features = ["derive"]
 
 [dependencies.serde_json]
 version = "1.0.85"
-features = ["preserve_order"]
 
 [dependencies.tera]
 version = "1.17.1"
-features = ["builtins", "preserve_order"]
+features = ["builtins"]
 
 [dev-dependencies]
 assert_cmd = "2.0.4"

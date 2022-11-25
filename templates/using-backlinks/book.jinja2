@@ -3,7 +3,7 @@ group: using-backlinks
 context: book
 structure: nested-grouped
 extension: md
-name-templates:
+names:
   book: "{{ book.author }} - {{ book.title }}"
   annotation: "{{ annotation.metadata.slugs.created }}-{{ book.slugs.title }}"
   directory: "{{ book.author }} - {{ book.title }}"
@@ -19,6 +19,6 @@ last-opened: {{ book.metadata.last_opened | date(format="%Y-%m-%dT%H:%M") }}
 
 # {{ book.author }} - {{ book.title }}
 
-{% for _, link in links.annotations -%}
-![[{{ link }}]]
+{% for name in names.annotations | sort(attribute="location") -%}
+![[{{ name.filename }}]]
 {% endfor %}

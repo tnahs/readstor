@@ -63,7 +63,7 @@ group: my-vault
 context: book
 structure: flat
 extension: md
-name-templates:
+names:
   book: "{{ book.author }} - {{ book.title }}"
 -->
 

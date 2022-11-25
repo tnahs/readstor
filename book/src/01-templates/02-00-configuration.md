@@ -34,7 +34,7 @@ group: my-vault
 context: book
 structure: nested
 extension: md
-name-templates:
+names:
   book: "{{ book.author }} - {{ book.title }}"
   annotation: "{{ annotation.metadata.slugs.created }}-{{ book.slugs.title }}"
   directory: "{{ book.author }} - {{ book.title }}"
@@ -51,16 +51,16 @@ name-templates:
 
 A quick rundown of each configuration key:
 
-| Key              | Description                                                                       |
-| ---------------- | --------------------------------------------------------------------------------- |
-| `group`          | The [Template Group][template-groups] name.                                       |
-| `context`        | The [Context Mode][context-modes] or what the template will render.               |
-| `structure`      | The [Structure Mode][structure-modes] or how the output files will be structured. |
-| `extension`      | The template's output [File Extension][file-extensions].                          |
-| `name-templates` | The [Name Templates][name-templates] for generating file and directory names.     |
+| Key         | Description                                                                       |
+| ----------- | --------------------------------------------------------------------------------- |
+| `group`     | The [Template Group][template-groups] name.                                       |
+| `context`   | The [Context Mode][context-modes] or what the template will render.               |
+| `structure` | The [Structure Mode][structure-modes] or how the output files will be structured. |
+| `extension` | The template's output [File Extension][file-extensions].                          |
+| `names`     | The template [Names][names] for generating file and directory names.              |
 
 [context-modes]: ./02-02-context-modes.md
 [file-extensions]: ./02-04-file-extensions.md
-[name-templates]: ./02-05-name-templates.md
+[names]: ./02-05-names.md
 [structure-modes]: ./02-03-structure-modes.md
 [template-groups]: ./02-01-template-groups.md

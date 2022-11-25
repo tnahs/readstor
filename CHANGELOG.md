@@ -1,5 +1,16 @@
 # Changelog
 
+## v0.4.0 UNRELEASED CHANGES
+
+- Implemented a more robust pre- and post-processor.
+- The configuration key `name-templates` is now `names`.
+- A template's `names.annotations` value is now a list of dictionaries. This
+  dictionary contains a field for the rendered filename as well as fields
+  for some of its respective annotation's metadata. The primary reason for
+  this change is to allow the user to optionally sort `names.annotations` by
+  these metadata fields. See the documentation for
+  [Context Reference - Names][names] for more information.
+
 ## v0.3.0 (2022-10-09)
 
 - Overhauled templates workflow.
@@ -55,7 +66,7 @@
 - Renamed 'items' directory to 'data'.
 - Documented how to implement custom templates.
 - Moved from `anyhow` to `color_eyre`.
-- Fixed [#3](https://github.com/tnahs/readstor/issues/3) Wrong default template
+- Fixed [#3][#3] Wrong default template
   location.
 
 ## v0.1.1 (2021-10-30)
@@ -69,5 +80,7 @@
   and notes as JSON (2) export them via a custom (or the default) template using
   the Tera syntax or (3) backup the current Apple Books databases.
 
+[#3]: https://github.com/tnahs/readstor/issues/3
 [crates-io]: https://crates.io
+[names]: https://tnahs.github.io/readstor/latest/01-templates/06-03-names.html
 [tera]: https://tera.netlify.app/

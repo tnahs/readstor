@@ -32,9 +32,12 @@ extension: txt
 {{ annotation.metadata.slugs.created }}
 {{ annotation.metadata.slugs.modified }}
 
-{{ links }}
-{{ links.book }}
-{% for id, link in links.annotations %}
-	{{ id }} {{ link }}
+{{ names }}
+{{ names.book }}
+{% for name in names.annotations %}
+	{{ name.filename }}
+	{{ name.created }}
+	{{ name.modified }}
+	{{ name.location }}
 {% endfor %}
-{{ links.directory }}
+{{ names.directory }}

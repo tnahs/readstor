@@ -26,13 +26,13 @@ _almost_ identical to one another.
 
 - `extension` is set to `md` as the template will be outputting Markdown.
 
-- `name-templates` can be set to anything as long as the values are identical
-  between the two templates. It might seem odd to see the values for
-  `name-templates` duplicated across the two templates. Shouldn't the book
-  template define `name-templates.book` and the annotation template define
-  `name-templates.annotation`? Ideally, yes. This need for duplication is the
-  result of a current [limitation][limitation] of ReadStor, therefore they
-  _must_ be identical so the backlinks are correctly generated.
+- `names` can be set to anything as long as the values are identical between
+  the two templates. It might seem odd to see the values for `names` duplicated
+  across the two templates. Shouldn't the book template define `names.book`
+  and the annotation template define `names.annotation`? Ideally, yes. This
+  need for duplication is the result of a current [limitation][limitation] of
+  ReadStor, therefore they _must_ be identical, so the backlinks are correctly
+  generated.
 
 ### Book Template Configuration
 
@@ -41,7 +41,7 @@ group: my-vault
 context: book # <- The only difference!
 structure: nested-grouped
 extension: md
-name-templates:
+names:
   book: "{{ book.author }} - {{ book.title }}"
   annotation: "{{ annotation.metadata.slugs.created }}-{{ book.slugs.title }}"
   directory: "{{ book.author }} - {{ book.title }}"
@@ -54,7 +54,7 @@ group: my-vault
 context: annotation # <- The only difference!
 structure: nested-grouped
 extension: md
-name-templates:
+names:
   book: "{{ book.author }} - {{ book.title }}"
   annotation: "{{ annotation.metadata.slugs.created }}-{{ book.slugs.title }}"
   directory: "{{ book.author }} - {{ book.title }}"
@@ -62,27 +62,26 @@ name-templates:
 
 ## Template Body
 
-With our configuration all set up, we can now use the `links` object, which
-contains all the rendered [Name Templates][name-templates], to link between
-our rendered output files. See [Context Reference - Links][links] for more
-information.
+With our configuration all set up, we can now use the `names` object, which
+contains all the rendered [Names][names], to link between our rendered output
+files. See [Context Reference - Names][names] for more information.
 
 ### Book Template Body
 
-The `links.annotation` object is a dictionary of key:value pairs where the key
-is the annotation's `id` and the value is the rendered output of the
-`name-templates.annotation` template. Here, the `id` is being discarded by
-declaring it an `_` (by convention only) and never actually using it.
+The `names.annotation` object is a dictionary of key:value pairs where the
+key is the annotation's `id` and the value is the rendered output of the
+`names.annotation` template. Here, the `id` is being discarded by declaring it
+an `_` (by convention only) and never actually using it.
 
 ```jinja2
 # {{ book.author }} - {{ book.title }}
 
-{% for _, link in links.annotations -%}
-![[{{ link }}]]
+{% for name in names.annotations -%}
+![[{{ name.filename }}]]
 {% endfor %}
 ```
 
-Alternatively we can use the `links.directory` variable to access the rendered
+Alternatively we can use the `names.directory` variable to access the rendered
 name of the parent directory. This value is only available if the
 [Structure Mode][structure-modes] is set to `nested` or `nested-grouped`.
 
@@ -91,18 +90,18 @@ name of the parent directory. This value is only available if the
 ```jinja2
 # {{ book.author }} - {{ book.title }}
 
-{% for _, link in links.annotations -%}
-![[{{ links.directory }}/{{ link }}]]
+{% for name in names.annotations -%}
+![[{{ name.directory }}/{{ name.filename }}]]
 {% endfor %}
 ```
 
 ### Annotation Template Body
 
-Finally, using the `links.book` variable we're able to link back to the source
+Finally, using the `names.book` variable we're able to link back to the source
 book.
 
 ```jinja2
-# [[{{ links.book }}]]
+# [[{{ names.book }}]]
 
 {{ annotation.body }}
 
@@ -193,8 +192,8 @@ on anyway.
 tags: #inspiration
 ```
 
-[links]: ./06-03-links.md
-[limitation]: ./02-05-name-templates.html#limitations
-[name-templates]: ./02-05-name-templates.md
+[names]: ./06-03-names.md
+[limitation]: ./02-05-names.html#limitations
+[names]: ./02-05-names.md
 [structure-modes]: ./02-03-structure-modes.md
 [using-backlinks]: https://github.com/tnahs/readstor/tree/main/templates/using-backlinks

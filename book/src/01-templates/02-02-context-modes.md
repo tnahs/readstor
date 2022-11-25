@@ -19,7 +19,7 @@ but also changes the number of output files. See
 |                 |                                                             |
 | --------------- | ----------------------------------------------------------- |
 | Context Mode    | `book`                                                      |
-| Context Objects | [`book`][book] [`annotations`][annotation] [`links`][links] |
+| Context Objects | [`book`][book] [`annotations`][annotation] [`names`][names] |
 | Ouput Files     | =1                                                          |
 
 > <i class="fa fa-info-circle"></i> Note that `annotations` is plural in the
@@ -70,7 +70,7 @@ annotations:
         created: 2021-11-02-181325
         modified: 2021-11-02-181325
   # ...
-links:
+names:
   book: Robert Henri - The Art Spirit.md
   annotations:
     C932CE69-8584-4555-834C-797DF84E6825: 2021-11-02-181250-the-art-spirit.md
@@ -87,7 +87,7 @@ links:
 |                 |                                                            |
 | --------------- | ---------------------------------------------------------- |
 | Context Mode    | `annotation`                                               |
-| Context Objects | [`book`][book] [`annotation`][annotation] [`links`][links] |
+| Context Objects | [`book`][book] [`annotation`][annotation] [`names`][names] |
 | Ouput Files     | >=1                                                        |
 
 When selected, multiple files are rendered out from a context containing a the
@@ -119,7 +119,7 @@ annotation:
     slugs:
       created: 2021-11-02-181250
       modified: 2021-11-02-181250
-links:
+names:
   book: Robert Henri - The Art Spirit.md
   annotations:
     C932CE69-8584-4555-834C-797DF84E6825: 2021-11-02-181250-the-art-spirit.md
@@ -208,4 +208,4 @@ file.
 
 [annotation]: ./06-02-annotation.md
 [book]: ./06-01-book.md
-[links]: ./06-03-links.md
+[names]: ./06-03-names.md

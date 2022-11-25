@@ -58,8 +58,8 @@ structure: nested
 
 When selected, the template is rendered to the
 [output directory][output-directory] and placed inside a directory named after
-the `name-templates.directory` key. This is useful if a template group contains
-multiple templates.
+the `names.directory` key. This is useful if a template group contains multiple
+templates.
 
 ```plaintext
 [output-directory]
@@ -91,9 +91,9 @@ structure: nested-grouped
 
 When selected, the template is rendered to the
 [output directory][output-directory] and placed inside a directory named after
-its `group` and another named after the `name-templates.directory` key. This is
-useful if multiple template groups are being rendered to the same directory and
-if a template group contains multiple templates.
+its `group` and another named after the `names.directory` key. This is useful
+if multiple template groups are being rendered to the same directory and if a
+template group contains multiple templates.
 
 ```plaintext
 [output-directory]
