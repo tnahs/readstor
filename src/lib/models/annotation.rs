@@ -139,13 +139,17 @@ impl AnnotationMetadata {
     ///Returns a slugified string of the creation date.
     #[must_use]
     pub fn slug_created(&self) -> String {
-        self.created.format(crate::defaults::DATE_FORMAT).to_string()
+        self.created
+            .format(crate::defaults::DATE_FORMAT)
+            .to_string()
     }
 
     ///Returns a slugified string of the modification date.
     #[must_use]
     pub fn slug_modified(&self) -> String {
-        self.created.format(crate::defaults::DATE_FORMAT).to_string()
+        self.created
+            .format(crate::defaults::DATE_FORMAT)
+            .to_string()
     }
 }
 
