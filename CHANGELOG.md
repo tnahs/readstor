@@ -10,6 +10,7 @@
   this change is to allow the user to optionally sort `names.annotations` by
   these metadata fields. See the documentation for
   [Context Reference - Names][names] for more information.
+- The short option name for `--trim-blocks` is now `-t`.
 
 ## v0.3.0 (2022-10-09)
 

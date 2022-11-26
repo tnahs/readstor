@@ -81,11 +81,11 @@ pub struct TemplateOptions {
 #[allow(clippy::struct_excessive_bools)]
 pub struct PreProcessorOptions {
     /// Extract #tags from annotation notes
-    #[arg(short, long)]
+    #[arg(short = 'e', long)]
     pub extract_tags: bool,
 
     /// Normalize whitespace in annotation body
-    #[arg(short, long)]
+    #[arg(short = 'n', long)]
     pub normalize_whitespace: bool,
 
     /// Convert all Unicode characters to ASCII
@@ -108,7 +108,7 @@ pub struct PreProcessorOptions {
 #[derive(Debug, Clone, Copy, Default, Parser)]
 pub struct PostProcessorOptions {
     /// Trim any blocks left after rendering
-    #[arg(short = 'b', long)]
+    #[arg(short = 't', long)]
     pub trim_blocks: bool,
 }
 
