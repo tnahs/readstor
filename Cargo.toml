@@ -1,6 +1,7 @@
 [package]
 name = "readstor"
 version = "0.3.0"
+authors = ["Shant Ergenian <shaaant@pm.me>"]
 description = "A CLI for Apple Books annotations"
 readme = "README.md"
 license = "MIT OR Apache-2.0"
