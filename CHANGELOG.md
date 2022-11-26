@@ -3,6 +3,7 @@
 ## v0.4.0 UNRELEASED CHANGES
 
 - Implemented a more robust pre- and post-processor.
+- Added the `--text-wrap [WIDTH]` option to enable text-wrapping
 - The configuration key `name-templates` is now `names`.
 - A template's `names.annotations` value is now a list of dictionaries. This
   dictionary contains a field for the rendered filename as well as fields
