@@ -172,7 +172,7 @@ impl PostProcessor {
         }
     }
 
-    /// Trim any blocks left after rendering.
+    /// Trims any blocks left after rendering.
     ///
     /// # Arguments
     ///
