@@ -1,10 +1,18 @@
 # TODO
 
+## Book
+
+- [ ] Links to example templates refer to `main` and not the current release.
+      All links containing `https://github.com/tnahs/readstor/main` must be
+      converted to a tag-aware one: `https://github.com/tnahs/readstor/v0.3.0`.
+      Is it possible to automate this nicely for every release?
+- [ ] Add more documentation for each annotation/book field.
+
 ## Next
 
-- [ ] Add [`textwrap`][textwrap] post-processor. `--textwrap=80`
-- [ ] Add `# Arguments` to public methods.
+- [ ] Simplify and consolidate how template names are defined.
 - [ ] Rename and slightly refactor `Data` to `Entries`.
+- [ ] Add `# Arguments` to public methods.
 - [ ] Is there a way to consolidate clippy lints between bin/lib?
 - [ ] Test [Tera][tera] macros and inheritances.
 - [ ] Checkout [fern][fern] for stdout/stderr and file logging.
