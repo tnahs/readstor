@@ -161,7 +161,7 @@ Render Apple Books' data via templates.
 
 Back-up Apple Books' databases.
 
-Ouputs using the following structure:
+Outputs using the following structure:
 
 ```plaintext
 [ouput-directory]

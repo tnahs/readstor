@@ -10,7 +10,7 @@ Set the output directory for all [Commands][commands]. Defaults to `~/.readstor`
 
 Set a custom databases directory.
 
-This can be useful when running ReadStor on on databases backed-up with the
+This can be useful when running ReadStor on databases backed-up with the
 [`backup`][backup] command. The output structure the [`backup`][backup] command
 creates is identical to the required databases directory structure.
 
@@ -80,7 +80,7 @@ compiled and placed them into [`book.tags`][book].
 
 Normalize whitespace in [`annotation.body`][annotation].
 
-Trims whitespace and replaces all linebreaks with two consecutive linebreaks:
+Trims whitespace and replaces all line-breaks with two consecutive line-breaks:
 `\n\n`.
 
 ### `--ascii-all`

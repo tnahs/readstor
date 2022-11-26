@@ -5,25 +5,30 @@ the template's [Context Mode][context-modes]. These contain all the file and
 directory names rendered from the `names` key in the template's config. See
 [Names][names] for more information.
 
-## Template Fields
+## Template Fields - Names
 
-### Names
+| Attribute           | Type               | Description             |
+| ------------------- | ------------------ | ----------------------- |
+| `names`             | dictionary         | names object            |
+| `names.book`        | string             | rendered book filename  |
+| `names.annotations` | list\[dictionary\] | annotation names        |
+| `names.directory`   | string             | rendered directory name |
 
-| Attribute           | Type                               | Description             |
-| ------------------- | ---------------------------------- | ----------------------- |
-| `names`             | dictionary                         | names object            |
-| `names.book`        | string                             | rendered book filename  |
-| `names.annotations` | list\[annotation-name-attributes\] | annotations object      |
-| `names.directory`   | string                             | rendered directory name |
+The `names.annotations` object is a list of dictionaries, where each dictionary
+refers to a rendered annotation file and contains its filename along with
+metadata about its respective annotation. Each dictionary consists of the
+following attributes:
 
-### Annotation Name Attributes
+| Attribute  | Type     | Description                  |
+| ---------- | -------- | ---------------------------- |
+| `filename` | string   | rendered annotation filename |
+| `created`  | datetime | date created                 |
+| `modified` | datetime | date modified                |
+| `location` | string   | location string              |
 
-| Attribute             | Type   | Description                  |
-| --------------------- | ------ | ---------------------------- |
-| `annotation.filename` | string | rendered annotation filename |
-| `annotation.created`  | string | date created                 |
-| `annotation.modified` | string | date modified                |
-| `annotation.location` | string | location string              |
+These attributes allow the sorting of the `names.annotations` list using
+[Tera][tera]'s [`sort`][tera-sort] filter. See [Backlinks][backlinks] for
+example usage.
 
 ## Example Data - Names
 
@@ -74,10 +79,13 @@ names:
 ```jinja2
 # {{ book.author }} - {{ book.title }}
 
-{% for annotation in names.annotations | sort(attribute="location") -%}
-![[{{ annotation.filename }}]]
+{% for name in names.annotations | sort(attribute="location") -%}
+![[{{ name.filename }}]]
 {% endfor %}
 ```
 
 [context-modes]: ./02-02-context-modes.md
+[backlinks]: ./04-backlinks.md
 [names]: ./02-05-names.md
+[tera]: https://tera.netlify.app/
+[tera-sort]: https://tera.netlify.app/docs/#sort

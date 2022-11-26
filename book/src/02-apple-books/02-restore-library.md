@@ -33,8 +33,8 @@ rsync \
 
 > <i class="fa fa-exclamation-circle"></i> The trailing forward-slash after
 > `Containers` and `Group\ Containers` here is important. It tells `rsync` to
-> move the the archive directory's _contents_ into the target. Otherwise it
-> would move the archive _directory_ into the target.
+> move the archive directory's _contents_ into the target. Otherwise, it would
+> move the archive _directory_ into the target.
 
 For example, if `[PATH-TO-ARCHIVE]` is:
 

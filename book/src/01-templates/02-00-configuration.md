@@ -45,7 +45,7 @@ names:
 
 > <i class="fa fa-exclamation-circle"></i> Note that the final rendered output
 > file will not include its template's configuration. Additionally, if the
-> configuration ended with trailing linebreaks, a single one of them is
+> configuration ended with trailing line-breaks, a single one of them is
 > removed. This allows for some extra whitespace while working with a template
 > without affecting final rendered output.
 

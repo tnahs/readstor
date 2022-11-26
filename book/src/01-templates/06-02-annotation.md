@@ -66,11 +66,12 @@ objects, under the name `annotations`, are injected into the template's context.
 {% endfor %}
 ```
 
-> <i class="fa fa-info-circle"></i> Here the [`join`][join] filter is used to
-> join an array of items into a space-separated string.
+> <i class="fa fa-info-circle"></i> Here [Tera][tera]'s [`join`][tera-join]
+> filter is used to join an array of items into a space-separated string.
 
 [context-modes]: ./02-02-context-modes.md
 [context-modes-book]: ./02-02-context-modes.md#the-book-context
 [context-modes-annotation]: ./02-02-context-modes.md#the-annotation-context
-[join]: https://tera.netlify.app/docs/#join
+[tera]: https://tera.netlify.app/
+[tera-join]: https://tera.netlify.app/docs/#join
 [epubcfi]: https://w3c.github.io/epub-specs/epub33/epubcfi/

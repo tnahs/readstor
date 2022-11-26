@@ -1,8 +1,8 @@
 # An Example Template
 
-The following is a example template along with its expected output and output
-structure. In fact it's almost identical to the default template that comes with
-ReadStor.
+The following is an example template along with its expected output and output
+structure. In fact, it's almost identical to the default template that comes
+with ReadStor.
 
 ## Template Syntax
 
@@ -42,10 +42,11 @@ And finally comments can be added like so:
 {# Hi! I'm a comment! #}
 ```
 
-> <i class="fa fa-info-circle"></i> See Tera's [documentation][documentation]
-> to learn more about these and more advanced features, including template
-> [inheritance][inheritance], the [include][include] tag, [macros][macros] and
-> the full list of available [filters][filters].
+> <i class="fa fa-info-circle"></i> See Tera's
+> [documentation][tera-documentation] to learn more about these and more advanced
+> features, including template [inheritance][tera-inheritance], the
+> [include][tera-include] tag, [macros][tera-macros] and the full list of
+> available [filters][tera-filters].
 
 ## Template
 
@@ -239,11 +240,11 @@ tags: #inspiration
 ```
 
 [context-modes]: ./02-02-context-modes.md
-[documentation]: https://tera.netlify.app/docs/
-[filters]: https://tera.netlify.app/docs/#built-in-filters
-[include]: https://tera.netlify.app/docs/#include
-[inheritance]: https://tera.netlify.app/docs/#inheritance
-[macros]: https://tera.netlify.app/docs/#macros
 [output-directory]: ../00-intro/02-options.md#--output-directory-path
 [structure-modes]: ./02-03-structure-modes.md
 [tera]: https://tera.netlify.app/
+[tera-documentation]: https://tera.netlify.app/docs/
+[tera-filters]: https://tera.netlify.app/docs/#built-in-filters
+[tera-include]: https://tera.netlify.app/docs/#include
+[tera-inheritance]: https://tera.netlify.app/docs/#inheritance
+[tera-macros]: https://tera.netlify.app/docs/#macros

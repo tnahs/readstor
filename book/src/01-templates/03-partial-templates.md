@@ -24,7 +24,7 @@ Partial templates are included using the `include` tag:
 {% include "_my-partial-template.md" %}
 ```
 
-Where `"_my-partial-template.md"` is a path relative to to the
+Where `"_my-partial-template.md"` is a path relative to the
 [templates directory][templates-directory]. Therefore, this would be pointing
 to a template at the root of the [templates directory][templates-directory].
 If we wanted to organize our templates into different directories we would
@@ -48,9 +48,11 @@ We would use the following `include` tags:
 {% include "my-vault-templates/_annotation.jinja2" %}
 ```
 
-> <i class="fa fa-info-circle"></i> See the documentation for [include][include]
-> for more information on its features and limitations.
+> <i class="fa fa-info-circle"></i> See the documentation for [Tera][tera]'s
+> [include][tera-include] tag for more information on its features and
+> limitations.
 
-[include]: https://tera.netlify.app/docs/#include
 [templates-directory]: ../00-intro/02-options.md#--templates-directory-path
+[tera]: https://tera.netlify.app/
+[tera-include]: https://tera.netlify.app/docs/#include
 [using-partials]: https://github.com/tnahs/readstor/tree/main/templates/using-partials

@@ -20,7 +20,7 @@ but also changes the number of output files. See
 | --------------- | ----------------------------------------------------------- |
 | Context Mode    | `book`                                                      |
 | Context Objects | [`book`][book] [`annotations`][annotation] [`names`][names] |
-| Ouput Files     | =1                                                          |
+| Output Files    | =1                                                          |
 
 > <i class="fa fa-info-circle"></i> Note that `annotations` is plural in the
 > `book` context.
@@ -88,9 +88,9 @@ names:
 | --------------- | ---------------------------------------------------------- |
 | Context Mode    | `annotation`                                               |
 | Context Objects | [`book`][book] [`annotation`][annotation] [`names`][names] |
-| Ouput Files     | >=1                                                        |
+| Output Files    | >=1                                                        |
 
-When selected, multiple files are rendered out from a context containing a the
+When selected, multiple files are rendered out from a context containing the
 data from a single annotation and its respective book. For example, represented
 here in YAML:
 

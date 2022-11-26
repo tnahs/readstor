@@ -68,15 +68,17 @@ files. See [Context Reference - Names][names] for more information.
 
 ### Book Template Body
 
-The `names.annotation` object is a dictionary of key:value pairs where the
-key is the annotation's `id` and the value is the rendered output of the
-`names.annotation` template. Here, the `id` is being discarded by declaring it
-an `_` (by convention only) and never actually using it.
+The `names.annotations` object is a list of dictionaries, where each dictionary
+refers to a rendered annotation file and contains its filename along with
+metadata about its respective annotation. This allows us to link back to the
+annotation and sort the links based of off different criteria. In the example
+below, [Tera][tera]'s [`sort`][tera-sort] filter is used with the `attribute`
+argument and the `location` attribute.
 
 ```jinja2
 # {{ book.author }} - {{ book.title }}
 
-{% for name in names.annotations -%}
+{% for name in names.annotations | sort(attribute="location")-%}
 ![[{{ name.filename }}]]
 {% endfor %}
 ```
@@ -196,4 +198,6 @@ tags: #inspiration
 [limitation]: ./02-05-names.html#limitations
 [names]: ./02-05-names.md
 [structure-modes]: ./02-03-structure-modes.md
+[tera]: https://tera.netlify.app/
+[tera-sort]: https://tera.netlify.app/docs/#sort
 [using-backlinks]: https://github.com/tnahs/readstor/tree/main/templates/using-backlinks
