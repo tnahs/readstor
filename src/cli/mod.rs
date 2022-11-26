@@ -112,7 +112,7 @@ pub struct PostProcessorOptions {
     pub trim_blocks: bool,
 
     /// Wrap text to a maximum character width.
-    #[arg(short = 'w', long)]
+    #[arg(short = 'w', long, value_name = "WIDTH")]
     pub wrap_text: Option<usize>,
 }
 
