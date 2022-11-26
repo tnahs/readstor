@@ -234,6 +234,17 @@ implementation that mimics what <a href="https://docs.rs/tera/latest/tera/"><cod
 <a href="https://github.com/Keats/tera/issues/637"><code>trim_blocks</code></a>. It is by no means smart and will just normalize
 whitespace regardless of what the template requested.</p>
 </blockquote>
+<h3 id="--wrap-text"><a class="header" href="#--wrap-text"><code>--wrap-text</code></a></h3>
+<p>Wrap text to a maximum character width.</p>
+<p>Maximum line length is not guaranteed as long words are not broken if their
+length exceeds the maximum. Hyphenation is not used, however, existing hyphen
+can be split on to insert a line-break.</p>
+<blockquote>
+<p><i class="fa fa-exclamation-circle"></i> This will naively wrap all the
+text inside a rendered file regardless its structure. Use with caution!
+Extremely low values may cause unexpected results. Values above <code>80</code> or so
+are recommended.</p>
+</blockquote>
 
                     </main>
 

@@ -412,6 +412,17 @@ implementation that mimics what <a href="https://docs.rs/tera/latest/tera/"><cod
 <a href="https://github.com/Keats/tera/issues/637"><code>trim_blocks</code></a>. It is by no means smart and will just normalize
 whitespace regardless of what the template requested.</p>
 </blockquote>
+<h3 id="--wrap-text"><a class="header" href="#--wrap-text"><code>--wrap-text</code></a></h3>
+<p>Wrap text to a maximum character width.</p>
+<p>Maximum line length is not guaranteed as long words are not broken if their
+length exceeds the maximum. Hyphenation is not used, however, existing hyphen
+can be split on to insert a line-break.</p>
+<blockquote>
+<p><i class="fa fa-exclamation-circle"></i> This will naively wrap all the
+text inside a rendered file regardless its structure. Use with caution!
+Extremely low values may cause unexpected results. Values above <code>80</code> or so
+are recommended.</p>
+</blockquote>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="templates"><a class="header" href="#templates">Templates</a></h1>
 <p>ReadStor's most powerful feature is the templating interface it provides for
 Apple Books. Templates can be designed to output almost any kind of text-based
@@ -1032,6 +1043,122 @@ template group contains multiple templates.</p>
 <p>Defines the template's output file extension. Note that this will be appended to
 all the output filenames with the format <code>[filename].[extension]</code>.</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="names"><a class="header" href="#names">Names</a></h1>
+<div class="table-wrapper"><table><thead><tr><th>Key</th><th>Context</th></tr></thead><tbody>
+<tr><td><code>names.book</code></td><td><code>book</code></td></tr>
+<tr><td><code>names.annotation</code></td><td><code>annotation</code></td></tr>
+<tr><td><code>names.directory</code></td><td><code>book</code></td></tr>
+</tbody></table>
+</div>
+<p>Output files and directory names can be customized using the same <a href="https://tera.netlify.app/">Tera</a>
+syntax. ReadStor will inject a different context into each <code>names</code> during
+render time and set the template's output file/directory name to the resulting
+string.</p>
+<blockquote>
+<p><i class="fa fa-exclamation-circle"></i> The rendered book, annotation and
+directory names are sanitized to make sure they interact well with the file
+system. See <a href="01-templates/./05-string-sanitization.html">String Sanitization</a> for more information.</p>
+</blockquote>
+<p>Additionally, all the rendered values from these keys are available within the
+template's context under the <code>names</code> variable regardless of the current context
+mode. See <a href="01-templates/./06-03-names.html">Context Reference - Names</a> for more information.</p>
+<blockquote>
+<p><i class="fa fa-exclamation-circle"></i> Note that the template's <code>context</code>
+matters when setting <code>names</code>.</p>
+<p>For example, if the template's <code>context</code> is set to <code>book</code>:</p>
+<pre><code class="language-yaml">group: my-vault
+structure: flat
+context: book # &lt;- Here!
+extension: md
+names:
+  book: &quot;{{ book.author }} - {{ book.title }}&quot;
+  annotation: &quot;{{ annotation.metadata.slugs.created }}-{{ book.slugs.title }}&quot;
+</code></pre>
+<p>ReadStor will generate a single file for each book and name them using the
+rendered result of <code>names.book</code>. The resulting output would be:</p>
+<pre><code class="language-plaintext">[output-directory]
+ ├── Krishnamurti - Think on These Things.md
+ ├── Richard P. Feynman - &quot;Surely You're Joking, Mr. Feynman!&quot;.md
+ ├── Robert Henri - The Art Spirit.md
+ └── ...
+</code></pre>
+<p>However, if the <code>context</code> is changed to <code>annotation</code>:</p>
+<pre><code class="language-yaml">group: my-vault
+structure: flat
+context: annotation # &lt;- Here!
+extension: md
+names:
+  book: &quot;{{ book.author }} - {{ book.title }}&quot;
+  annotation: &quot;{{ annotation.metadata.slugs.created }}-{{ book.slugs.title }}&quot;
+</code></pre>
+<p>ReadStor will now generate a single file for each annotation in each book
+and name them using the rendered result of <code>names.annotation</code>. The resulting
+output would be:</p>
+<pre><code class="language-plaintext">[output-directory]
+ ├── 2021-11-02-180445-the-art-spirit.md
+ ├── 2021-11-02-181250-the-art-spirit.md
+ ├── 2021-11-02-181325-the-art-spirit.md
+ ├── 2021-11-02-181510-the-art-spirit.md
+ ├── 2021-11-02-182059-surely-youre-joking-mr-feynman.md
+ ├── 2021-11-02-182319-think-on-these-things.md
+ ├── 2021-11-02-182426-think-on-these-things.md
+ ├── 2021-11-02-182543-think-on-these-things.md
+ ├── 2021-11-02-182648-think-on-these-things.md
+ ├── 2021-11-02-182805-think-on-these-things.md
+ └── ...
+</code></pre>
+</blockquote>
+<h2 id="book-names"><a class="header" href="#book-names">Book Names</a></h2>
+<p>Defines the filename template to use when the parent template's <code>context</code> mode
+is set to <code>book</code>. This template only has access to the <code>book</code> context when
+it's rendered.</p>
+<div class="table-wrapper"><table><thead><tr><th></th><th></th></tr></thead><tbody>
+<tr><td>Name</td><td><code>names.book</code></td></tr>
+<tr><td>Type</td><td>string</td></tr>
+<tr><td>Valid Values</td><td>any</td></tr>
+<tr><td>Required</td><td>No</td></tr>
+<tr><td>Default</td><td><code>{{ book.author }} - {{ book.title }}</code></td></tr>
+</tbody></table>
+</div>
+<h2 id="annotation-names"><a class="header" href="#annotation-names">Annotation Names</a></h2>
+<p>Defines the filename template to use when the parent template's <code>context</code> mode
+is set to <code>annotation</code>. This template has access to the <code>book</code> and <code>annotation</code>
+context when its rendered.</p>
+<div class="table-wrapper"><table><thead><tr><th></th><th></th></tr></thead><tbody>
+<tr><td>Name</td><td><code>names.annotation</code></td></tr>
+<tr><td>Type</td><td>string</td></tr>
+<tr><td>Valid Values</td><td>any</td></tr>
+<tr><td>Required</td><td>No</td></tr>
+<tr><td>Default</td><td><code>{{ annotation.metadata.slugs.created }}-{{ book.slugs.title }}</code></td></tr>
+</tbody></table>
+</div>
+<h2 id="directory-names"><a class="header" href="#directory-names">Directory Names</a></h2>
+<p>Defines the directory name template to use when the parent template's
+<code>structure</code> mode is set to <code>nested</code> or the <code>nested-grouped</code>. This template only
+has access to the <code>book</code> context when its rendered.</p>
+<div class="table-wrapper"><table><thead><tr><th></th><th></th></tr></thead><tbody>
+<tr><td>Name</td><td><code>names.directory</code></td></tr>
+<tr><td>Type</td><td>string</td></tr>
+<tr><td>Valid Values</td><td>any</td></tr>
+<tr><td>Required</td><td>No</td></tr>
+<tr><td>Default</td><td><code>{{ book.author }} - {{ book.title }}</code></td></tr>
+</tbody></table>
+</div>
+<h2 id="limitations"><a class="header" href="#limitations"><i class="fa fa-exclamation-circle"></i> Limitations</a></h2>
+<p>Why does a single template have both a <code>names.book</code> and <code>names.annotation</code> key?</p>
+<p>This is mainly the result of a current limitation with ReadStor. Templates that
+are part of the same <code>group</code> have no relation internally. ReadStor just renders
+each template it finds. If multiple templates share the same value for <code>group</code>
+then they end up in the same directory when the <code>structure</code> mode is set to
+<code>grouped</code> or <code>nested-grouped</code>.</p>
+<p>As a result of this limitation, if a template requires awareness of its
+<code>group</code>'s sibling names i.e. the value defined in the <a href="01-templates/./06-03-names.html"><code>names</code></a> field,
+they <em>must</em> be defined in each template. This results in some duplication
+across templates. This should hopefully be resolved in future versions of
+ReadStor.</p>
+<blockquote>
+<p><i class="fa fa-info-circle"></i> For more information on how to generate and
+use <code>names</code> see <a href="01-templates/./06-03-names.html">Context Reference - Names</a> and <a href="01-templates/./04-backlinks.html">Backlinks</a>.</p>
+</blockquote>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="partial-templates"><a class="header" href="#partial-templates">Partial Templates</a></h1>
 <p>When working with larger templates it can be helpful to separate them into
 smaller building blocks. One way to do this is to create partial templates and
