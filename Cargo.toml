@@ -37,6 +37,7 @@ regex = "1.6.0"
 rusqlite = "0.28.0"
 serde_yaml = "0.9.13"
 sysinfo = "0.26.4"
+textwrap = "0.16.0"
 thiserror = "1.0.37"
 walkdir = "2.3.2"
 

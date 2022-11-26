@@ -170,6 +170,10 @@ impl PostProcessor {
         if options.trim_blocks {
             Self::trim_blocks(render);
         }
+
+        if let Some(width) = options.wrap_text {
+            Self::wrap_text(render, width);
+        }
     }
 
     /// Trims any blocks left after rendering.
@@ -180,6 +184,21 @@ impl PostProcessor {
     fn trim_blocks(render: &mut TemplateRender) {
         render.contents = process::trim_blocks(&render.contents);
     }
+
+    /// Wraps text to a maximum character width.
+    ///
+    /// Maximum line length is not guaranteed as long words are not broken if
+    /// their length exceeds the maximum. Hyphenation is not used, however,
+    /// an existing hyphen can be split on to insert a line-break.
+    ///
+    /// # Arguments
+    ///
+    /// * `render` - The [`TemplateRender`] to process.
+    /// * `width` - The maximum character width.
+    fn wrap_text(render: &mut TemplateRender, width: usize) {
+        let options = textwrap::Options::new(width).break_words(false);
+        render.contents = textwrap::fill(&render.contents, options);
+    }
 }
 
 /// A struct represting options for the [`PostProcessor`] struct.
@@ -187,4 +206,7 @@ impl PostProcessor {
 pub struct PostProcessorOptions {
     /// Toggles trimming blocks left after rendering.
     pub trim_blocks: bool,
+
+    /// Toggles wrapping text to a maximum character width.
+    pub wrap_text: Option<usize>,
 }

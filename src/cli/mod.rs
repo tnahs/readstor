@@ -110,6 +110,10 @@ pub struct PostProcessorOptions {
     /// Trim any blocks left after rendering
     #[arg(short = 't', long)]
     pub trim_blocks: bool,
+
+    /// Wrap text to a maximum character width.
+    #[arg(short = 'w', long)]
+    pub wrap_text: Option<usize>,
 }
 
 pub fn validate_path_exists(value: &str) -> Result<PathBuf, String> {
@@ -140,6 +144,7 @@ impl From<PostProcessorOptions> for lib::processor::PostProcessorOptions {
     fn from(options: PostProcessorOptions) -> Self {
         Self {
             trim_blocks: options.trim_blocks,
+            wrap_text: options.wrap_text,
         }
     }
 }

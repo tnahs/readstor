@@ -125,6 +125,19 @@ Trim any blocks left after rendering.
 > [`trim_blocks`][github-tera]. It is by no means smart and will just normalize
 > whitespace regardless of what the template requested.
 
+### `--wrap-text`
+
+Wrap text to a maximum character width.
+
+Maximum line length is not guaranteed as long words are not broken if their
+length exceeds the maximum. Hyphenation is not used, however, existing hyphen
+can be split on to insert a line-break.
+
+> <i class="fa fa-exclamation-circle"></i> This will naively wrap all the
+> text inside a rendered file regardless its structure. Use with caution!
+> Extremely low values may cause unexpected results. Values above `80` or so
+> are recommended.
+
 [annotation]: ../01-templates/06-02-annotation.md
 [backup]: ./01-commands.md#backup
 [book]: ../01-templates/06-01-book.md
