@@ -142,7 +142,7 @@
                         <h1 id="introduction"><a class="header" href="#introduction">Introduction</a></h1>
 <p>ReadStor is a simple CLI for exporting user-generated data from Apple Books. The
 goal of this project is to facilitate data-migration from Apple Books to any
-other platform. Currently Apple Books provides no simple way to do this.
+other platform. Currently, Apple Books provides no simple way to do this.
 Exporting is possible but not ideal and often times truncates long annotations.</p>
 <p>Version <code>0.1.x</code> contained the core functionality: (1) save all annotations and
 notes as JSON (2) render them via a custom (or the default) template using the
@@ -297,7 +297,7 @@ and <a href="00-intro/./02-options.html#template-options">Template Options</a> f
 </blockquote>
 <h2 id="backup"><a class="header" href="#backup"><code>backup</code></a></h2>
 <p>Back-up Apple Books' databases.</p>
-<p>Ouputs using the following structure:</p>
+<p>Outputs using the following structure:</p>
 <pre><code class="language-plaintext">[ouput-directory]
  └─ [YYYY-MM-DD-HHMMSS-VERSION]
      ├─ AEAnnotation
@@ -325,7 +325,7 @@ and <a href="00-intro/./02-options.html#template-options">Template Options</a> f
 <p>Set the output directory for all <a href="00-intro/./01-commands.html">Commands</a>. Defaults to <code>~/.readstor</code>.</p>
 <h3 id="--databases-directory-path"><a class="header" href="#--databases-directory-path"><code>--databases-directory &lt;PATH&gt;</code></a></h3>
 <p>Set a custom databases directory.</p>
-<p>This can be useful when running ReadStor on on databases backed-up with the
+<p>This can be useful when running ReadStor on databases backed-up with the
 <a href="00-intro/./01-commands.html#backup"><code>backup</code></a> command. The output structure the <a href="00-intro/./01-commands.html#backup"><code>backup</code></a> command
 creates is identical to the required databases directory structure.</p>
 <p>The databases directory should contain the following structure:</p>
@@ -376,7 +376,7 @@ compiled and placed them into <a href="00-intro/../01-templates/06-01-book.html"
 </blockquote>
 <h3 id="--normalize-whitespace"><a class="header" href="#--normalize-whitespace"><code>--normalize-whitespace</code></a></h3>
 <p>Normalize whitespace in <a href="00-intro/../01-templates/06-02-annotation.html"><code>annotation.body</code></a>.</p>
-<p>Trims whitespace and replaces all linebreaks with two consecutive linebreaks:
+<p>Trims whitespace and replaces all line-breaks with two consecutive line-breaks:
 <code>\n\n</code>.</p>
 <h3 id="--ascii-all"><a class="header" href="#--ascii-all"><code>--ascii-all</code></a></h3>
 <p>Convert all Unicode characters to ASCII.</p>
@@ -433,9 +433,9 @@ require an extra step to convert an HTML file to the final PDF.</p>
 for fully working examples.</p>
 </blockquote>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="an-example-template"><a class="header" href="#an-example-template">An Example Template</a></h1>
-<p>The following is a example template along with its expected output and output
-structure. In fact it's almost identical to the default template that comes with
-ReadStor.</p>
+<p>The following is an example template along with its expected output and output
+structure. In fact, it's almost identical to the default template that comes
+with ReadStor.</p>
 <h2 id="template-syntax"><a class="header" href="#template-syntax">Template Syntax</a></h2>
 <p><a href="https://tera.netlify.app/">Tera</a>, a Jinja-flavored templating language, provides a rich set of
 tools for building a wide range of template complexities. The following is a
@@ -458,10 +458,11 @@ a space as a delimiter.</p>
 <pre><code class="language-jinja2">{# Hi! I'm a comment! #}
 </code></pre>
 <blockquote>
-<p><i class="fa fa-info-circle"></i> See Tera's <a href="https://tera.netlify.app/docs/">documentation</a>
-to learn more about these and more advanced features, including template
-<a href="https://tera.netlify.app/docs/#inheritance">inheritance</a>, the <a href="https://tera.netlify.app/docs/#include">include</a> tag, <a href="https://tera.netlify.app/docs/#macros">macros</a> and
-the full list of available <a href="https://tera.netlify.app/docs/#built-in-filters">filters</a>.</p>
+<p><i class="fa fa-info-circle"></i> See Tera's
+<a href="https://tera.netlify.app/docs/">documentation</a> to learn more about these and more advanced
+features, including template <a href="https://tera.netlify.app/docs/#inheritance">inheritance</a>, the
+<a href="https://tera.netlify.app/docs/#include">include</a> tag, <a href="https://tera.netlify.app/docs/#macros">macros</a> and the full list of
+available <a href="https://tera.netlify.app/docs/#built-in-filters">filters</a>.</p>
 </blockquote>
 <h2 id="template"><a class="header" href="#template">Template</a></h2>
 <p>Templates consist of two main sections, the configuration block written in YAML
@@ -668,7 +669,7 @@ names:
 <blockquote>
 <p><i class="fa fa-exclamation-circle"></i> Note that the final rendered output
 file will not include its template's configuration. Additionally, if the
-configuration ended with trailing linebreaks, a single one of them is
+configuration ended with trailing line-breaks, a single one of them is
 removed. This allows for some extra whitespace while working with a template
 without affecting final rendered output.</p>
 </blockquote>
@@ -773,7 +774,7 @@ but also changes the number of output files. See
 <div class="table-wrapper"><table><thead><tr><th></th><th></th></tr></thead><tbody>
 <tr><td>Context Mode</td><td><code>book</code></td></tr>
 <tr><td>Context Objects</td><td><a href="01-templates/./06-01-book.html"><code>book</code></a> <a href="01-templates/./06-02-annotation.html"><code>annotations</code></a> <a href="01-templates/./06-03-names.html"><code>names</code></a></td></tr>
-<tr><td>Ouput Files</td><td>=1</td></tr>
+<tr><td>Output Files</td><td>=1</td></tr>
 </tbody></table>
 </div>
 <blockquote>
@@ -839,10 +840,10 @@ for more information.</p>
 <div class="table-wrapper"><table><thead><tr><th></th><th></th></tr></thead><tbody>
 <tr><td>Context Mode</td><td><code>annotation</code></td></tr>
 <tr><td>Context Objects</td><td><a href="01-templates/./06-01-book.html"><code>book</code></a> <a href="01-templates/./06-02-annotation.html"><code>annotation</code></a> <a href="01-templates/./06-03-names.html"><code>names</code></a></td></tr>
-<tr><td>Ouput Files</td><td>&gt;=1</td></tr>
+<tr><td>Output Files</td><td>&gt;=1</td></tr>
 </tbody></table>
 </div>
-<p>When selected, multiple files are rendered out from a context containing a the
+<p>When selected, multiple files are rendered out from a context containing the
 data from a single annotation and its respective book. For example, represented
 here in YAML:</p>
 <pre><code class="language-yaml">book:
@@ -1183,7 +1184,7 @@ templates for a fully working example.</p>
 <p>Partial templates are included using the <code>include</code> tag:</p>
 <pre><code class="language-jinja2">{% include &quot;_my-partial-template.md&quot; %}
 </code></pre>
-<p>Where <code>&quot;_my-partial-template.md&quot;</code> is a path relative to to the
+<p>Where <code>&quot;_my-partial-template.md&quot;</code> is a path relative to the
 <a href="01-templates/../00-intro/02-options.html#--templates-directory-path">templates directory</a>. Therefore, this would be pointing
 to a template at the root of the <a href="01-templates/../00-intro/02-options.html#--templates-directory-path">templates directory</a>.
 If we wanted to organize our templates into different directories we would
@@ -1201,8 +1202,9 @@ template and the <a href="01-templates/../00-intro/02-options.html#--templates-d
 {% include &quot;my-vault-templates/_annotation.jinja2&quot; %}
 </code></pre>
 <blockquote>
-<p><i class="fa fa-info-circle"></i> See the documentation for <a href="https://tera.netlify.app/docs/#include">include</a>
-for more information on its features and limitations.</p>
+<p><i class="fa fa-info-circle"></i> See the documentation for <a href="https://tera.netlify.app/">Tera</a>'s
+<a href="https://tera.netlify.app/docs/#include">include</a> tag for more information on its features and
+limitations.</p>
 </blockquote>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="backlinks"><a class="header" href="#backlinks">Backlinks</a></h1>
 <p>Generating backlinks for a Zettelkasten-like note-taking experience is
@@ -1269,13 +1271,15 @@ names:
 contains all the rendered <a href="01-templates/./06-03-names.html">Names</a>, to link between our rendered output
 files. See <a href="01-templates/./06-03-names.html">Context Reference - Names</a> for more information.</p>
 <h3 id="book-template-body"><a class="header" href="#book-template-body">Book Template Body</a></h3>
-<p>The <code>names.annotation</code> object is a dictionary of key:value pairs where the
-key is the annotation's <code>id</code> and the value is the rendered output of the
-<code>names.annotation</code> template. Here, the <code>id</code> is being discarded by declaring it
-an <code>_</code> (by convention only) and never actually using it.</p>
+<p>The <code>names.annotations</code> object is a list of dictionaries, where each dictionary
+refers to a rendered annotation file and contains its filename along with
+metadata about its respective annotation. This allows us to link back to the
+annotation and sort the links based of off different criteria. In the example
+below, <a href="https://tera.netlify.app/">Tera</a>'s <a href="https://tera.netlify.app/docs/#sort"><code>sort</code></a> filter is used with the <code>attribute</code>
+argument and the <code>location</code> attribute.</p>
 <pre><code class="language-jinja2"># {{ book.author }} - {{ book.title }}
 
-{% for name in names.annotations -%}
+{% for name in names.annotations | sort(attribute=&quot;location&quot;)-%}
 ![[{{ name.filename }}]]
 {% endfor %}
 </code></pre>
@@ -1433,8 +1437,8 @@ last-opened: {{ book.metadata.last_opened | date(format=&quot;%Y-%m-%d-%H:%M&quo
 ---
 </code></pre>
 <blockquote>
-<p><i class="fa fa-info-circle"></i> Here the <a href="https://tera.netlify.app/docs/#date"><code>date</code></a> filter is used to
-format a <code>datetime</code> object into a human-readable date.</p>
+<p><i class="fa fa-info-circle"></i> Here <a href="https://tera.netlify.app/">Tera</a>'s <a href="https://tera.netlify.app/docs/#date"><code>date</code></a>
+filter is used to format a <code>datetime</code> object into a human-readable date.</p>
 </blockquote>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="annotation"><a class="header" href="#annotation">Annotation</a></h1>
 <p>The number of <code>annotation</code> objects injected into a template depends on
@@ -1496,31 +1500,36 @@ objects, under the name <code>annotations</code>, are injected into the template
 {% endfor %}
 </code></pre>
 <blockquote>
-<p><i class="fa fa-info-circle"></i> Here the <a href="https://tera.netlify.app/docs/#join"><code>join</code></a> filter is used to
-join an array of items into a space-separated string.</p>
+<p><i class="fa fa-info-circle"></i> Here <a href="https://tera.netlify.app/">Tera</a>'s <a href="https://tera.netlify.app/docs/#join"><code>join</code></a>
+filter is used to join an array of items into a space-separated string.</p>
 </blockquote>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="names-1"><a class="header" href="#names-1">Names</a></h1>
 <p>A single <code>names</code> object is injected into all template contexts regardless of
 the template's <a href="01-templates/./02-02-context-modes.html">Context Mode</a>. These contain all the file and
 directory names rendered from the <code>names</code> key in the template's config. See
 <a href="01-templates/./02-05-names.html">Names</a> for more information.</p>
-<h2 id="template-fields"><a class="header" href="#template-fields">Template Fields</a></h2>
-<h3 id="names-2"><a class="header" href="#names-2">Names</a></h3>
+<h2 id="template-fields---names"><a class="header" href="#template-fields---names">Template Fields - Names</a></h2>
 <div class="table-wrapper"><table><thead><tr><th>Attribute</th><th>Type</th><th>Description</th></tr></thead><tbody>
 <tr><td><code>names</code></td><td>dictionary</td><td>names object</td></tr>
 <tr><td><code>names.book</code></td><td>string</td><td>rendered book filename</td></tr>
-<tr><td><code>names.annotations</code></td><td>list[annotation-name-attributes]</td><td>annotations object</td></tr>
+<tr><td><code>names.annotations</code></td><td>list[dictionary]</td><td>annotation names</td></tr>
 <tr><td><code>names.directory</code></td><td>string</td><td>rendered directory name</td></tr>
 </tbody></table>
 </div>
-<h3 id="annotation-name-attributes"><a class="header" href="#annotation-name-attributes">Annotation Name Attributes</a></h3>
+<p>The <code>names.annotations</code> object is a list of dictionaries, where each dictionary
+refers to a rendered annotation file and contains its filename along with
+metadata about its respective annotation. Each dictionary consists of the
+following attributes:</p>
 <div class="table-wrapper"><table><thead><tr><th>Attribute</th><th>Type</th><th>Description</th></tr></thead><tbody>
-<tr><td><code>annotation.filename</code></td><td>string</td><td>rendered annotation filename</td></tr>
-<tr><td><code>annotation.created</code></td><td>string</td><td>date created</td></tr>
-<tr><td><code>annotation.modified</code></td><td>string</td><td>date modified</td></tr>
-<tr><td><code>annotation.location</code></td><td>string</td><td>location string</td></tr>
+<tr><td><code>filename</code></td><td>string</td><td>rendered annotation filename</td></tr>
+<tr><td><code>created</code></td><td>datetime</td><td>date created</td></tr>
+<tr><td><code>modified</code></td><td>datetime</td><td>date modified</td></tr>
+<tr><td><code>location</code></td><td>string</td><td>location string</td></tr>
 </tbody></table>
 </div>
+<p>These attributes allow the sorting of the <code>names.annotations</code> list using
+<a href="https://tera.netlify.app/">Tera</a>'s <a href="https://tera.netlify.app/docs/#sort"><code>sort</code></a> filter. See <a href="01-templates/./04-backlinks.html">Backlinks</a> for
+example usage.</p>
 <h2 id="example-data---names"><a class="header" href="#example-data---names">Example Data - Names</a></h2>
 <p>With the following <code>names</code> configuration:</p>
 <pre><code class="language-yaml">names:
@@ -1562,8 +1571,8 @@ directory names rendered from the <code>names</code> key in the template's confi
 <h2 id="example-template---names"><a class="header" href="#example-template---names">Example Template - Names</a></h2>
 <pre><code class="language-jinja2"># {{ book.author }} - {{ book.title }}
 
-{% for annotation in names.annotations | sort(attribute=&quot;location&quot;) -%}
-![[{{ annotation.filename }}]]
+{% for name in names.annotations | sort(attribute=&quot;location&quot;) -%}
+![[{{ name.filename }}]]
 {% endfor %}
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="apple-books"><a class="header" href="#apple-books">Apple Books</a></h1>
@@ -1616,16 +1625,16 @@ yields some other directories:</p>
 ./com.apple.iBooksX/Data/Documents/BKBookstore
 </code></pre>
 <p>So it's safe to assume any directory starting with <code>com.apple.Books</code> or
-<code>com.apple.BK</code> is important. Therefore these two globs along with Apple Books'
+<code>com.apple.BK</code> is important. Therefore, these two globs along with Apple Books'
 <code>Group Container</code> should be used for archiving and restoring:</p>
 <pre><code class="language-plaintext">~/Library/Containers/com.apple.BK*
 ~/Library/Containers/com.apple.iBooks*
 ~/Library/Group\ Containers/group.com.apple.iBooks
 </code></pre>
 <h2 id="important-note"><a class="header" href="#important-note"><i class="fa fa-exclamation-circle"></i> Important Note</a></h2>
-<p>Archving/restoring will work <strong>only</strong> if the path to the username <strong>has not
+<p>Archiving/restoring will work <strong>only</strong> if the path to the username <strong>has not
 changed</strong> since the library was archived. Doing a few searches shows that the
-the username has been hard-coded into some files. This is most evident in the
+username has been hard-coded into some files. This is most evident in the
 <code>BKLibrary-*.sqlite</code> file which contains absolute paths to library files.</p>
 <p>For example:</p>
 <pre><code class="language-console">$ find ~/Library/Containers/com.apple.BKAgentService \
@@ -1736,8 +1745,8 @@ rsync \
 <blockquote>
 <p><i class="fa fa-exclamation-circle"></i> The trailing forward-slash after
 <code>Containers</code> and <code>Group\ Containers</code> here is important. It tells <code>rsync</code> to
-move the the archive directory's <em>contents</em> into the target. Otherwise it
-would move the archive <em>directory</em> into the target.</p>
+move the archive directory's <em>contents</em> into the target. Otherwise, it would
+move the archive <em>directory</em> into the target.</p>
 </blockquote>
 <p>For example, if <code>[PATH-TO-ARCHIVE]</code> is:</p>
 <pre><code class="language-plaintext">~/archives/2022-10-08--apple-books-v4.4-5177--macos-v12.6

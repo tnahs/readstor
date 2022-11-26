@@ -191,16 +191,16 @@ yields some other directories:</p>
 ./com.apple.iBooksX/Data/Documents/BKBookstore
 </code></pre>
 <p>So it's safe to assume any directory starting with <code>com.apple.Books</code> or
-<code>com.apple.BK</code> is important. Therefore these two globs along with Apple Books'
+<code>com.apple.BK</code> is important. Therefore, these two globs along with Apple Books'
 <code>Group Container</code> should be used for archiving and restoring:</p>
 <pre><code class="language-plaintext">~/Library/Containers/com.apple.BK*
 ~/Library/Containers/com.apple.iBooks*
 ~/Library/Group\ Containers/group.com.apple.iBooks
 </code></pre>
 <h2 id="important-note"><a class="header" href="#important-note"><i class="fa fa-exclamation-circle"></i> Important Note</a></h2>
-<p>Archving/restoring will work <strong>only</strong> if the path to the username <strong>has not
+<p>Archiving/restoring will work <strong>only</strong> if the path to the username <strong>has not
 changed</strong> since the library was archived. Doing a few searches shows that the
-the username has been hard-coded into some files. This is most evident in the
+username has been hard-coded into some files. This is most evident in the
 <code>BKLibrary-*.sqlite</code> file which contains absolute paths to library files.</p>
 <p>For example:</p>
 <pre><code class="language-console">$ find ~/Library/Containers/com.apple.BKAgentService \

@@ -146,23 +146,28 @@
 the template's <a href="./02-02-context-modes.html">Context Mode</a>. These contain all the file and
 directory names rendered from the <code>names</code> key in the template's config. See
 <a href="./02-05-names.html">Names</a> for more information.</p>
-<h2 id="template-fields"><a class="header" href="#template-fields">Template Fields</a></h2>
-<h3 id="names-1"><a class="header" href="#names-1">Names</a></h3>
+<h2 id="template-fields---names"><a class="header" href="#template-fields---names">Template Fields - Names</a></h2>
 <div class="table-wrapper"><table><thead><tr><th>Attribute</th><th>Type</th><th>Description</th></tr></thead><tbody>
 <tr><td><code>names</code></td><td>dictionary</td><td>names object</td></tr>
 <tr><td><code>names.book</code></td><td>string</td><td>rendered book filename</td></tr>
-<tr><td><code>names.annotations</code></td><td>list[annotation-name-attributes]</td><td>annotations object</td></tr>
+<tr><td><code>names.annotations</code></td><td>list[dictionary]</td><td>annotation names</td></tr>
 <tr><td><code>names.directory</code></td><td>string</td><td>rendered directory name</td></tr>
 </tbody></table>
 </div>
-<h3 id="annotation-name-attributes"><a class="header" href="#annotation-name-attributes">Annotation Name Attributes</a></h3>
+<p>The <code>names.annotations</code> object is a list of dictionaries, where each dictionary
+refers to a rendered annotation file and contains its filename along with
+metadata about its respective annotation. Each dictionary consists of the
+following attributes:</p>
 <div class="table-wrapper"><table><thead><tr><th>Attribute</th><th>Type</th><th>Description</th></tr></thead><tbody>
-<tr><td><code>annotation.filename</code></td><td>string</td><td>rendered annotation filename</td></tr>
-<tr><td><code>annotation.created</code></td><td>string</td><td>date created</td></tr>
-<tr><td><code>annotation.modified</code></td><td>string</td><td>date modified</td></tr>
-<tr><td><code>annotation.location</code></td><td>string</td><td>location string</td></tr>
+<tr><td><code>filename</code></td><td>string</td><td>rendered annotation filename</td></tr>
+<tr><td><code>created</code></td><td>datetime</td><td>date created</td></tr>
+<tr><td><code>modified</code></td><td>datetime</td><td>date modified</td></tr>
+<tr><td><code>location</code></td><td>string</td><td>location string</td></tr>
 </tbody></table>
 </div>
+<p>These attributes allow the sorting of the <code>names.annotations</code> list using
+<a href="https://tera.netlify.app/">Tera</a>'s <a href="https://tera.netlify.app/docs/#sort"><code>sort</code></a> filter. See <a href="./04-backlinks.html">Backlinks</a> for
+example usage.</p>
 <h2 id="example-data---names"><a class="header" href="#example-data---names">Example Data - Names</a></h2>
 <p>With the following <code>names</code> configuration:</p>
 <pre><code class="language-yaml">names:
@@ -204,8 +209,8 @@ directory names rendered from the <code>names</code> key in the template's confi
 <h2 id="example-template---names"><a class="header" href="#example-template---names">Example Template - Names</a></h2>
 <pre><code class="language-jinja2"># {{ book.author }} - {{ book.title }}
 
-{% for annotation in names.annotations | sort(attribute=&quot;location&quot;) -%}
-![[{{ annotation.filename }}]]
+{% for name in names.annotations | sort(attribute=&quot;location&quot;) -%}
+![[{{ name.filename }}]]
 {% endfor %}
 </code></pre>
 

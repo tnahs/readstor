@@ -206,13 +206,15 @@ names:
 contains all the rendered <a href="./06-03-names.html">Names</a>, to link between our rendered output
 files. See <a href="./06-03-names.html">Context Reference - Names</a> for more information.</p>
 <h3 id="book-template-body"><a class="header" href="#book-template-body">Book Template Body</a></h3>
-<p>The <code>names.annotation</code> object is a dictionary of key:value pairs where the
-key is the annotation's <code>id</code> and the value is the rendered output of the
-<code>names.annotation</code> template. Here, the <code>id</code> is being discarded by declaring it
-an <code>_</code> (by convention only) and never actually using it.</p>
+<p>The <code>names.annotations</code> object is a list of dictionaries, where each dictionary
+refers to a rendered annotation file and contains its filename along with
+metadata about its respective annotation. This allows us to link back to the
+annotation and sort the links based of off different criteria. In the example
+below, <a href="https://tera.netlify.app/">Tera</a>'s <a href="https://tera.netlify.app/docs/#sort"><code>sort</code></a> filter is used with the <code>attribute</code>
+argument and the <code>location</code> attribute.</p>
 <pre><code class="language-jinja2"># {{ book.author }} - {{ book.title }}
 
-{% for name in names.annotations -%}
+{% for name in names.annotations | sort(attribute=&quot;location&quot;)-%}
 ![[{{ name.filename }}]]
 {% endfor %}
 </code></pre>
