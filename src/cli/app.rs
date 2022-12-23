@@ -248,7 +248,7 @@ impl App {
         let today = format!("{}-{}", utils::today(), *APPLEBOOKS_VERSION);
 
         // -> [ouput-directory]/[YYYY-MM-DD-HHMMSS]-[VERSION]
-        let destination_root = path.join(&today);
+        let destination_root = path.join(today);
 
         // -> [ouput-directory]/[YYYY-MM-DD-HHMMSS]-[VERSION]/BKLibrary
         let destination_books = destination_root.join(ABDatabaseName::Books.to_string());
@@ -269,8 +269,8 @@ impl App {
             .databases_directory
             .join(ABDatabaseName::Annotations.to_string());
 
-        utils::copy_dir(source_books, &destination_books)?;
-        utils::copy_dir(source_annotations, &destination_annotations)?;
+        utils::copy_dir(source_books, destination_books)?;
+        utils::copy_dir(source_annotations, destination_annotations)?;
 
         Ok(())
     }
@@ -311,7 +311,7 @@ impl App {
     /// Prints to the terminal. Allows muting.
     fn print(&self, message: &str) {
         if !self.config.is_quiet {
-            println!("{}", message);
+            println!("{message}");
         }
     }
 }

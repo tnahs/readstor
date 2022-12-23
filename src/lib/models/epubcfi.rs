@@ -175,7 +175,7 @@ pub fn parse(raw: &str) -> String {
     // -> A: 6.4.4.10.2.1:1
     // -> B: 6.4.4.10.1:3
     // -> C: 2.4.6.44.3
-    location = format!("{}{}", steps, character_offset);
+    location = format!("{steps}{character_offset}");
 
     location
 }

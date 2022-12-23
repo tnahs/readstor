@@ -134,7 +134,7 @@ impl TemplateRaw {
             post_config_contents = &post_config_contents[1..];
         }
 
-        let contents = format!("{}{}", pre_config_contents, post_config_contents,);
+        let contents = format!("{pre_config_contents}{post_config_contents}",);
 
         Some((config, contents))
     }
@@ -494,7 +494,7 @@ impl NamesRender {
 
         filename = crate::utils::sanitize_string(&filename);
 
-        Ok(format!("{}.{}", filename, template.extension))
+        Ok(format!("{filename}.{}", template.extension))
     }
 
     fn render_annotation_filenames(
@@ -513,7 +513,7 @@ impl NamesRender {
             )?;
 
             filename = crate::utils::sanitize_string(&filename);
-            filename = format!("{}.{}", filename, template.extension);
+            filename = format!("{filename}.{}", template.extension);
 
             annotations.insert(
                 annotation.metadata.id.clone(),

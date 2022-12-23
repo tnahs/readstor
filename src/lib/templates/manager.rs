@@ -161,7 +161,7 @@ impl Templates {
 
             // -> [ouput-directory]/[template-subdirectory]/[template-filename]
             let file = root.join(&render.filename);
-            let mut file = File::create(&file)?;
+            let mut file = File::create(file)?;
 
             write!(file, "{}", &render.contents)?;
         }

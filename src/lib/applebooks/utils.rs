@@ -24,7 +24,7 @@ pub static APPLEBOOKS_VERSION: Lazy<String> = Lazy::new(|| {
     .iter()
     .collect();
 
-    let value = if let Ok(value) = Value::from_file(&path) {
+    let value = if let Ok(value) = Value::from_file(path) {
         value
     } else {
         // This can happen if the user is on a non-macOS device.
@@ -53,7 +53,7 @@ pub static APPLEBOOKS_VERSION: Lazy<String> = Lazy::new(|| {
         });
 
     // v3.2-2217
-    format!("v{}-{}", version_short, version_long)
+    format!("v{version_short}-{version_long}")
 });
 
 /// Returns a boolean based on if Apple Books is running or not.

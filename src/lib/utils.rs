@@ -34,7 +34,7 @@ where
         let entry = entry?;
 
         if entry.path().is_dir() {
-            copy_dir(&entry.path(), &destination.join(entry.file_name()))?;
+            copy_dir(entry.path(), destination.join(entry.file_name()))?;
         } else {
             fs::copy(entry.path(), destination.join(entry.file_name()))?;
         }

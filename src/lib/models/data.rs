@@ -123,9 +123,6 @@ impl Data {
     /// Returns the number of annotations.
     #[must_use]
     pub fn count_annotations(&self) -> usize {
-        self.0
-            .iter()
-            .map(|(_, entry)| entry.annotations.len())
-            .sum()
+        self.0.values().map(|entry| entry.annotations.len()).sum()
     }
 }
