@@ -3,6 +3,8 @@
 
 pub mod process;
 
+use std::collections::HashSet;
+
 use crate::models::entry::Entry;
 use crate::templates::template::TemplateRender;
 
@@ -71,12 +73,18 @@ impl PreProcessor {
             annotation.notes = process::remove_tags(&annotation.notes);
         }
 
-        // Compile/insert all `#tags` into `Book::tags`.
-        entry.book.tags = entry
+        // Compile/insert unique list of `#tags` into `Book::tags`.
+        let mut tags = entry
             .annotations
             .iter()
             .flat_map(|a| a.tags.clone())
-            .collect();
+            .collect::<HashSet<String>>()
+            .into_iter()
+            .collect::<Vec<String>>();
+
+        tags.sort();
+
+        entry.book.tags = tags;
     }
 
     /// Normalizes whitespace in [`Annotation::body`][body].
@@ -209,4 +217,45 @@ pub struct PostProcessorOptions {
 
     /// Toggles wrapping text to a maximum character width.
     pub wrap_text: Option<usize>,
+}
+
+#[cfg(test)]
+mod test_processors {
+
+    use super::*;
+    use crate::models::annotation::Annotation;
+    use crate::models::book::Book;
+
+    #[test]
+    fn test_extracted_tags() {
+        let mut entry = Entry {
+            book: Book::default(),
+            annotations: vec![
+                Annotation {
+                    notes: "#tag01 #tag02".to_string(),
+                    ..Default::default()
+                },
+                Annotation {
+                    notes: "#tag02 #tag03".to_string(),
+                    ..Default::default()
+                },
+                Annotation {
+                    notes: "#tag03 #tag01".to_string(),
+                    ..Default::default()
+                },
+            ],
+        };
+
+        PreProcessor::extract_tags(&mut entry);
+
+        for annotation in entry.annotations {
+            assert_eq!(annotation.tags.len(), 2);
+            assert!(annotation.notes.is_empty());
+        }
+
+        assert_eq!(
+            *entry.book.tags,
+            ["#tag01", "#tag02", "#tag03"].map(String::from).to_vec()
+        );
+    }
 }
