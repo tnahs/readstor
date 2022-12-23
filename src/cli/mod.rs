@@ -9,7 +9,7 @@ use std::result::Result;
 use clap::{Parser, Subcommand};
 
 #[derive(Debug, Parser)]
-#[clap(author, version, about)]
+#[command(author, version, about)]
 pub struct Cli {
     #[clap(flatten)]
     pub options: Options,
