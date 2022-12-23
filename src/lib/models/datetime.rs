@@ -65,7 +65,8 @@ impl From<f64> for DateTimeUtc {
 
         let seconds = timestamp.trunc() as i64;
         let nanoseconds = timestamp.fract() * 1_000_000_000.0;
-        let datetime = NaiveDateTime::from_timestamp(seconds, nanoseconds as u32);
+        // Unwrap should be safe here as the timestamps are coming from the OS.
+        let datetime = NaiveDateTime::from_timestamp_opt(seconds, nanoseconds as u32).unwrap();
 
         DateTimeUtc(DateTime::from_utc(datetime, Utc))
     }
