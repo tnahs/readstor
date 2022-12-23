@@ -331,7 +331,7 @@ pub enum StructureMode {
     ///  │   │   ├─ [template-name-01].[extension]
     ///  │   │   ├─ [template-name-01].[extension]
     ///  │   │   └─ ...
-    ///  │   │   
+    ///  │   │
     ///  │   ├─ [author-title-02]
     ///  │   │   ├─ [template-name-02].[extension]
     ///  │   │   ├─ [template-name-02].[extension]
