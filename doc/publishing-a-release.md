@@ -8,6 +8,10 @@
    💡 Use [`cargo-markdown`][cargo-markdown] to verify that it renders correctly
    on [crates.io][crates-io]
 
+   ```shell
+   cargo markdown README.md
+   ```
+
 5. Check for packaging issues with:
 
    ```console
