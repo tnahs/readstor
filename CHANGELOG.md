@@ -1,6 +1,6 @@
 # Changelog
 
-## v0.4.0 UNRELEASED CHANGES
+## v0.4.0 (2022-12-22)
 
 - Implemented a more robust pre- and post-processor.
 - Added the `--text-wrap [WIDTH]` option to enable text-wrapping
