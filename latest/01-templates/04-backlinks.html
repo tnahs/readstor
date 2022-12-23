@@ -4,8 +4,10 @@
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
         <title>Backlinks - ReadStor</title>
+
+
         <!-- Custom HTML head -->
-        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        
         <meta name="description" content="A CLI for Apple Books annotations">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff" />
@@ -16,9 +18,11 @@
         <link rel="stylesheet" href="../css/general.css">
         <link rel="stylesheet" href="../css/chrome.css">
         <link rel="stylesheet" href="../css/print.css" media="print">
+
         <!-- Fonts -->
         <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
         <link rel="stylesheet" href="../fonts/fonts.css">
+
         <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="../highlight.css">
         <link rel="stylesheet" href="../tomorrow-night.css">
@@ -26,16 +30,17 @@
 
         <!-- Custom theme stylesheets -->
         <link rel="stylesheet" href="../src/css/custom.css">
+
     </head>
     <body>
         <!-- Provide site root to javascript -->
-        <script type="text/javascript">
+        <script>
             var path_to_root = "../";
             var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "ayu" : "ayu";
         </script>
 
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
-        <script type="text/javascript">
+        <script>
             try {
                 var theme = localStorage.getItem('mdbook-theme');
                 var sidebar = localStorage.getItem('mdbook-sidebar');
@@ -51,7 +56,7 @@
         </script>
 
         <!-- Set the theme before any content is loaded, prevents flash -->
-        <script type="text/javascript">
+        <script>
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
             if (theme === null || theme === undefined) { theme = default_theme; }
@@ -63,7 +68,7 @@
         </script>
 
         <!-- Hide / unhide sidebar before it is displayed -->
-        <script type="text/javascript">
+        <script>
             var html = document.querySelector('html');
             var sidebar = 'hidden';
             if (document.body.clientWidth >= 1080) {
@@ -76,7 +81,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded "><a href="../00-intro/00-intro.html"><strong aria-hidden="true">1.</strong> Introduction</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../00-intro/01-commands.html"><strong aria-hidden="true">1.1.</strong> Commands</a></li><li class="chapter-item expanded "><a href="../00-intro/02-options.html"><strong aria-hidden="true">1.2.</strong> Options</a></li></ol></li><li class="chapter-item expanded "><a href="../01-templates/00-templates.html"><strong aria-hidden="true">2.</strong> Templates</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../01-templates/01-an-example-template.html"><strong aria-hidden="true">2.1.</strong> An Example Template</a></li><li class="chapter-item expanded "><a href="../01-templates/02-00-configuration.html"><strong aria-hidden="true">2.2.</strong> Configuration</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../01-templates/02-01-template-groups.html"><strong aria-hidden="true">2.2.1.</strong> Template Groups</a></li><li class="chapter-item expanded "><a href="../01-templates/02-02-context-modes.html"><strong aria-hidden="true">2.2.2.</strong> Context Modes</a></li><li class="chapter-item expanded "><a href="../01-templates/02-03-structure-modes.html"><strong aria-hidden="true">2.2.3.</strong> Structure Modes</a></li><li class="chapter-item expanded "><a href="../01-templates/02-04-file-extensions.html"><strong aria-hidden="true">2.2.4.</strong> File Extensions</a></li><li class="chapter-item expanded "><a href="../01-templates/02-05-name-templates.html"><strong aria-hidden="true">2.2.5.</strong> Name Templates</a></li></ol></li><li class="chapter-item expanded "><a href="../01-templates/03-partial-templates.html"><strong aria-hidden="true">2.3.</strong> Partial Templates</a></li><li class="chapter-item expanded "><a href="../01-templates/04-backlinks.html" class="active"><strong aria-hidden="true">2.4.</strong> Backlinks</a></li><li class="chapter-item expanded "><a href="../01-templates/05-string-sanitization.html"><strong aria-hidden="true">2.5.</strong> String Sanitization</a></li><li class="chapter-item expanded "><a href="../01-templates/06-00-context-reference.html"><strong aria-hidden="true">2.6.</strong> Context Reference</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../01-templates/06-01-book.html"><strong aria-hidden="true">2.6.1.</strong> Book</a></li><li class="chapter-item expanded "><a href="../01-templates/06-02-annotation.html"><strong aria-hidden="true">2.6.2.</strong> Annotation</a></li><li class="chapter-item expanded "><a href="../01-templates/06-03-links.html"><strong aria-hidden="true">2.6.3.</strong> Links</a></li></ol></li></ol></li><li class="chapter-item expanded "><a href="../02-apple-books/00-apple-books.html"><strong aria-hidden="true">3.</strong> Apple Books</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../02-apple-books/01-archive-library.html"><strong aria-hidden="true">3.1.</strong> Archive Library</a></li><li class="chapter-item expanded "><a href="../02-apple-books/02-restore-library.html"><strong aria-hidden="true">3.2.</strong> Restore Library</a></li></ol></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded "><a href="../00-intro/00-intro.html"><strong aria-hidden="true">1.</strong> Introduction</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../00-intro/01-commands.html"><strong aria-hidden="true">1.1.</strong> Commands</a></li><li class="chapter-item expanded "><a href="../00-intro/02-options.html"><strong aria-hidden="true">1.2.</strong> Options</a></li></ol></li><li class="chapter-item expanded "><a href="../01-templates/00-templates.html"><strong aria-hidden="true">2.</strong> Templates</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../01-templates/01-an-example-template.html"><strong aria-hidden="true">2.1.</strong> An Example Template</a></li><li class="chapter-item expanded "><a href="../01-templates/02-00-configuration.html"><strong aria-hidden="true">2.2.</strong> Configuration</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../01-templates/02-01-template-groups.html"><strong aria-hidden="true">2.2.1.</strong> Template Groups</a></li><li class="chapter-item expanded "><a href="../01-templates/02-02-context-modes.html"><strong aria-hidden="true">2.2.2.</strong> Context Modes</a></li><li class="chapter-item expanded "><a href="../01-templates/02-03-structure-modes.html"><strong aria-hidden="true">2.2.3.</strong> Structure Modes</a></li><li class="chapter-item expanded "><a href="../01-templates/02-04-file-extensions.html"><strong aria-hidden="true">2.2.4.</strong> File Extensions</a></li><li class="chapter-item expanded "><a href="../01-templates/02-05-names.html"><strong aria-hidden="true">2.2.5.</strong> Names</a></li></ol></li><li class="chapter-item expanded "><a href="../01-templates/03-partial-templates.html"><strong aria-hidden="true">2.3.</strong> Partial Templates</a></li><li class="chapter-item expanded "><a href="../01-templates/04-backlinks.html" class="active"><strong aria-hidden="true">2.4.</strong> Backlinks</a></li><li class="chapter-item expanded "><a href="../01-templates/05-string-sanitization.html"><strong aria-hidden="true">2.5.</strong> String Sanitization</a></li><li class="chapter-item expanded "><a href="../01-templates/06-00-context-reference.html"><strong aria-hidden="true">2.6.</strong> Context Reference</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../01-templates/06-01-book.html"><strong aria-hidden="true">2.6.1.</strong> Book</a></li><li class="chapter-item expanded "><a href="../01-templates/06-02-annotation.html"><strong aria-hidden="true">2.6.2.</strong> Annotation</a></li><li class="chapter-item expanded "><a href="../01-templates/06-03-names.html"><strong aria-hidden="true">2.6.3.</strong> Names</a></li></ol></li></ol></li><li class="chapter-item expanded "><a href="../02-apple-books/00-apple-books.html"><strong aria-hidden="true">3.</strong> Apple Books</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../02-apple-books/01-archive-library.html"><strong aria-hidden="true">3.1.</strong> Archive Library</a></li><li class="chapter-item expanded "><a href="../02-apple-books/02-restore-library.html"><strong aria-hidden="true">3.2.</strong> Restore Library</a></li></ol></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -84,7 +89,7 @@
         <div id="page-wrapper" class="page-wrapper">
 
             <div class="page">
-                <div id="menu-bar-hover-placeholder"></div>
+                                <div id="menu-bar-hover-placeholder"></div>
                 <div id="menu-bar" class="menu-bar sticky bordered">
                     <div class="left-buttons">
                         <button id="sidebar-toggle" class="icon-button" type="button" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
@@ -98,7 +103,7 @@
                             <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
                             <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
                             <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
-                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu (default)</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
                         </ul>
                         <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
                             <i class="fa fa-search"></i>
@@ -117,6 +122,7 @@
                         <a href="https://github.com/tnahs/readstor/edit/main/book/src/01-templates/04-backlinks.md" title="Suggest an edit" aria-label="Suggest an edit">
                             <i id="git-edit-button" class="fa fa-edit"></i>
                         </a>
+
                     </div>
                 </div>
 
@@ -130,8 +136,9 @@
                         </ul>
                     </div>
                 </div>
+
                 <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
-                <script type="text/javascript">
+                <script>
                     document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
                     document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
                     Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
@@ -172,13 +179,13 @@ key. See <a href="./02-03-structure-modes.html">Structure Modes</a> for more inf
 <p><code>extension</code> is set to <code>md</code> as the template will be outputting Markdown.</p>
 </li>
 <li>
-<p><code>name-templates</code> can be set to anything as long as the values are identical
-between the two templates. It might seem odd to see the values for
-<code>name-templates</code> duplicated across the two templates. Shouldn't the book
-template define <code>name-templates.book</code> and the annotation template define
-<code>name-templates.annotation</code>? Ideally, yes. This need for duplication is the
-result of a current <a href="./02-05-name-templates.html#limitations">limitation</a> of ReadStor, therefore they
-<em>must</em> be identical so the backlinks are correctly generated.</p>
+<p><code>names</code> can be set to anything as long as the values are identical between
+the two templates. It might seem odd to see the values for <code>names</code> duplicated
+across the two templates. Shouldn't the book template define <code>names.book</code>
+and the annotation template define <code>names.annotation</code>? Ideally, yes. This
+need for duplication is the result of a current <a href="./02-05-names.html#limitations">limitation</a> of
+ReadStor, therefore they <em>must</em> be identical, so the backlinks are correctly
+generated.</p>
 </li>
 </ul>
 <h3 id="book-template-configuration"><a class="header" href="#book-template-configuration">Book Template Configuration</a></h3>
@@ -186,7 +193,7 @@ result of a current <a href="./02-05-name-templates.html#limitations">limitation
 context: book # &lt;- The only difference!
 structure: nested-grouped
 extension: md
-name-templates:
+names:
   book: &quot;{{ book.author }} - {{ book.title }}&quot;
   annotation: &quot;{{ annotation.metadata.slugs.created }}-{{ book.slugs.title }}&quot;
   directory: &quot;{{ book.author }} - {{ book.title }}&quot;
@@ -196,41 +203,42 @@ name-templates:
 context: annotation # &lt;- The only difference!
 structure: nested-grouped
 extension: md
-name-templates:
+names:
   book: &quot;{{ book.author }} - {{ book.title }}&quot;
   annotation: &quot;{{ annotation.metadata.slugs.created }}-{{ book.slugs.title }}&quot;
   directory: &quot;{{ book.author }} - {{ book.title }}&quot;
 </code></pre>
 <h2 id="template-body"><a class="header" href="#template-body">Template Body</a></h2>
-<p>With our configuration all set up, we can now use the <code>links</code> object, which
-contains all the rendered <a href="./02-05-name-templates.html">Name Templates</a>, to link between
-our rendered output files. See <a href="./06-03-links.html">Context Reference - Links</a> for more
-information.</p>
+<p>With our configuration all set up, we can now use the <code>names</code> object, which
+contains all the rendered <a href="./06-03-names.html">Names</a>, to link between our rendered output
+files. See <a href="./06-03-names.html">Context Reference - Names</a> for more information.</p>
 <h3 id="book-template-body"><a class="header" href="#book-template-body">Book Template Body</a></h3>
-<p>The <code>links.annotation</code> object is a dictionary of key:value pairs where the key
-is the annotation's <code>id</code> and the value is the rendered output of the
-<code>name-templates.annotation</code> template. Here, the <code>id</code> is being discarded by
-declaring it an <code>_</code> (by convention only) and never actually using it.</p>
+<p>The <code>names.annotations</code> object is a list of dictionaries, where each dictionary
+refers to a rendered annotation file and contains its filename along with
+metadata about its respective annotation. This allows us to link back to the
+annotation and sort the links based of off different criteria. In the example
+below, <a href="https://tera.netlify.app/">Tera</a>'s <a href="https://tera.netlify.app/docs/#sort"><code>sort</code></a> filter is used with the <code>attribute</code>
+argument and the <code>location</code> attribute.</p>
 <pre><code class="language-jinja2"># {{ book.author }} - {{ book.title }}
 
-{% for _, link in links.annotations -%}
-![[{{ link }}]]
+{% for name in names.annotations | sort(attribute=&quot;location&quot;)-%}
+![[{{ name.filename }}]]
 {% endfor %}
 </code></pre>
-<p>Alternatively we can use the <code>links.directory</code> variable to access the rendered
+<p>Alternatively we can use the <code>names.directory</code> variable to access the rendered
 name of the parent directory. This value is only available if the
 <a href="./02-03-structure-modes.html">Structure Mode</a> is set to <code>nested</code> or <code>nested-grouped</code>.</p>
 <!-- TODO: Verify this works! -->
 <pre><code class="language-jinja2"># {{ book.author }} - {{ book.title }}
 
-{% for _, link in links.annotations -%}
-![[{{ links.directory }}/{{ link }}]]
+{% for name in names.annotations -%}
+![[{{ name.directory }}/{{ name.filename }}]]
 {% endfor %}
 </code></pre>
 <h3 id="annotation-template-body"><a class="header" href="#annotation-template-body">Annotation Template Body</a></h3>
-<p>Finally, using the <code>links.book</code> variable we're able to link back to the source
+<p>Finally, using the <code>names.book</code> variable we're able to link back to the source
 book.</p>
-<pre><code class="language-jinja2"># [[{{ links.book }}]]
+<pre><code class="language-jinja2"># [[{{ names.book }}]]
 
 {{ annotation.body }}
 
@@ -309,9 +317,11 @@ tags: #inspiration
                             <a rel="prev" href="../01-templates/03-partial-templates.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
+
                             <a rel="next" href="../01-templates/05-string-sanitization.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
+
                         <div style="clear: both"></div>
                     </nav>
                 </div>
@@ -321,6 +331,7 @@ tags: #inspiration
                     <a rel="prev" href="../01-templates/03-partial-templates.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
+
                     <a rel="next" href="../01-templates/05-string-sanitization.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
@@ -328,16 +339,24 @@ tags: #inspiration
 
         </div>
 
-        <script type="text/javascript">
+
+
+
+        <script>
             window.playground_copyable = true;
         </script>
-        <script src="../elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
-        <script src="../mark.min.js" type="text/javascript" charset="utf-8"></script>
-        <script src="../searcher.js" type="text/javascript" charset="utf-8"></script>
-        <script src="../clipboard.min.js" type="text/javascript" charset="utf-8"></script>
-        <script src="../highlight.js" type="text/javascript" charset="utf-8"></script>
-        <script src="../book.js" type="text/javascript" charset="utf-8"></script>
+
+
+        <script src="../elasticlunr.min.js"></script>
+        <script src="../mark.min.js"></script>
+        <script src="../searcher.js"></script>
+
+        <script src="../clipboard.min.js"></script>
+        <script src="../highlight.js"></script>
+        <script src="../book.js"></script>
 
         <!-- Custom JS scripts -->
+
+
     </body>
 </html>
