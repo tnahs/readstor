@@ -39,9 +39,11 @@ cargo install readstor
 ## Version Support
 
 Apple Books' database schema can change with any update. The following versions
-have been verified as working. This is an ever growing list, if a version isn't
+have been verified as working. This is an ever-growing list, if a version isn't
 listed, it doesn't necessarily mean it isn't supported.
 
+- macOS Ventura 13.x
+  - Apple Books 5.0
 - macOS Monterey 12.x
   - Apple Books 4.4
   - Apple Books 4.2
