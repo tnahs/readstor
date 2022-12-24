@@ -98,7 +98,7 @@ impl App {
 
     /// Initializes templates.
     fn init_templates(&mut self, options: cli::TemplateOptions) -> Result<()> {
-        let mut templates = Templates::new(options.into(), super::defaults::TEMPLATE.into());
+        let mut templates = Templates::new(options, super::defaults::TEMPLATE.into());
 
         templates
             .init()

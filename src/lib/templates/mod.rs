@@ -52,14 +52,17 @@ impl Templates {
     ///
     /// # Arguments
     ///
-    /// * `options` - An instance [`TemplateOptions`].
+    /// * `options` - The [`Templates`]' options.
     /// * `default` - A string representing the contents of a template to build
     /// as the default. Used when no templates directory is specified.
     #[must_use]
-    pub fn new(options: TemplateOptions, default: String) -> Self {
+    pub fn new<O>(options: O, default: String) -> Self
+    where
+        O: Into<TemplateOptions>,
+    {
         Self {
             default,
-            options,
+            options: options.into(),
             ..Default::default()
         }
     }
