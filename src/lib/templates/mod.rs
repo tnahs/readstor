@@ -513,7 +513,7 @@ enum TemplateKind {
 }
 
 #[cfg(test)]
-mod test_manager {
+mod test_templates {
 
     use crate::defaults::{EXAMPLE_TEMPLATES, TEST_TEMPLATES};
     use crate::result::Error;

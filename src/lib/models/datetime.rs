@@ -24,8 +24,8 @@ use serde::Serialize;
 /// information.
 ///
 /// [entry]: super::entry::Entry
-/// [templates]: crate::templates::manager::Templates
-/// [validate-template]: crate::templates::manager::Templates::validate_template()
+/// [templates]: crate::templates::Templates
+/// [validate-template]: crate::templates::Templates::validate_template()
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize)]
 pub struct DateTimeUtc(DateTime<Utc>);
 

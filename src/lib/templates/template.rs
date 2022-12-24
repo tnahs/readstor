@@ -435,7 +435,7 @@ impl NamesRaw {
 ///
 /// See [`Templates::render()`][render] for more information.
 ///
-/// [render]: super::manager::Templates::render()
+/// [render]: super::Templates::render()
 #[derive(Debug, Default, Clone, Serialize)]
 pub struct NamesRender {
     /// The output filename for a template with [`ContextMode::Book`].
