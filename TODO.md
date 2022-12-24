@@ -11,6 +11,17 @@
 ## Next
 
 - [ ] Add an argument to `export` and `backup` to set the directory name template.
+
+  ```shell
+  readstor export \
+      --directory-template "{{ book.slugs.author }}--{{ book.slugs.title }}"
+  ```
+
+  ```shell
+  readstor backup \
+      --directory-template "{{ now() | date(format='%Y-%m-%d-%H%M%S') }}{{ version }}"
+  ```
+
 - [ ] Should we add pre- and post-processing options to the template's config?
       We could also keep the cli pre- and post-processing options and merge them
       with the ones local to each template.
