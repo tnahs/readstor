@@ -333,7 +333,7 @@ impl Templates {
     /// non-existent fields in an [`Entry`]/[`Book`]/[`Annotation`].
     //
     // FIXME: There's a fundamental error in how this is validating templates.
-    // If the data type is a sequence, the defauly length is zero. This
+    // If the data type is a sequence, the default length is zero. This
     // prevents the excecution of `for` loops within a template and therefore
     // never gets a chance to validate the blocks inside said loops.
     fn validate_template(&self, template: &TemplateRaw) -> Result<()> {

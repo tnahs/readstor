@@ -7,7 +7,7 @@ pub type Result<T> = std::result::Result<T, Error>;
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
     /// Error returned when the default Apple Books database cannot be found.
-    #[error("missing default Apple Books databases.")]
+    #[error("missing default Apple Books databases")]
     MissingDefaultDatabase,
 
     /// Error returned when there are issues connecting to a database.
@@ -32,7 +32,7 @@ pub enum Error {
 
     /// Error returned when a syntax error is detected in how a template's
     /// config block is defined. This does not include YAML syntax error.
-    #[error("cannot read config for: {path}.")]
+    #[error("cannot read config for: {path}")]
     InvalidTemplateConfig {
         /// The partial path to the template e.g. `nested/template.md`.
         path: String,
