@@ -1,5 +1,11 @@
 # Changelog
 
+## UNRELEASED CHANGES
+
+- `Books::tags` now returns a unique list of tags.
+- Passing a nonexistent template-group to `--template-group` now returns an
+  error instead of silently failing.
+
 ## v0.4.0 (2022-12-22)
 
 - Implemented a more robust pre- and post-processor.
