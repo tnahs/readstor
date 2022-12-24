@@ -1,6 +1,6 @@
 # Changelog
 
-## UNRELEASED CHANGES
+## v0.4.1 (2022-12-24)
 
 - `Books::tags` now returns a unique list of tags.
 - Passing a nonexistent template-group to `--template-group` now returns an
