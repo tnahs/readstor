@@ -120,7 +120,7 @@ pub fn validate_path_exists(value: &str) -> Result<PathBuf, String> {
     std::fs::canonicalize(value).map_err(|_| "path does not exist".into())
 }
 
-impl From<TemplateOptions> for lib::templates::manager::TemplateOptions {
+impl From<TemplateOptions> for lib::templates::TemplateOptions {
     fn from(options: TemplateOptions) -> Self {
         Self {
             templates_directory: options.templates_directory,

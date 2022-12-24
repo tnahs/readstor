@@ -7,7 +7,7 @@ use lib::applebooks::database::ABDatabaseName;
 use lib::applebooks::utils::APPLEBOOKS_VERSION;
 use lib::models::data::Data;
 use lib::processor::{PostProcessor, PreProcessor};
-use lib::templates::manager::Templates;
+use lib::templates::Templates;
 use lib::utils;
 
 use super::config::Config;
