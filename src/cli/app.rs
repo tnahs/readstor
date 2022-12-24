@@ -124,7 +124,7 @@ impl App {
     fn run_postprocessors(&mut self, options: cli::PostProcessorOptions) {
         self.templates
             .as_mut()
-            .expect("attempted to access un-initialized templates.")
+            .expect("attempted to access un-initialized templates")
             .renders_mut()
             .for_each(|render| PostProcessor::run(options, render));
     }
@@ -134,7 +134,7 @@ impl App {
         let templates = self
             .templates
             .as_mut()
-            .expect("attempted to access un-initialized templates.");
+            .expect("attempted to access un-initialized templates");
 
         self.data.entries().try_for_each(|entry| {
             templates
@@ -148,7 +148,7 @@ impl App {
         let templates = self
             .templates
             .as_ref()
-            .expect("attempted to access un-initialized templates.");
+            .expect("attempted to access un-initialized templates");
 
         // -> [ouput-directory]
         let path = &self.config.output_directory;
