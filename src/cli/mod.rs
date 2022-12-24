@@ -72,9 +72,9 @@ pub struct TemplateOptions {
     )]
     pub templates_directory: Option<PathBuf>,
 
-    /// Render specified template groups
+    /// Render specified template-groups
     #[arg(short = 'g', long = "template-group", value_name = "GROUP")]
-    pub template_groups: Option<Vec<String>>,
+    pub template_groups: Vec<String>,
 }
 
 #[derive(Debug, Clone, Copy, Default, Parser)]

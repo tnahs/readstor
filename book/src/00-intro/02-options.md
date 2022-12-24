@@ -50,7 +50,8 @@ Set a custom templates directory.
 
 Render specified [Template Groups][template-groups].
 
-> <i class="fa fa-exclamation-circle"></i> Only exact matches are rendered.
+> <i class="fa fa-exclamation-circle"></i> Passing nonexistent
+> [Template Groups][template-groups] will return an error.
 
 Multiple [Template Groups][template-groups] can be passed using the following
 syntax.

@@ -4,6 +4,7 @@ pub mod defaults;
 pub mod template;
 pub mod utils;
 
+use std::collections::HashSet;
 use std::fs::{self, File};
 use std::io::Write;
 use std::path::{Path, PathBuf};
@@ -14,7 +15,7 @@ use walkdir::DirEntry;
 use crate::models::annotation::Annotation;
 use crate::models::book::Book;
 use crate::models::entry::Entry;
-use crate::result::Result;
+use crate::result::{Error, Result};
 
 use template::{
     ContextMode, NamesRender, StructureMode, TemplateContext, TemplatePartialRaw, TemplateRaw,
@@ -78,6 +79,7 @@ impl Templates {
     /// reference non-existent fields in a [`Book`]/[`Annotation`].
     /// * A template's config block isn't formatted correctly, has syntax errors
     /// or is missing required fields.
+    /// * A requested template-group does not exist.
     /// * Any IO errors are encountered.
     pub fn init(&mut self) -> Result<()> {
         if let Some(path) = &self.options.templates_directory {
@@ -87,8 +89,7 @@ impl Templates {
             self.build_default();
         }
 
-        // TODO: Validate that the `self.options.template_groups` doesn't
-        // contain non-existing template groups.
+        self.validate_requested_template_groups()?;
 
         Ok(())
     }
@@ -107,7 +108,7 @@ impl Templates {
     pub fn render(&mut self, entry: &Entry) -> Result<()> {
         let mut renders = Vec::new();
 
-        for template in self.iter_active_templates() {
+        for template in self.iter_requested_templates() {
             let names = NamesRender::new(entry, template)?;
 
             // Builds a path, relative to the [output-directory], to where the
@@ -125,7 +126,6 @@ impl Templates {
                     // -> [output-directory]/[author-title]
                     PathBuf::from(&names.directory)
                 }
-
                 StructureMode::NestedGrouped => {
                     // -> [output-directory]/[template-group]/[author-title]
                     PathBuf::from(&template.group).join(&names.directory)
@@ -197,21 +197,45 @@ impl Templates {
         self.renders.len()
     }
 
-    /// Returns an iterator over all the currently active templates. Templates
-    /// can be activated through the [`TemplateOptions.template_groups`] field.
-    /// All templates are considered active if no groups are specified.
-    fn iter_active_templates(&self) -> impl Iterator<Item = &TemplateRaw> {
-        let templates: Vec<&TemplateRaw> = self.raws.iter().collect();
-
-        if let Some(template_groups) = &self.options.template_groups {
-            return templates
-                .into_iter()
-                .filter(|template| template_groups.contains(&template.group))
-                .collect::<Vec<_>>()
-                .into_iter();
+    /// Validates that all requested template-groups exist.
+    ///
+    /// # Errors
+    ///
+    /// Will return `Err` if a requested template-group does not exist.
+    fn validate_requested_template_groups(&self) -> Result<()> {
+        if self.options.template_groups.is_empty() {
+            return Ok(());
         }
 
-        templates.into_iter()
+        let available_template_groups: HashSet<&str> = self
+            .raws
+            .iter()
+            .map(|template| template.group.as_str())
+            .collect();
+
+        for template_group in &self.options.template_groups {
+            if !available_template_groups.contains(template_group.as_str()) {
+                return Err(Error::NonexistentTemplateGroup {
+                    name: template_group.to_string(),
+                });
+            }
+        }
+        Ok(())
+    }
+
+    /// Returns an iterator over all the requested templates.
+    fn iter_requested_templates(&self) -> impl Iterator<Item = &TemplateRaw> {
+        let templates: Vec<&TemplateRaw> = self.raws.iter().collect();
+
+        if self.options.template_groups.is_empty() {
+            return templates.into_iter();
+        }
+
+        templates
+            .into_iter()
+            .filter(|template| self.options.template_groups.contains(&template.group))
+            .collect::<Vec<_>>()
+            .into_iter()
     }
 
     /// Builds and registers [`TemplateRaw`]s from a directory containing user-
@@ -467,9 +491,13 @@ pub struct TemplateOptions {
     /// A path to a directory containing user-generated templates.
     pub templates_directory: Option<PathBuf>,
 
-    /// A list of template groups to render. If none is provided, all templates
-    /// are rendered.
-    pub template_groups: Option<Vec<String>>,
+    /// A list of template-groups to render. All template-groups are rendered
+    /// if none are specified.
+    ///
+    /// These are considered 'requested' template-groups. If they exist, their
+    /// respective templates are considered 'requested' templates and are
+    /// set to be rendered.
+    pub template_groups: Vec<String>,
 }
 
 /// An enum representing the two different template types.

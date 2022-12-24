@@ -38,6 +38,13 @@ pub enum Error {
         path: String,
     },
 
+    /// Error returned when a requested template-group does not exist.
+    #[error("no template-group named: '{name}'")]
+    NonexistentTemplateGroup {
+        /// The name of the template-group.
+        name: String,
+    },
+
     /// Error returned if [`tera`][tera] encounters any errors.
     ///
     /// [tera]: https://docs.rs/tera/latest/tera/
