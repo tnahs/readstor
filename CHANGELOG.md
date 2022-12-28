@@ -6,6 +6,17 @@
 ### Bug Fixes
 -->
 
+## UNRELEASED CHANGES
+
+### Changes
+
+- Folders generated from the `export` command now have two dashes between the
+  author and title: `book-author--book-title`.
+
+### Bug Fixes
+
+- The `--trim-blocks` option now only leaves a single trailing line-break.
+
 ## v0.4.1 (2022-12-24)
 
 ### Bug Fixes
