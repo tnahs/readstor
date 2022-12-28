@@ -93,8 +93,8 @@ pub fn convert_symbols_to_ascii(string: &str) -> String {
     string
 }
 
-/// Normalizes linebreaks by replacing three or more consecutive linebreaks with
-/// two consecutive linebreaks.
+/// Normalizes linebreaks by replacing three or more consecutive linebreaks
+/// with two consecutive linebreaks while leaving a single trailing linebreak.
 ///
 /// NOTE: This is a temporary solution that naively mimicks what [`tera`][tera]
 /// would do if/when it adds [`trim_blocks`][github-tera]. It is by no means
@@ -109,7 +109,12 @@ pub fn convert_symbols_to_ascii(string: &str) -> String {
 /// [tera]: https://docs.rs/tera/latest/tera/
 #[must_use]
 pub fn trim_blocks(string: &str) -> String {
-    RE_BLOCKS.replace_all(string, "\n\n").to_string()
+    let string = RE_BLOCKS.replace_all(string, "\n\n");
+    let mut string = string.trim_end().to_string();
+
+    string.push('\n');
+
+    string
 }
 
 #[cfg(test)]
