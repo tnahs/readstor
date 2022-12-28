@@ -20,7 +20,7 @@ impl Entry {
     /// Formats an [`Entry`]'s title and author into a slugified string.
     #[must_use]
     pub fn slug_name(&self) -> String {
-        format!("{}-{}", self.book.slug_author(), self.book.slug_title())
+        format!("{}--{}", self.book.slug_author(), self.book.slug_title())
     }
 }
 
