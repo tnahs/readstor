@@ -12,6 +12,7 @@ use lib::utils;
 
 use super::config::Config;
 use super::Command;
+use super::FilterBy;
 
 pub type Result<T> = color_eyre::Result<T>;
 
@@ -39,10 +40,14 @@ impl App {
     pub fn run(&mut self, command: Command) -> Result<()> {
         match command {
             Command::Export {
+                filters,
                 preprocessor_options,
             } => {
                 self.print("-> Initializing data");
                 self.init_data()?;
+
+                self.print("-> Running filters");
+                self.run_filters(filters);
 
                 self.print("-> Running pre-processors");
                 self.run_preprocessors(preprocessor_options);
@@ -53,12 +58,16 @@ impl App {
                 self.print_export_summary();
             }
             Command::Render {
+                filters,
                 template_options,
                 preprocessor_options,
                 postprocessor_options,
             } => {
                 self.print("-> Initializing data");
                 self.init_data()?;
+
+                self.print("-> Running filters");
+                self.run_filters(filters);
 
                 self.print("-> Running pre-processors");
                 self.run_preprocessors(preprocessor_options);
@@ -87,6 +96,10 @@ impl App {
         }
 
         Ok(())
+    }
+
+    fn run_filters(&mut self, filters: Vec<FilterBy>) {
+        todo!()
     }
 
     /// Initializes the application's data from the Apple Books databases.
