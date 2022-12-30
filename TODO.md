@@ -19,7 +19,28 @@
 
   ```shell
   readstor backup \
-      --directory-template "{{ now() | date(format='%Y-%m-%d-%H%M%S') }}{{ version }}"
+      --directory-template "{{ now() | date(format='%Y-%m-%d-%H%M%S') }}-{{ version }}"
+  ```
+
+- [ ] Improve stdout messages with [`indicatif`][indicatif]
+
+  ```plaintext
+  ◆ Rendering Templates:
+    • initializing data...
+    • running pre-processors...
+    • initializing templates...
+    • rendering templates...
+    • running post-processors...
+    • writing templates...
+    • rendered 1 template(s) into 99 file(s) to /path/to/output/directory
+  ```
+
+- [ ] Add `export`/`backup` filtering:
+
+  ```shell
+  readstor export \
+      --filter "title:the art spirit" \
+      --filter "tag:star"
   ```
 
 - [ ] Should we add pre- and post-processing options to the template's config?
@@ -55,4 +76,5 @@
 - [ ] Internationalization.
 
 [fern]: https://docs.rs/fern/latest/fern/
+[indicatif]: https://docs.rs/indicatif/latest/indicatif/
 [tera]: https://tera.netlify.app/
