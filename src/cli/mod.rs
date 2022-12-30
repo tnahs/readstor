@@ -3,8 +3,8 @@ pub mod config;
 pub mod defaults;
 pub mod utils;
 
-use std::path::PathBuf;
 use std::result::Result;
+use std::{path::PathBuf, str::FromStr};
 
 use clap::{Parser, Subcommand};
 
@@ -41,12 +41,20 @@ pub struct Options {
 pub enum Command {
     /// Export Apple Books' data as JSON
     Export {
+        /// Filter exported books/annotations
+        #[clap(short, long = "filter", value_name = "FIELD:QUERY")]
+        filters: Vec<FilterBy>,
+
         #[clap(flatten)]
         preprocessor_options: PreProcessorOptions,
     },
 
     /// Render Apple Books' data via templates
     Render {
+        /// Filter rendered books/annotations
+        #[clap(short, long = "filter", value_name = "FIELD:QUERY")]
+        filters: Vec<FilterBy>,
+
         #[clap(flatten)]
         template_options: TemplateOptions,
 
@@ -59,6 +67,18 @@ pub enum Command {
 
     /// Back-up Apple Books' databases
     Backup,
+}
+
+#[derive(Debug, Clone)]
+pub enum FilterBy {
+    /// Filter `Entry`s where the title contains `{query}`.
+    Title(String),
+
+    /// Filter `Entry`s where the author contains `{query}`.
+    Author(String),
+
+    /// Filter `annotations`s where the tags contain`{query}`.
+    Tags(String),
 }
 
 #[derive(Debug, Clone, Default, Parser)]
@@ -118,6 +138,36 @@ pub struct PostProcessorOptions {
 
 pub fn validate_path_exists(value: &str) -> Result<PathBuf, String> {
     std::fs::canonicalize(value).map_err(|_| "path does not exist".into())
+}
+
+impl FromStr for FilterBy {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        let error = "filters must follow the format 'field:query'";
+
+        let res: Vec<&str> = s.splitn(2, ':').collect();
+
+        if res.len() != 2 {
+            return Err(error.into());
+        }
+
+        let field = res[0];
+        let query = res[1].trim().to_string();
+
+        if query.is_empty() {
+            return Err(error.into());
+        }
+
+        let filter_by = match field {
+            "title" => Self::Title(query),
+            "author" => Self::Author(query),
+            "tags" => Self::Tags(query),
+            _ => return Err(format!("field '{field}' does not exist")),
+        };
+
+        Ok(filter_by)
+    }
 }
 
 impl From<TemplateOptions> for lib::templates::TemplateOptions {
