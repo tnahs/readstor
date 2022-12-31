@@ -64,13 +64,13 @@ impl Data {
         let annotations = ABDatabase::query::<Annotation>(path)?;
 
         log::debug!(
-            "found {} book(s) in {}.",
+            "found {} book(s) in {}",
             books.len(),
             ABDatabaseName::Books.to_string()
         );
 
         log::debug!(
-            "found {} annotation(s) in {}.",
+            "found {} annotation(s) in {}",
             annotations.len(),
             ABDatabaseName::Annotations.to_string()
         );

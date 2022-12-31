@@ -51,7 +51,7 @@ fn main() -> Result<()> {
 
     let config = Config::from(args.options);
 
-    log::debug!("{:#?}.", &config);
+    log::debug!("{:#?}", &config);
 
     App::new(config).run(args.command)
 }
