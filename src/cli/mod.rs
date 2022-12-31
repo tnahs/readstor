@@ -33,7 +33,7 @@ pub struct Options {
     pub force: bool,
 
     /// Silence output messages
-    #[arg(short, long = "quiet")]
+    #[arg(short = 'q', long = "quiet")]
     pub is_quiet: bool,
 }
 
