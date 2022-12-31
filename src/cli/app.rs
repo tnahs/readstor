@@ -1,6 +1,7 @@
 use std::fs;
 
 use color_eyre::eyre::WrapErr;
+use lib::filter::FilterRunner;
 
 use crate::cli;
 use lib::applebooks::database::ABDatabaseName;
@@ -12,7 +13,7 @@ use lib::utils;
 
 use super::config::Config;
 use super::Command;
-use super::FilterBy;
+use super::FilterType;
 
 pub type Result<T> = color_eyre::Result<T>;
 
@@ -46,11 +47,11 @@ impl App {
                 self.print("-> Initializing data");
                 self.init_data()?;
 
-                self.print("-> Running filters");
-                self.run_filters(filters);
-
                 self.print("-> Running pre-processors");
                 self.run_preprocessors(preprocessor_options);
+
+                self.print("-> Running filters");
+                self.run_filters(filters);
 
                 self.print("-> Exporting data");
                 self.export_data().wrap_err("Failed while exporting data")?;
@@ -66,11 +67,11 @@ impl App {
                 self.print("-> Initializing data");
                 self.init_data()?;
 
-                self.print("-> Running filters");
-                self.run_filters(filters);
-
                 self.print("-> Running pre-processors");
                 self.run_preprocessors(preprocessor_options);
+
+                self.print("-> Running filters");
+                self.run_filters(filters);
 
                 self.print("-> Initializing templates");
                 self.init_templates(template_options)?;
@@ -96,10 +97,6 @@ impl App {
         }
 
         Ok(())
-    }
-
-    fn run_filters(&mut self, filters: Vec<FilterBy>) {
-        todo!()
     }
 
     /// Initializes the application's data from the Apple Books databases.
@@ -129,6 +126,15 @@ impl App {
         self.data
             .entries_mut()
             .for_each(|entry| PreProcessor::run(options, entry));
+    }
+
+    /// Runs filters on all [`Entry`][entry]s.
+    ///
+    /// [entry]: lib::models::entry::Entry
+    fn run_filters(&mut self, filters: Vec<FilterType>) {
+        for filter in filters {
+            FilterRunner::run(filter, &mut self.data);
+        }
     }
 
     /// Runs post-processors on all [`TemplateRender`][template-render]s.
@@ -292,8 +298,8 @@ impl App {
     fn print_export_summary(&self) {
         self.print(&format!(
             "-> Exported {} annotation(s) from {} book(s) to {}",
-            self.data.count_annotations(),
-            self.data.count_books(),
+            self.data.annotations().count(),
+            self.data.books().count(),
             self.config.output_directory.display()
         ));
     }
@@ -344,8 +350,8 @@ mod test_app {
 
         app.init_data().unwrap();
 
-        assert_eq!(app.data.count_books(), 0);
-        assert_eq!(app.data.count_annotations(), 0);
+        assert_eq!(app.data.books().count(), 0);
+        assert_eq!(app.data.annotations().count(), 0);
     }
 
     // Tests that a database with un-annotated books returns zero books and
@@ -358,8 +364,8 @@ mod test_app {
         app.init_data().unwrap();
 
         // Un-annotated books are filtered out.
-        assert_eq!(app.data.count_books(), 0);
-        assert_eq!(app.data.count_annotations(), 0);
+        assert_eq!(app.data.books().count(), 0);
+        assert_eq!(app.data.annotations().count(), 0);
     }
 
     // Tests that a database with annotated books returns non-zero books and
@@ -371,8 +377,8 @@ mod test_app {
 
         app.init_data().unwrap();
 
-        assert_eq!(app.data.count_books(), 3);
-        assert_eq!(app.data.count_annotations(), 10);
+        assert_eq!(app.data.books().count(), 3);
+        assert_eq!(app.data.annotations().count(), 10);
     }
 
     // Tests that the annotations are sorted in the correct order.
@@ -390,6 +396,188 @@ mod test_app {
             for annotations in entry.annotations.windows(2) {
                 assert!(annotations[0] < annotations[1]);
             }
+        }
+    }
+
+    mod filter {
+
+        use super::*;
+
+        // Title
+
+        #[test]
+        fn test_title_any() {
+            let config = Config::test("books-annotated");
+            let mut app = App::new(config);
+
+            app.init_data().unwrap();
+
+            // Filter string: "?title:art think"
+            app.run_filters(vec![cli::FilterType::Title {
+                query: "art think".to_string(),
+                operator: cli::FilterOperator::Any,
+            }]);
+
+            assert_eq!(app.data.books().count(), 2);
+            assert_eq!(app.data.annotations().count(), 9);
+        }
+
+        #[test]
+        fn test_title_all() {
+            let config = Config::test("books-annotated");
+            let mut app = App::new(config);
+
+            app.init_data().unwrap();
+
+            // Filter string: "*title:joking feynman"
+            app.run_filters(vec![cli::FilterType::Title {
+                query: "joking feynman".to_string(),
+                operator: cli::FilterOperator::All,
+            }]);
+
+            assert_eq!(app.data.books().count(), 1);
+            assert_eq!(app.data.annotations().count(), 1);
+        }
+
+        #[test]
+        fn test_title_exact() {
+            let config = Config::test("books-annotated");
+            let mut app = App::new(config);
+
+            app.init_data().unwrap();
+
+            // Filter string: "=title:the art spirit"
+            app.run_filters(vec![cli::FilterType::Title {
+                query: "the art spirit".to_string(),
+                operator: cli::FilterOperator::Exact,
+            }]);
+
+            assert_eq!(app.data.books().count(), 1);
+            assert_eq!(app.data.annotations().count(), 4);
+        }
+
+        // Author
+
+        #[test]
+        fn test_author_any() {
+            let config = Config::test("books-annotated");
+            let mut app = App::new(config);
+
+            app.init_data().unwrap();
+
+            // Filter string: "?author:robert richard"
+            app.run_filters(vec![cli::FilterType::Author {
+                query: "robert richard".to_string(),
+                operator: cli::FilterOperator::Any,
+            }]);
+
+            assert_eq!(app.data.books().count(), 2);
+            assert_eq!(app.data.annotations().count(), 5);
+        }
+
+        #[test]
+        fn test_author_all() {
+            let config = Config::test("books-annotated");
+            let mut app = App::new(config);
+
+            app.init_data().unwrap();
+
+            // Filter string: "*author:richard feynman"
+            app.run_filters(vec![cli::FilterType::Author {
+                query: "richard feynman".to_string(),
+                operator: cli::FilterOperator::All,
+            }]);
+
+            assert_eq!(app.data.books().count(), 1);
+            assert_eq!(app.data.annotations().count(), 1);
+        }
+
+        #[test]
+        fn test_author_exact() {
+            let config = Config::test("books-annotated");
+            let mut app = App::new(config);
+
+            app.init_data().unwrap();
+
+            // Filter string: "=author:richard p. feynman"
+            app.run_filters(vec![cli::FilterType::Author {
+                query: "richard p. feynman".to_string(),
+                operator: cli::FilterOperator::Exact,
+            }]);
+
+            assert_eq!(app.data.books().count(), 1);
+            assert_eq!(app.data.annotations().count(), 1);
+        }
+
+        // Tags
+
+        #[test]
+        fn test_tags_any() {
+            let config = Config::test("books-annotated");
+            let mut app = App::new(config);
+
+            app.init_data().unwrap();
+
+            // The pre-processor extracts the tags.
+            app.run_preprocessors(cli::PreProcessorOptions {
+                extract_tags: true,
+                ..Default::default()
+            });
+
+            // Filter string: "?tags:#artist #death"
+            app.run_filters(vec![cli::FilterType::Tags {
+                query: "#artist #death".to_string(),
+                operator: cli::FilterOperator::Any,
+            }]);
+
+            assert_eq!(app.data.books().count(), 2);
+            assert_eq!(app.data.annotations().count(), 2);
+        }
+
+        #[test]
+        fn test_tags_all() {
+            let config = Config::test("books-annotated");
+            let mut app = App::new(config);
+
+            app.init_data().unwrap();
+
+            // The pre-processor extracts the tags.
+            app.run_preprocessors(cli::PreProcessorOptions {
+                extract_tags: true,
+                ..Default::default()
+            });
+
+            // Filter string: "*tags:#death #impermanence"
+            app.run_filters(vec![cli::FilterType::Tags {
+                query: "#death #impermanence".to_string(),
+                operator: cli::FilterOperator::All,
+            }]);
+
+            assert_eq!(app.data.books().count(), 1);
+            assert_eq!(app.data.annotations().count(), 1);
+        }
+
+        #[test]
+        fn test_tags_exact() {
+            let config = Config::test("books-annotated");
+            let mut app = App::new(config);
+
+            app.init_data().unwrap();
+
+            // The pre-processor extracts the tags.
+            app.run_preprocessors(cli::PreProcessorOptions {
+                extract_tags: true,
+                ..Default::default()
+            });
+
+            // Filter string: "=tags:#artist #being"
+            app.run_filters(vec![cli::FilterType::Tags {
+                query: "#artist #being".to_string(),
+                operator: cli::FilterOperator::Exact,
+            }]);
+
+            assert_eq!(app.data.books().count(), 1);
+            assert_eq!(app.data.annotations().count(), 1);
         }
     }
 }

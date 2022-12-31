@@ -1,6 +1,7 @@
 //! Defines the [`Data`] struct. A type that compiles and stores [`Entry`]s.
 
 use std::collections::HashMap;
+use std::ops::{Deref, DerefMut};
 use std::path::Path;
 
 use crate::applebooks::database::{ABDatabase, ABDatabaseName};
@@ -27,7 +28,7 @@ use super::entry::Entry;
 /// The `ID` for each `Entry` is taken from its `Book`'s `BookMetadata::id`.
 /// field. See [`From<Book> for Entry`](struct@Entry#impl-From<Book>) for more
 /// information.
-type Entries = HashMap<String, Entry>;
+pub type Entries = HashMap<String, Entry>;
 
 /// Defines a thin wrapper around the [`Entries`] type alias.
 ///
@@ -98,8 +99,8 @@ impl Data {
 
         self.0 = data;
 
-        log::debug!("created {} Book's", self.count_books());
-        log::debug!("created {} Annotation's", self.count_annotations());
+        log::debug!("created {} Book's", self.books().count());
+        log::debug!("created {} Annotation's", self.annotations().count());
 
         Ok(())
     }
@@ -114,15 +115,37 @@ impl Data {
         self.0.values_mut()
     }
 
-    /// Returns the number of books.
-    #[must_use]
-    pub fn count_books(&self) -> usize {
-        self.0.len()
+    /// Returns an iterator over all [`Book`]s.
+    pub fn books(&self) -> impl Iterator<Item = &Book> {
+        self.0.values().map(|entry| &entry.book)
     }
 
-    /// Returns the number of annotations.
-    #[must_use]
-    pub fn count_annotations(&self) -> usize {
-        self.0.values().map(|entry| entry.annotations.len()).sum()
+    /// Returns a mutable iterator over all [`Book`]s.
+    pub fn books_mut(&mut self) -> impl Iterator<Item = &Book> {
+        self.0.values().map(|entry| &entry.book)
+    }
+
+    /// Returns an iterator over all [`Annotation`]s.
+    pub fn annotations(&self) -> impl Iterator<Item = &Annotation> {
+        self.0.values().flat_map(|entry| &entry.annotations)
+    }
+
+    /// Returns a mutable iterator over all [`Annotation`]s.
+    pub fn annotations_mut(&mut self) -> impl Iterator<Item = &Annotation> {
+        self.0.values().flat_map(|entry| &entry.annotations)
+    }
+}
+
+impl Deref for Data {
+    type Target = Entries;
+
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+
+impl DerefMut for Data {
+    fn deref_mut(&mut self) -> &mut Entries {
+        &mut self.0
     }
 }
