@@ -44,8 +44,8 @@ pub struct Options {
 pub enum Command {
     /// Export Apple Books' data as JSON
     Export {
-        /// Filter exported books/annotations
-        #[clap(short, long = "filter", value_name = "FIELD:QUERY")]
+        /// Filter books/annotations before exporting
+        #[clap(short, long = "filter", value_name = "[?*=]FIELD:QUERY")]
         filters: Vec<FilterType>,
 
         #[clap(flatten)]
@@ -54,8 +54,8 @@ pub enum Command {
 
     /// Render Apple Books' data via templates
     Render {
-        /// Filter rendered books/annotations
-        #[clap(short, long = "filter", value_name = "FIELD:QUERY")]
+        /// Filter books/annotations before rendering
+        #[clap(short, long = "filter", value_name = "[?*=]FIELD:QUERY")]
         filters: Vec<FilterType>,
 
         #[clap(flatten)]
@@ -76,19 +76,19 @@ pub enum Command {
 pub enum FilterType {
     /// Filter books by their title
     Title {
-        query: String,
+        query: Vec<String>,
         operator: FilterOperator,
     },
 
     /// Filter books by their author
     Author {
-        query: String,
+        query: Vec<String>,
         operator: FilterOperator,
     },
 
     /// Filter annotations by their #tags
     Tags {
-        query: String,
+        query: Vec<String>,
         operator: FilterOperator,
     },
 }
@@ -197,13 +197,19 @@ impl FromStr for FilterType {
         // name does not exist. These are all defined above.
         let operator = captures.name("operator").unwrap().as_str();
         let field = captures.name("field").unwrap().as_str().to_lowercase();
-        let query = captures.name("query").unwrap().as_str().to_string();
+        let query = captures.name("query").unwrap();
 
         let operator = if operator.is_empty() {
             FilterOperator::default()
         } else {
             operator.parse()?
         };
+
+        let query = query
+            .as_str()
+            .split(' ')
+            .map(std::string::ToString::to_string)
+            .collect();
 
         let filter_by = match field.as_str() {
             "title" => Self::Title { query, operator },
@@ -235,24 +241,15 @@ impl From<FilterType> for lib::filter::FilterType {
     fn from(filter_type: FilterType) -> Self {
         match filter_type {
             FilterType::Title { query, operator } => Self::Title {
-                queries: query
-                    .split(' ')
-                    .map(std::string::ToString::to_string)
-                    .collect(),
+                query,
                 operator: operator.into(),
             },
             FilterType::Author { query, operator } => Self::Author {
-                queries: query
-                    .split(' ')
-                    .map(std::string::ToString::to_string)
-                    .collect(),
+                query,
                 operator: operator.into(),
             },
             FilterType::Tags { query, operator } => Self::Tags {
-                queries: query
-                    .split(' ')
-                    .map(std::string::ToString::to_string)
-                    .collect(),
+                query,
                 operator: operator.into(),
             },
         }
@@ -314,7 +311,7 @@ mod test_cli {
             assert_eq!(
                 FilterType::from_str("?title:art think").unwrap(),
                 FilterType::Title {
-                    query: "art think".to_string(),
+                    query: vec!["art".to_string(), "think".to_string()],
                     operator: FilterOperator::Any,
                 }
             );
@@ -325,7 +322,7 @@ mod test_cli {
             assert_eq!(
                 FilterType::from_str("*title:joking feynman").unwrap(),
                 FilterType::Title {
-                    query: "joking feynman".to_string(),
+                    query: vec!["joking".to_string(), "feynman".to_string()],
                     operator: FilterOperator::All,
                 }
             );
@@ -336,7 +333,7 @@ mod test_cli {
             assert_eq!(
                 FilterType::from_str("=title:the art spirit").unwrap(),
                 FilterType::Title {
-                    query: "the art spirit".to_string(),
+                    query: vec!["the".to_string(), "art".to_string(), "spirit".to_string()],
                     operator: FilterOperator::Exact,
                 }
             );
@@ -349,7 +346,7 @@ mod test_cli {
             assert_eq!(
                 FilterType::from_str("?author:robert richard").unwrap(),
                 FilterType::Author {
-                    query: "robert richard".to_string(),
+                    query: vec!["robert".to_string(), "richard".to_string()],
                     operator: FilterOperator::Any,
                 }
             );
@@ -360,7 +357,7 @@ mod test_cli {
             assert_eq!(
                 FilterType::from_str("*author:richard feynman").unwrap(),
                 FilterType::Author {
-                    query: "richard feynman".to_string(),
+                    query: vec!["richard".to_string(), "feynman".to_string()],
                     operator: FilterOperator::All,
                 }
             );
@@ -371,7 +368,11 @@ mod test_cli {
             assert_eq!(
                 FilterType::from_str("=author:richard p. feynman").unwrap(),
                 FilterType::Author {
-                    query: "richard p. feynman".to_string(),
+                    query: vec![
+                        "richard".to_string(),
+                        "p.".to_string(),
+                        "feynman".to_string(),
+                    ],
                     operator: FilterOperator::Exact,
                 }
             );
@@ -384,7 +385,7 @@ mod test_cli {
             assert_eq!(
                 FilterType::from_str("?tags:#artist #death").unwrap(),
                 FilterType::Tags {
-                    query: "#artist #death".to_string(),
+                    query: vec!["#artist".to_string(), "#death".to_string()],
                     operator: FilterOperator::Any,
                 }
             );
@@ -395,7 +396,7 @@ mod test_cli {
             assert_eq!(
                 FilterType::from_str("*tags:#death #impermanence").unwrap(),
                 FilterType::Tags {
-                    query: "#death #impermanence".to_string(),
+                    query: vec!["#death".to_string(), "#impermanence".to_string()],
                     operator: FilterOperator::All,
                 }
             );
@@ -406,7 +407,7 @@ mod test_cli {
             assert_eq!(
                 FilterType::from_str("=tags:#artist #being").unwrap(),
                 FilterType::Tags {
-                    query: "#artist #being".to_string(),
+                    query: vec!["#artist".to_string(), "#being".to_string()],
                     operator: FilterOperator::Exact,
                 }
             );
