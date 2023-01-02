@@ -1,5 +1,7 @@
 //! Defines the [`Book`] struct and its trait implementations.
 
+use std::collections::BTreeSet;
+
 use rusqlite::Row;
 use serde::Serialize;
 
@@ -20,7 +22,7 @@ pub struct Book {
     /// The book's `#tags` compiled from its [`Annotation`][annotation]s.
     ///
     /// [annotation]: crate::models::annotation::Annotation
-    pub tags: Vec<String>,
+    pub tags: BTreeSet<String>,
 
     /// The book's metadata.
     pub metadata: BookMetadata,
@@ -59,7 +61,7 @@ impl ABQuery for Book {
         Self {
             title: row.get_unwrap(0),
             author: row.get_unwrap(1),
-            tags: Vec::new(),
+            tags: BTreeSet::new(),
             metadata: BookMetadata {
                 id: row.get_unwrap(2),
                 last_opened: last_opened.into(),
@@ -83,7 +85,7 @@ impl serde::Serialize for Book {
         struct _Book<'a> {
             title: &'a str,
             author: &'a str,
-            tags: &'a Vec<String>,
+            tags: &'a BTreeSet<String>,
             metadata: &'a BookMetadata,
             slugs: _Slugs,
         }

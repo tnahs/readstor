@@ -3,7 +3,7 @@
 
 pub mod process;
 
-use std::collections::HashSet;
+use std::collections::BTreeSet;
 
 use crate::models::entry::Entry;
 use crate::templates::template::TemplateRender;
@@ -77,14 +77,12 @@ impl PreProcessor {
         let mut tags = entry
             .annotations
             .iter()
-            .flat_map(|a| a.tags.clone())
-            .collect::<HashSet<String>>()
-            .into_iter()
+            .flat_map(|annotation| annotation.tags.clone())
             .collect::<Vec<String>>();
 
         tags.sort();
 
-        entry.book.tags = tags;
+        entry.book.tags = BTreeSet::from_iter(tags);
     }
 
     /// Normalizes whitespace in [`Annotation::body`][body].
@@ -222,9 +220,12 @@ pub struct PostProcessorOptions {
 #[cfg(test)]
 mod test_processors {
 
-    use super::*;
+    use std::collections::BTreeSet;
+
     use crate::models::annotation::Annotation;
     use crate::models::book::Book;
+
+    use super::*;
 
     #[test]
     fn test_extracted_tags() {
@@ -254,8 +255,8 @@ mod test_processors {
         }
 
         assert_eq!(
-            *entry.book.tags,
-            ["#tag01", "#tag02", "#tag03"].map(String::from).to_vec()
+            entry.book.tags,
+            BTreeSet::from(["#tag01", "#tag02", "#tag03"].map(String::from))
         );
     }
 }

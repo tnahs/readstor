@@ -6,6 +6,8 @@
 //! [book]: crate::models::book::Book
 //! [entry]: crate::models::entry::Entry
 
+use std::collections::BTreeSet;
+
 use deunicode::deunicode;
 use once_cell::sync::Lazy;
 use regex::Regex;
@@ -39,7 +41,7 @@ pub fn normalize_whitespace(string: &str) -> String {
 ///
 /// * `string` - The string to extract from.
 #[must_use]
-pub fn extract_tags(string: &str) -> Vec<String> {
+pub fn extract_tags(string: &str) -> BTreeSet<String> {
     let mut tags = RE_TAG
         .find_iter(string)
         .map(|t| t.as_str())
@@ -48,9 +50,8 @@ pub fn extract_tags(string: &str) -> Vec<String> {
         .collect::<Vec<String>>();
 
     tags.sort();
-    tags.dedup();
 
-    tags
+    BTreeSet::from_iter(tags)
 }
 
 /// Removes all `#tags` from a string.
@@ -124,22 +125,20 @@ mod test_processes {
 
     // https://stackoverflow.com/a/34666891/16968574
     macro_rules! test_tags {
-        ($($name:ident: ($input:tt, $expected_result:tt, $expected_tags:tt),)*) => {
+        ($($name:ident: ($input:tt, $tags_removed_expected:tt, $tags_expected:tt),)*) => {
             $(
                 #[test]
                 fn $name() {
-                    let tags = extract_tags($input);
-                    let expected_tags = Vec::from(
-                        $expected_tags
-                            .into_iter()
-                            .map(|t: &str| t.to_string())
-                            .collect::<Vec<String>>(),
-                    );
+                    let tags_extracted = extract_tags($input);
+                    let tags_expected: BTreeSet<String> = $tags_expected
+                        .into_iter()
+                        .map(|t: &str| t.to_string())
+                        .collect();
 
-                    let result = remove_tags($input);
+                    let tags_removed = remove_tags($input);
 
-                    assert_eq!(tags, expected_tags);
-                    assert_eq!(result, $expected_result.to_string());
+                    assert_eq!(tags_extracted, tags_expected);
+                    assert_eq!(tags_removed, $tags_removed_expected.to_string());
                 }
             )*
         }
@@ -147,9 +146,9 @@ mod test_processes {
 
     test_tags! {
         // ...
-        // "Lorem ipsum. #tag",  // Input string.
-        // "Lorem ipsum.",       // Tags removed.
-        // ["#tag"]              // Tags extracted.
+        // "Lorem ipsum. #tag",  // Input string
+        // "Lorem ipsum.",       // Expected: tags removed
+        // ["#tag"]              // Expected: tags extracted
         // ...
         test_extract_tags_00: (
             "Lorem ipsum.",

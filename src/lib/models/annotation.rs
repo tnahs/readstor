@@ -1,6 +1,7 @@
 //! Defines the [`Annotation`] struct and its trait implementations.
 
 use std::cmp::Ordering;
+use std::collections::BTreeSet;
 
 use rusqlite::Row;
 use serde::Serialize;
@@ -25,7 +26,7 @@ pub struct Annotation {
     pub notes: String,
 
     /// The annotation's `#tags`.
-    pub tags: Vec<String>,
+    pub tags: BTreeSet<String>,
 
     /// The annotation's metadata.
     pub metadata: AnnotationMetadata,
@@ -78,7 +79,7 @@ impl ABQuery for Annotation {
             body: row.get_unwrap(0),
             style: Self::int_to_style(style),
             notes: notes.unwrap_or_default(),
-            tags: Vec::new(),
+            tags: BTreeSet::new(),
             metadata: AnnotationMetadata {
                 id: row.get_unwrap(3),
                 book_id: row.get_unwrap(4),

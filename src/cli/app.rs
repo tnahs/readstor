@@ -414,7 +414,7 @@ mod test_app {
 
             // Filter string: "?title:art think"
             app.run_filters(vec![cli::FilterType::Title {
-                query: "art think".to_string(),
+                query: vec!["art".to_string(), "think".to_string()],
                 operator: cli::FilterOperator::Any,
             }]);
 
@@ -431,7 +431,7 @@ mod test_app {
 
             // Filter string: "*title:joking feynman"
             app.run_filters(vec![cli::FilterType::Title {
-                query: "joking feynman".to_string(),
+                query: vec!["joking".to_string(), "feynman".to_string()],
                 operator: cli::FilterOperator::All,
             }]);
 
@@ -448,7 +448,7 @@ mod test_app {
 
             // Filter string: "=title:the art spirit"
             app.run_filters(vec![cli::FilterType::Title {
-                query: "the art spirit".to_string(),
+                query: vec!["the".to_string(), "art".to_string(), "spirit".to_string()],
                 operator: cli::FilterOperator::Exact,
             }]);
 
@@ -467,7 +467,7 @@ mod test_app {
 
             // Filter string: "?author:robert richard"
             app.run_filters(vec![cli::FilterType::Author {
-                query: "robert richard".to_string(),
+                query: vec!["robert".to_string(), "richard".to_string()],
                 operator: cli::FilterOperator::Any,
             }]);
 
@@ -484,7 +484,7 @@ mod test_app {
 
             // Filter string: "*author:richard feynman"
             app.run_filters(vec![cli::FilterType::Author {
-                query: "richard feynman".to_string(),
+                query: vec!["richard".to_string(), "feynman".to_string()],
                 operator: cli::FilterOperator::All,
             }]);
 
@@ -501,7 +501,11 @@ mod test_app {
 
             // Filter string: "=author:richard p. feynman"
             app.run_filters(vec![cli::FilterType::Author {
-                query: "richard p. feynman".to_string(),
+                query: vec![
+                    "richard".to_string(),
+                    "p.".to_string(),
+                    "feynman".to_string(),
+                ],
                 operator: cli::FilterOperator::Exact,
             }]);
 
@@ -526,7 +530,7 @@ mod test_app {
 
             // Filter string: "?tags:#artist #death"
             app.run_filters(vec![cli::FilterType::Tags {
-                query: "#artist #death".to_string(),
+                query: vec!["#artist".to_string(), "#death".to_string()],
                 operator: cli::FilterOperator::Any,
             }]);
 
@@ -549,7 +553,7 @@ mod test_app {
 
             // Filter string: "*tags:#death #impermanence"
             app.run_filters(vec![cli::FilterType::Tags {
-                query: "#death #impermanence".to_string(),
+                query: vec!["#death".to_string(), "#impermanence".to_string()],
                 operator: cli::FilterOperator::All,
             }]);
 
@@ -572,7 +576,7 @@ mod test_app {
 
             // Filter string: "=tags:#artist #being"
             app.run_filters(vec![cli::FilterType::Tags {
-                query: "#artist #being".to_string(),
+                query: vec!["#artist".to_string(), "#being".to_string()],
                 operator: cli::FilterOperator::Exact,
             }]);
 

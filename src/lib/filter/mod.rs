@@ -2,6 +2,8 @@
 //!
 //! [entry]: crate::models::entry::Entry
 
+use std::collections::BTreeSet;
+
 use crate::models::data::Entries;
 
 /// A struct for filtering [`Entry`][entry]s.
@@ -26,14 +28,14 @@ impl FilterRunner {
         let filter_type = filter_type.into();
 
         match filter_type {
-            FilterType::Title { queries, operator } => {
-                FilterRunner::filter_by_title(&queries, operator, entries);
+            FilterType::Title { query, operator } => {
+                FilterRunner::filter_by_title(&query, operator, entries);
             }
-            FilterType::Author { queries, operator } => {
-                FilterRunner::filter_by_author(&queries, operator, entries);
+            FilterType::Author { query, operator } => {
+                FilterRunner::filter_by_author(&query, operator, entries);
             }
-            FilterType::Tags { queries, operator } => {
-                FilterRunner::filter_by_tags(&queries, operator, entries);
+            FilterType::Tags { query, operator } => {
+                FilterRunner::filter_by_tags(&query, operator, entries);
             }
         }
 
@@ -41,52 +43,52 @@ impl FilterRunner {
         entries.retain(|_, entry| !entry.annotations.is_empty());
     }
 
-    fn filter_by_title(queries: &[String], operator: FilterOperator, entries: &mut Entries) {
+    fn filter_by_title(query: &[String], operator: FilterOperator, entries: &mut Entries) {
         match operator {
             FilterOperator::Any => {
                 entries.retain(|_, entry| {
-                    queries
+                    query
                         .iter()
-                        .any(|query| entry.book.title.to_lowercase().contains(query))
+                        .any(|q| entry.book.title.to_lowercase().contains(q))
                 });
             }
             FilterOperator::All => {
                 entries.retain(|_, entry| {
-                    queries
+                    query
                         .iter()
-                        .all(|query| entry.book.title.to_lowercase().contains(query))
+                        .all(|q| entry.book.title.to_lowercase().contains(q))
                 });
             }
             FilterOperator::Exact => {
-                entries.retain(|_, entry| entry.book.title.to_lowercase() == queries.join(" "));
+                entries.retain(|_, entry| entry.book.title.to_lowercase() == query.join(" "));
             }
         }
     }
 
-    fn filter_by_author(queries: &[String], operator: FilterOperator, entries: &mut Entries) {
+    fn filter_by_author(query: &[String], operator: FilterOperator, entries: &mut Entries) {
         match operator {
             FilterOperator::Any => {
                 entries.retain(|_, entry| {
-                    queries
+                    query
                         .iter()
-                        .any(|query| entry.book.author.to_lowercase().contains(query))
+                        .any(|q| entry.book.author.to_lowercase().contains(q))
                 });
             }
             FilterOperator::All => {
                 entries.retain(|_, entry| {
-                    queries
+                    query
                         .iter()
-                        .all(|query| entry.book.author.to_lowercase().contains(query))
+                        .all(|q| entry.book.author.to_lowercase().contains(q))
                 });
             }
             FilterOperator::Exact => {
-                entries.retain(|_, entry| entry.book.author.to_lowercase() == queries.join(" "));
+                entries.retain(|_, entry| entry.book.author.to_lowercase() == query.join(" "));
             }
         }
     }
 
-    fn filter_by_tags(queries: &[String], operator: FilterOperator, entries: &mut Entries) {
-        let tags = queries;
+    fn filter_by_tags(query: &[String], operator: FilterOperator, entries: &mut Entries) {
+        let tags: BTreeSet<String> = query.iter().cloned().collect();
 
         match operator {
             FilterOperator::Any => {
@@ -125,8 +127,8 @@ pub enum FilterType {
     ///
     /// [book]: crate::models::book::Book::title
     Title {
-        /// The filter queries.
-        queries: Vec<String>,
+        /// The filter query.
+        query: Vec<String>,
         /// The filter operator.
         operator: FilterOperator,
     },
@@ -135,8 +137,8 @@ pub enum FilterType {
     ///
     /// [book]: crate::models::book::Book::author
     Author {
-        /// The filter queries.
-        queries: Vec<String>,
+        /// The filter query.
+        query: Vec<String>,
         /// The filter operator.
         operator: FilterOperator,
     },
@@ -146,11 +148,35 @@ pub enum FilterType {
     ///
     /// [annotation]: crate::models::annotation::Annotation::tags
     Tags {
-        /// The filter queries.
-        queries: Vec<String>,
+        /// The filter query.
+        query: Vec<String>,
         /// The filter operator.
         operator: FilterOperator,
     },
+}
+
+#[cfg(test)]
+impl FilterType {
+    fn title(query: &[&str], operator: FilterOperator) -> Self {
+        Self::Title {
+            query: query.iter().map(std::string::ToString::to_string).collect(),
+            operator,
+        }
+    }
+
+    fn author(query: &[&str], operator: FilterOperator) -> Self {
+        Self::Author {
+            query: query.iter().map(std::string::ToString::to_string).collect(),
+            operator,
+        }
+    }
+
+    fn tags(query: &[&str], operator: FilterOperator) -> Self {
+        Self::Tags {
+            query: query.iter().map(std::string::ToString::to_string).collect(),
+            operator,
+        }
+    }
 }
 
 /// An enum representing possible filter operators.
@@ -183,23 +209,19 @@ mod test_filters {
     fn create_test_entries() -> Entries {
         let annotations = vec![
             Annotation {
-                tags: vec!["#tag01".to_string()],
+                tags: create_test_tags_from_str(&["#tag01"]),
                 ..Default::default()
             },
             Annotation {
-                tags: vec!["#tag02".to_string()],
+                tags: create_test_tags_from_str(&["#tag02"]),
                 ..Default::default()
             },
             Annotation {
-                tags: vec!["#tag03".to_string()],
+                tags: create_test_tags_from_str(&["#tag03"]),
                 ..Default::default()
             },
             Annotation {
-                tags: vec![
-                    "#tag01".to_string(),
-                    "#tag02".to_string(),
-                    "#tag03".to_string(),
-                ],
+                tags: create_test_tags_from_str(&["#tag01", "#tag02", "#tag03"]),
                 ..Default::default()
             },
         ];
@@ -229,6 +251,10 @@ mod test_filters {
         data
     }
 
+    fn create_test_tags_from_str(tags: &[&str]) -> BTreeSet<String> {
+        tags.iter().map(std::string::ToString::to_string).collect()
+    }
+
     // Title
 
     #[test]
@@ -236,10 +262,7 @@ mod test_filters {
         let mut entries = create_test_entries();
 
         FilterRunner::run(
-            FilterType::Title {
-                queries: vec!["book".to_string()],
-                operator: FilterOperator::Any,
-            },
+            FilterType::title(&["book"], FilterOperator::Any),
             &mut entries,
         );
 
@@ -257,10 +280,7 @@ mod test_filters {
         let mut entries = create_test_entries();
 
         FilterRunner::run(
-            FilterType::Title {
-                queries: vec!["two".to_string(), "return".to_string()],
-                operator: FilterOperator::All,
-            },
+            FilterType::title(&["two", "return"], FilterOperator::All),
             &mut entries,
         );
 
@@ -278,10 +298,7 @@ mod test_filters {
         let mut entries = create_test_entries();
 
         FilterRunner::run(
-            FilterType::Title {
-                queries: vec!["book".to_string(), "one".to_string()],
-                operator: FilterOperator::Exact,
-            },
+            FilterType::title(&["book", "one"], FilterOperator::Exact),
             &mut entries,
         );
 
@@ -301,10 +318,7 @@ mod test_filters {
         let mut entries = create_test_entries();
 
         FilterRunner::run(
-            FilterType::Author {
-                queries: vec!["author".to_string()],
-                operator: FilterOperator::Any,
-            },
+            FilterType::author(&["author"], FilterOperator::Any),
             &mut entries,
         );
 
@@ -322,10 +336,7 @@ mod test_filters {
         let mut entries = create_test_entries();
 
         FilterRunner::run(
-            FilterType::Author {
-                queries: vec!["author".to_string(), "no.".to_string()],
-                operator: FilterOperator::All,
-            },
+            FilterType::author(&["author", "no."], FilterOperator::All),
             &mut entries,
         );
 
@@ -343,10 +354,7 @@ mod test_filters {
         let mut entries = create_test_entries();
 
         FilterRunner::run(
-            FilterType::Author {
-                queries: vec!["author".to_string(), "no.".to_string(), "two".to_string()],
-                operator: FilterOperator::Exact,
-            },
+            FilterType::author(&["author", "no.", "two"], FilterOperator::Exact),
             &mut entries,
         );
 
@@ -366,10 +374,7 @@ mod test_filters {
         let mut entries = create_test_entries();
 
         FilterRunner::run(
-            FilterType::Tags {
-                queries: vec!["#tag01".to_string(), "#tag03".to_string()],
-                operator: FilterOperator::Any,
-            },
+            FilterType::tags(&["#tag01", "#tag03"], FilterOperator::Any),
             &mut entries,
         );
 
@@ -387,10 +392,7 @@ mod test_filters {
         let mut entries = create_test_entries();
 
         FilterRunner::run(
-            FilterType::Tags {
-                queries: vec!["#tag01".to_string(), "#tag03".to_string()],
-                operator: FilterOperator::All,
-            },
+            FilterType::tags(&["#tag01", "#tag03"], FilterOperator::All),
             &mut entries,
         );
 
@@ -408,14 +410,25 @@ mod test_filters {
         let mut entries = create_test_entries();
 
         FilterRunner::run(
-            FilterType::Tags {
-                queries: vec![
-                    "#tag01".to_string(),
-                    "#tag02".to_string(),
-                    "#tag03".to_string(),
-                ],
-                operator: FilterOperator::Exact,
-            },
+            FilterType::tags(&["#tag01", "#tag02", "#tag03"], FilterOperator::Exact),
+            &mut entries,
+        );
+
+        let annotations = entries
+            .values()
+            .flat_map(|entry| &entry.annotations)
+            .count();
+
+        assert_eq!(entries.len(), 2);
+        assert_eq!(annotations, 2);
+    }
+
+    #[test]
+    fn test_tags_exact_different_order() {
+        let mut entries = create_test_entries();
+
+        FilterRunner::run(
+            FilterType::tags(&["#tag03", "#tag02", "#tag01"], FilterOperator::Exact),
             &mut entries,
         );
 
@@ -435,26 +448,17 @@ mod test_filters {
         let mut entries = create_test_entries();
 
         FilterRunner::run(
-            FilterType::Title {
-                queries: vec!["one".to_string()],
-                operator: FilterOperator::Any,
-            },
+            FilterType::title(&["one"], FilterOperator::Any),
             &mut entries,
         );
 
         FilterRunner::run(
-            FilterType::Author {
-                queries: vec!["author".to_string(), "one".to_string()],
-                operator: FilterOperator::Exact,
-            },
+            FilterType::author(&["author", "one"], FilterOperator::Exact),
             &mut entries,
         );
 
         FilterRunner::run(
-            FilterType::Tags {
-                queries: vec!["#tag02".to_string()],
-                operator: FilterOperator::Exact,
-            },
+            FilterType::tags(&["#tag02"], FilterOperator::Exact),
             &mut entries,
         );
 
