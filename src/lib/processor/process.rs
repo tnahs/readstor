@@ -1,5 +1,5 @@
 //! Pre-processors for manipulating [`Entry`][entry], [`Book`][book] and
-//! [`Annotation`][annotation] types before they are rendered and
+//! [`Annotation`][annotation] types before they are rendered/exported and
 //! post-processors for manipulating a template after it's been rendered.
 //!
 //! [annotation]: crate::models::annotation::Annotation
@@ -73,9 +73,10 @@ pub fn convert_all_to_ascii(string: &str) -> String {
     deunicode(string)
 }
 
-/// Converts a subset of "smart" Unicode symbols to their ASCII equivalents. See
-/// [`UNICODE_TO_ASCII_SYMBOLS`][symbols] for list of symbols and their ASCII
-/// equivalents.
+/// Converts a subset of "smart" Unicode symbols to their ASCII equivalents.
+///
+/// See [`UNICODE_TO_ASCII_SYMBOLS`][symbols] for list of symbols and their
+/// ASCII equivalents.
 ///
 /// # Arguments
 ///
