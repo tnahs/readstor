@@ -23,7 +23,7 @@
 
 pub mod applebooks;
 pub mod defaults;
-pub mod filter;
+pub mod filters;
 pub mod models;
 pub mod processor;
 pub mod result;

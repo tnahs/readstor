@@ -44,9 +44,8 @@ pub struct Options {
 pub enum Command {
     /// Export Apple Books' data as JSON
     Export {
-        /// Filter books/annotations before exporting
-        #[clap(short, long = "filter", value_name = "[?*=]FIELD:QUERY")]
-        filters: Vec<FilterType>,
+        #[clap(flatten)]
+        filter_options: FilterOptions,
 
         #[clap(flatten)]
         preprocessor_options: PreProcessorOptions,
@@ -54,9 +53,8 @@ pub enum Command {
 
     /// Render Apple Books' data via templates
     Render {
-        /// Filter books/annotations before rendering
-        #[clap(short, long = "filter", value_name = "[?*=]FIELD:QUERY")]
-        filters: Vec<FilterType>,
+        #[clap(flatten)]
+        filter_options: FilterOptions,
 
         #[clap(flatten)]
         template_options: TemplateOptions,
@@ -70,6 +68,17 @@ pub enum Command {
 
     /// Back-up Apple Books' databases
     Backup,
+}
+
+#[derive(Debug, Clone, Default, Parser)]
+pub struct FilterOptions {
+    /// Filter books/annotations before outputting
+    #[clap(short, long = "filter", value_name = "[?*=]FIELD:QUERY")]
+    filters: Vec<FilterType>,
+
+    /// Auto-confirm filter results
+    #[clap(short = 'A', long = "auto-confirm-filter", requires = "filters")]
+    auto_confirm: bool,
 }
 
 #[derive(Debug, Clone, Eq, PartialEq)]
@@ -214,11 +223,27 @@ impl FromStr for FilterType {
         let filter_by = match field.as_str() {
             "title" => Self::Title { query, operator },
             "author" => Self::Author { query, operator },
-            "tags" => Self::Tags { query, operator },
+            "tags" | "tag" => Self::Tags { query, operator },
             _ => return Err(format!("invalid field: '{field}'")),
         };
 
         Ok(filter_by)
+    }
+}
+
+impl std::fmt::Display for FilterType {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            FilterType::Title { query, operator } => {
+                write!(f, "{operator}title:{}", query.join(" "))
+            }
+            FilterType::Author { query, operator } => {
+                write!(f, "{operator}author:{}", query.join(" "))
+            }
+            FilterType::Tags { query, operator } => {
+                write!(f, "{operator}tags:{}", query.join(" "))
+            }
+        }
     }
 }
 
@@ -237,7 +262,19 @@ impl FromStr for FilterOperator {
     }
 }
 
-impl From<FilterType> for lib::filter::FilterType {
+impl std::fmt::Display for FilterOperator {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let char = match self {
+            FilterOperator::Any => "?",
+            FilterOperator::All => "*",
+            FilterOperator::Exact => "=",
+        };
+
+        write!(f, "{char}")
+    }
+}
+
+impl From<FilterType> for lib::filters::FilterType {
     fn from(filter_type: FilterType) -> Self {
         match filter_type {
             FilterType::Title { query, operator } => Self::Title {
@@ -256,7 +293,7 @@ impl From<FilterType> for lib::filter::FilterType {
     }
 }
 
-impl From<FilterOperator> for lib::filter::FilterOperator {
+impl From<FilterOperator> for lib::filters::FilterOperator {
     fn from(filter_operator: FilterOperator) -> Self {
         match filter_operator {
             FilterOperator::Any => Self::Any,
