@@ -1,7 +1,8 @@
 use std::fs;
+use std::io::Write;
 
 use color_eyre::eyre::WrapErr;
-use lib::filter::FilterRunner;
+use lib::filters::FilterRunner;
 
 use crate::cli;
 use lib::applebooks::database::ABDatabaseName;
@@ -41,7 +42,7 @@ impl App {
     pub fn run(&mut self, command: Command) -> Result<()> {
         match command {
             Command::Export {
-                filters,
+                filter_options,
                 preprocessor_options,
             } => {
                 self.print("-> Initializing data");
@@ -50,8 +51,18 @@ impl App {
                 self.print("-> Running pre-processors");
                 self.run_preprocessors(preprocessor_options);
 
-                self.print("-> Running filters");
-                self.run_filters(filters);
+                if !filter_options.filters.is_empty() {
+                    self.print("-> Running filters");
+                    self.run_filters(filter_options.filters);
+
+                    // Show filter confirmation prompt...
+                    if !filter_options.auto_confirm {
+                        // ...and exit if the user does not confirm.
+                        if !self.confirm_filter_results() {
+                            return Ok(());
+                        }
+                    }
+                }
 
                 self.print("-> Exporting data");
                 self.export_data().wrap_err("Failed while exporting data")?;
@@ -59,7 +70,7 @@ impl App {
                 self.print_export_summary();
             }
             Command::Render {
-                filters,
+                filter_options,
                 template_options,
                 preprocessor_options,
                 postprocessor_options,
@@ -70,8 +81,18 @@ impl App {
                 self.print("-> Running pre-processors");
                 self.run_preprocessors(preprocessor_options);
 
-                self.print("-> Running filters");
-                self.run_filters(filters);
+                if !filter_options.filters.is_empty() {
+                    self.print("-> Running filters");
+                    self.run_filters(filter_options.filters);
+
+                    // Show filter confirmation prompt...
+                    if !filter_options.auto_confirm {
+                        // ...and exit if the user does not confirm.
+                        if !self.confirm_filter_results() {
+                            return Ok(());
+                        }
+                    }
+                }
 
                 self.print("-> Initializing templates");
                 self.init_templates(template_options)?;
@@ -292,6 +313,46 @@ impl App {
         utils::copy_dir(source_annotations, destination_annotations)?;
 
         Ok(())
+    }
+
+    /// Prompts the user to confirm the filter results. Returns a boolean
+    /// representing whether or not to continue.
+    fn confirm_filter_results(&self) -> bool {
+        let indent = " ".repeat(3);
+        let line = "-".repeat(64);
+
+        println!("{indent}{line}");
+
+        if self.data.annotations().count() == 0 {
+            println!("{indent}No annotations found.");
+            println!("{indent}{line}");
+            return false;
+        }
+
+        #[rustfmt::skip]
+        println!(
+            "{indent}Found {} annotation{} from {} book{}:",
+            self.data.annotations().count(),
+            if self.data.annotations().count() == 1 { "" } else { "s" },
+            self.data.books().count(),
+            if self.data.books().count() == 1 { "" } else { "s" },
+        );
+
+        for book in self.data.books() {
+            println!("{indent} • {} by {}", book.title, book.author);
+        }
+
+        println!("{indent}{line}");
+
+        print!("{indent}Continue? [y/N]: ");
+
+        let mut confirm = String::new();
+        std::io::stdout().flush().unwrap();
+        std::io::stdin().read_line(&mut confirm).unwrap();
+
+        println!();
+
+        matches!(confirm.trim().to_lowercase().as_str(), "y" | "yes")
     }
 
     /// Prints the export summary.

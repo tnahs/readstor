@@ -5,6 +5,7 @@ use std::ops::{Deref, DerefMut};
 use std::path::Path;
 
 use crate::applebooks::database::{ABDatabase, ABDatabaseName};
+use crate::filters::filter;
 use crate::result::Result;
 
 use super::annotation::Annotation;
@@ -95,7 +96,7 @@ impl Data {
         }
 
         // Remove `Entry`s that have no `Annotation`s.
-        data.retain(|_, entry| !entry.annotations.is_empty());
+        filter::contains_no_annotations(&mut data);
 
         self.0 = data;
 

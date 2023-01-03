@@ -1,12 +1,16 @@
-//! Defines types for filtering out [`Entry`][entry]s.
+//! Defines types for filtering out [`Entry`][entry]s and
+//! [`Annotation`][annotation]s.
 //!
+//! [annotation]: crate::models::annotation::Annotation
 //! [entry]: crate::models::entry::Entry
+
+pub mod filter;
 
 use std::collections::BTreeSet;
 
 use crate::models::data::Entries;
 
-/// A struct for filtering [`Entry`][entry]s.
+/// A struct for running filters on [`Entry`][entry]s.
 ///
 /// [entry]: crate::models::entry::Entry
 #[derive(Debug, Clone, Copy)]
@@ -29,89 +33,43 @@ impl FilterRunner {
 
         match filter_type {
             FilterType::Title { query, operator } => {
-                FilterRunner::filter_by_title(&query, operator, entries);
+                Self::filter_by_title(&query, operator, entries);
             }
             FilterType::Author { query, operator } => {
-                FilterRunner::filter_by_author(&query, operator, entries);
+                Self::filter_by_author(&query, operator, entries);
             }
             FilterType::Tags { query, operator } => {
-                FilterRunner::filter_by_tags(&query, operator, entries);
+                Self::filter_by_tags(&query, operator, entries);
             }
         }
 
-        // Remove `Entry`s that have no `Annotation`s.
-        entries.retain(|_, entry| !entry.annotations.is_empty());
+        // Remove `Entry`s that have had all their `Annotation`s filtered out.
+        filter::contains_no_annotations(entries);
     }
 
     fn filter_by_title(query: &[String], operator: FilterOperator, entries: &mut Entries) {
         match operator {
-            FilterOperator::Any => {
-                entries.retain(|_, entry| {
-                    query
-                        .iter()
-                        .any(|q| entry.book.title.to_lowercase().contains(q))
-                });
-            }
-            FilterOperator::All => {
-                entries.retain(|_, entry| {
-                    query
-                        .iter()
-                        .all(|q| entry.book.title.to_lowercase().contains(q))
-                });
-            }
-            FilterOperator::Exact => {
-                entries.retain(|_, entry| entry.book.title.to_lowercase() == query.join(" "));
-            }
+            FilterOperator::Any => filter::by_title_any(query, entries),
+            FilterOperator::All => filter::by_title_all(query, entries),
+            FilterOperator::Exact => filter::by_title_exact(&query.join(" "), entries),
         }
     }
 
     fn filter_by_author(query: &[String], operator: FilterOperator, entries: &mut Entries) {
         match operator {
-            FilterOperator::Any => {
-                entries.retain(|_, entry| {
-                    query
-                        .iter()
-                        .any(|q| entry.book.author.to_lowercase().contains(q))
-                });
-            }
-            FilterOperator::All => {
-                entries.retain(|_, entry| {
-                    query
-                        .iter()
-                        .all(|q| entry.book.author.to_lowercase().contains(q))
-                });
-            }
-            FilterOperator::Exact => {
-                entries.retain(|_, entry| entry.book.author.to_lowercase() == query.join(" "));
-            }
+            FilterOperator::Any => filter::by_author_any(query, entries),
+            FilterOperator::All => filter::by_author_all(query, entries),
+            FilterOperator::Exact => filter::by_author_exact(&query.join(" "), entries),
         }
     }
 
     fn filter_by_tags(query: &[String], operator: FilterOperator, entries: &mut Entries) {
-        let tags: BTreeSet<String> = query.iter().cloned().collect();
+        let tags = BTreeSet::from_iter(query);
 
         match operator {
-            FilterOperator::Any => {
-                for entry in entries.values_mut() {
-                    entry
-                        .annotations
-                        .retain(|annotation| tags.iter().any(|tag| annotation.tags.contains(tag)));
-                }
-            }
-            FilterOperator::All => {
-                for entry in entries.values_mut() {
-                    entry
-                        .annotations
-                        .retain(|annotation| tags.iter().all(|tag| annotation.tags.contains(tag)));
-                }
-            }
-            FilterOperator::Exact => {
-                for entry in entries.values_mut() {
-                    entry
-                        .annotations
-                        .retain(|annotation| annotation.tags == tags);
-                }
-            }
+            FilterOperator::Any => filter::by_tags_any(&tags, entries),
+            FilterOperator::All => filter::by_tags_all(&tags, entries),
+            FilterOperator::Exact => filter::by_tags_exact(&tags, entries),
         }
     }
 }
@@ -121,15 +79,14 @@ impl FilterRunner {
 /// A filter generally consists of three elements: (1) the field to use for
 /// filtering, (2) a list of queries and (3) a [`FilterOperator`] to determine
 /// how to handle the queries.
+#[allow(missing_docs)]
 #[derive(Debug, Clone)]
 pub enum FilterType {
     /// Sets the filter to use the [`Book::title`][book] field for filtering.
     ///
     /// [book]: crate::models::book::Book::title
     Title {
-        /// The filter query.
         query: Vec<String>,
-        /// The filter operator.
         operator: FilterOperator,
     },
 
@@ -137,9 +94,7 @@ pub enum FilterType {
     ///
     /// [book]: crate::models::book::Book::author
     Author {
-        /// The filter query.
         query: Vec<String>,
-        /// The filter operator.
         operator: FilterOperator,
     },
 
@@ -148,9 +103,7 @@ pub enum FilterType {
     ///
     /// [annotation]: crate::models::annotation::Annotation::tags
     Tags {
-        /// The filter query.
         query: Vec<String>,
-        /// The filter operator.
         operator: FilterOperator,
     },
 }
@@ -184,14 +137,14 @@ impl FilterType {
 /// See [`FilterType`] for more information.
 #[derive(Debug, Clone, Copy, Default)]
 pub enum FilterOperator {
-    /// Sets the filter to return `true` if any of the query strings match.
+    /// Sets the filter to check if any of the queries match.
     #[default]
     Any,
 
-    /// Sets the filter to return `true` if all of the query strings match.
+    /// Sets the filter to check if all of the queries match.
     All,
 
-    /// Sets the filter to return `true` if the query string is an exact match.
+    /// Sets the filter to check if the query string is an exact match.
     Exact,
 }
 
