@@ -2,7 +2,12 @@
 
 - [Introduction](./00-intro/00-intro.md)
   - [Commands](./00-intro/01-commands.md)
-  - [Options](./00-intro/02-options.md)
+  - [Options](./00-intro/02-00-options.md)
+    - [Global](./00-intro/02-01-global.md)
+    - [Filter](./00-intro/02-01-filter.md)
+    - [Template](./00-intro/02-02-template.md)
+    - [Pre-process](./00-intro/02-03-preprocess.md)
+    - [Post-process](./00-intro/02-04-postprocess.md)
 - [Templates](./01-templates/00-templates.md)
   - [An Example Template](./01-templates/01-an-example-template.md)
   - [Configuration](./01-templates/02-00-configuration.md)
