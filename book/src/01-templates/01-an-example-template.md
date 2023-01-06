@@ -240,7 +240,7 @@ tags: #inspiration
 ```
 
 [context-modes]: ./02-02-context-modes.md
-[output-directory]: ../00-intro/02-options.md#--output-directory-path
+[output-directory]: ../00-intro/02-01-global.md#--output-directory-path
 [structure-modes]: ./02-03-structure-modes.md
 [tera]: https://tera.netlify.app/
 [tera-documentation]: https://tera.netlify.app/docs/
