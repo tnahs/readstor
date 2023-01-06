@@ -52,7 +52,7 @@ We would use the following `include` tags:
 > [include][tera-include] tag for more information on its features and
 > limitations.
 
-[templates-directory]: ../00-intro/02-options.md#--templates-directory-path
+[templates-directory]: ../00-intro/02-02-template.md#--templates-directory-path
 [tera]: https://tera.netlify.app/
 [tera-include]: https://tera.netlify.app/docs/#include
 [using-partials]: https://github.com/tnahs/readstor/tree/main/templates/using-partials

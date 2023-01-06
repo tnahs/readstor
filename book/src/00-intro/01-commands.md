@@ -4,7 +4,7 @@
 
 Export Apple Books' data as JSON.
 
-> <i class="fa fa-info-circle"></i> See [Pre-process Options][preprocess-options]
+> <i class="fa fa-info-circle"></i> See [Pre-process][preprocess] options
 > for available options.
 
 Outputs using the following structure:
@@ -154,8 +154,9 @@ Render Apple Books' data via templates.
 > <i class="fa fa-info-circle"></i> See [Templates][templates] for a full guide
 > on creating templates.
 
-> <i class="fa fa-info-circle"></i> See [Pre-process Options][preprocess-options]
-> and [Template Options][template-options] for available options.
+> <i class="fa fa-info-circle"></i> See [Pre-process][preprocess],
+> [Post-process][postprocess] and [Template][template] options for available
+> options.
 
 ## `backup`
 
@@ -189,7 +190,8 @@ Example output:
          └── BKLibrary-1-091020131601.sqlite-wal
 ```
 
-[extract-tags]: ./02-options.md#--extract-tags
-[preprocess-options]: ./02-options.md#pre-process-options
-[template-options]: ./02-options.md#template-options
+[extract-tags]: ./02-03-preprocess.md#--extract-tags
+[postprocess]: ./02-04-postprocess.md
+[preprocess]: ./02-03-preprocess.md
+[template]: ./02-02-template.md
 [templates]: ../01-templates/00-templates.md
