@@ -11,6 +11,24 @@ use clap::{Parser, Subcommand};
 use once_cell::sync::Lazy;
 use regex::Regex;
 
+static RE_FILTER_QUERY: Lazy<Regex> = Lazy::new(|| {
+    Regex::new(r"^(?P<operator>[?*=]?)(?P<field>\w*):(?P<query>.*)$").unwrap()
+    //            └───┬──────────────┘└───────────┬┘ └───┬───────┘
+    //                │                           │      │
+    // operator ──────┘                           │      │
+    //   Captures a single char representing the  │      │
+    //   filter operator. Can be one of:          │      │
+    //     - "?" -> any                           │      │
+    //     - "*" -> all                           │      │
+    //     - "=" -> exact                         │      │
+    //                                            │      │
+    // field ─────────────────────────────────────┘      │
+    //   The field used to run filtering.                │
+    //                                                   │
+    // query ────────────────────────────────────────────┘
+    //   The query string.
+});
+
 #[derive(Debug, Parser)]
 #[command(author, version, about)]
 pub struct Cli {
@@ -73,7 +91,7 @@ pub enum Command {
 #[derive(Debug, Clone, Default, Parser)]
 pub struct FilterOptions {
     /// Filter books/annotations before outputting
-    #[clap(short, long = "filter", value_name = "[?*=]FIELD:QUERY")]
+    #[clap(short, long = "filter", value_name = "[OP]{FIELD}:{QUERY}")]
     filters: Vec<FilterType>,
 
     /// Auto-confirm filter results
@@ -178,28 +196,10 @@ impl FromStr for FilterType {
     type Err = String;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        static RE_FILTER_QUERY: Lazy<Regex> = Lazy::new(|| {
-            Regex::new(r"^(?P<operator>[?*=]?)(?P<field>\w*):(?P<query>.*)$").unwrap()
-            //            └───┬──────────────┘└───────────┬┘ └───┬───────┘
-            //                │                           │      │
-            // operator ──────┘                           │      │
-            //   Captures a single char representing the  │      │
-            //   filter operator. Can be one of:          │      │
-            //     - "?" -> any                           │      │
-            //     - "*" -> all                           │      │
-            //     - "=" -> exact                         │      │
-            //                                            │      │
-            // field ─────────────────────────────────────┘      │
-            //   The field used to run filtering.                │
-            //                                                   │
-            // query ────────────────────────────────────────────┘
-            //   The query string.
-        });
-
         let captures = RE_FILTER_QUERY.captures(s);
 
         let Some(captures) = captures else {
-            return Err("filters must follow the format '[?*=]field:query'".into());
+            return Err("filters must follow the format '[op]{field}:{query}'".into());
         };
 
         // These unwraps are safe as they will only panic if the capture-group
