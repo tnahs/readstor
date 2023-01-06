@@ -357,12 +357,17 @@ impl App {
 
     /// Prints the export summary.
     fn print_export_summary(&self) {
-        self.print(&format!(
-            "-> Exported {} annotation(s) from {} book(s) to {}",
+        #[rustfmt::skip]
+        let summary = format!(
+            "-> Exported {} annotation{} from {} book{} to {}",
             self.data.annotations().count(),
+            if self.data.annotations().count() == 1 { "" } else { "s" },
             self.data.books().count(),
+            if self.data.books().count() == 1 { "" } else { "s" },
             self.config.output_directory.display()
-        ));
+        );
+
+        self.print(&summary);
     }
 
     /// Prints the render summary.
@@ -372,12 +377,17 @@ impl App {
             .as_ref()
             .expect("attempted to access un-initialized templates.");
 
-        self.print(&format!(
-            "-> Rendered {} template(s) into {} file(s) to {}",
+        #[rustfmt::skip]
+        let summary = format!(
+            "-> Rendered {} template{} into {} file{} to {}",
             templates.count_templates(),
+            if templates.count_templates() == 1 { "" } else { "s" },
             templates.count_renders(),
+            if templates.count_renders() == 1 { "" } else { "s" },
             self.config.output_directory.display()
-        ));
+        );
+
+        self.print(&summary);
     }
 
     /// Prints the back-up summary.
