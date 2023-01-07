@@ -8,6 +8,14 @@
 
 ## UNRELEASED CHANGES
 
+### Features
+
+- Added the `--filter <[?*=]FIELD:QUERY>` option allowing books and annotations
+  to be filtered down for the `export` and `render` commands. See the
+  documentation on [Filtering][filtering] for more information.
+- Added the `--auto-confirm-filter` option to auto-confirm the filtered
+  results prompt.
+
 ### Changes
 
 - Folders generated from the `export` command now have two dashes between the
@@ -30,7 +38,7 @@
 
 ### Features
 
-- Added the `--text-wrap [WIDTH]` option to enable text-wrapping.
+- Added the `--text-wrap <WIDTH>` option to enable text-wrapping.
 
 ### Changes
 
@@ -134,5 +142,6 @@
 
 [#3]: https://github.com/tnahs/readstor/issues/3
 [crates-io]: https://crates.io
+[filtering]: https://tnahs.github.io/readstor/latest/00-intro/02-01-filter.md
 [names]: https://tnahs.github.io/readstor/latest/01-templates/06-03-names.html
 [tera]: https://tera.netlify.app/
