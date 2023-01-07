@@ -10,6 +10,7 @@
 
 ## Next
 
+- [ ] Add a quick-start/cheatsheet to `README.md` and book.
 - [ ] Add an argument to `export` and `backup` to set the directory name template.
 
   ```shell
@@ -32,15 +33,7 @@
     • rendering templates...
     • running post-processors...
     • writing templates...
-    • rendered 1 template(s) into 99 file(s) to /path/to/output/directory
-  ```
-
-- [ ] Add `export`/`backup` filtering:
-
-  ```shell
-  readstor export \
-      --filter "title:the art spirit" \
-      --filter "tag:star"
+    • rendered 1 template into 99 files to /path/to/output/directory
   ```
 
 - [ ] Should we add pre- and post-processing options to the template's config?
@@ -59,17 +52,23 @@
     wrap-text: 80
   ```
 
+- [ ] Convert `Book::authors` into a list of authors?
+
+## Internal
+
+- [ ] Rename `PreProcessor` to `PreProcessRunner` and `PostProcessor` to
+      `PostProcessRunner`.
+- [ ] Rename module `processor` to `processors`
 - [ ] Simplify how template names are defined in the `names` key.
-- [ ] Rename and slightly refactor `Data` to `Entries`.
-- [ ] Add `# Arguments` to public methods.
+- [ ] Clean up module documentation.
+- [ ] Document `cli` module.
 - [ ] Is there a way to consolidate clippy lints between bin/lib?
 - [ ] Test [Tera][tera] macros and inheritances.
-- [ ] Checkout [fern][fern] for stdout/stderr and file logging.
-- [ ] Config file support.
 
 ## Features
 
 - [ ] Extract data from iOS's `com.apple.ibooks-sync.plist` and `Books.plist` files.
+- [ ] Config file support.
 
 ## Future
 
