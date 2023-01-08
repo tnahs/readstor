@@ -113,7 +113,7 @@ impl PartialEq for Annotation {
 /// A struct representing an annotation's metadata.
 ///
 /// This is all the data that is not directly editable by the user.
-#[derive(Debug, Default, Clone, Eq)]
+#[derive(Debug, Default, Clone, Eq, Serialize)]
 pub struct AnnotationMetadata {
     /// The annotation's unique id.
     pub id: String,
@@ -134,63 +134,6 @@ pub struct AnnotationMetadata {
 
     /// The annotation's raw `epubcfi`.
     pub epubcfi: String,
-}
-
-impl AnnotationMetadata {
-    ///Returns a slugified string of the creation date.
-    #[must_use]
-    pub fn slug_created(&self) -> String {
-        self.created
-            .format(crate::defaults::DATE_FORMAT)
-            .to_string()
-    }
-
-    ///Returns a slugified string of the modification date.
-    #[must_use]
-    pub fn slug_modified(&self) -> String {
-        self.created
-            .format(crate::defaults::DATE_FORMAT)
-            .to_string()
-    }
-}
-
-impl serde::Serialize for AnnotationMetadata {
-    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
-    where
-        S: serde::Serializer,
-    {
-        #[derive(Serialize)]
-        struct _Slugs {
-            created: String,
-            modified: String,
-        }
-
-        #[derive(Serialize)]
-        struct _AnnotationMetadata<'a> {
-            id: &'a str,
-            book_id: &'a str,
-            created: &'a DateTimeUtc,
-            modified: &'a DateTimeUtc,
-            location: &'a str,
-            epubcfi: &'a str,
-            slugs: _Slugs,
-        }
-
-        let metadata = _AnnotationMetadata {
-            id: &self.id,
-            book_id: &self.book_id,
-            created: &self.created,
-            modified: &self.modified,
-            location: &self.location,
-            epubcfi: &self.epubcfi,
-            slugs: _Slugs {
-                created: self.slug_created(),
-                modified: self.slug_modified(),
-            },
-        };
-
-        metadata.serialize(serializer)
-    }
 }
 
 impl Ord for AnnotationMetadata {

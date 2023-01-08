@@ -3,6 +3,8 @@
 
 use serde::Serialize;
 
+use crate::utils;
+
 use super::annotation::Annotation;
 use super::book::Book;
 
@@ -20,7 +22,11 @@ impl Entry {
     /// Formats an [`Entry`]'s title and author into a slugified string.
     #[must_use]
     pub fn slug_name(&self) -> String {
-        format!("{}--{}", self.book.slug_author(), self.book.slug_title())
+        format!(
+            "{}--{}",
+            utils::to_slug_string(&self.book.author, '-'),
+            utils::to_slug_string(&self.book.title, '-'),
+        )
     }
 }
 

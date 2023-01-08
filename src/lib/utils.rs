@@ -5,7 +5,9 @@ use std::fs;
 use std::io;
 use std::path::Path;
 
+use chrono::DateTime;
 use chrono::Local;
+use chrono::Utc;
 use deunicode::deunicode;
 
 /// Recursively copies all files from one directory into another.
@@ -141,7 +143,7 @@ pub fn sanitize_string(string: &str) -> String {
 /// # Arguments
 ///
 /// * `string` - The string to slugify.
-/// * `delimeter` - Allow list for non-alphanumeric characters.
+/// * `delimeter` - The slug delimeter.
 #[must_use]
 pub fn to_slug_string(string: &str, delimiter: char) -> String {
     let slug = deunicode(string)
@@ -156,4 +158,14 @@ pub fn to_slug_string(string: &str, delimiter: char) -> String {
     slug.chars()
         .filter(|c| c.is_alphanumeric() || c == &delimiter)
         .collect()
+}
+
+/// Slugifies a date.
+///
+/// # Arguments
+///
+/// * `date` - The date to slugify.
+#[must_use]
+pub fn to_slug_date(date: &DateTime<Utc>) -> String {
+    date.format(crate::defaults::DATE_FORMAT).to_string()
 }

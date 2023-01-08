@@ -15,6 +15,18 @@
   documentation on [Filtering][filtering] for more information.
 - Added the `--auto-confirm-filter` option to auto-confirm the filtered
   results prompt.
+- All slugified strings in the `book` and `annotation` contexts have been moved
+  to under the `slugs` namespace. For example:
+
+  ```plaintext
+  book.slugs
+  book.slugs.title
+  book.slugs.author
+  book.slugs.metadata.last_opened
+  ```
+
+- The `book.slugs.metadata.last_opened` value has been added to the `book`
+  context.
 
 ### Changes
 
@@ -23,6 +35,9 @@
 - The short option name for `--quiet` is now `-q`.
 
 ### Bug Fixes
+
+- Slugified strings no longer appear in output data when using the `export`
+  command.
 
 - The `--trim-blocks` option now only leaves a single trailing line-break.
 

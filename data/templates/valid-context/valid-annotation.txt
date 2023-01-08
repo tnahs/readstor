@@ -28,9 +28,10 @@ extension: txt
 {{ annotation.metadata.modified }}
 {{ annotation.metadata.location }}
 {{ annotation.metadata.epubcfi }}
-{{ annotation.metadata.slugs }}
-{{ annotation.metadata.slugs.created }}
-{{ annotation.metadata.slugs.modified }}
+{{ annotation.slugs }}
+{{ annotation.slugs.metadata }}
+{{ annotation.slugs.metadata.created }}
+{{ annotation.slugs.metadata.modified }}
 
 {{ names }}
 {{ names.book }}

@@ -24,9 +24,10 @@ objects, under the name `annotations`, are injected into the template's context.
 | `annotation.metadata.modified`       | datetime           | date modified           |
 | `annotation.metadata.location`       | string             | location string         |
 | `annotation.metadata.epubcfi`        | string             | [epubcfi][epubcfi]      |
-| `annotation.metadata.slugs`          | dictionary         | slugs object            |
-| `annotation.metadata.slugs.created`  | string             | date created slugified  |
-| `annotation.metadata.slugs.modified` | string             | date modified slugified |
+| `annotation.slugs`                   | dictionary         | slugs object            |
+| `annotation.slugs.metadata`          | dictionary         | slugs metadata object   |
+| `annotation.slugs.metadata.created`  | string             | date created slugified  |
+| `annotation.slugs.metadata.modified` | string             | date modified slugified |
 
 ## Example Data - Annotation
 
