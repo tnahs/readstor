@@ -128,8 +128,8 @@ pub fn parse(raw: &str) -> String {
     //
     //     epubcfi([parent-path],[range-start],[range-end])
     //
-    // We only care about the [parent-path] and [range-start] which gives us the
-    // absolute path to where an `Annotation` begins.
+    // We only care about the [parent-path] and [range-start] which gives us
+    // the absolute path to where an `Annotation` begins.
     let mut parts: Vec<&str> = location.split(',').collect();
     parts = match parts[..] {
         [parent_path, range_start, _] => {

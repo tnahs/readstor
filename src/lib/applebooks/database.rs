@@ -55,7 +55,7 @@ impl ABDatabase {
         // This will only fail if the database schema has changes.This means
         // that the Apple Books database schema is different than the one the
         // query has been designed against. In that case the currently installed
-        // version of Apple Books us unsupported.
+        // version of Apple Books is unsupported.
         let mut statement = match connection.prepare(T::QUERY) {
             Ok(statement) => statement,
             Err(_) => {

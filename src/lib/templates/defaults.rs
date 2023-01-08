@@ -1,4 +1,4 @@
-//! Defines defaults for working with this templates.
+//! Defines defaults for working with templates.
 
 /// The opening tag for defining a config block in a template.
 ///
