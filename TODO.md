@@ -54,10 +54,11 @@
   ```
 
 - [ ] Convert `Book::authors` into a list of authors?
+- [ ] Simplify how template names are defined in the `names` key.
 
 ## Internal
 
-- [ ] Simplify how template names are defined in the `names` key.
+- [ ] Add teardown for testing.
 - [ ] Document `cli` module.
 - [ ] Is there a way to consolidate clippy lints between bin/lib?
 - [ ] Test [Tera][tera] macros and inheritances.
