@@ -17,7 +17,7 @@ pub struct TemplateRaw {
     /// This is typically a file path relative to the templates directory. It
     /// serves to identify a template within the registry when rendering. This
     /// is one of two fields that are passed to Tera when registering the
-    /// template. The other one being [`Template.contents`].
+    /// template. The other one being [`Self::contents`].
     ///
     /// ```plaintext
     /// --> /path/to/templates/nested/template.md
@@ -30,7 +30,7 @@ pub struct TemplateRaw {
     ///
     /// This gets parsed and validated during registration. This is one of two
     /// fields that are passed to Tera when registering the template. The other
-    /// one being [`Template.id`].
+    /// one being [`Self::id`].
     #[serde(skip_deserializing)]
     pub contents: String,
 
@@ -141,7 +141,7 @@ impl std::fmt::Debug for TemplateRaw {
     }
 }
 
-/// A struct representing a unconfigured partial template.
+/// A struct representing an unconfigured partial template.
 ///
 /// Partial templates get their configuration from the normal templates that
 /// `include` them.

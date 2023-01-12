@@ -1,4 +1,4 @@
-//! Defines the [`TemplateContext`] struct.
+//! Defines the context injected directly into a template.
 
 use serde::Serialize;
 
@@ -12,7 +12,6 @@ use super::names::NamesContext;
 /// This primarily used to shuffle data to fit a certain shape before it's
 /// injected into a template.
 #[derive(Debug, Serialize)]
-#[allow(missing_docs)]
 #[serde(untagged)]
 pub enum TemplateContext<'a> {
     /// Used when rendering both a [`Book`][book] and its
@@ -22,15 +21,23 @@ pub enum TemplateContext<'a> {
     /// [book]: crate::models::book::Book
     /// [annotation]: crate::models::annotation::Annotation
     Book {
+        #[allow(missing_docs)]
         book: &'a BookContext<'a>,
+        #[allow(missing_docs)]
         annotations: &'a [AnnotationContext<'a>],
+        #[allow(missing_docs)]
         names: &'a NamesContext,
     },
-    /// Used when rendering a single annotation in a template. Includes all the
-    /// output filenames and the nested directory name.
+    /// Used when rendering a single [`Annotation`][annotation] in a template.
+    /// Includes all the output filenames and the nested directory name.
+    ///
+    /// [annotation]: crate::models::annotation::Annotation
     Annotation {
+        #[allow(missing_docs)]
         book: &'a BookContext<'a>,
+        #[allow(missing_docs)]
         annotation: &'a AnnotationContext<'a>,
+        #[allow(missing_docs)]
         names: &'a NamesContext,
     },
     /// Used when rendering the output filename for a template with
@@ -38,7 +45,9 @@ pub enum TemplateContext<'a> {
     ///
     /// [book]: super::super::ContextMode::Book
     NameBook {
+        #[allow(missing_docs)]
         book: &'a BookContext<'a>,
+        #[allow(missing_docs)]
         annotations: &'a [AnnotationContext<'a>],
     },
     /// Used when rendering the output filename for a template with
@@ -46,7 +55,9 @@ pub enum TemplateContext<'a> {
     ///
     /// [annotation]: super::super::ContextMode::Annotation
     NameAnnotation {
+        #[allow(missing_docs)]
         book: &'a BookContext<'a>,
+        #[allow(missing_docs)]
         annotation: &'a AnnotationContext<'a>,
     },
 }

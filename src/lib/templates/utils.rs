@@ -1,4 +1,4 @@
-//! Utilities for working with templates.
+//! Defines utilities for working with templates.
 
 use ::std::hash::BuildHasher;
 use std::collections::HashMap;

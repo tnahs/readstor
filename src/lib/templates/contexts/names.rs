@@ -1,4 +1,6 @@
-//! Defines the [`NamesContext`] struct.
+//! Defines the context for [`Names`][names] data.
+//!
+//![names]: crate::templates::template::Names
 
 use std::collections::HashMap;
 
@@ -149,8 +151,7 @@ impl NamesContext {
 /// ```
 /// See [`NamesContext::annotations`][names-context] for more information.
 ///
-/// See [`AnnotationMetadata`][annotation-metadata] for information on
-/// undocumented fields.
+/// See [`AnnotationMetadata`][annotation-metadata] for undocumented fields.
 ///
 /// [annotation-metadata]: crate::models::annotation::AnnotationMetadata
 /// [context-mode]: super::super::ContextMode::Annotation

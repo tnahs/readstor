@@ -1,4 +1,4 @@
-//! Defines the [`BookContext`] struct.
+//! Defines the context for [`Book`] data.
 
 use std::collections::BTreeSet;
 
@@ -10,11 +10,14 @@ use crate::models::book::{Book, BookMetadata};
 ///
 /// See [`Book`] for undocumented fields.
 #[derive(Debug, Serialize)]
-#[allow(missing_docs)]
 pub struct BookContext<'a> {
+    #[allow(missing_docs)]
     pub title: &'a str,
+    #[allow(missing_docs)]
     pub author: &'a String,
+    #[allow(missing_docs)]
     pub tags: &'a BTreeSet<String>,
+    #[allow(missing_docs)]
     pub metadata: &'a BookMetadata,
 
     /// An [`Book`]s slugified strings.
@@ -39,20 +42,22 @@ impl<'a> From<&'a Book> for BookContext<'a> {
     }
 }
 
-/// A struct representing an [`Annotation`]'s slugified strings.
-#[allow(missing_docs)]
+/// A struct representing a [`Book`]'s slugified strings.
 #[derive(Debug, Default, Clone, Serialize)]
 pub struct BookSlugs {
+    #[allow(missing_docs)]
     pub title: String,
+    #[allow(missing_docs)]
     pub author: String,
+    #[allow(missing_docs)]
     pub metadata: BookMetadataSlugs,
 }
 
 /// A struct representing an [`BookMetadata`]'s slugified strings.
 ///
 /// See [`BookMetadata`] for undocumented fields.
-#[allow(missing_docs)]
 #[derive(Debug, Default, Clone, Serialize)]
 pub struct BookMetadataSlugs {
+    #[allow(missing_docs)]
     pub last_opened: String,
 }

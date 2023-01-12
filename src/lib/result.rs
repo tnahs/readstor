@@ -1,6 +1,6 @@
-//! Defines the library's [`Result`] type and the [`Error`] enum.
+//! Defines the result and error types for this crate.
 
-/// A generic library result type.
+/// A generic result type.
 pub type Result<T> = std::result::Result<T, Error>;
 
 /// An enum representing all possible library errors.
@@ -51,12 +51,19 @@ pub enum Error {
     #[error(transparent)]
     InvalidTemplate(#[from] tera::Error),
 
+    /// Error returned if [`serde_json`][serde-json] encounters any errors
+    /// during serialization.
+    ///
+    /// [serde-json]: https://docs.rs/serde_json/latest/serde_json/
+    #[error(transparent)]
+    JsonSerializationError(#[from] serde_json::Error),
+
     /// Error returned if [`serde_yaml`][serde-yaml] encounters any errors
     /// during deserialization.
     ///
     /// [serde-yaml]: https://docs.rs/serde_yaml/latest/serde_yaml/
     #[error(transparent)]
-    DeserializationError(#[from] serde_yaml::Error),
+    YamlDeserializationError(#[from] serde_yaml::Error),
 
     /// Error returned if any other IO errors are encountered.
     #[error(transparent)]

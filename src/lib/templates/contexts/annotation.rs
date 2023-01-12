@@ -1,4 +1,4 @@
-//! Defines the [`AnnotationContext`] struct.
+//! Defines the context for [`Annotation`] data.
 
 use std::collections::BTreeSet;
 
@@ -10,12 +10,16 @@ use crate::models::annotation::{Annotation, AnnotationMetadata};
 ///
 /// See [`Annotation`] for undocumented fields.
 #[derive(Debug, Serialize)]
-#[allow(missing_docs)]
 pub struct AnnotationContext<'a> {
+    #[allow(missing_docs)]
     pub body: &'a str,
+    #[allow(missing_docs)]
     pub style: &'a str,
+    #[allow(missing_docs)]
     pub notes: &'a str,
+    #[allow(missing_docs)]
     pub tags: &'a BTreeSet<String>,
+    #[allow(missing_docs)]
     pub metadata: &'a AnnotationMetadata,
 
     /// An [`Annotation`]s slugified strings.
@@ -41,18 +45,19 @@ impl<'a> From<&'a Annotation> for AnnotationContext<'a> {
 }
 
 /// A struct representing an [`Annotation`]'s slugified strings.
-#[allow(missing_docs)]
 #[derive(Debug, Serialize)]
 pub struct AnnotationSlugs {
+    #[allow(missing_docs)]
     metadata: AnnotationMetadataSlugs,
 }
 
 /// A struct representing an [`AnnotationMetadata`]'s slugified strings.
 ///
 /// See [`AnnotationMetadata`] for undocumented fields.
-#[allow(missing_docs)]
 #[derive(Debug, Serialize)]
 pub struct AnnotationMetadataSlugs {
+    #[allow(missing_docs)]
     created: String,
+    #[allow(missing_docs)]
     modified: String,
 }

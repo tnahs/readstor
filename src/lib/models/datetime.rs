@@ -1,4 +1,4 @@
-//! Defines the [`DateTimeUtc`] struct. A newtype to help when working with datetimes.
+//! Defines the [`DateTimeUtc`] struct.
 
 use std::ops::{Deref, DerefMut};
 use std::time::UNIX_EPOCH;
@@ -6,24 +6,24 @@ use std::time::UNIX_EPOCH;
 use chrono::{DateTime, NaiveDateTime, Utc};
 use serde::Serialize;
 
-/// A Newtype wrapper around [`chrono`]'s [`DateTime<Utc>`] to allow for a
-/// Default implementation.
+/// A newtype around [`chrono`]'s [`DateTime<Utc>`] to allow implementation of
+/// the [`Default`] trait.
 ///
 /// Why do we need a Default implementation?
 ///
-/// When a new template is added to the [`Templates`][templates] struct needs
-/// to be validated both for its syntax and for the fields that its variables
-/// reference. In order to achieve the latter, a dummy [`Entry`][entry] struct
-/// ---its Default implementation---is passed to validate the template's
-/// variables. Seeing as `DateTime` does not have a Default implementation, it
-/// was either we implement a hand written Default of [`Entry`][entry] which
-/// would include multiple nested structs or wrap [`DateTime<Utc>`] and provide
-/// a Default implementation.
+/// When a new template is added to the [`Templates`][templates] struct, it
+/// needs to be validated both for its syntax and for the fields that its
+/// variables reference. In order to achieve the latter, a dummy
+/// [`Entry`][entry] struct ---its Default implementation---is passed to
+/// validate the template's variables. Seeing as `DateTime` does not have a
+/// Default implementation, it was either we implement a hand written Default
+/// of [`Entry`][entry] which would include multiple nested structs or wrap
+/// [`DateTime<Utc>`] and provide a Default implementation.
 ///
 /// See [`Templates::validate_template()`][validate-template] for more
 /// information.
 ///
-/// [entry]: super::entry::Entry
+/// [entry]: crate::models::entry::Entry
 /// [templates]: crate::templates::Templates
 /// [validate-template]: crate::templates::Templates::validate_template()
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize)]

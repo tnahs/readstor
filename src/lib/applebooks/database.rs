@@ -1,6 +1,8 @@
-//! Defines the [`ABDatabase`] struct, used to interact with the Apple Books
-//! databases and the [`ABQuery`] trait, used for defining how to query each
-//! respective database.
+//! Defines types for interacting with the Apple Books databases.
+//!
+//! The [`ABDatabase`] struct, is used to to directly interact with the Apple
+//! Books databases while the [`ABQuery`] trait provides an interface for
+//! generating types from either of the Apple Books databases.
 
 use std::path::{Path, PathBuf};
 
@@ -10,8 +12,7 @@ use crate::result::{Error, Result};
 
 use super::utils::APPLEBOOKS_VERSION;
 
-/// A struct encapsulating the methods associated with interacting with the
-/// Apple Books databases.
+/// A struct for interacting with the Apple Books databases.
 #[derive(Debug, Clone, Copy)]
 pub struct ABDatabase;
 
@@ -128,12 +129,12 @@ impl ABDatabase {
     }
 }
 
-/// This trait is an attempt at reducing code duplication and standardizing
-/// how [`Book`][book] and [`Annotation`][annotation] instances are created.
-/// Thus it should only have to be implemented by said structs. It allows
-/// instances to be created generically over the rows of their respective
-/// databases `BKLibrary*.sqlite` and `AEAnnotation*.sqlite`. See
-/// [`DATABASES`][databases] for path information.
+/// A trait for standardizing how types are created from the Apple Books
+/// databases.
+///
+/// This trait allows for instances to be created generically over the rows of
+/// their respective databases `BKLibrary*.sqlite` and `AEAnnotation*.sqlite`.
+/// See [`DATABASES`][databases] for path information.
 ///
 /// The [`ABQuery::from_row()`] and [`ABQuery::QUERY`] methods are strongly
 /// coupled in that the declared rows in the `SELECT` statement *must* map
@@ -148,6 +149,9 @@ impl ABDatabase {
 /// Book         ZBKLIBRARYASSET.ZASSETID ─────────┐
 /// Annotation   ZAEANNOTATION.ZANNOTATIONASSETID ─┘
 /// ```
+///
+/// Note that for out purposes, this should only have to be implemented by the
+/// [`Book`][book] and [`Annotation`][annotation] types.
 ///
 /// [annotation]: crate::models::annotation::Annotation
 /// [book]: crate::models::book::Book
@@ -164,9 +168,7 @@ pub trait ABQuery {
     fn from_row(row: &Row<'_>) -> Self;
 }
 
-/// An enum representing Apple Books' two databases.
-///
-/// Primarily used to avoid using strings to refer to the databases.
+/// An enum representing the Apple Books' databases.
 #[derive(Debug, Clone, Copy)]
 pub enum ABDatabaseName {
     /// The books database with a basename of `BKLibrary`.

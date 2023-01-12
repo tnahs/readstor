@@ -1,6 +1,6 @@
-//! Defines a parser to convert an [`epubcfi`][epubcfi] into a string used to
-//! sort annotations into their order of appearance inside their respective
-//! book.
+//! Defines a parser to convert an [epubcfi][epubcfi] into a sortable string
+//! for sorting annotations into their order of appearance inside their
+//! respective books.
 //!
 //! [epubcfi]: https://w3c.github.io/epub-specs/epub33/epubcfi/
 

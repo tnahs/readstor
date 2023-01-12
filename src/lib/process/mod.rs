@@ -1,46 +1,48 @@
-//! Defines the [`PreProcessor`] and [`PostProcessor`] structs used for pre- and
-//! post-processing of [`Entry`]s and [`TemplateRender`]s respectively.
+//! Defines types for pre- and post-processing.
 
-pub mod process;
+pub mod processors;
 
 use std::collections::BTreeSet;
 
+use crate::models::data::Entries;
 use crate::models::entry::Entry;
 use crate::templates::template::TemplateRender;
 
 /// A struct for pre-processing [`Entry`]s.
 #[derive(Debug, Clone, Copy)]
-pub struct PreProcessor;
+pub struct PreProcessRunner;
 
-impl PreProcessor {
+impl PreProcessRunner {
     /// Runs all pre-processors on an [`Entry`].
     ///
     /// # Arguments
     ///
-    /// * `options` - The pre-processor's options.
-    /// * `entry` - The [`Entry`] to process.
-    pub fn run<O>(options: O, entry: &mut Entry)
+    /// * `options` - The pre-process options.
+    /// * `entry` - The [`Entry`]s to process.
+    pub fn run<O>(entries: &mut Entries, options: O)
     where
-        O: Into<PreProcessorOptions>,
+        O: Into<PreProcessOptions>,
     {
         let options = options.into();
 
-        Self::sort_annotations(entry);
+        for entry in entries.values_mut() {
+            Self::sort_annotations(entry);
 
-        if options.extract_tags {
-            Self::extract_tags(entry);
-        }
+            if options.extract_tags {
+                Self::extract_tags(entry);
+            }
 
-        if options.normalize_whitespace {
-            Self::normalize_whitespace(entry);
-        }
+            if options.normalize_whitespace {
+                Self::normalize_whitespace(entry);
+            }
 
-        if options.convert_all_to_ascii {
-            Self::convert_all_to_ascii(entry);
-        }
+            if options.convert_all_to_ascii {
+                Self::convert_all_to_ascii(entry);
+            }
 
-        if options.convert_symbols_to_ascii {
-            Self::convert_symbols_to_ascii(entry);
+            if options.convert_symbols_to_ascii {
+                Self::convert_symbols_to_ascii(entry);
+            }
         }
     }
 
@@ -69,8 +71,8 @@ impl PreProcessor {
     /// [book-tags]: crate::models::book::Book::tags
     fn extract_tags(entry: &mut Entry) {
         for annotation in &mut entry.annotations {
-            annotation.tags = process::extract_tags(&annotation.notes);
-            annotation.notes = process::remove_tags(&annotation.notes);
+            annotation.tags = processors::extract_tags(&annotation.notes);
+            annotation.notes = processors::remove_tags(&annotation.notes);
         }
 
         // Compile/insert unique list of `#tags` into `Book::tags`.
@@ -94,7 +96,7 @@ impl PreProcessor {
     /// [body]: crate::models::annotation::Annotation::body
     fn normalize_whitespace(entry: &mut Entry) {
         for annotation in &mut entry.annotations {
-            annotation.body = process::normalize_whitespace(&annotation.body);
+            annotation.body = processors::normalize_whitespace(&annotation.body);
         }
     }
 
@@ -110,11 +112,11 @@ impl PreProcessor {
     /// [body]: crate::models::annotation::Annotation::body
     /// [title]: crate::models::book::Book::title
     fn convert_all_to_ascii(entry: &mut Entry) {
-        entry.book.title = process::convert_all_to_ascii(&entry.book.title);
-        entry.book.author = process::convert_all_to_ascii(&entry.book.author);
+        entry.book.title = processors::convert_all_to_ascii(&entry.book.title);
+        entry.book.author = processors::convert_all_to_ascii(&entry.book.author);
 
         for annotation in &mut entry.annotations {
-            annotation.body = process::convert_all_to_ascii(&annotation.body);
+            annotation.body = processors::convert_all_to_ascii(&annotation.body);
         }
     }
 
@@ -130,19 +132,19 @@ impl PreProcessor {
     /// [body]: crate::models::annotation::Annotation::body
     /// [title]: crate::models::book::Book::title
     fn convert_symbols_to_ascii(entry: &mut Entry) {
-        entry.book.title = process::convert_symbols_to_ascii(&entry.book.title);
-        entry.book.author = process::convert_symbols_to_ascii(&entry.book.author);
+        entry.book.title = processors::convert_symbols_to_ascii(&entry.book.title);
+        entry.book.author = processors::convert_symbols_to_ascii(&entry.book.author);
 
         for annotation in &mut entry.annotations {
-            annotation.body = process::convert_symbols_to_ascii(&annotation.body);
+            annotation.body = processors::convert_symbols_to_ascii(&annotation.body);
         }
     }
 }
 
-/// A struct represting options for the [`PreProcessor`] struct.
+/// A struct representing options for the [`PreProcessRunner`] struct.
 #[derive(Debug, Default, Clone, Copy)]
 #[allow(clippy::struct_excessive_bools)]
-pub struct PreProcessorOptions {
+pub struct PreProcessOptions {
     /// Toggles running `#tag` extraction from notes.
     pub extract_tags: bool,
 
@@ -158,27 +160,29 @@ pub struct PreProcessorOptions {
 
 /// A struct for post-processing [`TemplateRender`]s.
 #[derive(Debug, Clone, Copy)]
-pub struct PostProcessor;
+pub struct PostProcessRunner;
 
-impl PostProcessor {
+impl PostProcessRunner {
     /// Runs all post-processors on an [`TemplateRender`].
     ///
     /// # Arguments
     ///
-    /// * `options` - The post-processor's options.
-    /// * `render` - The [`TemplateRender`] to process.
-    pub fn run<O>(options: O, render: &mut TemplateRender)
+    /// * `options` - The post-process options.
+    /// * `renders` - The [`TemplateRender`]s to process.
+    pub fn run<O>(renders: Vec<&mut TemplateRender>, options: O)
     where
-        O: Into<PostProcessorOptions>,
+        O: Into<PostProcessOptions>,
     {
         let options = options.into();
 
-        if options.trim_blocks {
-            Self::trim_blocks(render);
-        }
+        for render in renders {
+            if options.trim_blocks {
+                Self::trim_blocks(render);
+            }
 
-        if let Some(width) = options.wrap_text {
-            Self::wrap_text(render, width);
+            if let Some(width) = options.wrap_text {
+                Self::wrap_text(render, width);
+            }
         }
     }
 
@@ -188,7 +192,7 @@ impl PostProcessor {
     ///
     /// * `render` - The [`TemplateRender`] to process.
     fn trim_blocks(render: &mut TemplateRender) {
-        render.contents = process::trim_blocks(&render.contents);
+        render.contents = processors::trim_blocks(&render.contents);
     }
 
     /// Wraps text to a maximum character width.
@@ -207,9 +211,9 @@ impl PostProcessor {
     }
 }
 
-/// A struct represting options for the [`PostProcessor`] struct.
+/// A struct representing options for the [`PostProcessRunner`] struct.
 #[derive(Debug, Default, Clone, Copy)]
-pub struct PostProcessorOptions {
+pub struct PostProcessOptions {
     /// Toggles trimming blocks left after rendering.
     pub trim_blocks: bool,
 
@@ -247,7 +251,7 @@ mod test_processors {
             ],
         };
 
-        PreProcessor::extract_tags(&mut entry);
+        PreProcessRunner::extract_tags(&mut entry);
 
         for annotation in entry.annotations {
             assert_eq!(annotation.tags.len(), 2);

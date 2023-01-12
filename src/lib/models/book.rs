@@ -1,4 +1,4 @@
-//! Defines the [`Book`] struct and its trait implementations.
+//! Defines the [`Book`] struct.
 
 use std::collections::BTreeSet;
 

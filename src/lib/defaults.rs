@@ -1,4 +1,4 @@
-//! Defaults for the library module.
+//! Defines the defaults for this crate.
 
 use std::path::PathBuf;
 
@@ -34,7 +34,9 @@ pub static TEST_TEMPLATES: Lazy<PathBuf> = Lazy::new(|| {
     path
 });
 
-/// A list of "smart" Unicode symbols and their ASCII eqivalents. Based on:
+/// A list of "smart" Unicode symbols and their ASCII eqivalents.
+///
+/// Based on the following:
 ///
 /// * [Daring Fireball - SmartyPants](https://daringfireball.net/projects/smartypants/)
 /// * [Python-Markdown - SmartyPants](https://python-markdown.github.io/extensions/smarty/)

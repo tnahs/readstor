@@ -1,4 +1,4 @@
-//! Defines the [`Annotation`] struct and its trait implementations.
+//! Defines the [`Annotation`] struct.
 
 use std::cmp::Ordering;
 use std::collections::BTreeSet;

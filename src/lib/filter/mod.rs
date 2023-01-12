@@ -1,10 +1,6 @@
-//! Defines types for filtering out [`Entry`][entry]s and
-//! [`Annotation`][annotation]s.
-//!
-//! [annotation]: crate::models::annotation::Annotation
-//! [entry]: crate::models::entry::Entry
+//! Defines types for filtering.
 
-pub mod filter;
+pub mod filters;
 
 use std::collections::BTreeSet;
 
@@ -44,22 +40,22 @@ impl FilterRunner {
         }
 
         // Remove `Entry`s that have had all their `Annotation`s filtered out.
-        filter::contains_no_annotations(entries);
+        filters::contains_no_annotations(entries);
     }
 
     fn filter_by_title(query: &[String], operator: FilterOperator, entries: &mut Entries) {
         match operator {
-            FilterOperator::Any => filter::by_title_any(query, entries),
-            FilterOperator::All => filter::by_title_all(query, entries),
-            FilterOperator::Exact => filter::by_title_exact(&query.join(" "), entries),
+            FilterOperator::Any => filters::by_title_any(query, entries),
+            FilterOperator::All => filters::by_title_all(query, entries),
+            FilterOperator::Exact => filters::by_title_exact(&query.join(" "), entries),
         }
     }
 
     fn filter_by_author(query: &[String], operator: FilterOperator, entries: &mut Entries) {
         match operator {
-            FilterOperator::Any => filter::by_author_any(query, entries),
-            FilterOperator::All => filter::by_author_all(query, entries),
-            FilterOperator::Exact => filter::by_author_exact(&query.join(" "), entries),
+            FilterOperator::Any => filters::by_author_any(query, entries),
+            FilterOperator::All => filters::by_author_all(query, entries),
+            FilterOperator::Exact => filters::by_author_exact(&query.join(" "), entries),
         }
     }
 
@@ -67,14 +63,14 @@ impl FilterRunner {
         let tags = BTreeSet::from_iter(query);
 
         match operator {
-            FilterOperator::Any => filter::by_tags_any(&tags, entries),
-            FilterOperator::All => filter::by_tags_all(&tags, entries),
-            FilterOperator::Exact => filter::by_tags_exact(&tags, entries),
+            FilterOperator::Any => filters::by_tags_any(&tags, entries),
+            FilterOperator::All => filters::by_tags_all(&tags, entries),
+            FilterOperator::Exact => filters::by_tags_exact(&tags, entries),
         }
     }
 }
 
-/// An enum representing possible filters.
+/// An enum representing possible filter types.
 ///
 /// A filter generally consists of three elements: (1) the field to use for
 /// filtering, (2) a list of queries and (3) a [`FilterOperator`] to determine

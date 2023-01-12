@@ -1,5 +1,4 @@
-//! Defines a set of structs, traits and functions used to interact with,
-//! extract and export and render data from Apple Books.
+//! Defines types used for interacting with Apple Books.
 
 #![warn(
     clippy::all,
@@ -22,10 +21,12 @@
 )]
 
 pub mod applebooks;
+pub mod backup;
 pub mod defaults;
-pub mod filters;
+pub mod export;
+pub mod filter;
 pub mod models;
-pub mod processor;
+pub mod process;
 pub mod result;
 pub mod templates;
 pub mod utils;

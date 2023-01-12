@@ -1,4 +1,4 @@
-//! Common utilities for working with this library.
+//! Defines utilities for this crate.
 
 use std::ffi::OsStr;
 use std::fs;
@@ -51,7 +51,7 @@ where
     Ok(())
 }
 
-/// Returns the file extension from a path.
+/// Returns the file extension of a path.
 ///
 /// # Arguments
 ///
@@ -66,7 +66,7 @@ where
     path.as_ref().extension().and_then(OsStr::to_str)
 }
 
-/// Returns the filename from a path.
+/// Returns the filename of a path.
 ///
 /// # Arguments
 ///

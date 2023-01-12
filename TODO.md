@@ -56,11 +56,7 @@
 
 ## Internal
 
-- [ ] Rename `PreProcessor` to `PreProcessRunner` and `PostProcessor` to
-      `PostProcessRunner`.
-- [ ] Rename module `processor` to `processors`
 - [ ] Simplify how template names are defined in the `names` key.
-- [ ] Clean up module documentation.
 - [ ] Document `cli` module.
 - [ ] Is there a way to consolidate clippy lints between bin/lib?
 - [ ] Test [Tera][tera] macros and inheritances.

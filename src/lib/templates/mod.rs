@@ -1,4 +1,4 @@
-//! Defines all structs used to parse and render templates.
+//! Defines types for parsing and rendering templates.
 
 pub mod contexts;
 pub mod defaults;
@@ -23,21 +23,19 @@ use template::{ContextMode, StructureMode, TemplatePartialRaw, TemplateRaw, Temp
 use contexts::annotation::AnnotationContext;
 use contexts::book::BookContext;
 use contexts::entry::EntryContext;
+use contexts::names::NamesContext;
 use contexts::template::TemplateContext;
 
-use self::contexts::names::NamesContext;
-
-/// A struct providing a simple interface to build and render [`TemplateRaw`]s.
-///
-/// Template data is stored in two different locations: the `registry` holds all
-/// the parsed templates ready for rendering while `templates` holds each
-/// template's config along with the raw template string.
+/// A struct providing a simple interface to build and render templates.
 #[derive(Debug, Default)]
 pub struct Templates {
-    /// A list of all the registered [`TemplateRaw`]s.
+    /// All the parsed templates ready for rendering.
+    registry: Tera,
+
+    /// A list of all registed templates.
     raws: Vec<TemplateRaw>,
 
-    /// A list of all the registered [`TemplatePartialRaw`]s.
+    /// A list of all registed partial templates.
     partials: Vec<TemplatePartialRaw>,
 
     /// A list of all rendered templates.
@@ -45,9 +43,6 @@ pub struct Templates {
 
     /// The default template to use when no templates directory is specified.
     default: String,
-
-    /// An instance of [`Tera`] containing all the parsed templates.
-    registry: Tera,
 
     /// An instance of [`TemplateOptions`].
     options: TemplateOptions,
@@ -506,7 +501,7 @@ impl Templates {
     }
 }
 
-/// A struct for changing the rendering behavior of the [`Templates`].
+/// A struct representing options for the [`Templates`] struct.
 #[derive(Debug, Default)]
 pub struct TemplateOptions {
     /// A path to a directory containing user-generated templates.

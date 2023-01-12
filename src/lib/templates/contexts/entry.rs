@@ -1,4 +1,4 @@
-//! Defines the [`EntryContext`] struct.
+//! Defines the context for [`Entry`] data.
 
 use serde::Serialize;
 
@@ -11,9 +11,10 @@ use super::book::BookContext;
 ///
 /// See [`Entry`] for undocumented fields.
 #[derive(Debug, Serialize)]
-#[allow(missing_docs)]
 pub struct EntryContext<'a> {
+    #[allow(missing_docs)]
     pub book: BookContext<'a>,
+    #[allow(missing_docs)]
     pub annotations: Vec<AnnotationContext<'a>>,
 }
 

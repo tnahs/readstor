@@ -1,20 +1,22 @@
-//! Defines the [`Data`] struct. A type that compiles and stores [`Entry`]s.
+//! Defines the [`Data`] struct.
 
 use std::collections::HashMap;
 use std::ops::{Deref, DerefMut};
 use std::path::Path;
 
 use crate::applebooks::database::{ABDatabase, ABDatabaseName};
-use crate::filters::filter;
+use crate::filter::filters;
 use crate::result::Result;
 
 use super::annotation::Annotation;
 use super::book::Book;
 use super::entry::Entry;
 
-/// Defines the `Entries` type alias.
+/// A type alias represening the inner type of [`Data`].
 ///
-/// A `Entries` is a `HashMap` composed of `key:value` pairs of `ID:Entry`.
+/// [`Entries`] is a `HashMap` composed of `key:value` pairs of where the value
+/// is an [`Entry`] and the key is the unique id of its [`Book`], taken from
+/// the [`BookMetadata::id`][id] field.
 ///
 /// For example:
 ///
@@ -26,12 +28,10 @@ use super::entry::Entry;
 ///  └─ ...
 /// ```
 ///
-/// The `ID` for each `Entry` is taken from its `Book`'s `BookMetadata::id`.
-/// field. See [`From<Book> for Entry`](struct@Entry#impl-From<Book>) for more
-/// information.
+/// [id]: crate::models::book::BookMetadata::id
 pub type Entries = HashMap<String, Entry>;
 
-/// Defines a thin wrapper around the [`Entries`] type alias.
+/// A container struct for storing and managing [`Entry`]s.
 ///
 /// Allows default `HashMap` interaction via `Deref` and `DerefMut`, but also
 /// provides a few specific convenience methods.
@@ -96,7 +96,7 @@ impl Data {
         }
 
         // Remove `Entry`s that have no `Annotation`s.
-        filter::contains_no_annotations(&mut data);
+        filters::contains_no_annotations(&mut data);
 
         self.0 = data;
 

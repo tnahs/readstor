@@ -1,10 +1,10 @@
-//! Pre-processors for manipulating [`Entry`][entry], [`Book`][book] and
-//! [`Annotation`][annotation] types before they are rendered/exported and
-//! post-processors for manipulating a template after it's been rendered.
+//! Defines pre- and post-processor functions.
 //!
-//! [annotation]: crate::models::annotation::Annotation
-//! [book]: crate::models::book::Book
+//! Pre-processors are used to mutate fields within an [`Entry`][entry] while
+//! post-processors mutate those within a [`TemplateRender`][template-render].
+//!
 //! [entry]: crate::models::entry::Entry
+//! [template-render]: crate::templates::template::TemplateRender
 
 use std::collections::BTreeSet;
 

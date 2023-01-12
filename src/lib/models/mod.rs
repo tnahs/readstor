@@ -1,4 +1,4 @@
-//! Defines the models used for extracting data from the Apple Books databases.
+//! Defines types for representing Apple Books' data.
 
 pub mod annotation;
 pub mod book;

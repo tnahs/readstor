@@ -66,7 +66,7 @@ pub enum Command {
         filter_options: FilterOptions,
 
         #[clap(flatten)]
-        preprocessor_options: PreProcessorOptions,
+        preprocess_options: PreProcessOptions,
     },
 
     /// Render Apple Books' data via templates
@@ -78,10 +78,10 @@ pub enum Command {
         template_options: TemplateOptions,
 
         #[clap(flatten)]
-        preprocessor_options: PreProcessorOptions,
+        preprocess_options: PreProcessOptions,
 
         #[clap(flatten)]
-        postprocessor_options: PostProcessorOptions,
+        postprocess_options: PostProcessOptions,
     },
 
     /// Back-up Apple Books' databases
@@ -92,10 +92,10 @@ pub enum Command {
 pub struct FilterOptions {
     /// Filter books/annotations before outputting
     #[clap(short, long = "filter", value_name = "[OP]{FIELD}:{QUERY}")]
-    filters: Vec<FilterType>,
+    filter_types: Vec<FilterType>,
 
     /// Auto-confirm filter results
-    #[clap(short = 'A', long = "auto-confirm-filter", requires = "filters")]
+    #[clap(short = 'A', long = "auto-confirm-filter", requires = "filter_types")]
     auto_confirm: bool,
 }
 
@@ -151,7 +151,7 @@ pub struct TemplateOptions {
 
 #[derive(Debug, Clone, Copy, Default, Parser)]
 #[allow(clippy::struct_excessive_bools)]
-pub struct PreProcessorOptions {
+pub struct PreProcessOptions {
     /// Extract #tags from annotation notes
     #[arg(short = 'e', long)]
     pub extract_tags: bool,
@@ -178,7 +178,7 @@ pub struct PreProcessorOptions {
 }
 
 #[derive(Debug, Clone, Copy, Default, Parser)]
-pub struct PostProcessorOptions {
+pub struct PostProcessOptions {
     /// Trim any blocks left after rendering
     #[arg(short = 't', long)]
     pub trim_blocks: bool,
@@ -274,7 +274,7 @@ impl std::fmt::Display for FilterOperator {
     }
 }
 
-impl From<FilterType> for lib::filters::FilterType {
+impl From<FilterType> for lib::filter::FilterType {
     fn from(filter_type: FilterType) -> Self {
         match filter_type {
             FilterType::Title { query, operator } => Self::Title {
@@ -293,7 +293,7 @@ impl From<FilterType> for lib::filters::FilterType {
     }
 }
 
-impl From<FilterOperator> for lib::filters::FilterOperator {
+impl From<FilterOperator> for lib::filter::FilterOperator {
     fn from(filter_operator: FilterOperator) -> Self {
         match filter_operator {
             FilterOperator::Any => Self::Any,
@@ -312,8 +312,8 @@ impl From<TemplateOptions> for lib::templates::TemplateOptions {
     }
 }
 
-impl From<PreProcessorOptions> for lib::processor::PreProcessorOptions {
-    fn from(options: PreProcessorOptions) -> Self {
+impl From<PreProcessOptions> for lib::process::PreProcessOptions {
+    fn from(options: PreProcessOptions) -> Self {
         Self {
             extract_tags: options.extract_tags,
             normalize_whitespace: options.normalize_whitespace,
@@ -323,8 +323,8 @@ impl From<PreProcessorOptions> for lib::processor::PreProcessorOptions {
     }
 }
 
-impl From<PostProcessorOptions> for lib::processor::PostProcessorOptions {
-    fn from(options: PostProcessorOptions) -> Self {
+impl From<PostProcessOptions> for lib::process::PostProcessOptions {
+    fn from(options: PostProcessOptions) -> Self {
         Self {
             trim_blocks: options.trim_blocks,
             wrap_text: options.wrap_text,

@@ -1,4 +1,7 @@
-//! Defines functions for filtering [`Entry`][entry]s based on a criteria.
+//! Defines filter functions.
+//!
+//! Filters are used for filtering out [`Entry`][entry]s from [`Entries`]
+//! based on specific criteria.
 //!
 //! [entry]: crate::models::entry::Entry
 

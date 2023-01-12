@@ -1,5 +1,4 @@
-//! Defines the [`Entry`] struct. A container type that stores a [`Book`] and
-//! its respective [`Annotation`]s.
+//! Defines the [`Entry`] struct.
 
 use serde::Serialize;
 
@@ -8,7 +7,7 @@ use crate::utils;
 use super::annotation::Annotation;
 use super::book::Book;
 
-/// A container type that stores a [`Book`] and its respective [`Annotation`]s.
+/// A container struct that stores a [`Book`] and its respective [`Annotation`]s.
 #[derive(Debug, Default, Clone, Serialize)]
 pub struct Entry {
     /// The entry's [`Book`].
