@@ -11,6 +11,7 @@
 ## Next
 
 - [ ] Add a quick-start/cheatsheet to `README.md` and book.
+- [ ] Add `--overwrite` flag to force overwriting existing files.
 - [ ] Add an argument to `export` and `backup` to set the directory name template.
 
   ```shell
