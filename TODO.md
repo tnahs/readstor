@@ -33,9 +33,17 @@
     • rendered 1 template into 99 files to /path/to/output/directory
   ```
 
+- [ ] Add `display` command to display annotations in the terminal with
+      [`minus`][minus].
+- [ ] Simplify template-groups file naming workflow. Add internal awareness of
+      template groups.
+
+## Ideas
+
+- [ ] Convert `Book::authors` into a list of authors?
 - [ ] Should we add pre- and post-processing options to the template's config?
-      We could also keep the cli pre- and post-processing options and merge them
-      with the ones local to each template.
+      We could also keep the cli pre- and post-processing options and merge
+      them with the ones local to each template.
 
   ```yaml
   group: extended-config
@@ -49,9 +57,6 @@
     wrap-text: 80
   ```
 
-- [ ] Convert `Book::authors` into a list of authors?
-- [ ] Simplify how template names are defined in the `names` key.
-
 ## Internal
 
 - [ ] Add teardown for testing.
@@ -61,7 +66,7 @@
 
 ## Features
 
-- [ ] Extract data from iOS's `com.apple.ibooks-sync.plist` and `Books.plist` files.
+- [ ] Extract data from iOS's `com.apple.ibooks-sync.plist` and `Books.plist`.
 - [ ] Config file support.
 
 ## Future
@@ -70,4 +75,5 @@
 
 [fern]: https://docs.rs/fern/latest/fern/
 [indicatif]: https://docs.rs/indicatif/latest/indicatif/
+[minus]: https://docs.rs/minus/latest/minus/
 [tera]: https://tera.netlify.app/
