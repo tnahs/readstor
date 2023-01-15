@@ -1,13 +1,14 @@
-use std::fs;
 use std::io::Write;
 use std::path::Path;
 
 use color_eyre::eyre::WrapErr;
 
+use lib::backup::BackupRunner;
+use lib::export::ExportRunner;
 use lib::filter::FilterRunner;
 use lib::models::data::{Data, Entries};
 use lib::process::{PostProcessRunner, PreProcessRunner};
-use lib::templates::Templates;
+use lib::render::templates::Templates;
 
 use crate::cli;
 
@@ -17,9 +18,6 @@ use super::Command;
 pub type Result<T> = color_eyre::Result<T>;
 
 /// The main application struct.
-///
-/// Contains a single public method to run the application. A provided
-/// [`Config`] is used to change its behavior.
 #[derive(Debug)]
 pub struct App {
     config: Config,
@@ -27,6 +25,7 @@ pub struct App {
 }
 
 impl App {
+    /// Creates a new instance of [`App`].
     pub fn new(config: Config) -> Self {
         Self {
             config,
@@ -37,44 +36,6 @@ impl App {
     /// Runs the application based off of the given [`Command`].
     pub fn run(&mut self, command: Command) -> Result<()> {
         match command {
-            Command::Export {
-                filter_options,
-                preprocess_options,
-            } => {
-                self.print("-> Initializing data");
-                self.init_data()?;
-
-                self.print("-> Running pre-processes");
-                Self::run_preprocesses(&mut self.data, preprocess_options);
-
-                if !filter_options.filter_types.is_empty() {
-                    self.print("-> Running filters");
-                    Self::run_filters(&mut self.data, filter_options.filter_types);
-
-                    // Show filter confirmation prompt...
-                    if !filter_options.auto_confirm {
-                        // ...and exit if the user does not confirm.
-                        if !self.confirm_filter_results() {
-                            return Ok(());
-                        }
-                    }
-                }
-
-                self.print("-> Exporting data");
-                Self::export_data(&mut self.data, &self.config.output_directory)?;
-
-                #[rustfmt::skip]
-                let summary = format!(
-                    "-> Exported {} annotation{} from {} book{} to {}",
-                    self.data.annotations().count(),
-                    if self.data.annotations().count() == 1 { "" } else { "s" },
-                    self.data.books().count(),
-                    if self.data.books().count() == 1 { "" } else { "s" },
-                    self.config.output_directory.display()
-                );
-
-                self.print(&summary);
-            }
             Command::Render {
                 filter_options,
                 template_options,
@@ -124,11 +85,55 @@ impl App {
 
                 self.print(&summary);
             }
-            Command::Backup => {
+            Command::Export {
+                filter_options,
+                preprocess_options,
+                export_options,
+            } => {
+                self.print("-> Initializing data");
+                self.init_data()?;
+
+                self.print("-> Running pre-processes");
+                Self::run_preprocesses(&mut self.data, preprocess_options);
+
+                if !filter_options.filter_types.is_empty() {
+                    self.print("-> Running filters");
+                    Self::run_filters(&mut self.data, filter_options.filter_types);
+
+                    // Show filter confirmation prompt...
+                    if !filter_options.auto_confirm {
+                        // ...and exit if the user does not confirm.
+                        if !self.confirm_filter_results() {
+                            return Ok(());
+                        }
+                    }
+                }
+
+                self.print("-> Exporting data");
+                Self::export_data(
+                    &mut self.data,
+                    &self.config.output_directory,
+                    export_options,
+                )?;
+
+                #[rustfmt::skip]
+                let summary = format!(
+                    "-> Exported {} annotation{} from {} book{} to {}",
+                    self.data.annotations().count(),
+                    if self.data.annotations().count() == 1 { "" } else { "s" },
+                    self.data.books().count(),
+                    if self.data.books().count() == 1 { "" } else { "s" },
+                    self.config.output_directory.display()
+                );
+
+                self.print(&summary);
+            }
+            Command::Backup { backup_options } => {
                 self.print("-> Backing-up databases");
                 Self::backup_databases(
                     &self.config.databases_directory,
                     &self.config.output_directory,
+                    backup_options,
                 )?;
 
                 let summary = &format!(
@@ -148,60 +153,6 @@ impl App {
         self.data
             .init(&self.config.databases_directory)
             .wrap_err("Failed while initializing data")
-    }
-
-    /// Initializes templates.
-    ///
-    /// # Arguments
-    ///
-    /// * `options` - The [`Templates`]' options.
-    fn init_templates(options: cli::TemplateOptions) -> Result<Templates> {
-        let mut templates = Templates::new(options, super::defaults::TEMPLATE.into());
-
-        templates
-            .init()
-            .wrap_err("Failed while initializing template(s)")?;
-
-        Ok(templates)
-    }
-
-    /// Runs pre-processes on all [`Entry`][entry]s.
-    ///
-    /// # Arguments
-    ///
-    /// * `entries` - The [`Entry`][entry]s to run pre-processors on.
-    /// * `options` - The pre-processor options.
-    ///
-    /// [entry]: lib::models::entry::Entry
-    fn run_preprocesses(entries: &mut Entries, options: cli::PreProcessOptions) {
-        PreProcessRunner::run(entries, options);
-    }
-
-    /// Runs filters on all [`Entry`][entry]s.
-    ///
-    /// # Arguments
-    ///
-    /// * `entries` - The [`Entry`][entry]s to run filters on.
-    /// * `filter_types` - The filters to run.
-    ///
-    /// [entry]: lib::models::entry::Entry
-    fn run_filters(entries: &mut Entries, filter_types: Vec<cli::FilterType>) {
-        for filter_type in filter_types {
-            FilterRunner::run(filter_type, entries);
-        }
-    }
-
-    /// Runs post-processes on all [`TemplateRender`][template-render]s.
-    ///
-    /// # Arguments
-    ///
-    /// * `entries` - The [`Entry`][entry]s to run post-processors on.
-    /// * `options` - The post-processor options.
-    ///
-    /// [entry]: lib::models::entry::Entry
-    /// [template-render]: lib::templates::template::TemplateRender
-    fn run_postprocesses(templates: &mut Templates, options: cli::PostProcessOptions) {
-        PostProcessRunner::run(templates.renders_mut().collect(), options);
     }
 
     /// Renders templates.
@@ -227,7 +178,7 @@ impl App {
     /// * `templates` - The templates to write.
     /// * `path` - The ouput directory.
     fn write_templates(templates: &Templates, path: &Path) -> Result<()> {
-        fs::create_dir_all(path)?;
+        std::fs::create_dir_all(path)?;
 
         templates
             .write(path)
@@ -240,10 +191,11 @@ impl App {
     ///
     /// * `entries` - The [`Entry`][entry]s to export.
     /// * `path` - The ouput directory.
+    /// * `options` - The export options.
     ///
     /// [entry]: lib::models::entry::Entry
-    fn export_data(entries: &mut Entries, path: &Path) -> Result<()> {
-        lib::export::export_data(entries, path).wrap_err("Failed while exporting data")?;
+    fn export_data(entries: &mut Entries, path: &Path, options: cli::ExportOptions) -> Result<()> {
+        ExportRunner::run(entries, path, options).wrap_err("Failed while exporting data")?;
 
         Ok(())
     }
@@ -252,13 +204,72 @@ impl App {
     ///
     /// # Arguments
     ///
-    /// * `databases` - The directory containing the Apple Books databases to backup.
+    /// * `databases` - The directory to back-up.
     /// * `output` - The ouput directory.
-    fn backup_databases(databases: &Path, output: &Path) -> Result<()> {
-        lib::backup::backup_databases(databases, output)
+    /// * `options` - The back-up options.
+    fn backup_databases(
+        databases: &Path,
+        output: &Path,
+        options: cli::BackupOptions,
+    ) -> Result<()> {
+        BackupRunner::run(databases, output, options)
             .wrap_err("Failed while backing-up databases")?;
 
         Ok(())
+    }
+
+    /// Initializes templates.
+    ///
+    /// # Arguments
+    ///
+    /// * `options` - The [`Templates`]' options.
+    fn init_templates(options: cli::RenderOptions) -> Result<Templates> {
+        let mut templates = Templates::new(options, super::defaults::TEMPLATE.into());
+
+        templates
+            .init()
+            .wrap_err("Failed while initializing template(s)")?;
+
+        Ok(templates)
+    }
+
+    /// Runs pre-processes on all [`Entry`][entry]s.
+    ///
+    /// # Arguments
+    ///
+    /// * `entries` - The [`Entry`][entry]s to run pre-processors on.
+    /// * `options` - The pre-process options.
+    ///
+    /// [entry]: lib::models::entry::Entry
+    fn run_preprocesses(entries: &mut Entries, options: cli::PreProcessOptions) {
+        PreProcessRunner::run(entries, options);
+    }
+
+    /// Runs filters on all [`Entry`][entry]s.
+    ///
+    /// # Arguments
+    ///
+    /// * `entries` - The [`Entry`][entry]s to run filters on.
+    /// * `filter_types` - The filters to run.
+    ///
+    /// [entry]: lib::models::entry::Entry
+    fn run_filters(entries: &mut Entries, filter_types: Vec<cli::FilterType>) {
+        for filter_type in filter_types {
+            FilterRunner::run(filter_type, entries);
+        }
+    }
+
+    /// Runs post-processes on all [`TemplateRender`][template-render]s.
+    ///
+    /// # Arguments
+    ///
+    /// * `entries` - The [`Entry`][entry]s to run post-processors on.
+    /// * `options` - The post-process options.
+    ///
+    /// [entry]: lib::models::entry::Entry
+    /// [template-render]: lib::render::template::TemplateRender
+    fn run_postprocesses(templates: &mut Templates, options: cli::PostProcessOptions) {
+        PostProcessRunner::run(templates.renders_mut().collect(), options);
     }
 
     /// Prompts the user to confirm the filter results. Returns a boolean

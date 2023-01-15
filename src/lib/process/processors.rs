@@ -4,7 +4,7 @@
 //! post-processors mutate those within a [`TemplateRender`][template-render].
 //!
 //! [entry]: crate::models::entry::Entry
-//! [template-render]: crate::templates::template::TemplateRender
+//! [template-render]: crate::render::template::TemplateRender
 
 use std::collections::BTreeSet;
 

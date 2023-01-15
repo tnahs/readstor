@@ -11,18 +11,12 @@
 ## Next
 
 - [ ] Add a quick-start/cheatsheet to `README.md` and book.
-- [ ] Add `--overwrite` flag to force overwriting existing files.
-- [ ] Add an argument to `export` and `backup` to set the directory name template.
+- [ ] Add `--overwrite` flag to force overwriting existing files:
 
-  ```shell
-  readstor export \
-      --directory-template "{{ book.slugs.author }}--{{ book.slugs.title }}"
-  ```
-
-  ```shell
-  readstor backup \
-      --directory-template "{{ now() | date(format='%Y-%m-%d-%H%M%S') }}-{{ version }}"
-  ```
+  - [x] Add to the `export` command
+  - [ ] Add tests for the `export` command
+  - [ ] Add to the `render` command
+  - [ ] Add tests for the `render` command
 
 - [ ] Improve stdout messages with [`indicatif`][indicatif]
 

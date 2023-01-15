@@ -1,4 +1,4 @@
-# Template
+# Render
 
 The following options affect only the [`render`][render] commands.
 

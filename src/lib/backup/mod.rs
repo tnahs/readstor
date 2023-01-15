@@ -2,62 +2,139 @@
 
 use std::path::Path;
 
+use chrono::{DateTime, Local};
+use serde::Serialize;
+
 use crate::applebooks::database::ABDatabaseName;
 use crate::applebooks::utils::APPLEBOOKS_VERSION;
 use crate::result::Result;
 
-/// Backs-up Apple Books' databases to disk.
+/// The default back-up directory template.
 ///
-/// The output strucutre is as follows:
-///
-/// ```plaintext
-/// [ouput-directory]
-///  │
-///  ├─ [YYYY-MM-DD-HHMMSS-VERSION]
-///  │   │
-///  │   ├─ AEAnnotation
-///  │   │   ├─ AEAnnotation*.sqlite
-///  │   │   └─ ...
-///  │   │
-///  │   └─ BKLibrary
-///  │       ├─ BKLibrary*.sqlite
-///  │       └─ ...
-///  │
-///  │─ [YYYY-MM-DD-HHMMSS-VERSION]
-///  │   └─ ...
-///  └─ ...
-/// ```
-/// # Arguments
-///
-/// * `databases` - The databases directory to back-up.
-/// * `output` - The ouput directory.
-///
-/// See [`ABDatabase::get_database()`][abdatabase] for information on how the
-/// `databases` directory should be structured.
-///
-/// # Errors
-///
-/// Will return `Err` if any IO errors are encountered.
-///
-/// [abdatabase]: crate::applebooks::database::ABDatabase
-pub fn backup_databases(databases: &Path, output: &Path) -> Result<()> {
-    // -> [YYYY-MM-DD-HHMMSS]-[VERSION]
-    let today = format!("{}-{}", crate::utils::today(), *APPLEBOOKS_VERSION);
+/// Outputs `[YYYY-MM-DD-HHMMSS]-[VERSION]` e.g. `1970-01-01-120000-v0.1-0000`.
+pub const DIRECTORY_TEMPLATE: &str = "{{ now |  date(format='%Y-%m-%d-%H%M%S')}}-{{ version }}";
 
-    // -> [ouput-directory]/[YYYY-MM-DD-HHMMSS]-[VERSION]
-    let destination_root = output.join(today);
+/// A struct for running the back-up task.
+#[derive(Debug, Clone, Copy)]
+pub struct BackupRunner;
 
-    for name in &[
-        ABDatabaseName::Books.to_string(),
-        ABDatabaseName::Annotations.to_string(),
-    ] {
-        // -> [databases-directory]/[name]
-        let source = databases.join(name.clone());
-        // -> [ouput-directory]/[YYYY-MM-DD-HHMMSS]-[VERSION]/[name]
-        let destination = destination_root.join(name);
+impl BackupRunner {
+    /// Runs the back-up task.
+    ///
+    /// # Arguments
+    ///
+    /// * `databases` - The directory to back-up.
+    /// * `output` - The ouput directory.
+    /// * `options` - The back-up options.
+    ///
+    /// # Errors
+    ///
+    /// Will return `Err` if any IO errors are encountered.
+    pub fn run<O>(databases: &Path, output: &Path, options: O) -> Result<()>
+    where
+        O: Into<BackupOptions>,
+    {
+        let options: BackupOptions = options.into();
 
-        crate::utils::copy_dir(source, destination)?;
+        Self::backup(databases, output, options)?;
+
+        Ok(())
     }
 
-    Ok(())
+    /// Backs-up Apple Books' databases to disk.
+    ///
+    /// # Arguments
+    ///
+    /// * `databases` - The directory to back-up.
+    /// * `output` - The ouput directory.
+    /// * `options` - The back-up options.
+    ///
+    /// The `databases` directory should contains the following structure as
+    /// this is the way Apple Books' `Documents` directory is set up.
+    ///
+    /// ```plaintext
+    /// [databases]
+    ///  │
+    ///  ├─ AEAnnotation
+    ///  │  ├─ AEAnnotation*.sqlite
+    ///  │  └─ ...
+    ///  │
+    ///  ├─ BKLibrary
+    ///  │  ├─ BKLibrary*.sqlite
+    ///  │  └─ ...
+    ///  └─ ...
+    /// ```
+    ///
+    /// The `output` strucutre is as follows:
+    ///
+    /// ```plaintext
+    /// [ouput-directory]
+    ///  │
+    ///  ├─ [YYYY-MM-DD-HHMMSS-VERSION]
+    ///  │   │
+    ///  │   ├─ AEAnnotation
+    ///  │   │   ├─ AEAnnotation*.sqlite
+    ///  │   │   └─ ...
+    ///  │   │
+    ///  │   └─ BKLibrary
+    ///  │       ├─ BKLibrary*.sqlite
+    ///  │       └─ ...
+    ///  │
+    ///  │─ [YYYY-MM-DD-HHMMSS-VERSION]
+    ///  │   └─ ...
+    ///  └─ ...
+    /// ```
+    ///
+    /// # Errors
+    ///
+    /// Will return `Err` if any IO errors are encountered.
+    pub fn backup(databases: &Path, output: &Path, options: BackupOptions) -> Result<()> {
+        let directory_template = options
+            .directory_template
+            .unwrap_or_else(|| DIRECTORY_TEMPLATE.to_string());
+
+        // -> [YYYY-MM-DD-HHMMSS]-[VERSION]
+        let directory_name = Self::render_directory_name(&directory_template)?;
+
+        // -> [ouput-directory]/[YYYY-MM-DD-HHMMSS]-[VERSION]
+        let destination_root = output.join(directory_name);
+
+        for name in &[
+            ABDatabaseName::Books.to_string(),
+            ABDatabaseName::Annotations.to_string(),
+        ] {
+            // -> [databases-directory]/[name]
+            let source = databases.join(name.clone());
+            // -> [ouput-directory]/[YYYY-MM-DD-HHMMSS]-[VERSION]/[name]
+            let destination = destination_root.join(name);
+
+            crate::utils::copy_dir(source, destination)?;
+        }
+
+        Ok(())
+    }
+
+    fn render_directory_name(template: &str) -> Result<String> {
+        let context = BackupContext::Directory {
+            now: Local::now(),
+            version: APPLEBOOKS_VERSION.to_owned(),
+        };
+        crate::utils::render_and_sanitize(template, context)
+    }
+}
+
+/// A struct representing options for the [`BackupRunner`] struct.
+#[derive(Debug)]
+pub struct BackupOptions {
+    /// The template to use render for rendering the back-up's ouput directory.
+    pub directory_template: Option<String>,
+}
+
+#[derive(Debug, Serialize)]
+#[serde(untagged)]
+enum BackupContext {
+    Directory {
+        now: DateTime<Local>,
+        version: String,
+    },
 }

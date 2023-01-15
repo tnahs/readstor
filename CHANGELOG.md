@@ -27,6 +27,16 @@
 
 - The `book.slugs.metadata.last_opened` value has been added to the `book`
   context.
+- A custom directory template can now be passed to the `export` and `backup`
+  commands. See the documentation for the defaults. For example:
+
+  ```shell
+  readstor export --directory-template "{{ book.author }} - {{ book.title }}"
+  ```
+
+- The `--overwrite-existing` command has been added to the `export` command to
+  toggle whether or not to overwrite existing files. This used to be true all
+  the time and is now customizable.
 
 ### Changes
 

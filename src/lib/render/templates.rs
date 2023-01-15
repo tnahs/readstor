@@ -1,30 +1,27 @@
-//! Defines types for parsing and rendering templates.
-
-pub mod contexts;
-pub mod defaults;
-pub mod template;
-pub mod utils;
+//! Defines types to build and manage templates.
 
 use std::collections::HashSet;
-use std::fs::{self, File};
+use std::fs::File;
 use std::io::Write;
 use std::path::{Path, PathBuf};
 
+use serde::Serialize;
 use tera::Tera;
 use walkdir::DirEntry;
 
+use crate::contexts::annotation::AnnotationContext;
+use crate::contexts::book::BookContext;
+use crate::contexts::entry::EntryContext;
 use crate::models::annotation::Annotation;
 use crate::models::book::Book;
 use crate::models::entry::Entry;
 use crate::result::{Error, Result};
 
-use template::{ContextMode, StructureMode, TemplatePartialRaw, TemplateRaw, TemplateRender};
-
-use contexts::annotation::AnnotationContext;
-use contexts::book::BookContext;
-use contexts::entry::EntryContext;
-use contexts::names::NamesContext;
-use contexts::template::TemplateContext;
+use super::names::NamesRender;
+use super::template::{
+    ContextMode, StructureMode, TemplatePartialRaw, TemplateRaw, TemplateRender,
+};
+use super::utils;
 
 /// A struct providing a simple interface to build and render templates.
 #[derive(Debug, Default)]
@@ -44,8 +41,8 @@ pub struct Templates {
     /// The default template to use when no templates directory is specified.
     default: String,
 
-    /// An instance of [`TemplateOptions`].
-    options: TemplateOptions,
+    /// An instance of [`RenderOptions`].
+    options: RenderOptions,
 }
 
 impl Templates {
@@ -59,7 +56,7 @@ impl Templates {
     #[must_use]
     pub fn new<O>(options: O, default: String) -> Self
     where
-        O: Into<TemplateOptions>,
+        O: Into<RenderOptions>,
     {
         Self {
             default,
@@ -111,7 +108,7 @@ impl Templates {
         let entry = EntryContext::from(entry);
 
         for template in self.iter_requested_templates() {
-            let names = NamesContext::new(&entry, template)?;
+            let names = NamesRender::new(&entry, template)?;
 
             // Builds a path, relative to the [output-directory], to where the
             // the rendered template will be written to.
@@ -165,7 +162,7 @@ impl Templates {
             // -> [ouput-directory]/[template-subdirectory]
             let root = path.join(&render.path);
 
-            fs::create_dir_all(&root)?;
+            std::fs::create_dir_all(&root)?;
 
             // -> [ouput-directory]/[template-subdirectory]/[template-filename]
             let file = root.join(&render.filename);
@@ -278,7 +275,7 @@ impl Templates {
             // be absolute paths.
             let path = pathdiff::diff_paths(&item, path).unwrap();
 
-            let partial_template = fs::read_to_string(&item)?;
+            let partial_template = std::fs::read_to_string(&item)?;
             let partial_template = TemplatePartialRaw::new(&path, &partial_template);
 
             self.registry
@@ -298,7 +295,7 @@ impl Templates {
             // be absolute paths.
             let path = pathdiff::diff_paths(&item, path).unwrap();
 
-            let template = fs::read_to_string(&item)?;
+            let template = std::fs::read_to_string(&item)?;
             let template = TemplateRaw::new(&path, &template)?;
 
             self.registry
@@ -343,7 +340,7 @@ impl Templates {
 
     /// Validates that a template does not contain variables that reference
     /// non-existent fields in an [`Entry`], [`Book`], [`Annotation`],
-    /// [`NamesContext`].
+    /// [`NamesRender`].
     ///
     /// Tera checks for invalid syntax when a new template is registered however
     /// the template's use of variables can only be checked when a context is
@@ -364,14 +361,18 @@ impl Templates {
     // prevents the excecution of `for` loops within a template and therefore
     // never gets a chance to validate the blocks inside said loops.
     fn validate_template(&self, template: &TemplateRaw) -> Result<()> {
-        let names = NamesContext::default();
+        let names = NamesRender::default();
 
         match template.context_mode {
             ContextMode::Book => {
                 let entry = Entry::default();
                 let entry = EntryContext::from(&entry);
 
-                let context = TemplateContext::book(&entry, &names);
+                let context = TemplateContext::Book {
+                    book: &entry.book,
+                    annotations: &entry.annotations,
+                    names: &names,
+                };
 
                 self.registry
                     .render(&template.id, &tera::Context::from_serialize(context)?)?;
@@ -382,7 +383,11 @@ impl Templates {
                 let annotation = Annotation::default();
                 let annotation = AnnotationContext::from(&annotation);
 
-                let context = TemplateContext::annotation(&book, &annotation, &names);
+                let context = TemplateContext::Annotation {
+                    book: &book,
+                    annotation: &annotation,
+                    names: &names,
+                };
 
                 self.registry
                     .render(&template.id, &tera::Context::from_serialize(context)?)?;
@@ -399,7 +404,7 @@ impl Templates {
     /// * `entry` - The [`EntryContext`] containing the [`BookContext`] to
     /// render.
     /// * `template` - The [`TemplateRaw`] to render with.
-    /// * `names` - A [`NameContext`] instance generated from the [`Entry`] and
+    /// * `names` - A [`NamesRender`] instance generated from the [`Entry`] and
     /// a [`TemplateRaw`].
     /// * `path` - The path to where the template will be written to. This path
     /// should be relative to the final output directory.
@@ -411,12 +416,16 @@ impl Templates {
         &self,
         entry: &EntryContext<'_>,
         template: &TemplateRaw,
-        names: &NamesContext,
+        names: &NamesRender,
         path: PathBuf,
     ) -> Result<TemplateRender> {
         let filename = names.book.clone();
 
-        let context = TemplateContext::book(entry, names);
+        let context = TemplateContext::Book {
+            book: &entry.book,
+            annotations: &entry.annotations,
+            names,
+        };
 
         let contents = self
             .registry
@@ -432,7 +441,7 @@ impl Templates {
     /// * `entry` - The [`EntryContext`] containing the [`AnnotationContext`]s
     /// to render.
     /// * `template` - The [`TemplateRaw`] to render with.
-    /// * `names` - A [`NameContext`] instance generated from the [`Entry`] and
+    /// * `names` - A [`NamesRender`] instance generated from the [`Entry`] and
     /// a [`TemplateRaw`].
     /// * `path` - The path to where the template will be written to. This path
     /// should be relative to the final output directory.
@@ -444,24 +453,28 @@ impl Templates {
         &self,
         entry: &EntryContext<'_>,
         template: &TemplateRaw,
-        names: &NamesContext,
+        names: &NamesRender,
         path: &Path,
     ) -> Result<Vec<TemplateRender>> {
         let mut renders = Vec::with_capacity(entry.annotations.len());
 
         for annotation in &entry.annotations {
-            // This should theoretically never fail as the `NameContext`
+            // This should theoretically never fail as the `NamesRender`
             // instance is created from the `Entry`. This means they contain
             // the same exact keys and it should therefore be safe to unwrap.
             // An error here would be critical and should fail.
             let filename = names
                 .annotations
                 .get(&annotation.metadata.id)
-                .expect("`NameContext` instance missing `Annotation` present in `Entry`")
+                .expect("`NamesRender` instance missing `Annotation` present in `Entry`")
                 .filename
                 .clone();
 
-            let context = TemplateContext::annotation(&entry.book, annotation, names);
+            let context = TemplateContext::Annotation {
+                book: &entry.book,
+                annotation,
+                names,
+            };
 
             let contents = self
                 .registry
@@ -503,7 +516,7 @@ impl Templates {
 
 /// A struct representing options for the [`Templates`] struct.
 #[derive(Debug, Default)]
-pub struct TemplateOptions {
+pub struct RenderOptions {
     /// A path to a directory containing user-generated templates.
     pub templates_directory: Option<PathBuf>,
 
@@ -526,6 +539,35 @@ enum TemplateKind {
     /// A [`TemplatePartialRaw`] template. Must start with an underscore `_`
     /// but does not require a configuration block.
     Partial,
+}
+
+/// An enum representing all possible template contexts.
+///
+/// This primarily used to shuffle data to fit a certain shape before it's
+/// injected into a template.
+#[derive(Debug, Serialize)]
+#[serde(untagged)]
+enum TemplateContext<'a> {
+    /// Used when rendering both a [`Book`][book] and its
+    /// [`Annotation`][annotation]s in a template. Includes all the output
+    /// filenames and the nested directory name.
+    ///
+    /// [book]: crate::models::book::Book
+    /// [annotation]: crate::models::annotation::Annotation
+    Book {
+        book: &'a BookContext<'a>,
+        annotations: &'a [AnnotationContext<'a>],
+        names: &'a NamesRender,
+    },
+    /// Used when rendering a single [`Annotation`][annotation] in a template.
+    /// Includes all the output filenames and the nested directory name.
+    ///
+    /// [annotation]: crate::models::annotation::Annotation
+    Annotation {
+        book: &'a BookContext<'a>,
+        annotation: &'a AnnotationContext<'a>,
+        names: &'a NamesRender,
+    },
 }
 
 #[cfg(test)]

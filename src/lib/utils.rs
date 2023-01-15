@@ -1,7 +1,8 @@
 //! Defines utilities for this crate.
 
+use std::collections::HashMap;
 use std::ffi::OsStr;
-use std::fs;
+use std::hash::BuildHasher;
 use std::io;
 use std::path::Path;
 
@@ -9,6 +10,11 @@ use chrono::DateTime;
 use chrono::Local;
 use chrono::Utc;
 use deunicode::deunicode;
+use serde::ser::SerializeSeq;
+use serde::{de, ser, Deserialize, Serialize};
+use tera::Tera;
+
+use super::result::Result;
 
 /// Recursively copies all files from one directory into another.
 ///
@@ -30,15 +36,15 @@ where
     let source = source.as_ref();
     let destination = destination.as_ref();
 
-    fs::create_dir_all(destination)?;
+    std::fs::create_dir_all(destination)?;
 
-    for entry in fs::read_dir(source)? {
+    for entry in std::fs::read_dir(source)? {
         let entry = entry?;
 
         if entry.path().is_dir() {
             copy_dir(entry.path(), destination.join(entry.file_name()))?;
         } else {
-            fs::copy(entry.path(), destination.join(entry.file_name()))?;
+            std::fs::copy(entry.path(), destination.join(entry.file_name()))?;
         }
     }
 
@@ -168,4 +174,50 @@ pub fn to_slug_string(string: &str, delimiter: char) -> String {
 #[must_use]
 pub fn to_slug_date(date: &DateTime<Utc>) -> String {
     date.format(crate::defaults::DATE_FORMAT).to_string()
+}
+
+/// Renders a template string with a context and sanitizes the output string.
+///
+/// # Errors
+///
+/// Will return `Err` if Tera encounters an error.
+pub fn render_and_sanitize<C>(template: &str, context: C) -> Result<String>
+where
+    C: Serialize,
+{
+    let context = &tera::Context::from_serialize(context)?;
+
+    let string = Tera::one_off(template, context, false)?;
+
+    Ok(sanitize_string(&string))
+}
+
+/// Custom deserialization method to deserialize and sanitize a string.
+#[allow(clippy::missing_errors_doc)]
+pub fn deserialize_and_sanitize<'de, D>(deserializer: D) -> std::result::Result<String, D::Error>
+where
+    D: de::Deserializer<'de>,
+{
+    let s: &str = Deserialize::deserialize(deserializer)?;
+    Ok(sanitize_string(s))
+}
+
+/// Custom serialization method to convert a `HashMap<K, V>` to `Vec<V>`.
+// https://rust-lang.github.io/rust-clippy/master/index.html
+#[allow(clippy::missing_errors_doc)]
+pub fn serialize_hashmap_to_vec<S, K, V, B>(
+    map: &HashMap<K, V, B>,
+    serializer: S,
+) -> std::result::Result<S::Ok, S::Error>
+where
+    S: ser::Serializer,
+    V: Serialize,
+    B: BuildHasher,
+{
+    let values: Vec<&V> = map.values().collect();
+    let mut seq = serializer.serialize_seq(Some(values.len()))?;
+    for value in values {
+        seq.serialize_element(value)?;
+    }
+    seq.end()
 }

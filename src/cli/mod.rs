@@ -60,22 +60,13 @@ pub struct Options {
 
 #[derive(Debug, Subcommand)]
 pub enum Command {
-    /// Export Apple Books' data as JSON
-    Export {
-        #[clap(flatten)]
-        filter_options: FilterOptions,
-
-        #[clap(flatten)]
-        preprocess_options: PreProcessOptions,
-    },
-
     /// Render Apple Books' data via templates
     Render {
         #[clap(flatten)]
         filter_options: FilterOptions,
 
         #[clap(flatten)]
-        template_options: TemplateOptions,
+        template_options: RenderOptions,
 
         #[clap(flatten)]
         preprocess_options: PreProcessOptions,
@@ -84,8 +75,57 @@ pub enum Command {
         postprocess_options: PostProcessOptions,
     },
 
+    /// Export Apple Books' data as JSON
+    Export {
+        #[clap(flatten)]
+        filter_options: FilterOptions,
+
+        #[clap(flatten)]
+        export_options: ExportOptions,
+
+        #[clap(flatten)]
+        preprocess_options: PreProcessOptions,
+    },
+
     /// Back-up Apple Books' databases
-    Backup,
+    Backup {
+        #[clap(flatten)]
+        backup_options: BackupOptions,
+    },
+}
+
+#[derive(Debug, Clone, Default, Parser)]
+pub struct RenderOptions {
+    /// Set a custom templates directory
+    #[arg(
+        short = 'd',
+        long,
+        value_name = "PATH",
+        value_parser(validate_path_exists)
+    )]
+    pub templates_directory: Option<PathBuf>,
+
+    /// Render specified template-groups
+    #[arg(short = 'g', long = "template-group", value_name = "GROUP")]
+    pub template_groups: Vec<String>,
+}
+
+#[derive(Debug, Clone, Default, Parser)]
+pub struct ExportOptions {
+    /// Set the output directory template
+    #[clap(short = 'd', long, value_name = "TEMPLATE")]
+    pub directory_template: Option<String>,
+
+    /// Overwrite existing files
+    #[clap(short = 'o', long)]
+    pub overwrite_existing: bool,
+}
+
+#[derive(Debug, Clone, Default, Parser)]
+pub struct BackupOptions {
+    /// Set the output directory template
+    #[clap(short = 'd', long, value_name = "TEMPLATE")]
+    pub directory_template: Option<String>,
 }
 
 #[derive(Debug, Clone, Default, Parser)]
@@ -133,22 +173,6 @@ pub enum FilterOperator {
     Exact,
 }
 
-#[derive(Debug, Clone, Default, Parser)]
-pub struct TemplateOptions {
-    /// Set a custom templates directory
-    #[arg(
-        short = 'd',
-        long,
-        value_name = "PATH",
-        value_parser(validate_path_exists)
-    )]
-    pub templates_directory: Option<PathBuf>,
-
-    /// Render specified template-groups
-    #[arg(short = 'g', long = "template-group", value_name = "GROUP")]
-    pub template_groups: Vec<String>,
-}
-
 #[derive(Debug, Clone, Copy, Default, Parser)]
 #[allow(clippy::struct_excessive_bools)]
 pub struct PreProcessOptions {
@@ -192,6 +216,81 @@ pub fn validate_path_exists(value: &str) -> Result<PathBuf, String> {
     std::fs::canonicalize(value).map_err(|_| "path does not exist".into())
 }
 
+impl From<RenderOptions> for lib::render::templates::RenderOptions {
+    fn from(options: RenderOptions) -> Self {
+        Self {
+            templates_directory: options.templates_directory,
+            template_groups: options.template_groups,
+        }
+    }
+}
+
+impl From<ExportOptions> for lib::export::ExportOptions {
+    fn from(options: ExportOptions) -> Self {
+        Self {
+            directory_template: options.directory_template,
+            overwrite_existing: options.overwrite_existing,
+        }
+    }
+}
+
+impl From<BackupOptions> for lib::backup::BackupOptions {
+    fn from(options: BackupOptions) -> Self {
+        Self {
+            directory_template: options.directory_template,
+        }
+    }
+}
+
+impl From<FilterOperator> for lib::filter::FilterOperator {
+    fn from(filter_operator: FilterOperator) -> Self {
+        match filter_operator {
+            FilterOperator::Any => Self::Any,
+            FilterOperator::All => Self::All,
+            FilterOperator::Exact => Self::Exact,
+        }
+    }
+}
+
+impl From<FilterType> for lib::filter::FilterType {
+    fn from(filter_type: FilterType) -> Self {
+        match filter_type {
+            FilterType::Title { query, operator } => Self::Title {
+                query,
+                operator: operator.into(),
+            },
+            FilterType::Author { query, operator } => Self::Author {
+                query,
+                operator: operator.into(),
+            },
+            FilterType::Tags { query, operator } => Self::Tags {
+                query,
+                operator: operator.into(),
+            },
+        }
+    }
+}
+
+impl From<PreProcessOptions> for lib::process::PreProcessOptions {
+    fn from(options: PreProcessOptions) -> Self {
+        Self {
+            extract_tags: options.extract_tags,
+            normalize_whitespace: options.normalize_whitespace,
+            convert_all_to_ascii: options.convert_all_to_ascii,
+            convert_symbols_to_ascii: options.convert_symbols_to_ascii,
+        }
+    }
+}
+
+impl From<PostProcessOptions> for lib::process::PostProcessOptions {
+    fn from(options: PostProcessOptions) -> Self {
+        Self {
+            trim_blocks: options.trim_blocks,
+            wrap_text: options.wrap_text,
+        }
+    }
+}
+
 impl FromStr for FilterType {
     type Err = String;
 
@@ -231,22 +330,6 @@ impl FromStr for FilterType {
     }
 }
 
-impl std::fmt::Display for FilterType {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            FilterType::Title { query, operator } => {
-                write!(f, "{operator}title:{}", query.join(" "))
-            }
-            FilterType::Author { query, operator } => {
-                write!(f, "{operator}author:{}", query.join(" "))
-            }
-            FilterType::Tags { query, operator } => {
-                write!(f, "{operator}tags:{}", query.join(" "))
-            }
-        }
-    }
-}
-
 impl FromStr for FilterOperator {
     type Err = String;
 
@@ -259,76 +342,6 @@ impl FromStr for FilterOperator {
         };
 
         Ok(filter_type)
-    }
-}
-
-impl std::fmt::Display for FilterOperator {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        let char = match self {
-            FilterOperator::Any => "?",
-            FilterOperator::All => "*",
-            FilterOperator::Exact => "=",
-        };
-
-        write!(f, "{char}")
-    }
-}
-
-impl From<FilterType> for lib::filter::FilterType {
-    fn from(filter_type: FilterType) -> Self {
-        match filter_type {
-            FilterType::Title { query, operator } => Self::Title {
-                query,
-                operator: operator.into(),
-            },
-            FilterType::Author { query, operator } => Self::Author {
-                query,
-                operator: operator.into(),
-            },
-            FilterType::Tags { query, operator } => Self::Tags {
-                query,
-                operator: operator.into(),
-            },
-        }
-    }
-}
-
-impl From<FilterOperator> for lib::filter::FilterOperator {
-    fn from(filter_operator: FilterOperator) -> Self {
-        match filter_operator {
-            FilterOperator::Any => Self::Any,
-            FilterOperator::All => Self::All,
-            FilterOperator::Exact => Self::Exact,
-        }
-    }
-}
-
-impl From<TemplateOptions> for lib::templates::TemplateOptions {
-    fn from(options: TemplateOptions) -> Self {
-        Self {
-            templates_directory: options.templates_directory,
-            template_groups: options.template_groups,
-        }
-    }
-}
-
-impl From<PreProcessOptions> for lib::process::PreProcessOptions {
-    fn from(options: PreProcessOptions) -> Self {
-        Self {
-            extract_tags: options.extract_tags,
-            normalize_whitespace: options.normalize_whitespace,
-            convert_all_to_ascii: options.convert_all_to_ascii,
-            convert_symbols_to_ascii: options.convert_symbols_to_ascii,
-        }
-    }
-}
-
-impl From<PostProcessOptions> for lib::process::PostProcessOptions {
-    fn from(options: PostProcessOptions) -> Self {
-        Self {
-            trim_blocks: options.trim_blocks,
-            wrap_text: options.wrap_text,
-        }
     }
 }
 

@@ -7,6 +7,7 @@ use serde::Deserialize;
 use crate::result::{Error, Result};
 
 use super::defaults::{CONFIG_TAG_CLOSE, CONFIG_TAG_OPEN};
+use super::names::Names;
 
 /// A struct representing a fully configured template.
 #[derive(Clone, Deserialize)]
@@ -38,7 +39,7 @@ pub struct TemplateRaw {
     ///
     /// See [`StructureMode::FlatGrouped`] and [`StructureMode::NestedGrouped`]
     /// for more information.
-    #[serde(deserialize_with = "super::utils::deserialize_and_sanitize")]
+    #[serde(deserialize_with = "crate::utils::deserialize_and_sanitize")]
     pub group: String,
 
     /// The template's context mode i.e what the template intends to render.
@@ -375,51 +376,6 @@ pub enum ContextMode {
     /// [book]: crate::models::book::Book
     /// [annotation]: crate::models::annotation::Annotation
     Annotation,
-}
-
-/// A struct representing the raw template strings for generating output file
-/// and directory names.
-#[derive(Debug, Clone, Deserialize)]
-pub struct Names {
-    /// The default template used when generating an output filename for the
-    /// template when its context mode is [`ContextMode::Book`].
-    #[serde(default = "Names::default_book")]
-    pub book: String,
-
-    /// The default template used when generating an output filename for the
-    /// template when its context mode is [`ContextMode::Annotation`].
-    #[serde(default = "Names::default_annotation")]
-    pub annotation: String,
-
-    /// The default template used when generating a nested output directory for
-    /// the template when its structure mode is either [`StructureMode::Nested`]
-    /// or [`StructureMode::NestedGrouped`].
-    #[serde(default = "Names::default_directory")]
-    pub directory: String,
-}
-
-impl Default for Names {
-    fn default() -> Self {
-        Self {
-            book: Self::default_book(),
-            annotation: Self::default_annotation(),
-            directory: Self::default_directory(),
-        }
-    }
-}
-
-impl Names {
-    fn default_book() -> String {
-        super::defaults::FILENAME_TEMPLATE_BOOK.to_owned()
-    }
-
-    fn default_annotation() -> String {
-        super::defaults::FILENAME_TEMPLATE_ANNOTATION.to_owned()
-    }
-
-    fn default_directory() -> String {
-        super::defaults::DIRECTORY_TEMPLATE.to_owned()
-    }
 }
 
 #[cfg(test)]

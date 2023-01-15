@@ -1,19 +1,70 @@
-//! Defines the context for [`Names`][names] data.
-//!
-//![names]: crate::templates::template::Names
+//! Defines types to represent the output file/directory names of rendered
+//! templates.
 
 use std::collections::HashMap;
+use std::path::PathBuf;
 
-use serde::Serialize;
-use tera::Tera;
+use serde::{Deserialize, Serialize};
 
+use crate::contexts::annotation::AnnotationContext;
+use crate::contexts::book::BookContext;
+use crate::contexts::entry::EntryContext;
 use crate::models::datetime::DateTimeUtc;
+use crate::render::template::TemplateRaw;
 use crate::result::Result;
 
-use super::super::template::TemplateRaw;
-use super::annotation::AnnotationContext;
-use super::entry::EntryContext;
-use super::template::TemplateContext;
+/// A struct representing the raw template strings for generating output file
+/// and directory names.
+#[derive(Debug, Clone, Deserialize)]
+pub struct Names {
+    /// The default template used when generating an output filename for the
+    /// template when its context mode is [`ContextMode::Book`][book].
+    ///
+    /// [book]: crate::render::template::ContextMode::Book
+    #[serde(default = "Names::default_book")]
+    pub book: String,
+
+    /// The default template used when generating an output filename for the
+    /// template when its context mode is [`ContextMode::Annotation`][annotation].
+    ///
+    /// [annotation]: crate::render::template::ContextMode::Annotation
+    #[serde(default = "Names::default_annotation")]
+    pub annotation: String,
+
+    /// The default template used when generating a nested output directory for
+    /// the template when its structure mode is either
+    /// [`StructureMode::Nested`][nested] or
+    /// [`StructureMode::NestedGrouped`][nested-grouped].
+    ///
+    /// [nested]: crate::render::template::StructureMode::Nested
+    /// [nested-grouped]: crate::render::template::StructureMode::NestedGrouped
+    #[serde(default = "Names::default_directory")]
+    pub directory: String,
+}
+
+impl Default for Names {
+    fn default() -> Self {
+        Self {
+            book: Self::default_book(),
+            annotation: Self::default_annotation(),
+            directory: Self::default_directory(),
+        }
+    }
+}
+
+impl Names {
+    fn default_book() -> String {
+        super::defaults::FILENAME_TEMPLATE_BOOK.to_owned()
+    }
+
+    fn default_annotation() -> String {
+        super::defaults::FILENAME_TEMPLATE_ANNOTATION.to_owned()
+    }
+
+    fn default_directory() -> String {
+        super::defaults::DIRECTORY_TEMPLATE.to_owned()
+    }
+}
 
 /// A struct representing the rendered template strings for all the output file
 /// and directory names for a given template.
@@ -24,12 +75,12 @@ use super::template::TemplateContext;
 ///
 /// See [`Templates::render()`][render] for more information.
 ///
-/// [render]: super::super::Templates::render()
+/// [render]: crate::render::templates::Templates::render()
 #[derive(Debug, Default, Clone, Serialize)]
-pub struct NamesContext {
+pub struct NamesRender {
     /// The output filename for a template with [`ContextMode::Book`][book].
     ///
-    /// [book]: super::super::ContextMode::Book
+    /// [book]: crate::render::template::ContextMode::Book
     pub book: String,
 
     /// The output filenames for a template with
@@ -38,20 +89,20 @@ pub struct NamesContext {
     /// Internally this field is stored as a `HashMap` but is converted into a
     /// `Vec` before it's injected into a template.
     ///
-    /// [annotation]: super::super::ContextMode::Annotation
-    #[serde(serialize_with = "crate::templates::utils::serialize_hashmap_to_vec")]
+    /// [annotation]: crate::render::template::ContextMode::Annotation
+    #[serde(serialize_with = "crate::utils::serialize_hashmap_to_vec")]
     pub annotations: HashMap<String, AnnotationNameAttributes>,
 
     /// The directory name for a template with
     /// [`StructureMode::Nested`][nested] or
     /// [`StructureMode::NestedGrouped`][nested-grouped].
     ///
-    /// [nested]: super::super::StructureMode::Nested
-    /// [nested-grouped]: super::super::StructureMode::NestedGrouped
+    /// [nested]: crate::render::template::StructureMode::Nested
+    /// [nested-grouped]: crate::render::template::StructureMode::NestedGrouped
     pub directory: String,
 }
 
-impl NamesContext {
+impl NamesRender {
     /// Creates a new instance of [`NamesContext`].
     ///
     /// Note that all names are generated regardless of the template's
@@ -73,7 +124,7 @@ impl NamesContext {
     ///
     /// [annotation]: crate::models::annotation::Annotation
     /// [book]: crate::models::book::Book
-    /// [context-mode]: super::super::ContextMode
+    /// [context-mode]: crate::render::template::ContextMode
     pub fn new(entry: &EntryContext<'_>, template: &TemplateRaw) -> Result<Self> {
         Ok(Self {
             book: Self::render_book_filename(entry, template)?,
@@ -83,17 +134,16 @@ impl NamesContext {
     }
 
     fn render_book_filename(entry: &EntryContext<'_>, template: &TemplateRaw) -> Result<String> {
-        let context = TemplateContext::name_book(entry);
+        let context = NamesContext::Book {
+            book: &entry.book,
+            annotations: &entry.annotations,
+        };
 
-        let mut filename = Tera::one_off(
-            &template.names.book,
-            &tera::Context::from_serialize(context)?,
-            false,
-        )?;
+        let filename = crate::utils::render_and_sanitize(&template.names.book, context)?;
+        let filename = PathBuf::from(filename).with_extension(&template.extension);
+        let filename = filename.to_str().unwrap().into();
 
-        filename = crate::utils::sanitize_string(&filename);
-
-        Ok(format!("{filename}.{}", template.extension))
+        Ok(filename)
     }
 
     fn render_annotation_filenames(
@@ -103,16 +153,14 @@ impl NamesContext {
         let mut annotations = HashMap::new();
 
         for annotation in &entry.annotations {
-            let context = TemplateContext::name_annotation(&entry.book, annotation);
+            let context = NamesContext::Annotation {
+                book: &entry.book,
+                annotation,
+            };
 
-            let mut filename = Tera::one_off(
-                &template.names.annotation,
-                &tera::Context::from_serialize(context)?,
-                false,
-            )?;
-
-            filename = crate::utils::sanitize_string(&filename);
-            filename = format!("{filename}.{}", template.extension);
+            let filename = crate::utils::render_and_sanitize(&template.names.annotation, context)?;
+            let filename = PathBuf::from(filename).with_extension(&template.extension);
+            let filename = filename.to_str().unwrap().into();
 
             annotations.insert(
                 annotation.metadata.id.clone(),
@@ -124,17 +172,9 @@ impl NamesContext {
     }
 
     fn render_directory_name(entry: &EntryContext<'_>, template: &TemplateRaw) -> Result<String> {
-        let context = TemplateContext::name_book(entry);
+        let context = NamesContext::Directory { book: &entry.book };
 
-        let mut directory_name = Tera::one_off(
-            &template.names.directory,
-            &tera::Context::from_serialize(context)?,
-            false,
-        )?;
-
-        directory_name = crate::utils::sanitize_string(&directory_name);
-
-        Ok(directory_name)
+        crate::utils::render_and_sanitize(&template.names.directory, context)
     }
 }
 
@@ -154,7 +194,7 @@ impl NamesContext {
 /// See [`AnnotationMetadata`][annotation-metadata] for undocumented fields.
 ///
 /// [annotation-metadata]: crate::models::annotation::AnnotationMetadata
-/// [context-mode]: super::super::ContextMode::Annotation
+/// [context-mode]: crate::render::template::ContextMode::Annotation
 /// [names-context]: NamesContext#structfield.annotations
 #[derive(Debug, Default, Clone, Serialize)]
 #[allow(missing_docs)]
@@ -162,7 +202,7 @@ pub struct AnnotationNameAttributes {
     /// The rendered filename for a template with
     /// [`ContextMode::Annotation`][context-mode].
     ///
-    /// [context-mode]: super::super::ContextMode
+    /// [context-mode]: crate::render::template::ContextMode
     pub filename: String,
     pub created: DateTimeUtc,
     pub modified: DateTimeUtc,
@@ -179,4 +219,20 @@ impl AnnotationNameAttributes {
             location: annotation.metadata.location.clone(),
         }
     }
+}
+
+#[derive(Debug, Serialize)]
+#[serde(untagged)]
+enum NamesContext<'a> {
+    Book {
+        book: &'a BookContext<'a>,
+        annotations: &'a [AnnotationContext<'a>],
+    },
+    Annotation {
+        book: &'a BookContext<'a>,
+        annotation: &'a AnnotationContext<'a>,
+    },
+    Directory {
+        book: &'a BookContext<'a>,
+    },
 }

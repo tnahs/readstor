@@ -1,10 +1,21 @@
 # Commands
 
+## `render`
+
+Render Apple Books' data via templates.
+
+> <i class="fa fa-info-circle"></i> See [Templates][templates] for a full guide
+> on creating templates.
+
+> <i class="fa fa-info-circle"></i> See [Pre-process][pre-process],
+> [Post-process][post-process] and [Render][render] options for available
+> options.
+
 ## `export`
 
 Export Apple Books' data as JSON.
 
-> <i class="fa fa-info-circle"></i> See [Pre-process][preprocess] options
+> <i class="fa fa-info-circle"></i> See [Pre-process][pre-process] options
 > for available options.
 
 Outputs using the following structure:
@@ -27,19 +38,19 @@ Example output structure:
 
 ```plaintext
 [ouput-directory]
- ├── krishnamurti-think-on-these-things
+ ├── Krishnamurti - Think on These Things
  │   ├── data
  │   │   ├── annotations.json
  │   │   └── book.json
  │   └── resources
  │       └── .gitkeep
- ├── richard-p-feynman-surely-youre-joking-mr-feynman
+ ├── Richard P. Feynman - "Surely You're Joking, Mr. Feynman!"
  │   ├── data
  │   │   ├── annotations.json
  │   │   └── book.json
  │   └── resources
  │       └── .gitkeep
- └── robert-henri-the-art-spirit
+ └── Robert Henri - The Art Spirit
      ├── data
      │   ├── annotations.json
      │   └── book.json
@@ -147,17 +158,6 @@ Example `annotations.json`:
 > <i class="fa fa-info-circle"></i> This `export` was run with the
 > [`--extract-tags`][extract-tags] option.
 
-## `render`
-
-Render Apple Books' data via templates.
-
-> <i class="fa fa-info-circle"></i> See [Templates][templates] for a full guide
-> on creating templates.
-
-> <i class="fa fa-info-circle"></i> See [Pre-process][preprocess],
-> [Post-process][postprocess] and [Template][template] options for available
-> options.
-
 ## `backup`
 
 Back-up Apple Books' databases.
@@ -190,8 +190,8 @@ Example output:
          └── BKLibrary-1-091020131601.sqlite-wal
 ```
 
-[extract-tags]: ./02-03-preprocess.md#--extract-tags
-[postprocess]: ./02-04-postprocess.md
-[preprocess]: ./02-03-preprocess.md
-[template]: ./02-02-template.md
+[extract-tags]: ./02-06-preprocess.md#--extract-tags
+[post-process]: ./02-07-postprocess.md
+[pre-process]: ./02-06-preprocess.md
+[render]: ./02-02-render.md
 [templates]: ../01-templates/00-templates.md

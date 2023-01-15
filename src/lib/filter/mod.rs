@@ -25,7 +25,7 @@ impl FilterRunner {
     where
         F: Into<FilterType>,
     {
-        let filter_type = filter_type.into();
+        let filter_type: FilterType = filter_type.into();
 
         match filter_type {
             FilterType::Title { query, operator } => {
@@ -75,14 +75,15 @@ impl FilterRunner {
 /// A filter generally consists of three elements: (1) the field to use for
 /// filtering, (2) a list of queries and (3) a [`FilterOperator`] to determine
 /// how to handle the queries.
-#[allow(missing_docs)]
 #[derive(Debug, Clone)]
 pub enum FilterType {
     /// Sets the filter to use the [`Book::title`][book] field for filtering.
     ///
     /// [book]: crate::models::book::Book::title
     Title {
+        #[allow(missing_docs)]
         query: Vec<String>,
+        #[allow(missing_docs)]
         operator: FilterOperator,
     },
 
@@ -90,7 +91,9 @@ pub enum FilterType {
     ///
     /// [book]: crate::models::book::Book::author
     Author {
+        #[allow(missing_docs)]
         query: Vec<String>,
+        #[allow(missing_docs)]
         operator: FilterOperator,
     },
 
@@ -99,7 +102,9 @@ pub enum FilterType {
     ///
     /// [annotation]: crate::models::annotation::Annotation::tags
     Tags {
+        #[allow(missing_docs)]
         query: Vec<String>,
+        #[allow(missing_docs)]
         operator: FilterOperator,
     },
 }

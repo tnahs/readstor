@@ -13,5 +13,3 @@
 pub mod annotation;
 pub mod book;
 pub mod entry;
-pub mod names;
-pub mod template;

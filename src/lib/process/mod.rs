@@ -6,7 +6,7 @@ use std::collections::BTreeSet;
 
 use crate::models::data::Entries;
 use crate::models::entry::Entry;
-use crate::templates::template::TemplateRender;
+use crate::render::template::TemplateRender;
 
 /// A struct for pre-processing [`Entry`]s.
 #[derive(Debug, Clone, Copy)]
@@ -17,13 +17,13 @@ impl PreProcessRunner {
     ///
     /// # Arguments
     ///
-    /// * `options` - The pre-process options.
     /// * `entry` - The [`Entry`]s to process.
+    /// * `options` - The pre-process options.
     pub fn run<O>(entries: &mut Entries, options: O)
     where
         O: Into<PreProcessOptions>,
     {
-        let options = options.into();
+        let options: PreProcessOptions = options.into();
 
         for entry in entries.values_mut() {
             Self::sort_annotations(entry);
@@ -142,7 +142,7 @@ impl PreProcessRunner {
 }
 
 /// A struct representing options for the [`PreProcessRunner`] struct.
-#[derive(Debug, Default, Clone, Copy)]
+#[derive(Debug, Clone, Copy)]
 #[allow(clippy::struct_excessive_bools)]
 pub struct PreProcessOptions {
     /// Toggles running `#tag` extraction from notes.
@@ -167,13 +167,13 @@ impl PostProcessRunner {
     ///
     /// # Arguments
     ///
-    /// * `options` - The post-process options.
     /// * `renders` - The [`TemplateRender`]s to process.
+    /// * `options` - The post-process options.
     pub fn run<O>(renders: Vec<&mut TemplateRender>, options: O)
     where
         O: Into<PostProcessOptions>,
     {
-        let options = options.into();
+        let options: PostProcessOptions = options.into();
 
         for render in renders {
             if options.trim_blocks {
