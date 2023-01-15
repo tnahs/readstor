@@ -166,9 +166,13 @@ impl Templates {
 
             // -> [ouput-directory]/[template-subdirectory]/[template-filename]
             let file = root.join(&render.filename);
-            let mut file = File::create(file)?;
 
-            write!(file, "{}", &render.contents)?;
+            if !self.options.overwrite_existing && file.exists() {
+                log::debug!("skipped writing {}", file.display());
+            } else {
+                let mut file = File::create(file)?;
+                write!(file, "{}", &render.contents)?;
+            }
         }
 
         Ok(())
@@ -527,6 +531,9 @@ pub struct RenderOptions {
     /// respective templates are considered 'requested' templates and are
     /// set to be rendered.
     pub template_groups: Vec<String>,
+
+    /// Toggles whether or not to overwrite existing files.
+    pub overwrite_existing: bool,
 }
 
 /// An enum representing the two different template types.

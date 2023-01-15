@@ -108,6 +108,10 @@ pub struct RenderOptions {
     /// Render specified template-groups
     #[arg(short = 'g', long = "template-group", value_name = "GROUP")]
     pub template_groups: Vec<String>,
+
+    /// Overwrite existing files
+    #[clap(short = 'o', long)]
+    pub overwrite_existing: bool,
 }
 
 #[derive(Debug, Clone, Default, Parser)]
@@ -221,6 +225,7 @@ impl From<RenderOptions> for lib::render::templates::RenderOptions {
         Self {
             templates_directory: options.templates_directory,
             template_groups: options.template_groups,
+            overwrite_existing: options.overwrite_existing,
         }
     }
 }

@@ -15,8 +15,10 @@
 
   - [x] Add to the `export` command
   - [ ] Add tests for the `export` command
-  - [ ] Add to the `render` command
+  - [x] Add to the `render` command
   - [ ] Add tests for the `render` command
+  - [ ] Update how the summary is printed out. With the ability to skip writing
+        files, the current method will display incorrect information.
 
 - [ ] Improve stdout messages with [`indicatif`][indicatif]
 
