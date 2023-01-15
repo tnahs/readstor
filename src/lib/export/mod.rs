@@ -114,21 +114,21 @@ impl ExportRunner {
             let gitkeep = resources.join(".gitkeep");
 
             if !options.overwrite_existing && book_json.exists() {
-                log::debug!("skipped creating {}", book_json.display());
+                log::debug!("skipped writing {}", book_json.display());
             } else {
                 let book_json = File::create(book_json)?;
                 serde_json::to_writer_pretty(&book_json, &entry.book)?;
             }
 
             if !options.overwrite_existing && annotations_json.exists() {
-                log::debug!("skipped creating {}", annotations_json.display());
+                log::debug!("skipped writing {}", annotations_json.display());
             } else {
                 let annotations_json = File::create(annotations_json)?;
                 serde_json::to_writer_pretty(&annotations_json, &entry.annotations)?;
             }
 
             if !options.overwrite_existing && gitkeep.exists() {
-                log::debug!("skipped creating {}", gitkeep.display());
+                log::debug!("skipped writing {}", gitkeep.display());
             } else {
                 File::create(gitkeep)?;
             }
