@@ -1,0 +1,10 @@
+{{ book }}
+{{ book.title }}
+{{ book.author }}
+{{ book.tags }}
+{{ book.metadata }}
+{{ book.metadata.id }}
+{{ book.metadata.last_opened }}
+{{ book.slugs }}
+{{ book.slugs.title }}
+{{ book.slugs.author }}

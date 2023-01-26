@@ -25,7 +25,7 @@ impl<'a> From<&'a Entry> for EntryContext<'a> {
             annotations: entry
                 .annotations
                 .iter()
-                .map(std::convert::Into::into)
+                .map(AnnotationContext::from)
                 .collect(),
         }
     }

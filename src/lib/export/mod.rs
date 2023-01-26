@@ -139,7 +139,7 @@ impl ExportRunner {
 
     fn render_directory_name(template: &str, entry: &Entry) -> Result<String> {
         let context = BookContext::from(&entry.book);
-        let context = ExportContext::Directory { book: &context };
+        let context = ExportContext::from(&context);
         crate::utils::render_and_sanitize(template, context)
     }
 }
@@ -155,7 +155,50 @@ pub struct ExportOptions {
 }
 
 #[derive(Debug, Serialize)]
-#[serde(untagged)]
-enum ExportContext<'a> {
-    Directory { book: &'a BookContext<'a> },
+struct ExportContext<'a> {
+    book: &'a BookContext<'a>,
+}
+
+impl<'a> From<&'a BookContext<'a>> for ExportContext<'a> {
+    fn from(book: &'a BookContext<'a>) -> Self {
+        Self { book }
+    }
+}
+
+#[cfg(test)]
+mod test_export {
+
+    use tera::Tera;
+
+    use crate::defaults::TEST_TEMPLATES;
+    use crate::models::book::Book;
+
+    use super::*;
+
+    fn load_raw_template(directory: &str, filename: &str) -> String {
+        let path = TEST_TEMPLATES.join(directory).join(filename);
+        std::fs::read_to_string(path).unwrap()
+    }
+
+    #[test]
+    fn context() {
+        let template = load_raw_template("valid-context", "valid-export.txt");
+
+        let book = Book::default();
+        let context = BookContext::from(&book);
+        let context = ExportContext::from(&context);
+        let context = &tera::Context::from_serialize(context).unwrap();
+
+        Tera::one_off(&template, context, false).unwrap();
+    }
+
+    #[test]
+    fn default_template() {
+        let book = Book::default();
+        let context = BookContext::from(&book);
+        let context = ExportContext { book: &context };
+        let context = &tera::Context::from_serialize(context).unwrap();
+
+        Tera::one_off(DIRECTORY_TEMPLATE, context, false).unwrap();
+    }
 }

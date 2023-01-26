@@ -133,11 +133,26 @@ impl NamesRender {
         })
     }
 
+    /// Returns the rendered annotation filename based on its id.
+    ///
+    /// # Arguments
+    ///
+    /// * `entry` - The annotation's id.
+    #[must_use]
+    pub fn get_annotation_filename(&self, annotation_id: &str) -> String {
+        self.annotations
+            .get(annotation_id)
+            // This should theoretically never fail as the `NamesRender`
+            // instance is created from the `Entry`. This means they contain
+            // the same exact keys and it should therefore be safe to unwrap.
+            // An error here would be critical and should fail.
+            .expect("`NamesRender` instance missing `Annotation` present in `Entry`")
+            .filename
+            .clone()
+    }
+
     fn render_book_filename(entry: &EntryContext<'_>, template: &TemplateRaw) -> Result<String> {
-        let context = NamesContext::Book {
-            book: &entry.book,
-            annotations: &entry.annotations,
-        };
+        let context = NamesContext::book(&entry.book, &entry.annotations);
 
         let filename = crate::utils::render_and_sanitize(&template.names.book, context)?;
         let filename = PathBuf::from(filename).with_extension(&template.extension);
@@ -153,10 +168,7 @@ impl NamesRender {
         let mut annotations = HashMap::new();
 
         for annotation in &entry.annotations {
-            let context = NamesContext::Annotation {
-                book: &entry.book,
-                annotation,
-            };
+            let context = NamesContext::annotation(&entry.book, annotation);
 
             let filename = crate::utils::render_and_sanitize(&template.names.annotation, context)?;
             let filename = PathBuf::from(filename).with_extension(&template.extension);
@@ -172,7 +184,7 @@ impl NamesRender {
     }
 
     fn render_directory_name(entry: &EntryContext<'_>, template: &TemplateRaw) -> Result<String> {
-        let context = NamesContext::Directory { book: &entry.book };
+        let context = NamesContext::directory(&entry.book);
 
         crate::utils::render_and_sanitize(&template.names.directory, context)
     }
@@ -235,4 +247,18 @@ enum NamesContext<'a> {
     Directory {
         book: &'a BookContext<'a>,
     },
+}
+
+impl<'a> NamesContext<'a> {
+    fn book(book: &'a BookContext<'a>, annotations: &'a [AnnotationContext<'a>]) -> Self {
+        Self::Book { book, annotations }
+    }
+
+    fn annotation(book: &'a BookContext<'a>, annotation: &'a AnnotationContext<'a>) -> Self {
+        Self::Annotation { book, annotation }
+    }
+
+    fn directory(book: &'a BookContext<'a>) -> Self {
+        Self::Directory { book }
+    }
 }

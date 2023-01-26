@@ -133,10 +133,10 @@ impl Templates {
 
             match template.context_mode {
                 ContextMode::Book => {
-                    renders.push(self.render_book(&entry, template, &names, path)?);
+                    renders.push(self.render_book(template, &entry, &names, path)?);
                 }
                 ContextMode::Annotation => {
-                    renders.extend(self.render_annotations(&entry, template, &names, &path)?);
+                    renders.extend(self.render_annotations(template, &entry, &names, &path)?);
                 }
             }
         }
@@ -372,14 +372,9 @@ impl Templates {
                 let entry = Entry::default();
                 let entry = EntryContext::from(&entry);
 
-                let context = TemplateContext::Book {
-                    book: &entry.book,
-                    annotations: &entry.annotations,
-                    names: &names,
-                };
+                let context = TemplateContext::book(&entry.book, &entry.annotations, &names);
 
-                self.registry
-                    .render(&template.id, &tera::Context::from_serialize(context)?)?;
+                self.render_template(template, context)?;
             }
             ContextMode::Annotation => {
                 let book = Book::default();
@@ -387,14 +382,9 @@ impl Templates {
                 let annotation = Annotation::default();
                 let annotation = AnnotationContext::from(&annotation);
 
-                let context = TemplateContext::Annotation {
-                    book: &book,
-                    annotation: &annotation,
-                    names: &names,
-                };
+                let context = TemplateContext::annotation(&book, &annotation, &names);
 
-                self.registry
-                    .render(&template.id, &tera::Context::from_serialize(context)?)?;
+                self.render_template(template, context)?;
             }
         };
 
@@ -405,11 +395,9 @@ impl Templates {
     ///
     /// # Arguments
     ///
-    /// * `entry` - The [`EntryContext`] containing the [`BookContext`] to
-    /// render.
-    /// * `template` - The [`TemplateRaw`] to render with.
-    /// * `names` - A [`NamesRender`] instance generated from the [`Entry`] and
-    /// a [`TemplateRaw`].
+    /// * `template` - The [`TemplateRaw`] to render.
+    /// * `entry` - The [`EntryContext`] to inject.
+    /// * `names` - A [`NamesRender`] instance.
     /// * `path` - The path to where the template will be written to. This path
     /// should be relative to the final output directory.
     ///
@@ -418,35 +406,28 @@ impl Templates {
     /// Will return `Err` if Tera encounters an error.
     fn render_book(
         &self,
-        entry: &EntryContext<'_>,
         template: &TemplateRaw,
+        entry: &EntryContext<'_>,
         names: &NamesRender,
         path: PathBuf,
     ) -> Result<TemplateRender> {
         let filename = names.book.clone();
 
-        let context = TemplateContext::Book {
-            book: &entry.book,
-            annotations: &entry.annotations,
-            names,
-        };
+        let context = TemplateContext::book(&entry.book, &entry.annotations, names);
 
-        let contents = self
-            .registry
-            .render(&template.id, &tera::Context::from_serialize(context)?)?;
+        let render = self.render_template(template, context)?;
+        let render = TemplateRender::new(path, filename, render);
 
-        Ok(TemplateRender::new(path, filename, contents))
+        Ok(render)
     }
 
     /// Renders an [`Entry`]'s [`Annotation`]s to multiple [`TemplateRender`]s.
     ///
     /// # Arguments
     ///
-    /// * `entry` - The [`EntryContext`] containing the [`AnnotationContext`]s
-    /// to render.
-    /// * `template` - The [`TemplateRaw`] to render with.
-    /// * `names` - A [`NamesRender`] instance generated from the [`Entry`] and
-    /// a [`TemplateRaw`].
+    /// * `template` - The [`TemplateRaw`] to render.
+    /// * `entry` - The [`EntryContext`] to inject.
+    /// * `names` - A [`NamesRender`] instance.
     /// * `path` - The path to where the template will be written to. This path
     /// should be relative to the final output directory.
     ///
@@ -455,39 +436,40 @@ impl Templates {
     /// Will return `Err` if Tera encounters an error.
     fn render_annotations(
         &self,
-        entry: &EntryContext<'_>,
         template: &TemplateRaw,
+        entry: &EntryContext<'_>,
         names: &NamesRender,
         path: &Path,
     ) -> Result<Vec<TemplateRender>> {
         let mut renders = Vec::with_capacity(entry.annotations.len());
 
         for annotation in &entry.annotations {
-            // This should theoretically never fail as the `NamesRender`
-            // instance is created from the `Entry`. This means they contain
-            // the same exact keys and it should therefore be safe to unwrap.
-            // An error here would be critical and should fail.
-            let filename = names
-                .annotations
-                .get(&annotation.metadata.id)
-                .expect("`NamesRender` instance missing `Annotation` present in `Entry`")
-                .filename
-                .clone();
+            let filename = names.get_annotation_filename(&annotation.metadata.id);
 
-            let context = TemplateContext::Annotation {
-                book: &entry.book,
-                annotation,
-                names,
-            };
+            let context = TemplateContext::annotation(&entry.book, annotation, names);
 
-            let contents = self
-                .registry
-                .render(&template.id, &tera::Context::from_serialize(context)?)?;
+            let render = self.render_template(template, context)?;
+            let render = TemplateRender::new(path.to_owned(), filename, render);
 
-            renders.push(TemplateRender::new(path.to_owned(), filename, contents));
+            renders.push(render);
         }
 
         Ok(renders)
+    }
+
+    /// Renders a single template to a string.
+    ///
+    /// # Arguments
+    ///
+    /// * `template` - The template to render.
+    /// * `context` - The template's context.
+    fn render_template<'a>(
+        &self,
+        template: &TemplateRaw,
+        context: TemplateContext<'a>,
+    ) -> Result<String> {
+        let context = &tera::Context::from_serialize(context)?;
+        Ok(self.registry.render(&template.id, context)?)
     }
 
     /// Returns an iterator over all template-like files in a directory.
@@ -575,6 +557,32 @@ enum TemplateContext<'a> {
         annotation: &'a AnnotationContext<'a>,
         names: &'a NamesRender,
     },
+}
+
+impl<'a> TemplateContext<'a> {
+    fn book(
+        book: &'a BookContext<'a>,
+        annotations: &'a [AnnotationContext<'a>],
+        names: &'a NamesRender,
+    ) -> Self {
+        Self::Book {
+            book,
+            annotations,
+            names,
+        }
+    }
+
+    fn annotation(
+        book: &'a BookContext<'a>,
+        annotation: &'a AnnotationContext<'a>,
+        names: &'a NamesRender,
+    ) -> Self {
+        Self::Annotation {
+            book,
+            annotation,
+            names,
+        }
+    }
 }
 
 #[cfg(test)]

@@ -115,10 +115,7 @@ impl BackupRunner {
     }
 
     fn render_directory_name(template: &str) -> Result<String> {
-        let context = BackupContext::Directory {
-            now: Local::now(),
-            version: APPLEBOOKS_VERSION.to_owned(),
-        };
+        let context = BackupContext::default();
         crate::utils::render_and_sanitize(template, context)
     }
 }
@@ -131,10 +128,49 @@ pub struct BackupOptions {
 }
 
 #[derive(Debug, Serialize)]
-#[serde(untagged)]
-enum BackupContext {
-    Directory {
-        now: DateTime<Local>,
-        version: String,
-    },
+struct BackupContext {
+    now: DateTime<Local>,
+    version: String,
+}
+
+impl Default for BackupContext {
+    fn default() -> Self {
+        Self {
+            now: Local::now(),
+            version: APPLEBOOKS_VERSION.to_owned(),
+        }
+    }
+}
+
+#[cfg(test)]
+mod test_backup {
+
+    use tera::Tera;
+
+    use crate::defaults::TEST_TEMPLATES;
+
+    use super::*;
+
+    fn load_raw_template(directory: &str, filename: &str) -> String {
+        let path = TEST_TEMPLATES.join(directory).join(filename);
+        std::fs::read_to_string(path).unwrap()
+    }
+
+    #[test]
+    fn context() {
+        let template = load_raw_template("valid-context", "valid-backup.txt");
+
+        let context = BackupContext::default();
+        let context = &tera::Context::from_serialize(context).unwrap();
+
+        Tera::one_off(&template, context, false).unwrap();
+    }
+
+    #[test]
+    fn default_template() {
+        let context = BackupContext::default();
+        let context = &tera::Context::from_serialize(context).unwrap();
+
+        Tera::one_off(DIRECTORY_TEMPLATE, context, false).unwrap();
+    }
 }
