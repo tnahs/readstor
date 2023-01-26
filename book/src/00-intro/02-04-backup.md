@@ -6,11 +6,11 @@ The following options affect only the [`backup`][backup] commands.
 
 Set the output directory template
 
-|               |                                                            |
-| ------------- | ---------------------------------------------------------- |
-| Context       | [Backup Context](#backup-context)                          |
-| Default       | `{{ now \| date(format='%Y-%m-%d-%H%M%S')}}-{{ version }}` |
-| Example Ouput | `1970-01-01-120000-v0.1-00001970-01-01-120000-v5.0-5693`   |
+|                |                                                            |
+| -------------- | ---------------------------------------------------------- |
+| Context        | [Backup Context](#backup-context)                          |
+| Default        | `{{ now \| date(format='%Y-%m-%d-%H%M%S')}}-{{ version }}` |
+| Example Output | `1970-01-01-120000-v0.1-0000`                              |
 
 ### Backup Context
 
