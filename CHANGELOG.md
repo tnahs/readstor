@@ -43,6 +43,7 @@
 - Folders generated from the `export` command now have two dashes between the
   author and title: `book-author--book-title`.
 - The short option name for `--quiet` is now `-q`.
+- Removed the `data` and `resources` directories from the `export` command.
 
 ### Bug Fixes
 
