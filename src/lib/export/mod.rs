@@ -60,21 +60,13 @@ impl ExportRunner {
     /// ```plaintext
     /// [ouput-directory]
     ///  │
-    ///  ├─ [author-title]
-    ///  │   │
-    ///  │   ├─ data
-    ///  │   │   ├─ book.json
-    ///  │   │   └─ annotations.json
-    ///  │   │
-    ///  │   └─ resources
-    ///  │       ├─ .gitkeep
-    ///  │       ├─ [author-title].epub   ─┐
-    ///  │       ├─ cover.jpeg             ├─ These are not exported.
-    ///  │       └─ ...                   ─┘
+    ///  ├── [author-title]
+    ///  │    ├── book.json
+    ///  │    └── annotations.json
     ///  │
-    ///  ├─ [author-title]
-    ///  │   └─ ...
-    ///  └─ ...
+    ///  ├── [author-title]
+    ///  │    └── ...
+    ///  └── ...
     /// ```
     ///
     /// # Errors
@@ -93,25 +85,15 @@ impl ExportRunner {
         for entry in entries.values() {
             // -> [author-title]
             let directory_name = Self::render_directory_name(&directory_template, entry)?;
+
             // -> [ouput-directory]/[author-title]
             let item = path.join(directory_name);
-            // -> [ouput-directory]/[author-title]/data
-            let data = item.join("data");
-            // -> [ouput-directory]/[author-title]/resources
-            let resources = item.join("resources");
+            // -> [ouput-directory]/[author-title]/book.json
+            let book_json = item.join("book").with_extension("json");
+            // -> [ouput-directory]/[author-title]/annotation.json
+            let annotations_json = item.join("annotations").with_extension("json");
 
             std::fs::create_dir_all(&item)?;
-            std::fs::create_dir_all(&data)?;
-            std::fs::create_dir_all(&resources)?;
-
-            // -> [ouput-directory]/[author-title]/data/book.json
-            let book_json = data.join("book").with_extension("json");
-
-            // -> [ouput-directory]/[author-title]/data/annotation.json
-            let annotations_json = data.join("annotations").with_extension("json");
-
-            // -> [ouput-directory]/[author-title]/resources/.gitkeep
-            let gitkeep = resources.join(".gitkeep");
 
             if !options.overwrite_existing && book_json.exists() {
                 log::debug!("skipped writing {}", book_json.display());
@@ -125,12 +107,6 @@ impl ExportRunner {
             } else {
                 let annotations_json = File::create(annotations_json)?;
                 serde_json::to_writer_pretty(&annotations_json, &entry.annotations)?;
-            }
-
-            if !options.overwrite_existing && gitkeep.exists() {
-                log::debug!("skipped writing {}", gitkeep.display());
-            } else {
-                File::create(gitkeep)?;
             }
         }
 

@@ -22,16 +22,13 @@ Outputs using the following structure:
 
 ```plaintext
 [ouput-directory]
- ├─ [author-title]
- │   ├─ data
- │   │   ├─ book.json
- │   │   └─ annotations.json
- │   └─ resources
- │       └─ .gitkeep
+ ├── [author-title]
+ │    ├── book.json
+ │    └── annotations.json
  │
- ├─ [author-title]
- │   └─ ...
- └─ ...
+ ├── [author-title]
+ │    └── ...
+ └── ...
 ```
 
 Example output structure:
@@ -39,23 +36,14 @@ Example output structure:
 ```plaintext
 [ouput-directory]
  ├── Krishnamurti - Think on These Things
- │   ├── data
- │   │   ├── annotations.json
- │   │   └── book.json
- │   └── resources
- │       └── .gitkeep
+ │   ├── annotations.json
+ │   └── book.json
  ├── Richard P. Feynman - "Surely You're Joking, Mr. Feynman!"
- │   ├── data
- │   │   ├── annotations.json
- │   │   └── book.json
- │   └── resources
- │       └── .gitkeep
+ │   ├── annotations.json
+ │   └── book.json
  └── Robert Henri - The Art Spirit
-     ├── data
-     │   ├── annotations.json
-     │   └── book.json
-     └── resources
-         └── .gitkeep
+     ├── annotations.json
+     └── book.json
 ```
 
 Example `book.json`:
