@@ -176,37 +176,25 @@ for available options.</p>
 </blockquote>
 <p>Outputs using the following structure:</p>
 <pre><code class="language-plaintext">[ouput-directory]
- ├─ [author-title]
- │   ├─ data
- │   │   ├─ book.json
- │   │   └─ annotations.json
- │   └─ resources
- │       └─ .gitkeep
+ ├── [author-title]
+ │    ├── book.json
+ │    └── annotations.json
  │
- ├─ [author-title]
- │   └─ ...
- └─ ...
+ ├── [author-title]
+ │    └── ...
+ └── ...
 </code></pre>
 <p>Example output structure:</p>
 <pre><code class="language-plaintext">[ouput-directory]
  ├── Krishnamurti - Think on These Things
- │   ├── data
- │   │   ├── annotations.json
- │   │   └── book.json
- │   └── resources
- │       └── .gitkeep
+ │   ├── annotations.json
+ │   └── book.json
  ├── Richard P. Feynman - &quot;Surely You're Joking, Mr. Feynman!&quot;
- │   ├── data
- │   │   ├── annotations.json
- │   │   └── book.json
- │   └── resources
- │       └── .gitkeep
+ │   ├── annotations.json
+ │   └── book.json
  └── Robert Henri - The Art Spirit
-     ├── data
-     │   ├── annotations.json
-     │   └── book.json
-     └── resources
-         └── .gitkeep
+     ├── annotations.json
+     └── book.json
 </code></pre>
 <p>Example <code>book.json</code>:</p>
 <pre><code class="language-json">{
@@ -307,13 +295,13 @@ for available options.</p>
 <p>Back-up Apple Books' databases.</p>
 <p>Outputs using the following structure:</p>
 <pre><code class="language-plaintext">[ouput-directory]
- └─ [YYYY-MM-DD-HHMMSS-VERSION]
-     ├─ AEAnnotation
-     │   ├─ AEAnnotation*.sqlite
-     │   └─ ...
-     └─ BKLibrary
-         ├─ BKLibrary*.sqlite
-         └─ ...
+ └── [YYYY-MM-DD-HHMMSS-VERSION]
+      ├── AEAnnotation
+      │   ├── AEAnnotation*.sqlite
+      │   └── ...
+      └── BKLibrary
+          ├── BKLibrary*.sqlite
+          └── ...
 </code></pre>
 <p>Example output:</p>
 <pre><code class="language-plaintext">[ouput-directory]
@@ -373,14 +361,14 @@ creates is identical to the required databases directory structure.</p>
 <p>The databases directory should contain the following structure:</p>
 <pre><code class="language-plaintext">[databases-directory]
  │
- ├─ AEAnnotation
- │  ├─ AEAnnotation*.sqlite
- │  └─ ...
+ ├── AEAnnotation
+ │   ├── AEAnnotation*.sqlite
+ │   └── ...
  │
- ├─ BKLibrary
- │  ├─ BKLibrary*.sqlite
- │  └─ ...
- └─ ...
+ ├── BKLibrary
+ │   ├── BKLibrary*.sqlite
+ │   └── ...
+ └── ...
 </code></pre>
 <h2 id="--force"><a class="header" href="#--force"><code>--force</code></a></h2>
 <p>Run even if Apple Books is currently running.</p>
@@ -429,7 +417,7 @@ overwritten if they are re-exported.</p>
 <div class="table-wrapper"><table><thead><tr><th></th><th></th></tr></thead><tbody>
 <tr><td>Context</td><td><a href="00-intro/02-04-backup.html#backup-context">Backup Context</a></td></tr>
 <tr><td>Default</td><td><code>{{ now \| date(format='%Y-%m-%d-%H%M%S')}}-{{ version }}</code></td></tr>
-<tr><td>Example Ouput</td><td><code>1970-01-01-120000-v0.1-00001970-01-01-120000-v5.0-5693</code></td></tr>
+<tr><td>Example Output</td><td><code>1970-01-01-120000-v0.1-0000</code></td></tr>
 </tbody></table>
 </div>
 <h3 id="backup-context"><a class="header" href="#backup-context">Backup Context</a></h3>
@@ -913,19 +901,19 @@ structure: flat-grouped
 <p>The output will be:</p>
 <pre><code class="language-plaintext">[output-directory]
  ├── my-vault
- │    ├── 2021-11-02-180445-the-art-spirit.md
- │    ├── 2021-11-02-181250-the-art-spirit.md
- │    ├── 2021-11-02-181325-the-art-spirit.md
- │    ├── 2021-11-02-181510-the-art-spirit.md
- │    ├── 2021-11-02-182059-surely-youre-joking-mr-feynman.md
- │    ├── 2021-11-02-182319-think-on-these-things.md
- │    ├── 2021-11-02-182426-think-on-these-things.md
- │    ├── 2021-11-02-182543-think-on-these-things.md
- │    ├── 2021-11-02-182648-think-on-these-things.md
- │    ├── 2021-11-02-182805-think-on-these-things.md
- │    ├── Krishnamurti - Think on These Things.md
- │    ├── Richard P. Feynman - &quot;Surely You're Joking, Mr. Feynman!&quot;.md
- │    └── Robert Henri - The Art Spirit.md
+ │   ├── 2021-11-02-180445-the-art-spirit.md
+ │   ├── 2021-11-02-181250-the-art-spirit.md
+ │   ├── 2021-11-02-181325-the-art-spirit.md
+ │   ├── 2021-11-02-181510-the-art-spirit.md
+ │   ├── 2021-11-02-182059-surely-youre-joking-mr-feynman.md
+ │   ├── 2021-11-02-182319-think-on-these-things.md
+ │   ├── 2021-11-02-182426-think-on-these-things.md
+ │   ├── 2021-11-02-182543-think-on-these-things.md
+ │   ├── 2021-11-02-182648-think-on-these-things.md
+ │   ├── 2021-11-02-182805-think-on-these-things.md
+ │   ├── Krishnamurti - Think on These Things.md
+ │   ├── Richard P. Feynman - &quot;Surely You're Joking, Mr. Feynman!&quot;.md
+ │   └── Robert Henri - The Art Spirit.md
  │
  ├── [other-group]
  │    └── ...
@@ -938,22 +926,22 @@ structure: nested-grouped
 <p>The output will be:</p>
 <pre><code class="language-plaintext">[output-directory]
  ├── my-vault
- │    ├── Krishnamurti - Think on These Things
- │    │    ├── 2021-11-02-182319-think-on-these-things.md
- │    │    ├── 2021-11-02-182426-think-on-these-things.md
- │    │    ├── 2021-11-02-182543-think-on-these-things.md
- │    │    ├── 2021-11-02-182648-think-on-these-things.md
- │    │    ├── 2021-11-02-182805-think-on-these-things.md
- │    │    └── Krishnamurti - Think on These Things.md
- │    ├── Richard P. Feynman - &quot;Surely You're Joking, Mr. Feynman!&quot;
- │    │    ├── 2021-11-02-182059-surely-youre-joking-mr-feynman.md
- │    │    └── Richard P. Feynman - &quot;Surely You're Joking, Mr. Feynman!&quot;.md
- │    └── Robert Henri - The Art Spirit
- │         ├── 2021-11-02-180445-the-art-spirit.md
- │         ├── 2021-11-02-181250-the-art-spirit.md
- │         ├── 2021-11-02-181325-the-art-spirit.md
- │         ├── 2021-11-02-181510-the-art-spirit.md
- │         └── Robert Henri - The Art Spirit.md`
+ │   ├── Krishnamurti - Think on These Things
+ │   │   ├── 2021-11-02-182319-think-on-these-things.md
+ │   │   ├── 2021-11-02-182426-think-on-these-things.md
+ │   │   ├── 2021-11-02-182543-think-on-these-things.md
+ │   │   ├── 2021-11-02-182648-think-on-these-things.md
+ │   │   ├── 2021-11-02-182805-think-on-these-things.md
+ │   │   └── Krishnamurti - Think on These Things.md
+ │   ├── Richard P. Feynman - &quot;Surely You're Joking, Mr. Feynman!&quot;
+ │   │   ├── 2021-11-02-182059-surely-youre-joking-mr-feynman.md
+ │   │   └── Richard P. Feynman - &quot;Surely You're Joking, Mr. Feynman!&quot;.md
+ │   └── Robert Henri - The Art Spirit
+ │       ├── 2021-11-02-180445-the-art-spirit.md
+ │       ├── 2021-11-02-181250-the-art-spirit.md
+ │       ├── 2021-11-02-181325-the-art-spirit.md
+ │       ├── 2021-11-02-181510-the-art-spirit.md
+ │       └── Robert Henri - The Art Spirit.md`
  │
  ├── [other-group]
  │    └── ...
@@ -1094,11 +1082,11 @@ structure: nested
 <p>The output structure is as follows:</p>
 <pre><code class="language-plaintext">[output-directory]
  ├── Krishnamurti - Think on These Things
- │    └── Krishnamurti - Think on These Things.md
+ │   └── Krishnamurti - Think on These Things.md
  ├── Richard P. Feynman - &quot;Surely You're Joking, Mr. Feynman!&quot;
- │    └── Richard P. Feynman - &quot;Surely You're Joking, Mr. Feynman!&quot;.md
+ │   └── Richard P. Feynman - &quot;Surely You're Joking, Mr. Feynman!&quot;.md
  └── Robert Henri - The Art Spirit
-      └── Robert Henri - The Art Spirit.md`
+     └── Robert Henri - The Art Spirit.md`
 </code></pre>
 <p>And when the context mode is set to <code>annotation</code>, multiple files are rendered
 out, one for each annotation within a book. Using the following configuration
@@ -1109,39 +1097,39 @@ structure: nested
 <p>The output structure is as follows:</p>
 <pre><code class="language-plaintext">[output-directory]
  ├── Krishnamurti - Think on These Things
- │    ├── 2021-11-02-182319-think-on-these-things.md
- │    ├── 2021-11-02-182426-think-on-these-things.md
- │    ├── 2021-11-02-182543-think-on-these-things.md
- │    ├── 2021-11-02-182648-think-on-these-things.md
- │    └── 2021-11-02-182805-think-on-these-things.md
+ │   ├── 2021-11-02-182319-think-on-these-things.md
+ │   ├── 2021-11-02-182426-think-on-these-things.md
+ │   ├── 2021-11-02-182543-think-on-these-things.md
+ │   ├── 2021-11-02-182648-think-on-these-things.md
+ │   └── 2021-11-02-182805-think-on-these-things.md
  ├── Richard P. Feynman - &quot;Surely You're Joking, Mr. Feynman!&quot;
- │    └── 2021-11-02-182059-surely-youre-joking-mr-feynman.md
+ │   └── 2021-11-02-182059-surely-youre-joking-mr-feynman.md
  └── Robert Henri - The Art Spirit
-      ├── 2021-11-02-180445-the-art-spirit.md
-      ├── 2021-11-02-181250-the-art-spirit.md
-      ├── 2021-11-02-181325-the-art-spirit.md
-      └── 2021-11-02-181510-the-art-spirit.md
+     ├── 2021-11-02-180445-the-art-spirit.md
+     ├── 2021-11-02-181250-the-art-spirit.md
+     ├── 2021-11-02-181325-the-art-spirit.md
+     └── 2021-11-02-181510-the-art-spirit.md
 </code></pre>
 <p>When both templates are rendered to the same directory, we get a complete
 output with a book and each of its annotations all rendered out to their own
 file.</p>
 <pre><code class="language-plaintext">[output-directory]
  ├── Krishnamurti - Think on These Things
- │    ├── 2021-11-02-182319-think-on-these-things.md
- │    ├── 2021-11-02-182426-think-on-these-things.md
- │    ├── 2021-11-02-182543-think-on-these-things.md
- │    ├── 2021-11-02-182648-think-on-these-things.md
- │    ├── 2021-11-02-182805-think-on-these-things.md
- │    └── Krishnamurti - Think on These Things.md
+ │   ├── 2021-11-02-182319-think-on-these-things.md
+ │   ├── 2021-11-02-182426-think-on-these-things.md
+ │   ├── 2021-11-02-182543-think-on-these-things.md
+ │   ├── 2021-11-02-182648-think-on-these-things.md
+ │   ├── 2021-11-02-182805-think-on-these-things.md
+ │   └── Krishnamurti - Think on These Things.md
  ├── Richard P. Feynman - &quot;Surely You're Joking, Mr. Feynman!&quot;
- │    ├── 2021-11-02-182059-surely-youre-joking-mr-feynman.md
- │    └── Richard P. Feynman - &quot;Surely You're Joking, Mr. Feynman!&quot;.md
+ │   ├── 2021-11-02-182059-surely-youre-joking-mr-feynman.md
+ │   └── Richard P. Feynman - &quot;Surely You're Joking, Mr. Feynman!&quot;.md
  └── Robert Henri - The Art Spirit
-      ├── 2021-11-02-180445-the-art-spirit.md
-      ├── 2021-11-02-181250-the-art-spirit.md
-      ├── 2021-11-02-181325-the-art-spirit.md
-      ├── 2021-11-02-181510-the-art-spirit.md
-      └── Robert Henri - The Art Spirit.md
+     ├── 2021-11-02-180445-the-art-spirit.md
+     ├── 2021-11-02-181250-the-art-spirit.md
+     ├── 2021-11-02-181325-the-art-spirit.md
+     ├── 2021-11-02-181510-the-art-spirit.md
+     └── Robert Henri - The Art Spirit.md
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="structure-modes"><a class="header" href="#structure-modes">Structure Modes</a></h1>
 <div class="table-wrapper"><table><thead><tr><th></th><th></th></tr></thead><tbody>
@@ -1176,10 +1164,10 @@ inside a directory named after its <code>group</code>. This is useful if multipl
 groups are being rendered to the same directory.</p>
 <pre><code class="language-plaintext">[output-directory]
  └── my-vault
-      ├── Krishnamurti - Think on These Things.md
-      ├── Richard P. Feynman - &quot;Surely You're Joking, Mr. Feynman!&quot;.md
-      ├── Robert Henri - The Art Spirit.md
-      └── ...
+     ├── Krishnamurti - Think on These Things.md
+     ├── Richard P. Feynman - &quot;Surely You're Joking, Mr. Feynman!&quot;.md
+     ├── Robert Henri - The Art Spirit.md
+     └── ...
 </code></pre>
 <h2 id="nested-mode"><a class="header" href="#nested-mode">Nested Mode</a></h2>
 <pre><code class="language-yaml">structure: nested
@@ -1190,21 +1178,21 @@ the <code>names.directory</code> key. This is useful if a template group contain
 templates.</p>
 <pre><code class="language-plaintext">[output-directory]
  ├── Krishnamurti - Think on These Things
- │    ├── 2021-11-02-182319-think-on-these-things.md
- │    ├── 2021-11-02-182426-think-on-these-things.md
- │    ├── 2021-11-02-182543-think-on-these-things.md
- │    ├── 2021-11-02-182648-think-on-these-things.md
- │    ├── 2021-11-02-182805-think-on-these-things.md
- │    └── Krishnamurti - Think on These Things.md
+ │   ├── 2021-11-02-182319-think-on-these-things.md
+ │   ├── 2021-11-02-182426-think-on-these-things.md
+ │   ├── 2021-11-02-182543-think-on-these-things.md
+ │   ├── 2021-11-02-182648-think-on-these-things.md
+ │   ├── 2021-11-02-182805-think-on-these-things.md
+ │   └── Krishnamurti - Think on These Things.md
  ├── Richard P. Feynman - &quot;Surely You're Joking, Mr. Feynman!&quot;
- │    ├── 2021-11-02-182059-surely-youre-joking-mr-feynman.md
- │    └── Richard P. Feynman - &quot;Surely You're Joking, Mr. Feynman!&quot;.md
+ │   ├── 2021-11-02-182059-surely-youre-joking-mr-feynman.md
+ │   └── Richard P. Feynman - &quot;Surely You're Joking, Mr. Feynman!&quot;.md
  ├── Robert Henri - The Art Spirit
- │    ├── 2021-11-02-180445-the-art-spirit.md
- │    ├── 2021-11-02-181250-the-art-spirit.md
- │    ├── 2021-11-02-181325-the-art-spirit.md
- │    ├── 2021-11-02-181510-the-art-spirit.md
- │    └── Robert Henri - The Art Spirit.md`
+ │   ├── 2021-11-02-180445-the-art-spirit.md
+ │   ├── 2021-11-02-181250-the-art-spirit.md
+ │   ├── 2021-11-02-181325-the-art-spirit.md
+ │   ├── 2021-11-02-181510-the-art-spirit.md
+ │   └── Robert Henri - The Art Spirit.md`
  └── ...
 </code></pre>
 <h2 id="nested--grouped-mode"><a class="header" href="#nested--grouped-mode">Nested &amp; Grouped Mode</a></h2>
@@ -1218,22 +1206,22 @@ if multiple template groups are being rendered to the same directory and if a
 template group contains multiple templates.</p>
 <pre><code class="language-plaintext">[output-directory]
  └── my-vault
-      ├── Krishnamurti - Think on These Things
-      │    ├── 2021-11-02-182319-think-on-these-things.md
-      │    ├── 2021-11-02-182426-think-on-these-things.md
-      │    ├── 2021-11-02-182543-think-on-these-things.md
-      │    ├── 2021-11-02-182648-think-on-these-things.md
-      │    ├── 2021-11-02-182805-think-on-these-things.md
-      │    └── Krishnamurti - Think on These Things.md
-      ├── Richard P. Feynman - &quot;Surely You're Joking, Mr. Feynman!&quot;
-      │    ├── 2021-11-02-182059-surely-youre-joking-mr-feynman.md
-      │    └── Richard P. Feynman - &quot;Surely You're Joking, Mr. Feynman!&quot;.md
-      └── Robert Henri - The Art Spirit
-           ├── 2021-11-02-180445-the-art-spirit.md
-           ├── 2021-11-02-181250-the-art-spirit.md
-           ├── 2021-11-02-181325-the-art-spirit.md
-           ├── 2021-11-02-181510-the-art-spirit.md
-           └── Robert Henri - The Art Spirit.md
+     ├── Krishnamurti - Think on These Things
+     │   ├── 2021-11-02-182319-think-on-these-things.md
+     │   ├── 2021-11-02-182426-think-on-these-things.md
+     │   ├── 2021-11-02-182543-think-on-these-things.md
+     │   ├── 2021-11-02-182648-think-on-these-things.md
+     │   ├── 2021-11-02-182805-think-on-these-things.md
+     │   └── Krishnamurti - Think on These Things.md
+     ├── Richard P. Feynman - &quot;Surely You're Joking, Mr. Feynman!&quot;
+     │   ├── 2021-11-02-182059-surely-youre-joking-mr-feynman.md
+     │   └── Richard P. Feynman - &quot;Surely You're Joking, Mr. Feynman!&quot;.md
+     └── Robert Henri - The Art Spirit
+         ├── 2021-11-02-180445-the-art-spirit.md
+         ├── 2021-11-02-181250-the-art-spirit.md
+         ├── 2021-11-02-181325-the-art-spirit.md
+         ├── 2021-11-02-181510-the-art-spirit.md
+         └── Robert Henri - The Art Spirit.md
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="extension"><a class="header" href="#extension">Extension</a></h1>
 <div class="table-wrapper"><table><thead><tr><th></th><th></th></tr></thead><tbody>
@@ -1396,9 +1384,9 @@ template and the <a href="01-templates/../00-intro/02-02-template.html#--templat
 <p>For example, with the following structure:</p>
 <pre><code class="language-plaintext">[templates-directory]
  └── my-vault-templates
-      ├── _annotation.md
-      ├── _book.md
-      └── template.md
+     ├── _annotation.md
+     ├── _book.md
+     └── template.md
 </code></pre>
 <p>We would use the following <code>include</code> tags:</p>
 <pre><code class="language-jinja2">{% include &quot;my-vault-templates/_book.jinja2&quot; %}

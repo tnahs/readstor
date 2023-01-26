@@ -168,37 +168,25 @@ for available options.</p>
 </blockquote>
 <p>Outputs using the following structure:</p>
 <pre><code class="language-plaintext">[ouput-directory]
- ├─ [author-title]
- │   ├─ data
- │   │   ├─ book.json
- │   │   └─ annotations.json
- │   └─ resources
- │       └─ .gitkeep
+ ├── [author-title]
+ │    ├── book.json
+ │    └── annotations.json
  │
- ├─ [author-title]
- │   └─ ...
- └─ ...
+ ├── [author-title]
+ │    └── ...
+ └── ...
 </code></pre>
 <p>Example output structure:</p>
 <pre><code class="language-plaintext">[ouput-directory]
  ├── Krishnamurti - Think on These Things
- │   ├── data
- │   │   ├── annotations.json
- │   │   └── book.json
- │   └── resources
- │       └── .gitkeep
+ │   ├── annotations.json
+ │   └── book.json
  ├── Richard P. Feynman - &quot;Surely You're Joking, Mr. Feynman!&quot;
- │   ├── data
- │   │   ├── annotations.json
- │   │   └── book.json
- │   └── resources
- │       └── .gitkeep
+ │   ├── annotations.json
+ │   └── book.json
  └── Robert Henri - The Art Spirit
-     ├── data
-     │   ├── annotations.json
-     │   └── book.json
-     └── resources
-         └── .gitkeep
+     ├── annotations.json
+     └── book.json
 </code></pre>
 <p>Example <code>book.json</code>:</p>
 <pre><code class="language-json">{
@@ -299,13 +287,13 @@ for available options.</p>
 <p>Back-up Apple Books' databases.</p>
 <p>Outputs using the following structure:</p>
 <pre><code class="language-plaintext">[ouput-directory]
- └─ [YYYY-MM-DD-HHMMSS-VERSION]
-     ├─ AEAnnotation
-     │   ├─ AEAnnotation*.sqlite
-     │   └─ ...
-     └─ BKLibrary
-         ├─ BKLibrary*.sqlite
-         └─ ...
+ └── [YYYY-MM-DD-HHMMSS-VERSION]
+      ├── AEAnnotation
+      │   ├── AEAnnotation*.sqlite
+      │   └── ...
+      └── BKLibrary
+          ├── BKLibrary*.sqlite
+          └── ...
 </code></pre>
 <p>Example output:</p>
 <pre><code class="language-plaintext">[ouput-directory]
