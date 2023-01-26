@@ -23,9 +23,9 @@ use super::entry::Entry;
 /// ```plaintext
 /// Entries
 ///  │
-///  ├─ ID: Entry
-///  ├─ ID: Entry
-///  └─ ...
+///  ├── ID: Entry
+///  ├── ID: Entry
+///  └── ...
 /// ```
 ///
 /// [id]: crate::models::book::BookMetadata::id
@@ -43,13 +43,13 @@ pub type Entries = HashMap<String, Entry>;
 ///  │
 ///  └─ Entries
 ///      │
-///      ├─ ID: Entry
-///      │       ├─ Book
-///      │       └─ Annotation
-///      ├─ ID: Entry
-///      │       ├─ Book
-///      │       └─ Annotation
-///      └─ ...
+///      ├── ID: Entry
+///      │       ├── Book
+///      │       └── Annotation
+///      ├── ID: Entry
+///      │       ├── Book
+///      │       └── Annotation
+///      └── ...
 /// ```
 #[derive(Debug, Default)]
 pub struct Data(Entries);

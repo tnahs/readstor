@@ -36,9 +36,9 @@ For example, with the following structure:
 ```plaintext
 [templates-directory]
  └── my-vault-templates
-      ├── _annotation.md
-      ├── _book.md
-      └── template.md
+     ├── _annotation.md
+     ├── _book.md
+     └── template.md
 ```
 
 We would use the following `include` tags:

@@ -19,14 +19,14 @@ The databases directory should contain the following structure:
 ```plaintext
 [databases-directory]
  │
- ├─ AEAnnotation
- │  ├─ AEAnnotation*.sqlite
- │  └─ ...
+ ├── AEAnnotation
+ │   ├── AEAnnotation*.sqlite
+ │   └── ...
  │
- ├─ BKLibrary
- │  ├─ BKLibrary*.sqlite
- │  └─ ...
- └─ ...
+ ├── BKLibrary
+ │   ├── BKLibrary*.sqlite
+ │   └── ...
+ └── ...
 ```
 
 ## `--force`

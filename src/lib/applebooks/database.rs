@@ -92,14 +92,14 @@ impl ABDatabase {
     /// ```plaintext
     /// [databases]
     ///  │
-    ///  ├─ AEAnnotation
-    ///  │  ├─ AEAnnotation*.sqlite
-    ///  │  └─ ...
+    ///  ├── AEAnnotation
+    ///  │   ├── AEAnnotation*.sqlite
+    ///  │   └── ...
     ///  │
-    ///  ├─ BKLibrary
-    ///  │  ├─ BKLibrary*.sqlite
-    ///  │  └─ ...
-    ///  └─ ...
+    ///  ├── BKLibrary
+    ///  │   ├── BKLibrary*.sqlite
+    ///  │   └── ...
+    ///  └── ...
     /// ```
     fn get_database<T: ABQuery>(path: &Path) -> Result<PathBuf> {
         // (a) -> `/path/to/databases/DATABASE_NAME/`

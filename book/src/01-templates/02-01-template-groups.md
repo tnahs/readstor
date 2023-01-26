@@ -34,19 +34,19 @@ The output will be:
 ```plaintext
 [output-directory]
  ├── my-vault
- │    ├── 2021-11-02-180445-the-art-spirit.md
- │    ├── 2021-11-02-181250-the-art-spirit.md
- │    ├── 2021-11-02-181325-the-art-spirit.md
- │    ├── 2021-11-02-181510-the-art-spirit.md
- │    ├── 2021-11-02-182059-surely-youre-joking-mr-feynman.md
- │    ├── 2021-11-02-182319-think-on-these-things.md
- │    ├── 2021-11-02-182426-think-on-these-things.md
- │    ├── 2021-11-02-182543-think-on-these-things.md
- │    ├── 2021-11-02-182648-think-on-these-things.md
- │    ├── 2021-11-02-182805-think-on-these-things.md
- │    ├── Krishnamurti - Think on These Things.md
- │    ├── Richard P. Feynman - "Surely You're Joking, Mr. Feynman!".md
- │    └── Robert Henri - The Art Spirit.md
+ │   ├── 2021-11-02-180445-the-art-spirit.md
+ │   ├── 2021-11-02-181250-the-art-spirit.md
+ │   ├── 2021-11-02-181325-the-art-spirit.md
+ │   ├── 2021-11-02-181510-the-art-spirit.md
+ │   ├── 2021-11-02-182059-surely-youre-joking-mr-feynman.md
+ │   ├── 2021-11-02-182319-think-on-these-things.md
+ │   ├── 2021-11-02-182426-think-on-these-things.md
+ │   ├── 2021-11-02-182543-think-on-these-things.md
+ │   ├── 2021-11-02-182648-think-on-these-things.md
+ │   ├── 2021-11-02-182805-think-on-these-things.md
+ │   ├── Krishnamurti - Think on These Things.md
+ │   ├── Richard P. Feynman - "Surely You're Joking, Mr. Feynman!".md
+ │   └── Robert Henri - The Art Spirit.md
  │
  ├── [other-group]
  │    └── ...
@@ -65,22 +65,22 @@ The output will be:
 ```plaintext
 [output-directory]
  ├── my-vault
- │    ├── Krishnamurti - Think on These Things
- │    │    ├── 2021-11-02-182319-think-on-these-things.md
- │    │    ├── 2021-11-02-182426-think-on-these-things.md
- │    │    ├── 2021-11-02-182543-think-on-these-things.md
- │    │    ├── 2021-11-02-182648-think-on-these-things.md
- │    │    ├── 2021-11-02-182805-think-on-these-things.md
- │    │    └── Krishnamurti - Think on These Things.md
- │    ├── Richard P. Feynman - "Surely You're Joking, Mr. Feynman!"
- │    │    ├── 2021-11-02-182059-surely-youre-joking-mr-feynman.md
- │    │    └── Richard P. Feynman - "Surely You're Joking, Mr. Feynman!".md
- │    └── Robert Henri - The Art Spirit
- │         ├── 2021-11-02-180445-the-art-spirit.md
- │         ├── 2021-11-02-181250-the-art-spirit.md
- │         ├── 2021-11-02-181325-the-art-spirit.md
- │         ├── 2021-11-02-181510-the-art-spirit.md
- │         └── Robert Henri - The Art Spirit.md`
+ │   ├── Krishnamurti - Think on These Things
+ │   │   ├── 2021-11-02-182319-think-on-these-things.md
+ │   │   ├── 2021-11-02-182426-think-on-these-things.md
+ │   │   ├── 2021-11-02-182543-think-on-these-things.md
+ │   │   ├── 2021-11-02-182648-think-on-these-things.md
+ │   │   ├── 2021-11-02-182805-think-on-these-things.md
+ │   │   └── Krishnamurti - Think on These Things.md
+ │   ├── Richard P. Feynman - "Surely You're Joking, Mr. Feynman!"
+ │   │   ├── 2021-11-02-182059-surely-youre-joking-mr-feynman.md
+ │   │   └── Richard P. Feynman - "Surely You're Joking, Mr. Feynman!".md
+ │   └── Robert Henri - The Art Spirit
+ │       ├── 2021-11-02-180445-the-art-spirit.md
+ │       ├── 2021-11-02-181250-the-art-spirit.md
+ │       ├── 2021-11-02-181325-the-art-spirit.md
+ │       ├── 2021-11-02-181510-the-art-spirit.md
+ │       └── Robert Henri - The Art Spirit.md`
  │
  ├── [other-group]
  │    └── ...

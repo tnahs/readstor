@@ -55,14 +55,14 @@ impl BackupRunner {
     /// ```plaintext
     /// [databases]
     ///  │
-    ///  ├─ AEAnnotation
-    ///  │  ├─ AEAnnotation*.sqlite
-    ///  │  └─ ...
+    ///  ├── AEAnnotation
+    ///  │   ├── AEAnnotation*.sqlite
+    ///  │   └── ...
     ///  │
-    ///  ├─ BKLibrary
-    ///  │  ├─ BKLibrary*.sqlite
-    ///  │  └─ ...
-    ///  └─ ...
+    ///  ├── BKLibrary
+    ///  │   ├── BKLibrary*.sqlite
+    ///  │   └── ...
+    ///  └── ...
     /// ```
     ///
     /// The `output` strucutre is as follows:
@@ -70,19 +70,19 @@ impl BackupRunner {
     /// ```plaintext
     /// [ouput-directory]
     ///  │
-    ///  ├─ [YYYY-MM-DD-HHMMSS-VERSION]
-    ///  │   │
-    ///  │   ├─ AEAnnotation
-    ///  │   │   ├─ AEAnnotation*.sqlite
-    ///  │   │   └─ ...
-    ///  │   │
-    ///  │   └─ BKLibrary
-    ///  │       ├─ BKLibrary*.sqlite
-    ///  │       └─ ...
+    ///  ├── [YYYY-MM-DD-HHMMSS-VERSION]
+    ///  │    │
+    ///  │    ├── AEAnnotation
+    ///  │    │   ├── AEAnnotation*.sqlite
+    ///  │    │   └── ...
+    ///  │    │
+    ///  │    └─ BKLibrary
+    ///  │       ├── BKLibrary*.sqlite
+    ///  │       └── ...
     ///  │
-    ///  │─ [YYYY-MM-DD-HHMMSS-VERSION]
-    ///  │   └─ ...
-    ///  └─ ...
+    ///  ├── [YYYY-MM-DD-HHMMSS-VERSION]
+    ///  │    └── ...
+    ///  └── ...
     /// ```
     ///
     /// # Errors
