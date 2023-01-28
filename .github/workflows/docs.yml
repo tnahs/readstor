@@ -1,11 +1,12 @@
 name: docs
 
 on:
+  workflow_dispatch:
   push:
     branches:
-     - main
+      - main
     tags:
-     - v[0-9]+.[0-9]+.[0-9]+
+      - v[0-9]+.[0-9]+.[0-9]+
 
 jobs:
   book:
