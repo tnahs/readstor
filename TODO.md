@@ -2,6 +2,7 @@
 
 ## Book
 
+- [ ] Add a quick-start/cheatsheet to `README.md` and book.
 - [ ] Links to example templates refer to `main` and not the current release.
       All links containing `https://github.com/tnahs/readstor/main` must be
       converted to a tag-aware one: `https://github.com/tnahs/readstor/v0.3.0`.
@@ -10,16 +11,13 @@
 
 ## Next
 
-- [ ] Add a quick-start/cheatsheet to `README.md` and book.
-- [ ] Add `--overwrite` flag to force overwriting existing files:
-
-  - [x] Add to the `export` command
-  - [ ] Add tests for the `export` command
-  - [x] Add to the `render` command
-  - [ ] Add tests for the `render` command
-  - [ ] Update how the summary is printed out. With the ability to skip writing
-        files, the current method will display incorrect information.
-
+- [ ] Extract data from iOS's `com.apple.ibooks-sync.plist` and `Books.plist`.
+- [ ] Add `display` command to display annotations in the terminal with
+      [`minus`][minus].
+- [ ] Update how the summaries are printed out. With the ability to skip
+      writing files, the current method will display incorrect information.
+- [ ] Add filsystem tests for when skipping/overwriting files using the
+      `export` and `render` commands.
 - [ ] Improve stdout messages with [`indicatif`][indicatif]
 
   ```plaintext
@@ -33,8 +31,6 @@
     • rendered 1 template into 99 files to /path/to/output/directory
   ```
 
-- [ ] Add `display` command to display annotations in the terminal with
-      [`minus`][minus].
 - [ ] Simplify template-groups file naming workflow. Add internal awareness of
       template groups.
 
@@ -66,7 +62,6 @@
 
 ## Features
 
-- [ ] Extract data from iOS's `com.apple.ibooks-sync.plist` and `Books.plist`.
 - [ ] Config file support.
 
 ## Future
