@@ -195,7 +195,7 @@ structure: nested-grouped
 extension: md
 names:
   book: &quot;{{ book.author }} - {{ book.title }}&quot;
-  annotation: &quot;{{ annotation.metadata.slugs.created }}-{{ book.slugs.title }}&quot;
+  annotation: &quot;{{ annotation.slugs.metadata.created }}-{{ book.slugs.title }}&quot;
   directory: &quot;{{ book.author }} - {{ book.title }}&quot;
 </code></pre>
 <h3 id="annotation-template-configuration"><a class="header" href="#annotation-template-configuration">Annotation Template Configuration</a></h3>
@@ -205,7 +205,7 @@ structure: nested-grouped
 extension: md
 names:
   book: &quot;{{ book.author }} - {{ book.title }}&quot;
-  annotation: &quot;{{ annotation.metadata.slugs.created }}-{{ book.slugs.title }}&quot;
+  annotation: &quot;{{ annotation.slugs.metadata.created }}-{{ book.slugs.title }}&quot;
   directory: &quot;{{ book.author }} - {{ book.title }}&quot;
 </code></pre>
 <h2 id="template-body"><a class="header" href="#template-body">Template Body</a></h2>
