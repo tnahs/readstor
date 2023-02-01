@@ -178,7 +178,7 @@ context: book # &lt;- Here!
 extension: md
 names:
   book: &quot;{{ book.author }} - {{ book.title }}&quot;
-  annotation: &quot;{{ annotation.metadata.slugs.created }}-{{ book.slugs.title }}&quot;
+  annotation: &quot;{{ annotation.slugs.metadata.created }}-{{ book.slugs.title }}&quot;
 </code></pre>
 <p>ReadStor will generate a single file for each book and name them using the
 rendered result of <code>names.book</code>. The resulting output would be:</p>
@@ -195,7 +195,7 @@ context: annotation # &lt;- Here!
 extension: md
 names:
   book: &quot;{{ book.author }} - {{ book.title }}&quot;
-  annotation: &quot;{{ annotation.metadata.slugs.created }}-{{ book.slugs.title }}&quot;
+  annotation: &quot;{{ annotation.slugs.metadata.created }}-{{ book.slugs.title }}&quot;
 </code></pre>
 <p>ReadStor will now generate a single file for each annotation in each book
 and name them using the rendered result of <code>names.annotation</code>. The resulting
@@ -235,7 +235,7 @@ context when its rendered.</p>
 <tr><td>Type</td><td>string</td></tr>
 <tr><td>Valid Values</td><td>any</td></tr>
 <tr><td>Required</td><td>No</td></tr>
-<tr><td>Default</td><td><code>{{ annotation.metadata.slugs.created }}-{{ book.slugs.title }}</code></td></tr>
+<tr><td>Default</td><td><code>{{ annotation.slugs.metadata.created }}-{{ book.slugs.title }}</code></td></tr>
 </tbody></table>
 </div>
 <h2 id="directory-names"><a class="header" href="#directory-names">Directory Names</a></h2>
