@@ -9,6 +9,12 @@ static DATABASES_DIRECTORY: Lazy<String> = Lazy::new(|| {
     path.display().to_string()
 });
 
+static TEMPLATES_DIRECTORY: Lazy<String> = Lazy::new(|| {
+    let mut path = lib::defaults::CRATE_ROOT.to_owned();
+    path.push("templates");
+    path.display().to_string()
+});
+
 static OUTPUT_DIRECTORY: Lazy<String> = Lazy::new(|| {
     let path = std::env::temp_dir().join("readstor").join("tests");
     std::fs::create_dir_all(&path).expect("could not create temp directory for testing");
@@ -69,6 +75,24 @@ fn default_backup() {
         "--output-directory",
         &OUTPUT_DIRECTORY,
         "backup",
+    ])
+    .assert()
+    .code(0)
+    .success();
+}
+
+#[test]
+fn render_example_templates() {
+    let mut c = Command::cargo_bin(BINARY).unwrap();
+    c.args([
+        "--force",
+        "--databases-directory",
+        &DATABASES_DIRECTORY,
+        "--output-directory",
+        &OUTPUT_DIRECTORY,
+        "render",
+        "--templates-directory",
+        &TEMPLATES_DIRECTORY,
     ])
     .assert()
     .code(0)
