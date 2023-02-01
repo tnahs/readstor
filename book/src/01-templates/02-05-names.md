@@ -31,7 +31,7 @@ mode. See [Context Reference - Names][names] for more information.
 > extension: md
 > names:
 >   book: "{{ book.author }} - {{ book.title }}"
->   annotation: "{{ annotation.metadata.slugs.created }}-{{ book.slugs.title }}"
+>   annotation: "{{ annotation.slugs.metadata.created }}-{{ book.slugs.title }}"
 > ```
 >
 > ReadStor will generate a single file for each book and name them using the
@@ -54,7 +54,7 @@ mode. See [Context Reference - Names][names] for more information.
 > extension: md
 > names:
 >   book: "{{ book.author }} - {{ book.title }}"
->   annotation: "{{ annotation.metadata.slugs.created }}-{{ book.slugs.title }}"
+>   annotation: "{{ annotation.slugs.metadata.created }}-{{ book.slugs.title }}"
 > ```
 >
 > ReadStor will now generate a single file for each annotation in each book
@@ -102,7 +102,7 @@ context when its rendered.
 | Type         | string                                                           |
 | Valid Values | any                                                              |
 | Required     | No                                                               |
-| Default      | `{{ annotation.metadata.slugs.created }}-{{ book.slugs.title }}` |
+| Default      | `{{ annotation.slugs.metadata.created }}-{{ book.slugs.title }}` |
 
 ## Directory Names
 

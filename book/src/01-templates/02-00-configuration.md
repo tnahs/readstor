@@ -36,7 +36,7 @@ structure: nested
 extension: md
 names:
   book: "{{ book.author }} - {{ book.title }}"
-  annotation: "{{ annotation.metadata.slugs.created }}-{{ book.slugs.title }}"
+  annotation: "{{ annotation.slugs.metadata.created }}-{{ book.slugs.title }}"
   directory: "{{ book.author }} - {{ book.title }}"
 -->
 
