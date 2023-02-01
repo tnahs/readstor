@@ -2,7 +2,6 @@
 //! templates.
 
 use std::collections::HashMap;
-use std::path::PathBuf;
 
 use serde::{Deserialize, Serialize};
 
@@ -12,6 +11,7 @@ use crate::contexts::entry::EntryContext;
 use crate::models::datetime::DateTimeUtc;
 use crate::render::template::TemplateRaw;
 use crate::result::Result;
+use crate::utils;
 
 /// A struct representing the raw template strings for generating output file
 /// and directory names.
@@ -90,7 +90,7 @@ pub struct NamesRender {
     /// `Vec` before it's injected into a template.
     ///
     /// [annotation]: crate::render::template::ContextMode::Annotation
-    #[serde(serialize_with = "crate::utils::serialize_hashmap_to_vec")]
+    #[serde(serialize_with = "utils::serialize_hashmap_to_vec")]
     pub annotations: HashMap<String, AnnotationNameAttributes>,
 
     /// The directory name for a template with
@@ -137,7 +137,7 @@ impl NamesRender {
     ///
     /// # Arguments
     ///
-    /// * `entry` - The annotation's id.
+    /// * `annotation_id` - The annotation's id.
     #[must_use]
     pub fn get_annotation_filename(&self, annotation_id: &str) -> String {
         self.annotations
@@ -154,9 +154,8 @@ impl NamesRender {
     fn render_book_filename(entry: &EntryContext<'_>, template: &TemplateRaw) -> Result<String> {
         let context = NamesContext::book(&entry.book, &entry.annotations);
 
-        let filename = crate::utils::render_and_sanitize(&template.names.book, context)?;
-        let filename = PathBuf::from(filename).with_extension(&template.extension);
-        let filename = filename.to_str().unwrap().into();
+        let filename = utils::render_and_sanitize(&template.names.book, context)?;
+        let filename = utils::build_and_sanitize_filename(&filename, &template.extension);
 
         Ok(filename)
     }
@@ -170,9 +169,8 @@ impl NamesRender {
         for annotation in &entry.annotations {
             let context = NamesContext::annotation(&entry.book, annotation);
 
-            let filename = crate::utils::render_and_sanitize(&template.names.annotation, context)?;
-            let filename = PathBuf::from(filename).with_extension(&template.extension);
-            let filename = filename.to_str().unwrap().into();
+            let filename = utils::render_and_sanitize(&template.names.annotation, context)?;
+            let filename = utils::build_and_sanitize_filename(&filename, &template.extension);
 
             annotations.insert(
                 annotation.metadata.id.clone(),
@@ -186,7 +184,7 @@ impl NamesRender {
     fn render_directory_name(entry: &EntryContext<'_>, template: &TemplateRaw) -> Result<String> {
         let context = NamesContext::directory(&entry.book);
 
-        crate::utils::render_and_sanitize(&template.names.directory, context)
+        utils::render_and_sanitize(&template.names.directory, context)
     }
 }
 

@@ -137,6 +137,9 @@ pub fn sanitize_string(string: &str) -> String {
         .map(|c| if replace.contains(&c) { '_' } else { c })
         .collect();
 
+    let sanitized = OsStr::new(&sanitized);
+    let sanitized = sanitized.to_string_lossy().to_string();
+
     if sanitized != string {
         log::warn!("the string '{}' contained invalid characters", string);
     };
@@ -190,6 +193,23 @@ where
     let string = Tera::one_off(template, context, false)?;
 
     Ok(sanitize_string(&string))
+}
+
+/// Builds a filename from a file stem and extension and sanitizes the output string.
+///
+/// This is a helper method to replace `PathBuf::set_extension()` as some file
+/// stems might include a period `.`. If we used `PathBuf::set_extension()`,
+/// the text after the last period would be replaced with the extension.
+///
+/// # Arguments
+///
+/// * `file_stem` - The file stem.
+/// * `extension` - The file extension.
+#[must_use]
+pub fn build_and_sanitize_filename(file_stem: &str, extension: &str) -> String {
+    let filename = format!("{file_stem}.{extension}");
+
+    sanitize_string(&filename)
 }
 
 /// Custom deserialization method to deserialize and sanitize a string.
