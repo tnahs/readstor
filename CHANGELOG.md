@@ -11,7 +11,7 @@
 
 ### Bug Fixes
 
-- [ ] Filenames are no longer truncated if they contain a period `.`.
+- Filenames are no longer truncated if they contain a period `.`.
 
 ## v0.5.0 (2023-01-27)
 
