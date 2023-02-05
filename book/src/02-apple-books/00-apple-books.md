@@ -26,8 +26,8 @@ However, only archiving and restoring these directories might miss some
 metadata. Searching `~/Library/Containers` for anything that contains `Books`
 yields some other directories:
 
-```console
-$ find ~/Library/Containers -type d -name "*Books*"
+```shell
+find ~/Library/Containers -type d -name "*Books*"
 
 ./com.apple.BKAgentService/Data/Documents/iBooks
 ./com.apple.BKAgentService/Data/Documents/iBooks/Books
@@ -44,8 +44,8 @@ $ find ~/Library/Containers -type d -name "*Books*"
 
 Using `BK` as a proxy for `Books` yields no additional directores:
 
-```console
-$ find ~/Library/Containers -type d -name "*BK*"
+```shell
+find ~/Library/Containers -type d -name "*BK*"
 
 ./com.apple.BKAgentService
 ./com.apple.iBooksX/Data/Documents/BKSeriesDatabase
@@ -73,8 +73,8 @@ username has been hard-coded into some files. This is most evident in the
 
 For example:
 
-```console
-$ find ~/Library/Containers/com.apple.BKAgentService \
+```shell
+find ~/Library/Containers/com.apple.BKAgentService \
     -type f -a -exec grep -l --exclude=\*.{htm,html,xhtml} $USER {} +
 
 .../.com.apple.containermanagerd.metadata.plist
@@ -82,8 +82,8 @@ $ find ~/Library/Containers/com.apple.BKAgentService \
 .../Data/Documents/iBooks/Books/Books.plist
 ```
 
-```console
-$ find ~/Library/Containers/com.apple.iBooksX* \
+```shell
+find ~/Library/Containers/com.apple.iBooksX* \
     -type f -a -exec grep -l --exclude=\*.{htm,html,xhtml} $USER {} +
 
 .../com.apple.iBooksX/.com.apple.containermanagerd.metadata.plist

@@ -21,18 +21,18 @@ See the [documentation][documentation] for usage information.
 
 ### Using Homebrew
 
-```console
+```shell
 brew tap tnahs/formulas
 brew install readstor
 ```
 
-```console
+```shell
 readstor --version
 ```
 
 ### Using Cargo
 
-```console
+```shell
 cargo install readstor
 ```
 

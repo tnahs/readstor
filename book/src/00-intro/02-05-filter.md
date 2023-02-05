@@ -42,7 +42,7 @@ After all the filters are run, a confirmation prompt is shown with a brief
 summary of the filtered down books/annotations.
 
 ```shell
-$ readstor render \
+readstor render \
     --extract-tags \
     --filter "=title:the art spirit" \
     --filter "tag:#star"

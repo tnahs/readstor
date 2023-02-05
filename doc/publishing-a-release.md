@@ -14,7 +14,7 @@
 
 5. Check for packaging issues with:
 
-   ```console
+   ```shell
    cargo publish --dry-run --allow-dirty
    ```
 
@@ -25,7 +25,7 @@
 
 6. Push changes:
 
-   ```console
+   ```shell
    git add .
    git commit -m "feat: shiny new things!"
    git push origin main
@@ -35,7 +35,7 @@
 
 7. Tag the last commit:
 
-   ```console
+   ```shell
    git tag [VERSION]
    git push origin [VERSION]
    ```

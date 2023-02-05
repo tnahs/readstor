@@ -8,7 +8,7 @@ the current Apple Books library. We can delete all the library files and
 directories by using the paths we determined from
 [What To Archive/Restore?][what-to-archive-restore].
 
-```sh
+```shell
 rm -rf $HOME/Library/Containers/com.apple.BK*
 rm -rf $HOME/Library/Containers/com.apple.iBooks*
 rm -rf $HOME/Library/Group\ Containers/group.com.apple.iBooks
@@ -17,7 +17,7 @@ rm -rf $HOME/Library/Group\ Containers/group.com.apple.iBooks
 Finally, we can run the reverse `rsync` commands and restore the archive we
 previously made. Make sure to replace `[PATH-TO-ARCHIVE]` with a valid path.
 
-```sh
+```shell
 rsync \
     --archive \
     --extended-attributes \
@@ -44,7 +44,7 @@ For example, if `[PATH-TO-ARCHIVE]` is:
 
 Our `rsync` command would be:
 
-```sh
+```shell
 rsync \
     --archive \
     --extended-attributes \

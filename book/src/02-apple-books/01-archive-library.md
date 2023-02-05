@@ -7,7 +7,7 @@ Archiving the library is as simple as running two `rsync` commands. This should
 save all the relevant Apple Books data and metadata to a single directory. Make
 sure to replace `[PATH-TO-ARCHIVE]` with a valid path to said directory.
 
-```sh
+```shell
 rsync \
     --archive \
     --extended-attributes \
@@ -30,7 +30,7 @@ For example, if `[PATH-TO-ARCHIVE]` is:
 
 Our `rsync` commands would be:
 
-```sh
+```shell
 rsync \
     --archive \
     --extended-attributes \
