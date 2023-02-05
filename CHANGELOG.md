@@ -7,6 +7,12 @@
 ### Bug Fixes
 -->
 
+## v0.5.1 (2023-02-05)
+
+### Bug Fixes
+
+- [ ] Filenames are no longer truncated if they contain a period `.`.
+
 ## v0.5.0 (2023-01-27)
 
 ### Features
