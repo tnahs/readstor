@@ -6,12 +6,12 @@ READSTOR_LOG = "debug"
 staging = { index = "https://github.com/rust-lang/staging.crates.io-index" }
 
 [alias]
-lint = """\
-    clippy \
-        --all-targets \
-        --all-features \
-        -- \
+lint = """                      \
+    clippy                      \
+        --all-targets           \
+        --all-features          \
+        --                      \
         --warn clippy::pedantic \
-        --warn clippy::cargo \
+        --warn clippy::cargo    \
     """
-docs = "doc --no-deps --open"
+docs = "doc --no-deps --document-private-items"
