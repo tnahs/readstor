@@ -4,17 +4,19 @@ The following options affect all [Commands][commands].
 
 ## `--output-directory <PATH>`
 
-Set the output directory for all [Commands][commands]. Defaults to `~/.readstor`.
+Set the output directory for all [Commands][commands].
+
+Default: `/Users/[user]/.readstor`.
 
 ## `--databases-directory <PATH>`
 
-Set a custom databases directory.
+Set the directory containing macOS's Apple Books databases
 
-This can be useful when running ReadStor on databases backed-up with the
-[`backup`][backup] command. The output structure the [`backup`][backup] command
-creates is identical to the required databases directory structure.
+Default: `/Users/[user]/Library/Containers/com.apple.iBooksX/Data/Documents`
 
-The databases directory should contain the following structure:
+The databases directory should contain the databases for macOS's Apple Books.
+These databases are: `AEAnnotation*.sqlite` and `BKLibrary*.sqlite`. The
+directory should follow the following structure:
 
 ```plaintext
 [databases-directory]
@@ -29,6 +31,30 @@ The databases directory should contain the following structure:
  └── ...
 ```
 
+> <i class="fa fa-info-circle"></i> This can be useful when running ReadStor
+> on databases backed-up with the [`backup`][backup] command. Note that the
+> [`backup`][backup] command produces an output structure identical to this.
+> So backing up and extracting data would reqire little effort.
+
+## `--plists-directory <PATH>`
+
+Set the directory containing iOS's Apple Books plists
+
+The plists directory should contain the plist files from iOS's Apple Books.
+These files are: `Books.plist` and `com.apple.ibooks-sync.plist`. The directory
+should follow the following structure:
+
+```plaintext
+[plists-directory]
+ │
+ ├── Books.plist
+ ├── com.apple.ibooks-sync.plist
+ └── ...
+```
+
+> <i class="fa fa-info-circle"></i> See [iOS - Access Library][ios-access-library]
+> guide on how to retrieve these files.
+
 ## `--force`
 
 Run even if Apple Books is currently running.
@@ -39,3 +65,4 @@ Silence output messages.
 
 [backup]: ./01-commands.md#backup
 [commands]: ./01-commands.md
+[ios-access-library]: ../02-apple-books/02-01-access-library.md

@@ -2,7 +2,7 @@
 
 ## `render`
 
-Render Apple Books' data via templates.
+Render data via templates.
 
 > <i class="fa fa-info-circle"></i> See [Templates][templates] for a full guide
 > on creating templates.
@@ -13,7 +13,7 @@ Render Apple Books' data via templates.
 
 ## `export`
 
-Export Apple Books' data as JSON.
+Export data as JSON.
 
 > <i class="fa fa-info-circle"></i> See [Pre-process][pre-process] options
 > for available options.
@@ -148,7 +148,7 @@ Example `annotations.json`:
 
 ## `backup`
 
-Back-up Apple Books' databases.
+Back-up macOS's Apple Books databases.
 
 Outputs using the following structure:
 
