@@ -6,13 +6,14 @@ use color_eyre::eyre::WrapErr;
 use lib::backup::BackupRunner;
 use lib::export::ExportRunner;
 use lib::filter::FilterRunner;
-use lib::models::data::{Data, Entries};
+use lib::models::entry::Entries;
 use lib::process::{PostProcessRunner, PreProcessRunner};
 use lib::render::templates::Templates;
 
 use crate::cli;
 
-use super::config::Config;
+use super::config::{Config, DataDirectory};
+use super::data::Data;
 use super::Command;
 
 pub type Result<T> = color_eyre::Result<T>;
@@ -73,13 +74,13 @@ impl App {
                 self.print("-> Writing templates");
                 Self::write_templates(&templates, &self.config.output_directory)?;
 
-                #[rustfmt::skip]
+                let count_templates = templates.count_templates();
+                let count_renders = templates.count_renders();
+
                 let summary = format!(
-                    "-> Rendered {} template{} into {} file{} to {}",
-                    templates.count_templates(),
-                    if templates.count_templates() == 1 { "" } else { "s" },
-                    templates.count_renders(),
-                    if templates.count_renders() == 1 { "" } else { "s" },
+                    "-> Rendered {count_templates} template{} into {count_renders} file{} to {}",
+                    if count_templates == 1 { "" } else { "s" },
+                    if count_renders == 1 { "" } else { "s" },
                     self.config.output_directory.display()
                 );
 
@@ -116,13 +117,13 @@ impl App {
                     export_options,
                 )?;
 
-                #[rustfmt::skip]
+                let count_books = self.data.count_books();
+                let count_annotations = self.data.count_annotations();
+
                 let summary = format!(
-                    "-> Exported {} annotation{} from {} book{} to {}",
-                    self.data.annotations().count(),
-                    if self.data.annotations().count() == 1 { "" } else { "s" },
-                    self.data.books().count(),
-                    if self.data.books().count() == 1 { "" } else { "s" },
+                    "-> Exported {count_annotations} annotation{} from {count_books} book{} to {}",
+                    if count_annotations == 1 { "" } else { "s" },
+                    if count_books == 1 { "" } else { "s" },
                     self.config.output_directory.display()
                 );
 
@@ -130,11 +131,14 @@ impl App {
             }
             Command::Backup { backup_options } => {
                 self.print("-> Backing-up databases");
-                Self::backup_databases(
-                    &self.config.databases_directory,
-                    &self.config.output_directory,
-                    backup_options,
-                )?;
+
+                // TODO: It might be nice to eventually support this.
+                let DataDirectory::Macos(databases) = &self.config.data_directory else {
+                    println!("Backing-up iOS's Apple Books plists is currently unsupported.");
+                    return Ok(());
+                };
+
+                Self::backup_databases(databases, &self.config.output_directory, backup_options)?;
 
                 let summary = &format!(
                     "-> Backed-up databases to {}",
@@ -148,11 +152,28 @@ impl App {
         Ok(())
     }
 
-    /// Initializes the application's data from the Apple Books databases.
+    /// Initializes the application's data.
     fn init_data(&mut self) -> Result<()> {
-        self.data
-            .init(&self.config.databases_directory)
-            .wrap_err("Failed while initializing data")
+        let error_ios = "Failed while initializing iOS's Apple Books plists data";
+        let error_macos = "Failed while initializing macOS's Apple Books databases data";
+
+        match &self.config.data_directory {
+            DataDirectory::Macos(path) => {
+                self.data.init_macos(path).wrap_err(error_macos)?;
+            }
+            DataDirectory::Ios(path) => {
+                self.data.init_ios(path).wrap_err(error_ios)?;
+            }
+            DataDirectory::Both {
+                path_macos,
+                path_ios,
+            } => {
+                self.data.init_macos(path_macos).wrap_err(error_macos)?;
+                self.data.init_ios(path_ios).wrap_err(error_ios)?;
+            }
+        }
+
+        Ok(())
     }
 
     /// Renders templates.
@@ -185,7 +206,7 @@ impl App {
             .wrap_err("Failed while writing template(s)")
     }
 
-    /// Exports Apple Books' data to disk.
+    /// Exports data to disk.
     ///
     /// # Arguments
     ///
@@ -200,7 +221,7 @@ impl App {
         Ok(())
     }
 
-    /// Backs-up Apple Books' databases to disk.
+    /// Backs-up macOS's Apple Books databases to disk.
     ///
     /// # Arguments
     ///
@@ -280,22 +301,23 @@ impl App {
 
         println!("{indent}{line}");
 
-        if self.data.annotations().count() == 0 {
+        let count_books = self.data.count_books();
+
+        if count_books == 0 {
             println!("{indent}No annotations found.");
             println!("{indent}{line}");
             return false;
         }
 
-        #[rustfmt::skip]
+        let count_annotations = self.data.count_annotations();
+
         println!(
-            "{indent}Found {} annotation{} from {} book{}:",
-            self.data.annotations().count(),
-            if self.data.annotations().count() == 1 { "" } else { "s" },
-            self.data.books().count(),
-            if self.data.books().count() == 1 { "" } else { "s" },
+            "{indent}Found {count_annotations} annotation{} from {count_books} book{}:",
+            if count_annotations == 1 { "" } else { "s" },
+            if count_books == 1 { "" } else { "s" },
         );
 
-        for book in self.data.books() {
+        for book in self.data.iter_books() {
             println!("{indent} • {} by {}", book.title, book.author);
         }
 
@@ -323,63 +345,193 @@ impl App {
 #[cfg(test)]
 mod test_app {
 
-    use crate::cli::config::Config;
+    use crate::cli::config::tests::TestConfig;
 
     use super::*;
 
-    // Tests that an empty database returns zero books and zero annotations.
-    #[test]
-    fn test_databases_empty() {
-        let config = Config::test("empty");
-        let mut app = App::new(config);
+    mod macos {
 
-        app.init_data().unwrap();
+        use super::*;
 
-        assert_eq!(app.data.books().count(), 0);
-        assert_eq!(app.data.annotations().count(), 0);
+        // Tests that empty databases return zero books and zero annotations.
+        #[test]
+        fn test_empty() {
+            let config = TestConfig::macos_empty();
+            let mut app = App::new(config);
+
+            app.init_data().unwrap();
+
+            assert_eq!(app.data.iter_books().count(), 0);
+            assert_eq!(app.data.iter_annotations().count(), 0);
+        }
+
+        // Tests that databases with un-annotated books return zero books and
+        // zero annotations.
+        #[test]
+        fn test_books_new() {
+            let config = TestConfig::macos_new();
+            let mut app = App::new(config);
+
+            app.init_data().unwrap();
+
+            // Un-annotated books are filtered out.
+            assert_eq!(app.data.iter_books().count(), 0);
+            assert_eq!(app.data.iter_annotations().count(), 0);
+        }
+
+        // Tests that databases with annotated books return non-zero books and
+        // non-zero annotations.
+        #[test]
+        fn test_books_annotated() {
+            let config = TestConfig::macos_annotated();
+            let mut app = App::new(config);
+
+            app.init_data().unwrap();
+
+            assert_eq!(app.data.iter_books().count(), 3);
+            assert_eq!(app.data.iter_annotations().count(), 10);
+        }
+
+        // Tests that annotations are sorted in the correct order.
+        #[test]
+        fn test_annotations_order() {
+            let config = TestConfig::macos_annotated();
+            let mut app = App::new(config);
+
+            app.init_data().unwrap();
+
+            // The pre-processor sorts the annotations.
+            App::run_preprocesses(&mut app.data, cli::PreProcessOptions::default());
+
+            for entry in app.data.values() {
+                for annotations in entry.annotations.windows(2) {
+                    assert!(annotations[0] < annotations[1]);
+                }
+            }
+        }
     }
 
-    // Tests that a database with un-annotated books returns zero books and
-    // zero annotations.
-    #[test]
-    fn test_databases_books_new() {
-        let config = Config::test("books-new");
-        let mut app = App::new(config);
+    mod ios {
 
-        app.init_data().unwrap();
+        use super::*;
 
-        // Un-annotated books are filtered out.
-        assert_eq!(app.data.books().count(), 0);
-        assert_eq!(app.data.annotations().count(), 0);
+        // Tests that empty plist files return zero books and zero annotations.
+        #[test]
+        fn test_empty() {
+            let config = TestConfig::ios_empty();
+            let mut app = App::new(config);
+
+            app.init_data().unwrap();
+
+            assert_eq!(app.data.iter_books().count(), 0);
+            assert_eq!(app.data.iter_annotations().count(), 0);
+        }
+
+        // Tests that plist files with un-annotated books return zero books and
+        // zero annotation.
+        #[test]
+        fn test_books_new() {
+            let config = TestConfig::ios_new();
+            let mut app = App::new(config);
+
+            app.init_data().unwrap();
+
+            // Un-annotated books are filtered out.
+            assert_eq!(app.data.iter_books().count(), 0);
+            assert_eq!(app.data.iter_annotations().count(), 0);
+        }
+
+        // Tests that plist files with annotated books return non-zero books and
+        // non-zero annotations.
+        #[test]
+        fn test_books_annotated() {
+            let config = TestConfig::ios_annotated();
+            let mut app = App::new(config);
+
+            app.init_data().unwrap();
+
+            assert_eq!(app.data.iter_books().count(), 3);
+            assert_eq!(app.data.iter_annotations().count(), 7);
+        }
+
+        // Tests that annotations are sorted in the correct order.
+        #[test]
+        fn test_annotations_order() {
+            let config = TestConfig::ios_annotated();
+            let mut app = App::new(config);
+
+            app.init_data().unwrap();
+
+            // The pre-processor sorts the annotations.
+            App::run_preprocesses(&mut app.data, cli::PreProcessOptions::default());
+
+            for entry in app.data.values() {
+                for annotations in entry.annotations.windows(2) {
+                    assert!(annotations[0] < annotations[1]);
+                }
+            }
+        }
     }
 
-    // Tests that a database with annotated books returns non-zero books and
-    // non-zero annotations.
-    #[test]
-    fn test_databases_books_annotated() {
-        let config = Config::test("books-annotated");
-        let mut app = App::new(config);
+    mod both {
 
-        app.init_data().unwrap();
+        use super::*;
 
-        assert_eq!(app.data.books().count(), 3);
-        assert_eq!(app.data.annotations().count(), 10);
-    }
+        // Tests that empty databases and plist files return zero books and
+        // zero annotations.
+        #[test]
+        fn test_empty() {
+            let config = TestConfig::both_empty();
+            let mut app = App::new(config);
 
-    // Tests that the annotations are sorted in the correct order.
-    #[test]
-    fn test_annotations_order() {
-        let config = Config::test("books-annotated");
-        let mut app = App::new(config);
+            app.init_data().unwrap();
 
-        app.init_data().unwrap();
+            assert_eq!(app.data.iter_books().count(), 0);
+            assert_eq!(app.data.iter_annotations().count(), 0);
+        }
 
-        // The pre-processor sorts the annotations.
-        App::run_preprocesses(&mut app.data, cli::PreProcessOptions::default());
+        // Tests that databses and plist files with un-annotated books return
+        // zero books and zero annotation.
+        #[test]
+        fn test_books_new() {
+            let config = TestConfig::both_new();
+            let mut app = App::new(config);
 
-        for entry in app.data.entries() {
-            for annotations in entry.annotations.windows(2) {
-                assert!(annotations[0] < annotations[1]);
+            app.init_data().unwrap();
+
+            // Un-annotated books are filtered out.
+            assert_eq!(app.data.iter_books().count(), 0);
+            assert_eq!(app.data.iter_annotations().count(), 0);
+        }
+
+        // Tests that databases and plist files with annotated books return non-
+        // zero books and non-zero annotations.
+        #[test]
+        fn test_books_annotated() {
+            let config = TestConfig::both_annotated();
+            let mut app = App::new(config);
+
+            app.init_data().unwrap();
+
+            assert_eq!(app.data.iter_books().count(), 6);
+            assert_eq!(app.data.iter_annotations().count(), 17);
+        }
+
+        // Tests that annotations are sorted in the correct order.
+        #[test]
+        fn test_annotations_order() {
+            let config = TestConfig::both_annotated();
+            let mut app = App::new(config);
+
+            app.init_data().unwrap();
+
+            // The pre-processor sorts the annotations.
+            App::run_preprocesses(&mut app.data, cli::PreProcessOptions::default());
+
+            for entry in app.data.values() {
+                for annotations in entry.annotations.windows(2) {
+                    assert!(annotations[0] < annotations[1]);
+                }
             }
         }
     }
@@ -392,7 +544,7 @@ mod test_app {
 
         #[test]
         fn test_title_any() {
-            let config = Config::test("books-annotated");
+            let config = TestConfig::both_annotated();
             let mut app = App::new(config);
 
             app.init_data().unwrap();
@@ -406,13 +558,13 @@ mod test_app {
                 }],
             );
 
-            assert_eq!(app.data.books().count(), 2);
-            assert_eq!(app.data.annotations().count(), 9);
+            assert_eq!(app.data.iter_books().count(), 2);
+            assert_eq!(app.data.iter_annotations().count(), 9);
         }
 
         #[test]
         fn test_title_all() {
-            let config = Config::test("books-annotated");
+            let config = TestConfig::both_annotated();
             let mut app = App::new(config);
 
             app.init_data().unwrap();
@@ -426,13 +578,13 @@ mod test_app {
                 }],
             );
 
-            assert_eq!(app.data.books().count(), 1);
-            assert_eq!(app.data.annotations().count(), 1);
+            assert_eq!(app.data.iter_books().count(), 1);
+            assert_eq!(app.data.iter_annotations().count(), 1);
         }
 
         #[test]
         fn test_title_exact() {
-            let config = Config::test("books-annotated");
+            let config = TestConfig::both_annotated();
             let mut app = App::new(config);
 
             app.init_data().unwrap();
@@ -446,15 +598,15 @@ mod test_app {
                 }],
             );
 
-            assert_eq!(app.data.books().count(), 1);
-            assert_eq!(app.data.annotations().count(), 4);
+            assert_eq!(app.data.iter_books().count(), 1);
+            assert_eq!(app.data.iter_annotations().count(), 4);
         }
 
         // Author
 
         #[test]
         fn test_author_any() {
-            let config = Config::test("books-annotated");
+            let config = TestConfig::both_annotated();
             let mut app = App::new(config);
 
             app.init_data().unwrap();
@@ -468,13 +620,13 @@ mod test_app {
                 }],
             );
 
-            assert_eq!(app.data.books().count(), 2);
-            assert_eq!(app.data.annotations().count(), 5);
+            assert_eq!(app.data.iter_books().count(), 2);
+            assert_eq!(app.data.iter_annotations().count(), 5);
         }
 
         #[test]
         fn test_author_all() {
-            let config = Config::test("books-annotated");
+            let config = TestConfig::both_annotated();
             let mut app = App::new(config);
 
             app.init_data().unwrap();
@@ -488,13 +640,13 @@ mod test_app {
                 }],
             );
 
-            assert_eq!(app.data.books().count(), 1);
-            assert_eq!(app.data.annotations().count(), 1);
+            assert_eq!(app.data.iter_books().count(), 1);
+            assert_eq!(app.data.iter_annotations().count(), 1);
         }
 
         #[test]
         fn test_author_exact() {
-            let config = Config::test("books-annotated");
+            let config = TestConfig::both_annotated();
             let mut app = App::new(config);
 
             app.init_data().unwrap();
@@ -512,15 +664,15 @@ mod test_app {
                 }],
             );
 
-            assert_eq!(app.data.books().count(), 1);
-            assert_eq!(app.data.annotations().count(), 1);
+            assert_eq!(app.data.iter_books().count(), 1);
+            assert_eq!(app.data.iter_annotations().count(), 1);
         }
 
         // Tags
 
         #[test]
         fn test_tags_any() {
-            let config = Config::test("books-annotated");
+            let config = TestConfig::both_annotated();
             let mut app = App::new(config);
 
             app.init_data().unwrap();
@@ -543,13 +695,13 @@ mod test_app {
                 }],
             );
 
-            assert_eq!(app.data.books().count(), 2);
-            assert_eq!(app.data.annotations().count(), 2);
+            assert_eq!(app.data.iter_books().count(), 2);
+            assert_eq!(app.data.iter_annotations().count(), 2);
         }
 
         #[test]
         fn test_tags_all() {
-            let config = Config::test("books-annotated");
+            let config = TestConfig::both_annotated();
             let mut app = App::new(config);
 
             app.init_data().unwrap();
@@ -572,13 +724,13 @@ mod test_app {
                 }],
             );
 
-            assert_eq!(app.data.books().count(), 1);
-            assert_eq!(app.data.annotations().count(), 1);
+            assert_eq!(app.data.iter_books().count(), 1);
+            assert_eq!(app.data.iter_annotations().count(), 1);
         }
 
         #[test]
         fn test_tags_exact() {
-            let config = Config::test("books-annotated");
+            let config = TestConfig::both_annotated();
             let mut app = App::new(config);
 
             app.init_data().unwrap();
@@ -601,8 +753,8 @@ mod test_app {
                 }],
             );
 
-            assert_eq!(app.data.books().count(), 1);
-            assert_eq!(app.data.annotations().count(), 1);
+            assert_eq!(app.data.iter_books().count(), 1);
+            assert_eq!(app.data.iter_annotations().count(), 1);
         }
     }
 }

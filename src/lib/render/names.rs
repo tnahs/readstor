@@ -103,7 +103,7 @@ pub struct NamesRender {
 }
 
 impl NamesRender {
-    /// Creates a new instance of [`NamesContext`].
+    /// Creates a new instance of [`NamesRender`].
     ///
     /// Note that all names are generated regardless of the template's
     /// [`ContextMode`][context-mode]. For example, when a separate template
@@ -199,13 +199,10 @@ impl NamesRender {
 /// ![[{{ name.filename }}]]
 /// {% endfor %}
 /// ```
-/// See [`NamesContext::annotations`][names-context] for more information.
-///
 /// See [`AnnotationMetadata`][annotation-metadata] for undocumented fields.
 ///
 /// [annotation-metadata]: crate::models::annotation::AnnotationMetadata
 /// [context-mode]: crate::render::template::ContextMode::Annotation
-/// [names-context]: NamesContext#structfield.annotations
 #[derive(Debug, Default, Clone, Serialize)]
 #[allow(missing_docs)]
 pub struct AnnotationNameAttributes {

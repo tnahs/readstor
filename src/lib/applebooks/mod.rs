@@ -1,5 +1,4 @@
-//! Defines types for working with the Apple Books databases.
+//! Defines types for interacting the Apple Books' data.
 
-pub mod database;
-pub mod defaults;
-pub mod utils;
+pub mod ios;
+pub mod macos;

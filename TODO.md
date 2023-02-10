@@ -11,24 +11,24 @@
 
 ## Next
 
-- [ ] Extract data from iOS's `com.apple.ibooks-sync.plist` and `Books.plist`.
-- [ ] Add `display` command to display annotations in the terminal with
-      [`minus`][minus].
+- [ ] Update README to be more focused on template outputs and exporting rather
+      than a general purpose CLI.
 - [ ] Update how the summaries are printed out. With the ability to skip
       writing files, the current method will display incorrect information.
-- [ ] Add filsystem tests for when skipping/overwriting files using the
-      `export` and `render` commands.
-- [ ] Improve stdout messages with [`indicatif`][indicatif]
+- [ ] Add `display` command to display annotations in the terminal with
+      [`minus`][minus].
+- [ ] Display a more information-rich table when filtering:
 
   ```plaintext
-  ◆ Rendering Templates:
-    • initializing data...
-    • running pre-processors...
-    • initializing templates...
-    • rendering templates...
-    • running post-processors...
-    • writing templates...
-    • rendered 1 template into 99 files to /path/to/output/directory
+   Found 11 annotations from 2 books
+  ┌───────────────────────┬─────────────────┬──────────────────┐
+  │ Title                 │ Author          │ # of Annotations │
+  ├───────────────────────┼─────────────────┼──────────────────┤
+  │ Think on These Things │ J. Krishnamurti │ 3                │
+  │ The Art Spirit        │ Robert Henri    │ 8                │
+  └───────────────────────┴─────────────────┴──────────────────┘
+
+  Continue? [y/N]: █
   ```
 
 - [ ] Simplify template-groups file naming workflow. Add internal awareness of
@@ -53,9 +53,27 @@
     wrap-text: 80
   ```
 
+- [ ] Improve stdout messages with [`indicatif`][indicatif]
+
+  ```plaintext
+  ◆ Rendering Templates:
+    • initializing data...
+    • running pre-processors...
+    • initializing templates...
+    • rendering templates...
+    • running post-processors...
+    • writing templates...
+    • rendered 1 template into 99 files to /path/to/output/directory
+  ```
+
 ## Internal
 
 - [ ] Add teardown for testing.
+- [ ] Can we add tests inside the `lib::render::template.rs` to verify that the
+      example template configs are valid? This should also check the `names`
+      field for any errors in requested values.
+- [ ] Add filsystem tests for when skipping/overwriting files using the
+      `export` and `render` commands.
 - [ ] Document `cli` module.
 - [ ] Is there a way to consolidate clippy lints between bin/lib?
 - [ ] Test [Tera][tera] macros and inheritances.

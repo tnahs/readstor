@@ -6,8 +6,7 @@ use std::path::Path;
 use serde::Serialize;
 
 use crate::contexts::book::BookContext;
-use crate::models::data::Entries;
-use crate::models::entry::Entry;
+use crate::models::entry::{Entries, Entry};
 use crate::result::Result;
 
 /// The default export directory template.
@@ -47,7 +46,7 @@ impl ExportRunner {
         Ok(())
     }
 
-    /// Exports Apple Books' data as JSON.
+    /// Exports data as JSON.
     ///
     /// # Arguments
     ///

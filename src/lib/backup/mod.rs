@@ -1,12 +1,12 @@
-//! Defines types for backing-up Apple Books' databases.
+//! Defines types for backing-up macOS's Apple Books databases.
 
 use std::path::Path;
 
 use chrono::{DateTime, Local};
 use serde::Serialize;
 
-use crate::applebooks::database::ABDatabaseName;
-use crate::applebooks::utils::APPLEBOOKS_VERSION;
+use crate::applebooks::macos::utils::APPLEBOOKS_VERSION;
+use crate::applebooks::macos::ABDatabase;
 use crate::result::Result;
 
 /// The default back-up directory template.
@@ -41,29 +41,13 @@ impl BackupRunner {
         Ok(())
     }
 
-    /// Backs-up Apple Books' databases to disk.
+    /// Backs-up macOS's Apple Books databases to disk.
     ///
     /// # Arguments
     ///
     /// * `databases` - The directory to back-up.
     /// * `output` - The ouput directory.
     /// * `options` - The back-up options.
-    ///
-    /// The `databases` directory should contains the following structure as
-    /// this is the way Apple Books' `Documents` directory is set up.
-    ///
-    /// ```plaintext
-    /// [databases]
-    ///  │
-    ///  ├── AEAnnotation
-    ///  │   ├── AEAnnotation*.sqlite
-    ///  │   └── ...
-    ///  │
-    ///  ├── BKLibrary
-    ///  │   ├── BKLibrary*.sqlite
-    ///  │   └── ...
-    ///  └── ...
-    /// ```
     ///
     /// The `output` strucutre is as follows:
     ///
@@ -85,9 +69,13 @@ impl BackupRunner {
     ///  └── ...
     /// ```
     ///
+    /// See [`ABMacos`][abmacos] for information
+    ///
     /// # Errors
     ///
     /// Will return `Err` if any IO errors are encountered.
+    ///
+    /// [abmacos]: crate::applebooks::macos::ABMacos
     pub fn backup(databases: &Path, output: &Path, options: BackupOptions) -> Result<()> {
         let directory_template = options
             .directory_template
@@ -100,8 +88,8 @@ impl BackupRunner {
         let destination_root = output.join(directory_name);
 
         for name in &[
-            ABDatabaseName::Books.to_string(),
-            ABDatabaseName::Annotations.to_string(),
+            ABDatabase::Books.to_string(),
+            ABDatabase::Annotations.to_string(),
         ] {
             // -> [databases-directory]/[name]
             let source = databases.join(name.clone());

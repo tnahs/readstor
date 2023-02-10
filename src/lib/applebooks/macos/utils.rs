@@ -7,7 +7,7 @@ use once_cell::sync::Lazy;
 use plist::Value;
 use sysinfo::{System, SystemExt};
 
-/// Returns Apple Books' version as `v[short]-[long]` e.g. `v3.2-2217`.
+/// Returns the version Apple Books for macOS as `v[short]-[long]` e.g. `v3.2-2217`.
 ///
 /// * Returns `v?` if the Apple Books application cannot be found.
 /// * Returns `v[short]-?`, `v?-[long]` or `v?-?` depending on what version

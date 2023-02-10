@@ -3,21 +3,19 @@
 #![warn(
     clippy::all,
     clippy::pedantic,
+    // clippy::missing_docs_in_private_items,
     future_incompatible,
     missing_copy_implementations,
     missing_debug_implementations,
     missing_docs,
     rust_2018_idioms,
     rust_2018_compatibility,
-    rust_2021_compatibility
+    rust_2021_compatibility,
 )]
 #![allow(
-    rustdoc::private_intra_doc_links,
+    // rustdoc::private_intra_doc_links,
     clippy::module_name_repetitions,
-    // Produces some false positives in docs.
-    clippy::doc_markdown,
-    // TODO: How is this fixed?
-    clippy::multiple_crate_versions,
+    clippy::multiple_crate_versions
 )]
 
 pub mod applebooks;

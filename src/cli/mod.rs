@@ -1,5 +1,6 @@
 pub mod app;
 pub mod config;
+pub mod data;
 pub mod defaults;
 pub mod utils;
 
@@ -30,7 +31,12 @@ static RE_FILTER_QUERY: Lazy<Regex> = Lazy::new(|| {
 });
 
 #[derive(Debug, Parser)]
-#[command(author, version, about)]
+#[command(
+    author,
+    version,
+    about,
+    after_help = "See the documentation for more information: https://tnahs.github.io/readstor"
+)]
 pub struct Cli {
     #[clap(flatten)]
     pub options: Options,
@@ -42,25 +48,50 @@ pub struct Cli {
 #[derive(Debug, Clone, Parser)]
 pub struct Options {
     /// Set the output directory [default: ~/.readstor]
-    #[arg(short, long, value_name = "PATH", value_parser(validate_path_exists))]
+    #[arg(
+        short = 'o',
+        long,
+        global = true,
+        value_name = "PATH",
+        value_parser(validate_path_exists),
+        help_heading = "Global"
+    )]
     pub output_directory: Option<PathBuf>,
 
-    /// Set a custom databses directory
-    #[arg(short, long, value_name = "PATH", value_parser(validate_path_exists))]
+    /// Set the directory containing macOS's Apple Books databases
+    #[arg(
+        short = 'd',
+        long,
+        global = true,
+        value_name = "PATH",
+        value_parser(validate_path_exists),
+        help_heading = "Global"
+    )]
     pub databases_directory: Option<PathBuf>,
 
+    /// Set the directory containing iOS's Apple Books plists
+    #[arg(
+        short = 'p',
+        long,
+        global = true,
+        value_name = "PATH",
+        value_parser(validate_path_exists),
+        help_heading = "Global"
+    )]
+    pub plists_directory: Option<PathBuf>,
+
     /// Run even if Apple Books is open
-    #[arg(short, long)]
+    #[arg(short = 'F', long, global = true, help_heading = "Global")]
     pub force: bool,
 
     /// Silence output messages
-    #[arg(short = 'q', long = "quiet")]
+    #[arg(short = 'q', long = "quiet", global = true, help_heading = "Global")]
     pub is_quiet: bool,
 }
 
 #[derive(Debug, Subcommand)]
 pub enum Command {
-    /// Render Apple Books' data via templates
+    /// Render data via templates
     Render {
         #[clap(flatten)]
         filter_options: FilterOptions,
@@ -75,7 +106,7 @@ pub enum Command {
         postprocess_options: PostProcessOptions,
     },
 
-    /// Export Apple Books' data as JSON
+    /// Export data as JSON
     Export {
         #[clap(flatten)]
         filter_options: FilterOptions,
@@ -87,7 +118,7 @@ pub enum Command {
         preprocess_options: PreProcessOptions,
     },
 
-    /// Back-up Apple Books' databases
+    /// Back-up macOS's Apple Books databases
     Backup {
         #[clap(flatten)]
         backup_options: BackupOptions,
@@ -98,48 +129,60 @@ pub enum Command {
 pub struct RenderOptions {
     /// Set a custom templates directory
     #[arg(
-        short = 'd',
+        short = 't',
         long,
         value_name = "PATH",
         value_parser(validate_path_exists)
     )]
     pub templates_directory: Option<PathBuf>,
 
-    /// Render specified template-groups
+    /// Render specified template-group(s)
     #[arg(short = 'g', long = "template-group", value_name = "GROUP")]
     pub template_groups: Vec<String>,
 
     /// Overwrite existing files
-    #[clap(short = 'o', long)]
+    #[arg(short = 'O', long)]
     pub overwrite_existing: bool,
 }
 
 #[derive(Debug, Clone, Default, Parser)]
 pub struct ExportOptions {
     /// Set the output directory template
-    #[clap(short = 'd', long, value_name = "TEMPLATE")]
+    // TODO: Rename option?
+    #[arg(short = 't', long, value_name = "TEMPLATE")]
     pub directory_template: Option<String>,
 
     /// Overwrite existing files
-    #[clap(short = 'o', long)]
+    #[arg(short = 'O', long)]
     pub overwrite_existing: bool,
 }
 
 #[derive(Debug, Clone, Default, Parser)]
 pub struct BackupOptions {
     /// Set the output directory template
-    #[clap(short = 'd', long, value_name = "TEMPLATE")]
+    // TODO: Rename option?
+    #[arg(short = 't', long, value_name = "TEMPLATE")]
     pub directory_template: Option<String>,
 }
 
 #[derive(Debug, Clone, Default, Parser)]
 pub struct FilterOptions {
     /// Filter books/annotations before outputting
-    #[clap(short, long = "filter", value_name = "[OP]{FIELD}:{QUERY}")]
+    #[arg(
+        short = 'f',
+        long = "filter",
+        value_name = "[OP]{FIELD}:{QUERY}",
+        help_heading = "Filter"
+    )]
     filter_types: Vec<FilterType>,
 
     /// Auto-confirm filter results
-    #[clap(short = 'A', long = "auto-confirm-filter", requires = "filter_types")]
+    #[arg(
+        short = 'A',
+        long = "auto-confirm-filter",
+        requires = "filter_types",
+        help_heading = "Filter"
+    )]
     auto_confirm: bool,
 }
 
@@ -181,18 +224,19 @@ pub enum FilterOperator {
 #[allow(clippy::struct_excessive_bools)]
 pub struct PreProcessOptions {
     /// Extract #tags from annotation notes
-    #[arg(short = 'e', long)]
+    #[arg(short = 'e', long, help_heading = "Pre-process")]
     pub extract_tags: bool,
 
     /// Normalize whitespace in annotation body
-    #[arg(short = 'n', long)]
+    #[arg(short = 'n', long, help_heading = "Pre-process")]
     pub normalize_whitespace: bool,
 
     /// Convert all Unicode characters to ASCII
     #[arg(
         short = 'a',
         long = "ascii-all",
-        conflicts_with = "convert_symbols_to_ascii"
+        conflicts_with = "convert_symbols_to_ascii",
+        help_heading = "Pre-process"
     )]
     pub convert_all_to_ascii: bool,
 
@@ -200,7 +244,8 @@ pub struct PreProcessOptions {
     #[arg(
         short = 's',
         long = "ascii-symbols",
-        conflicts_with = "convert_all_to_ascii"
+        conflicts_with = "convert_all_to_ascii",
+        help_heading = "Pre-process"
     )]
     pub convert_symbols_to_ascii: bool,
 }
@@ -208,11 +253,11 @@ pub struct PreProcessOptions {
 #[derive(Debug, Clone, Copy, Default, Parser)]
 pub struct PostProcessOptions {
     /// Trim any blocks left after rendering
-    #[arg(short = 't', long)]
+    #[arg(short = 'b', long, help_heading = "Post-process")]
     pub trim_blocks: bool,
 
     /// Wrap text to a maximum character width.
-    #[arg(short = 'w', long, value_name = "WIDTH")]
+    #[arg(short = 'w', long, value_name = "WIDTH", help_heading = "Post-process")]
     pub wrap_text: Option<usize>,
 }
 

@@ -4,7 +4,7 @@ pub mod filters;
 
 use std::collections::BTreeSet;
 
-use crate::models::data::Entries;
+use crate::models::entry::Entries;
 
 /// A struct for running filters on [`Entry`][entry]s.
 ///

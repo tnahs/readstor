@@ -6,7 +6,8 @@ use std::collections::BTreeSet;
 use rusqlite::Row;
 use serde::Serialize;
 
-use crate::applebooks::database::{ABDatabaseName, ABQuery};
+use crate::applebooks::ios::models::AnnotationRaw;
+use crate::applebooks::macos::ABQuery;
 
 use super::datetime::DateTimeUtc;
 use super::epubcfi;
@@ -18,9 +19,7 @@ pub struct Annotation {
     pub body: String,
 
     /// The annotation's highlight style.
-    ///
-    /// Possible values are: `green`, `blue`, `yellow`, `pink` `purple` or `underline`.
-    pub style: String,
+    pub style: AnnotationStyle,
 
     /// The annotation's notes.
     pub notes: String,
@@ -32,26 +31,7 @@ pub struct Annotation {
     pub metadata: AnnotationMetadata,
 }
 
-impl Annotation {
-    /// Returns a style/color string from Apple Books' integer representation.
-    fn int_to_style(int: u8) -> String {
-        let style = match int {
-            0 => "underline",
-            1 => "green",
-            2 => "blue",
-            3 => "yellow",
-            4 => "pink",
-            5 => "purple",
-            _ => "",
-        };
-
-        style.to_owned()
-    }
-}
-
 impl ABQuery for Annotation {
-    const DATABASE_NAME: ABDatabaseName = ABDatabaseName::Annotations;
-
     const QUERY: &'static str = {
         "SELECT
             ZANNOTATIONSELECTEDTEXT,           -- 0 body
@@ -77,16 +57,35 @@ impl ABQuery for Annotation {
 
         Self {
             body: row.get_unwrap(0),
-            style: Self::int_to_style(style),
+            style: AnnotationStyle::from(style as usize),
             notes: notes.unwrap_or_default(),
             tags: BTreeSet::new(),
             metadata: AnnotationMetadata {
                 id: row.get_unwrap(3),
                 book_id: row.get_unwrap(4),
-                created: created.into(),
-                modified: modified.into(),
+                created: DateTimeUtc::from(created),
+                modified: DateTimeUtc::from(modified),
                 location: epubcfi::parse(&epubcfi),
                 epubcfi,
+            },
+        }
+    }
+}
+
+impl From<AnnotationRaw> for Annotation {
+    fn from(annotation: AnnotationRaw) -> Self {
+        Self {
+            body: annotation.body,
+            style: AnnotationStyle::from(annotation.style),
+            notes: annotation.notes.unwrap_or_default(),
+            tags: BTreeSet::new(),
+            metadata: AnnotationMetadata {
+                id: annotation.id,
+                book_id: annotation.book_id,
+                created: DateTimeUtc::from(annotation.created),
+                modified: DateTimeUtc::from(annotation.modified),
+                location: epubcfi::parse(&annotation.epubcfi),
+                epubcfi: annotation.epubcfi,
             },
         }
     }
@@ -151,6 +150,41 @@ impl PartialOrd for AnnotationMetadata {
 impl PartialEq for AnnotationMetadata {
     fn eq(&self, other: &Self) -> bool {
         self.location == other.location
+    }
+}
+
+/// An enum represening all possible annotation highlight styles.
+#[derive(Debug, Default, Clone, Copy, PartialEq, Eq, Serialize)]
+#[serde(rename_all = "lowercase")]
+pub enum AnnotationStyle {
+    #[default]
+    #[allow(missing_docs)]
+    None,
+    #[allow(missing_docs)]
+    Underline,
+    #[allow(missing_docs)]
+    Green,
+    #[allow(missing_docs)]
+    Blue,
+    #[allow(missing_docs)]
+    Yellow,
+    #[allow(missing_docs)]
+    Red,
+    #[allow(missing_docs)]
+    Purple,
+}
+
+impl From<usize> for AnnotationStyle {
+    fn from(value: usize) -> Self {
+        match value {
+            0 => Self::Underline,
+            1 => Self::Green,
+            2 => Self::Blue,
+            3 => Self::Yellow,
+            4 => Self::Red,
+            5 => Self::Purple,
+            _ => Self::None,
+        }
     }
 }
 

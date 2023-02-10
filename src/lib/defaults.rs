@@ -12,7 +12,10 @@ pub static CRATE_ROOT: Lazy<PathBuf> = Lazy::new(|| env!("CARGO_MANIFEST_DIR").i
 // Unwrap should be safe here. It would only fail if the user is deleted after
 // the process has started. Which is highly unlikely, and would be okay to panic
 // if that was the case.
-pub static HOME: Lazy<PathBuf> = Lazy::new(|| home::home_dir().unwrap());
+pub static HOME: Lazy<PathBuf> = Lazy::new(|| {
+    let path = std::env::var_os("HOME").expect("could not determine home directory");
+    PathBuf::from(path)
+});
 
 /// The default date format string. Translates to: `YYYY-MM-DD-HHMMSS` i.e.
 /// `1970-01-01-120000`.
@@ -40,6 +43,7 @@ pub static TEST_TEMPLATES: Lazy<PathBuf> = Lazy::new(|| {
 ///
 /// * [Daring Fireball - SmartyPants](https://daringfireball.net/projects/smartypants/)
 /// * [Python-Markdown - SmartyPants](https://python-markdown.github.io/extensions/smarty/)
+#[allow(clippy::doc_markdown)]
 pub static UNICODE_TO_ASCII_SYMBOLS: Lazy<Vec<(char, &str)>> = Lazy::new(|| {
     [
         ('‘', "'"),

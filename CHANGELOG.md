@@ -7,6 +7,25 @@
 ### Bug Fixes
 -->
 
+## UNRELEASED CHANGES
+
+### Features
+
+- Extracting data from iOS's Apple Books plists is now supported. Currently,
+  this will require the user to retrieve and manually pipe in the directory
+  containing the data. See the [documentation][documentation] for more
+  information.
+
+### Changes
+
+- CLI options are now grouped for better readability.
+- The short option name for `--force` is now `-F`.
+- The short option name for `--overwrite-existing` is now `-O`.
+- The short option name for `--template-directory` is now `-t` in the `render`
+  command.
+- The short option name for `--directory-template` is now `-t` in the `export`
+  and `backup` command.
+
 ## v0.5.1 (2023-02-05)
 
 ### Bug Fixes
@@ -175,6 +194,7 @@
 [#3]: https://github.com/tnahs/readstor/issues/3
 [backup]: https://tnahs.github.io/readstor/latest/00-intro/02-04-backup.html
 [crates-io]: https://crates.io
+[documentation]: https://tnahs.github.io/readstor/latest/
 [export]: https://tnahs.github.io/readstor/latest/00-intro/02-03-export.html
 [filtering]: https://tnahs.github.io/readstor/latest/00-intro/02-01-filter.md
 [names]: https://tnahs.github.io/readstor/latest/01-templates/06-03-names.html

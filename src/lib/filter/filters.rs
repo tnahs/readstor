@@ -7,7 +7,7 @@
 
 use std::collections::BTreeSet;
 
-use crate::models::data::Entries;
+use crate::models::entry::Entries;
 
 /// Filters out [`Entry`][entry]s which have no [`Annotation`][annotation]s.
 ///

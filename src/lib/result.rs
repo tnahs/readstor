@@ -19,15 +19,33 @@ pub enum Error {
         path: String,
     },
 
-    /// Error returned when querying a database fails.
+    /// Error returned when the currently installed version of Apple Books for
+    /// macOS is unsupported.
     ///
     /// This most likely means that the database schema is different than
     /// the one the query has been designed for. In that case, the currently
     /// installed version of Apple Books is considered unsupported.
-    #[error("unsupported Apple Books version: {version}")]
-    UnsupportedVersion {
-        /// The currently installed Apple Books version number.
+    #[error("unsupported version of Apple Books for macOS: {version}")]
+    UnsupportedMacosVersion {
+        /// The currently installed Apple Books for macOS version number.
         version: String,
+        /// The source error string.
+        error: String,
+    },
+
+    /// Error returned when the currently installed version of Apple Books for
+    /// iOS is unsupported.
+    ///
+    /// This most likely means that the plist schema is different than
+    /// the one used for deserialization. In that case, the currently
+    /// installed version of Apple Books for iOS  is considered unsupported.
+    #[error("unsupported version of Apple Books for iOS: {error}")]
+    UnsupportedIosVersion {
+        /// The currently installed Apple Books for iOS version number.
+        // TODO: How can we retrieve the iOS version of Apple Books?
+        version: String,
+        /// The source error string.
+        error: String,
     },
 
     /// Error returned when a syntax error is detected in how a template's
@@ -57,6 +75,13 @@ pub enum Error {
     /// [serde-json]: https://docs.rs/serde_json/latest/serde_json/
     #[error(transparent)]
     JsonSerializationError(#[from] serde_json::Error),
+
+    /// Error returned if [`plist`][plist] encounters any errors during
+    /// deserialization.
+    ///
+    /// [plist]: https://docs.rs/plist/latest/plist/
+    #[error(transparent)]
+    PlistDeserializationError(#[from] plist::Error),
 
     /// Error returned if [`serde_yaml`][serde-yaml] encounters any errors
     /// during deserialization.

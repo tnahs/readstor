@@ -120,7 +120,7 @@ pub fn trim_blocks(string: &str) -> String {
 }
 
 #[cfg(test)]
-mod test_processes {
+mod test_processors {
 
     use super::*;
 

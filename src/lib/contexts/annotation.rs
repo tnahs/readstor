@@ -4,7 +4,7 @@ use std::collections::BTreeSet;
 
 use serde::Serialize;
 
-use crate::models::annotation::{Annotation, AnnotationMetadata};
+use crate::models::annotation::{Annotation, AnnotationMetadata, AnnotationStyle};
 
 /// A struct representing an [`Annotation`] within a template context.
 ///
@@ -14,7 +14,7 @@ pub struct AnnotationContext<'a> {
     #[allow(missing_docs)]
     pub body: &'a str,
     #[allow(missing_docs)]
-    pub style: &'a str,
+    pub style: &'a AnnotationStyle,
     #[allow(missing_docs)]
     pub notes: &'a str,
     #[allow(missing_docs)]

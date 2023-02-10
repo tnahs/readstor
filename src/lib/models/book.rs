@@ -5,7 +5,8 @@ use std::collections::BTreeSet;
 use rusqlite::Row;
 use serde::Serialize;
 
-use crate::applebooks::database::{ABDatabaseName, ABQuery};
+use crate::applebooks::ios::models::BookRaw;
+use crate::applebooks::macos::ABQuery;
 
 use super::datetime::DateTimeUtc;
 
@@ -28,8 +29,6 @@ pub struct Book {
 }
 
 impl ABQuery for Book {
-    const DATABASE_NAME: ABDatabaseName = ABDatabaseName::Books;
-
     const QUERY: &'static str = {
         "SELECT
             ZBKLIBRARYASSET.ZTITLE,        -- 0 title
@@ -49,7 +48,22 @@ impl ABQuery for Book {
             tags: BTreeSet::new(),
             metadata: BookMetadata {
                 id: row.get_unwrap(2),
-                last_opened: last_opened.into(),
+                last_opened: DateTimeUtc::from(last_opened),
+            },
+        }
+    }
+}
+
+impl From<BookRaw> for Book {
+    fn from(book: BookRaw) -> Self {
+        Self {
+            title: book.title,
+            author: book.author,
+            tags: BTreeSet::new(),
+            metadata: BookMetadata {
+                id: book.id,
+                // FIXME: How can we find the `last_opened` date?
+                last_opened: DateTimeUtc::default(),
             },
         }
     }

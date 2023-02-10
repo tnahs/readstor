@@ -4,8 +4,7 @@ pub mod processors;
 
 use std::collections::BTreeSet;
 
-use crate::models::data::Entries;
-use crate::models::entry::Entry;
+use crate::models::entry::{Entries, Entry};
 use crate::render::template::TemplateRender;
 
 /// A struct for pre-processing [`Entry`]s.
@@ -222,7 +221,7 @@ pub struct PostProcessOptions {
 }
 
 #[cfg(test)]
-mod test_processors {
+mod test_processes {
 
     use std::collections::BTreeSet;
 

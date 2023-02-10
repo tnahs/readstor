@@ -3,6 +3,12 @@ use once_cell::sync::Lazy;
 
 const BINARY: &str = env!("CARGO_PKG_NAME");
 
+static OUTPUT_DIRECTORY: Lazy<String> = Lazy::new(|| {
+    let path = std::env::temp_dir().join("readstor").join("tests");
+    std::fs::create_dir_all(&path).expect("could not create temp directory for testing");
+    path.display().to_string()
+});
+
 static DATABASES_DIRECTORY: Lazy<String> = Lazy::new(|| {
     let mut path = lib::defaults::CRATE_ROOT.to_owned();
     path.extend(["data", "databases", "books-annotated"].iter());
@@ -12,12 +18,6 @@ static DATABASES_DIRECTORY: Lazy<String> = Lazy::new(|| {
 static TEMPLATES_DIRECTORY: Lazy<String> = Lazy::new(|| {
     let mut path = lib::defaults::CRATE_ROOT.to_owned();
     path.push("templates");
-    path.display().to_string()
-});
-
-static OUTPUT_DIRECTORY: Lazy<String> = Lazy::new(|| {
-    let path = std::env::temp_dir().join("readstor").join("tests");
-    std::fs::create_dir_all(&path).expect("could not create temp directory for testing");
     path.display().to_string()
 });
 
@@ -37,12 +37,12 @@ fn help() {
 fn default_render() {
     let mut c = Command::cargo_bin(BINARY).unwrap();
     c.args([
+        "render",
         "--force",
-        "--databases-directory",
-        &DATABASES_DIRECTORY,
         "--output-directory",
         &OUTPUT_DIRECTORY,
-        "render",
+        "--databases-directory",
+        &DATABASES_DIRECTORY,
     ])
     .assert()
     .code(0)
@@ -53,12 +53,12 @@ fn default_render() {
 fn default_export() {
     let mut c = Command::cargo_bin(BINARY).unwrap();
     c.args([
+        "export",
         "--force",
-        "--databases-directory",
-        &DATABASES_DIRECTORY,
         "--output-directory",
         &OUTPUT_DIRECTORY,
-        "export",
+        "--databases-directory",
+        &DATABASES_DIRECTORY,
     ])
     .assert()
     .code(0)
@@ -69,12 +69,12 @@ fn default_export() {
 fn default_backup() {
     let mut c = Command::cargo_bin(BINARY).unwrap();
     c.args([
+        "backup",
         "--force",
-        "--databases-directory",
-        &DATABASES_DIRECTORY,
         "--output-directory",
         &OUTPUT_DIRECTORY,
-        "backup",
+        "--databases-directory",
+        &DATABASES_DIRECTORY,
     ])
     .assert()
     .code(0)
@@ -85,12 +85,12 @@ fn default_backup() {
 fn render_example_templates() {
     let mut c = Command::cargo_bin(BINARY).unwrap();
     c.args([
+        "render",
         "--force",
-        "--databases-directory",
-        &DATABASES_DIRECTORY,
         "--output-directory",
         &OUTPUT_DIRECTORY,
-        "render",
+        "--databases-directory",
+        &DATABASES_DIRECTORY,
         "--templates-directory",
         &TEMPLATES_DIRECTORY,
     ])
@@ -112,6 +112,15 @@ fn missing_output_directory() {
 fn missing_databases_directory() {
     let mut c = Command::cargo_bin(BINARY).unwrap();
     c.args(["--force", "--databases-directory", "./path/does/not/exist"])
+        .assert()
+        .code(2)
+        .failure();
+}
+
+#[test]
+fn missing_plists_directory() {
+    let mut c = Command::cargo_bin(BINARY).unwrap();
+    c.args(["--force", "--plists-directory", "./path/does/not/exist"])
         .assert()
         .code(2)
         .failure();
