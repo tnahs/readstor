@@ -34,6 +34,7 @@
 
     </head>
     <body>
+    <div id="body-container">
         <!-- Provide site root to javascript -->
         <script>
             var path_to_root = "";
@@ -390,7 +391,7 @@ creates is identical to the required databases directory structure.</p>
 </blockquote>
 <p>Multiple <a href="00-intro/../01-templates/02-01-template-groups.html">Template Groups</a> can be passed using the following
 syntax.</p>
-<pre><code class="language-sh">readstor \
+<pre><code class="language-shell">readstor \
     # ...
     --template-group basic
     --template-group using-backlinks
@@ -461,7 +462,7 @@ case-insensitive.</p>
 <h3 id="filter-results"><a class="header" href="#filter-results">Filter Results</a></h3>
 <p>After all the filters are run, a confirmation prompt is shown with a brief
 summary of the filtered down books/annotations.</p>
-<pre><code class="language-shell">$ readstor render \
+<pre><code class="language-shell">readstor render \
     --extract-tags \
     --filter &quot;=title:the art spirit&quot; \
     --filter &quot;tag:#star&quot;
@@ -1800,7 +1801,7 @@ available in <a href="https://github.com/tnahs/readstor/tree/main/scripts/apple-
 <p>However, only archiving and restoring these directories might miss some
 metadata. Searching <code>~/Library/Containers</code> for anything that contains <code>Books</code>
 yields some other directories:</p>
-<pre><code class="language-console">$ find ~/Library/Containers -type d -name &quot;*Books*&quot;
+<pre><code class="language-shell">find ~/Library/Containers -type d -name &quot;*Books*&quot;
 
 ./com.apple.BKAgentService/Data/Documents/iBooks
 ./com.apple.BKAgentService/Data/Documents/iBooks/Books
@@ -1815,7 +1816,7 @@ yields some other directories:</p>
 ./com.apple.iBooksX-SecureUserDefaults
 </code></pre>
 <p>Using <code>BK</code> as a proxy for <code>Books</code> yields no additional directores:</p>
-<pre><code class="language-console">$ find ~/Library/Containers -type d -name &quot;*BK*&quot;
+<pre><code class="language-shell">find ~/Library/Containers -type d -name &quot;*BK*&quot;
 
 ./com.apple.BKAgentService
 ./com.apple.iBooksX/Data/Documents/BKSeriesDatabase
@@ -1836,14 +1837,14 @@ changed</strong> since the library was archived. Doing a few searches shows that
 username has been hard-coded into some files. This is most evident in the
 <code>BKLibrary-*.sqlite</code> file which contains absolute paths to library files.</p>
 <p>For example:</p>
-<pre><code class="language-console">$ find ~/Library/Containers/com.apple.BKAgentService \
+<pre><code class="language-shell">find ~/Library/Containers/com.apple.BKAgentService \
     -type f -a -exec grep -l --exclude=\*.{htm,html,xhtml} $USER {} +
 
 .../.com.apple.containermanagerd.metadata.plist
 .../Container.plist
 .../Data/Documents/iBooks/Books/Books.plist
 </code></pre>
-<pre><code class="language-console">$ find ~/Library/Containers/com.apple.iBooksX* \
+<pre><code class="language-shell">find ~/Library/Containers/com.apple.iBooksX* \
     -type f -a -exec grep -l --exclude=\*.{htm,html,xhtml} $USER {} +
 
 .../com.apple.iBooksX/.com.apple.containermanagerd.metadata.plist
@@ -1867,7 +1868,7 @@ username has been hard-coded into some files. This is most evident in the
 <p>Archiving the library is as simple as running two <code>rsync</code> commands. This should
 save all the relevant Apple Books data and metadata to a single directory. Make
 sure to replace <code>[PATH-TO-ARCHIVE]</code> with a valid path to said directory.</p>
-<pre><code class="language-sh">rsync \
+<pre><code class="language-shell">rsync \
     --archive \
     --extended-attributes \
     $HOME/Library/Containers/com.apple.BK* \
@@ -1884,7 +1885,7 @@ rsync \
 <pre><code class="language-plaintext">~/archives/2022-10-08--apple-books-v4.4-5177--macos-v12.6
 </code></pre>
 <p>Our <code>rsync</code> commands would be:</p>
-<pre><code class="language-sh">rsync \
+<pre><code class="language-shell">rsync \
     --archive \
     --extended-attributes \
     $HOME/Library/Containers/com.apple.BK* \
@@ -1923,13 +1924,13 @@ rsync \
 the current Apple Books library. We can delete all the library files and
 directories by using the paths we determined from
 <a href="02-apple-books/./00-apple-books.html#what-to-archiverestore">What To Archive/Restore?</a>.</p>
-<pre><code class="language-sh">rm -rf $HOME/Library/Containers/com.apple.BK*
+<pre><code class="language-shell">rm -rf $HOME/Library/Containers/com.apple.BK*
 rm -rf $HOME/Library/Containers/com.apple.iBooks*
 rm -rf $HOME/Library/Group\ Containers/group.com.apple.iBooks
 </code></pre>
 <p>Finally, we can run the reverse <code>rsync</code> commands and restore the archive we
 previously made. Make sure to replace <code>[PATH-TO-ARCHIVE]</code> with a valid path.</p>
-<pre><code class="language-sh">rsync \
+<pre><code class="language-shell">rsync \
     --archive \
     --extended-attributes \
     [PATH-TO-ARCHIVE]/Containers/ \
@@ -1951,7 +1952,7 @@ move the archive <em>directory</em> into the target.</p>
 <pre><code class="language-plaintext">~/archives/2022-10-08--apple-books-v4.4-5177--macos-v12.6
 </code></pre>
 <p>Our <code>rsync</code> command would be:</p>
-<pre><code class="language-sh">rsync \
+<pre><code class="language-shell">rsync \
     --archive \
     --extended-attributes \
     ~/archives/2022-10-08--apple-books-v4.4-5177--macos-v12.6/Containers/ \
@@ -2005,5 +2006,6 @@ rsync \
         });
         </script>
 
+    </div>
     </body>
 </html>

@@ -33,6 +33,7 @@
 
     </head>
     <body>
+    <div id="body-container">
         <!-- Provide site root to javascript -->
         <script>
             var path_to_root = "../";
@@ -174,7 +175,7 @@ available in <a href="https://github.com/tnahs/readstor/tree/main/scripts/apple-
 <p>However, only archiving and restoring these directories might miss some
 metadata. Searching <code>~/Library/Containers</code> for anything that contains <code>Books</code>
 yields some other directories:</p>
-<pre><code class="language-console">$ find ~/Library/Containers -type d -name &quot;*Books*&quot;
+<pre><code class="language-shell">find ~/Library/Containers -type d -name &quot;*Books*&quot;
 
 ./com.apple.BKAgentService/Data/Documents/iBooks
 ./com.apple.BKAgentService/Data/Documents/iBooks/Books
@@ -189,7 +190,7 @@ yields some other directories:</p>
 ./com.apple.iBooksX-SecureUserDefaults
 </code></pre>
 <p>Using <code>BK</code> as a proxy for <code>Books</code> yields no additional directores:</p>
-<pre><code class="language-console">$ find ~/Library/Containers -type d -name &quot;*BK*&quot;
+<pre><code class="language-shell">find ~/Library/Containers -type d -name &quot;*BK*&quot;
 
 ./com.apple.BKAgentService
 ./com.apple.iBooksX/Data/Documents/BKSeriesDatabase
@@ -210,14 +211,14 @@ changed</strong> since the library was archived. Doing a few searches shows that
 username has been hard-coded into some files. This is most evident in the
 <code>BKLibrary-*.sqlite</code> file which contains absolute paths to library files.</p>
 <p>For example:</p>
-<pre><code class="language-console">$ find ~/Library/Containers/com.apple.BKAgentService \
+<pre><code class="language-shell">find ~/Library/Containers/com.apple.BKAgentService \
     -type f -a -exec grep -l --exclude=\*.{htm,html,xhtml} $USER {} +
 
 .../.com.apple.containermanagerd.metadata.plist
 .../Container.plist
 .../Data/Documents/iBooks/Books/Books.plist
 </code></pre>
-<pre><code class="language-console">$ find ~/Library/Containers/com.apple.iBooksX* \
+<pre><code class="language-shell">find ~/Library/Containers/com.apple.iBooksX* \
     -type f -a -exec grep -l --exclude=\*.{htm,html,xhtml} $USER {} +
 
 .../com.apple.iBooksX/.com.apple.containermanagerd.metadata.plist
@@ -282,5 +283,6 @@ username has been hard-coded into some files. This is most evident in the
         <!-- Custom JS scripts -->
 
 
+    </div>
     </body>
 </html>

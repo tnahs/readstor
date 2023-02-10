@@ -33,6 +33,7 @@
 
     </head>
     <body>
+    <div id="body-container">
         <!-- Provide site root to javascript -->
         <script>
             var path_to_root = "../";
@@ -157,13 +158,13 @@
 the current Apple Books library. We can delete all the library files and
 directories by using the paths we determined from
 <a href="./00-apple-books.html#what-to-archiverestore">What To Archive/Restore?</a>.</p>
-<pre><code class="language-sh">rm -rf $HOME/Library/Containers/com.apple.BK*
+<pre><code class="language-shell">rm -rf $HOME/Library/Containers/com.apple.BK*
 rm -rf $HOME/Library/Containers/com.apple.iBooks*
 rm -rf $HOME/Library/Group\ Containers/group.com.apple.iBooks
 </code></pre>
 <p>Finally, we can run the reverse <code>rsync</code> commands and restore the archive we
 previously made. Make sure to replace <code>[PATH-TO-ARCHIVE]</code> with a valid path.</p>
-<pre><code class="language-sh">rsync \
+<pre><code class="language-shell">rsync \
     --archive \
     --extended-attributes \
     [PATH-TO-ARCHIVE]/Containers/ \
@@ -185,7 +186,7 @@ move the archive <em>directory</em> into the target.</p>
 <pre><code class="language-plaintext">~/archives/2022-10-08--apple-books-v4.4-5177--macos-v12.6
 </code></pre>
 <p>Our <code>rsync</code> command would be:</p>
-<pre><code class="language-sh">rsync \
+<pre><code class="language-shell">rsync \
     --archive \
     --extended-attributes \
     ~/archives/2022-10-08--apple-books-v4.4-5177--macos-v12.6/Containers/ \
@@ -240,5 +241,6 @@ rsync \
         <!-- Custom JS scripts -->
 
 
+    </div>
     </body>
 </html>

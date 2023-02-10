@@ -33,6 +33,7 @@
 
     </head>
     <body>
+    <div id="body-container">
         <!-- Provide site root to javascript -->
         <script>
             var path_to_root = "../";
@@ -179,7 +180,7 @@ case-insensitive.</p>
 <h3 id="filter-results"><a class="header" href="#filter-results">Filter Results</a></h3>
 <p>After all the filters are run, a confirmation prompt is shown with a brief
 summary of the filtered down books/annotations.</p>
-<pre><code class="language-shell">$ readstor render \
+<pre><code class="language-shell">readstor render \
     --extract-tags \
     --filter &quot;=title:the art spirit&quot; \
     --filter &quot;tag:#star&quot;
@@ -324,5 +325,6 @@ separate search term depending on the specified <a href="#operator"><code>operat
         <!-- Custom JS scripts -->
 
 
+    </div>
     </body>
 </html>

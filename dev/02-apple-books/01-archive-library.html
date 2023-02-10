@@ -33,6 +33,7 @@
 
     </head>
     <body>
+    <div id="body-container">
         <!-- Provide site root to javascript -->
         <script>
             var path_to_root = "../";
@@ -156,7 +157,7 @@
 <p>Archiving the library is as simple as running two <code>rsync</code> commands. This should
 save all the relevant Apple Books data and metadata to a single directory. Make
 sure to replace <code>[PATH-TO-ARCHIVE]</code> with a valid path to said directory.</p>
-<pre><code class="language-sh">rsync \
+<pre><code class="language-shell">rsync \
     --archive \
     --extended-attributes \
     $HOME/Library/Containers/com.apple.BK* \
@@ -173,7 +174,7 @@ rsync \
 <pre><code class="language-plaintext">~/archives/2022-10-08--apple-books-v4.4-5177--macos-v12.6
 </code></pre>
 <p>Our <code>rsync</code> commands would be:</p>
-<pre><code class="language-sh">rsync \
+<pre><code class="language-shell">rsync \
     --archive \
     --extended-attributes \
     $HOME/Library/Containers/com.apple.BK* \
@@ -252,5 +253,6 @@ rsync \
         <!-- Custom JS scripts -->
 
 
+    </div>
     </body>
 </html>
