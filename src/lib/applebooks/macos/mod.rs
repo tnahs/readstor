@@ -101,16 +101,12 @@ impl ABMacos {
         // Returns the appropriate database based on its name.
         let path = Self::get_database(path, database)?;
 
-        let connection = match Connection::open_with_flags(&path, OpenFlags::SQLITE_OPEN_READ_ONLY)
-        {
-            Ok(connection) => connection,
-            Err(_) => {
-                return Err(Error::DatabaseConnection {
-                    name: database.to_string(),
-                    path: path.display().to_string(),
-                });
-            }
-        };
+        let Ok(connection) = Connection::open_with_flags(&path, OpenFlags::SQLITE_OPEN_READ_ONLY) else {
+             return Err(Error::DatabaseConnection {
+                 name: database.to_string(),
+                 path: path.display().to_string(),
+             });
+         };
 
         // This will only fail if the database schema has changes. This means
         // that the Apple Books database schema is different than the one the

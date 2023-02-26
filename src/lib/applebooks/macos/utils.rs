@@ -24,9 +24,7 @@ pub static APPLEBOOKS_VERSION: Lazy<String> = Lazy::new(|| {
     .iter()
     .collect();
 
-    let value = if let Ok(value) = Value::from_file(path) {
-        value
-    } else {
+    let Ok(value) = Value::from_file(path) else {
         // This can happen if the user is on a non-macOS device.
         log::warn!("could not determine Apple Books version");
         return "v?".to_owned();

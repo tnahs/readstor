@@ -465,10 +465,10 @@ impl Templates {
     ///
     /// * `template` - The template to render.
     /// * `context` - The template's context.
-    fn render_template<'a>(
+    fn render_template(
         &self,
         template: &TemplateRaw,
-        context: TemplateContext<'a>,
+        context: TemplateContext<'_>,
     ) -> Result<String> {
         let context = &tera::Context::from_serialize(context)?;
         Ok(self.registry.render(&template.id, context)?)
