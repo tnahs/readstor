@@ -1,0 +1,12 @@
+[[language]]
+name = "rust"
+auto-format = true
+max-line-length = 100
+
+[language.config]
+checkOnSave.command = "clippy"
+
+[[language]]
+name = "markdown"
+auto-format = true
+max-line-length = 100
