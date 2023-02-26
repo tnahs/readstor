@@ -49,7 +49,6 @@ impl ABIos {
             Ok(data) => data,
             Err(error) => {
                 return Err(Error::UnsupportedIosVersion {
-                    version: "?".to_string(),
                     error: error.to_string(),
                 })
             }
@@ -86,7 +85,6 @@ impl ABIos {
             Ok(data) => data,
             Err(error) => {
                 return Err(Error::UnsupportedIosVersion {
-                    version: "?".to_string(),
                     error: error.to_string(),
                 })
             }

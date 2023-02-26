@@ -39,11 +39,9 @@ pub enum Error {
     /// This most likely means that the plist schema is different than
     /// the one used for deserialization. In that case, the currently
     /// installed version of Apple Books for iOS  is considered unsupported.
+    // TODO: Is there a way to retrieve the iOS version from the device?
     #[error("unsupported version of Apple Books for iOS: {error}")]
     UnsupportedIosVersion {
-        /// The currently installed Apple Books for iOS version number.
-        // TODO: How can we retrieve the iOS version of Apple Books?
-        version: String,
         /// The source error string.
         error: String,
     },
