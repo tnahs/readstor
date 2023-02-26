@@ -1,4 +1,3 @@
-exclude: ^(data/ios)
 repos:
 - repo: https://github.com/pre-commit/pre-commit-hooks
   rev: v4.4.0
@@ -11,3 +10,4 @@ repos:
   - id: check-executables-have-shebangs
     exclude: ^(data/databases)
   - id: check-added-large-files
+    exclude: ^(data/ios)
