@@ -1,0 +1,199 @@
+<package xmlns="http://www.idpf.org/2007/opf" unique-identifier="bookid" version="3.0">
+<metadata xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:opf="http://www.idpf.org/2007/opf">
+<dc:title>Sapiens</dc:title>
+<dc:creator>Yuval Noah Harari</dc:creator>
+<dc:source>9780062316110</dc:source>
+<dc:date>2018-04-12</dc:date>
+<dc:identifier id="bookid">9780062316103</dc:identifier>
+<dc:language>en</dc:language>
+<dc:rights>All rights reserved</dc:rights>
+<dc:publisher>HarperCollins</dc:publisher>
+<meta property="dcterms:modified">2018-04-26T06:00:00Z</meta>
+<meta content="cover-image" name="cover"/>
+<description xmlns="http://purl.org/dc/elements/1.1/">&lt;p&gt;&lt;strong&gt;New York Times Bestseller&lt;/strong&gt;&lt;/p&gt;&lt;p&gt;&lt;strong&gt;A Summer Reading Pick for President Barack Obama, Bill Gates, and Mark Zuckerberg &lt;/strong&gt;&lt;/p&gt;&lt;p&gt;From a renowned historian comes a groundbreaking narrative of humanity's creation and evolution&amp;#8212;a #1 international bestseller&amp;#8212;that explores the ways in which biology and history have defined us and enhanced our understanding of what it means to be "human."&lt;/p&gt;&lt;p&gt;One hundred thousand years ago, at least six different species of humans inhabited Earth. Yet today there is only one&amp;#8212;homo sapiens. What happened to the others? And what may happen to us?&lt;/p&gt;&lt;p&gt;Most books about the history of humanity pursue either a historical or a biological approach, but Dr. Yuval Noah Harari breaks the mold with this highly original book that begins about 70,000 years ago with the appearance of modern cognition. From examining the role evolving humans have played in the global ecosystem to charting the rise of empires, Sapiens...</description>
+</metadata>
+<manifest>
+<item href="9780062316103_toc.ncx" id="ncx" media-type="application/x-dtbncx+xml"/>
+<item href="styles/9780062316103_template.css" id="stylesheet" media-type="text/css"/>
+<item href="text/9780062316103_Cover.xhtml" id="Cover-page" media-type="application/xhtml+xml"/>
+<item href="text/nav.xhtml" id="nav" media-type="application/xhtml+xml" properties="nav"/>
+<item href="text/9780062316103_Contents.xhtml" id="Contents" media-type="application/xhtml+xml"/>
+<item href="text/9780062316103_Praise.xhtml" id="Praise" media-type="application/xhtml+xml"/>
+<item href="text/9780062316103_Titlepage.xhtml" id="Titlepage" media-type="application/xhtml+xml"/>
+<item href="text/9780062316103_Copyright.xhtml" id="Copyright" media-type="application/xhtml+xml"/>
+<item href="text/9780062316103_Dedication.xhtml" id="Dedication" media-type="application/xhtml+xml"/>
+<item href="text/9780062316103_Timeline.xhtml" id="Timeline" media-type="application/xhtml+xml"/>
+<item href="text/9780062316103_Part_1.xhtml" id="Part_1" media-type="application/xhtml+xml"/>
+<item href="text/9780062316103_Chapter_1.xhtml" id="Chapter_1" media-type="application/xhtml+xml"/>
+<item href="text/9780062316103_Chapter_2.xhtml" id="Chapter_2" media-type="application/xhtml+xml"/>
+<item href="text/9780062316103_Chapter_3.xhtml" id="Chapter_3" media-type="application/xhtml+xml"/>
+<item href="text/9780062316103_Chapter_4.xhtml" id="Chapter_4" media-type="application/xhtml+xml"/>
+<item href="text/9780062316103_Part_2.xhtml" id="Part_2" media-type="application/xhtml+xml"/>
+<item href="text/9780062316103_Chapter_5.xhtml" id="Chapter_5" media-type="application/xhtml+xml"/>
+<item href="text/9780062316103_Chapter_6.xhtml" id="Chapter_6" media-type="application/xhtml+xml"/>
+<item href="text/9780062316103_Chapter_7.xhtml" id="Chapter_7" media-type="application/xhtml+xml"/>
+<item href="text/9780062316103_Chapter_8.xhtml" id="Chapter_8" media-type="application/xhtml+xml"/>
+<item href="text/9780062316103_Part_3.xhtml" id="Part_3" media-type="application/xhtml+xml"/>
+<item href="text/9780062316103_Chapter_9.xhtml" id="Chapter_9" media-type="application/xhtml+xml"/>
+<item href="text/9780062316103_Chapter_10.xhtml" id="Chapter_10" media-type="application/xhtml+xml"/>
+<item href="text/9780062316103_Chapter_11.xhtml" id="Chapter_11" media-type="application/xhtml+xml"/>
+<item href="text/9780062316103_Chapter_12.xhtml" id="Chapter_12" media-type="application/xhtml+xml"/>
+<item href="text/9780062316103_Chapter_13.xhtml" id="Chapter_13" media-type="application/xhtml+xml"/>
+<item href="text/9780062316103_Part_4.xhtml" id="Part_4" media-type="application/xhtml+xml"/>
+<item href="text/9780062316103_Chapter_14.xhtml" id="Chapter_14" media-type="application/xhtml+xml"/>
+<item href="text/9780062316103_Chapter_15.xhtml" id="Chapter_15" media-type="application/xhtml+xml"/>
+<item href="text/9780062316103_Chapter_16.xhtml" id="Chapter_16" media-type="application/xhtml+xml"/>
+<item href="text/9780062316103_Chapter_17.xhtml" id="Chapter_17" media-type="application/xhtml+xml"/>
+<item href="text/9780062316103_Chapter_18.xhtml" id="Chapter_18" media-type="application/xhtml+xml"/>
+<item href="text/9780062316103_Chapter_19.xhtml" id="Chapter_19" media-type="application/xhtml+xml"/>
+<item href="text/9780062316103_Chapter_20.xhtml" id="Chapter_20" media-type="application/xhtml+xml"/>
+<item href="text/9780062316103_Afterword.xhtml" id="Afterword" media-type="application/xhtml+xml"/>
+<item href="text/9780062316103_Notes.xhtml" id="Notes" media-type="application/xhtml+xml"/>
+<item href="text/9780062316103_Acknowledgements.xhtml" id="Acknowledgements" media-type="application/xhtml+xml"/>
+<item href="text/9780062316103_Index.xhtml" id="Index" media-type="application/xhtml+xml"/>
+<item href="text/About_the_Author.xhtml" id="About_the_Author" media-type="application/xhtml+xml"/>
+<item href="text/9780062316103_Ps.xhtml" id="Ps" media-type="application/xhtml+xml"/>
+<item href="text/9780062316103_Ps_Author.xhtml" id="Ps_Author" media-type="application/xhtml+xml"/>
+<item href="text/9780062316103_Ps_Also.xhtml" id="Ps_Also" media-type="application/xhtml+xml"/>
+<item href="text/9780062316103_BA.xhtml" id="BA" media-type="application/xhtml+xml"/>
+<item href="text/About_the_Publisher.xhtml" id="About_the_Publisher" media-type="application/xhtml+xml"/>
+<item href="text/9780062316103_Footnote_1.xhtml" id="Footnote_1" media-type="application/xhtml+xml"/>
+<item href="text/9780062316103_Footnote_2.xhtml" id="Footnote_2" media-type="application/xhtml+xml"/>
+<item href="text/9780062316103_Footnote_3.xhtml" id="Footnote_3" media-type="application/xhtml+xml"/>
+<item href="text/9780062316103_Footnote_4.xhtml" id="Footnote_4" media-type="application/xhtml+xml"/>
+<item href="text/9780062316103_Footnote_5.xhtml" id="Footnote_5" media-type="application/xhtml+xml"/>
+<item href="text/9780062316103_Footnote_6.xhtml" id="Footnote_6" media-type="application/xhtml+xml"/>
+<item href="text/9780062316103_Footnote_7.xhtml" id="Footnote_7" media-type="application/xhtml+xml"/>
+<item href="images/9780062316103_Cover.jpg" id="cover-image" media-type="image/jpeg" properties="cover-image"/>
+<item href="images/bookperk-boba-V1.jpg" id="bookperk-boba-V1" media-type="image/jpeg"/>
+<item href="images/common.jpg" id="common" media-type="image/jpeg"/>
+<item href="images/f0001-01.jpg" id="f0001-01" media-type="image/jpeg"/>
+<item href="images/f0006-01.jpg" id="f0006-01" media-type="image/jpeg"/>
+<item href="images/f0015-01.jpg" id="f0015-01" media-type="image/jpeg"/>
+<item href="images/f0017-01.jpg" id="f0017-01" media-type="image/jpeg"/>
+<item href="images/f0023-01.jpg" id="f0023-01" media-type="image/jpeg"/>
+<item href="images/f0029-01.jpg" id="f0029-01" media-type="image/jpeg"/>
+<item href="images/f0035-01.jpg" id="f0035-01" media-type="image/jpeg"/>
+<item href="images/f0047-01.jpg" id="f0047-01" media-type="image/jpeg"/>
+<item href="images/f0056-01.jpg" id="f0056-01" media-type="image/jpeg"/>
+<item href="images/f0057-01.jpg" id="f0057-01" media-type="image/jpeg"/>
+<item href="images/f0073-01.jpg" id="f0073-01" media-type="image/jpeg"/>
+<item href="images/f0075-01.jpg" id="f0075-01" media-type="image/jpeg"/>
+<item href="images/f0079-01.jpg" id="f0079-01" media-type="image/jpeg"/>
+<item href="images/f0082-01.jpg" id="f0082-01" media-type="image/jpeg"/>
+<item href="images/f0090-01.jpg" id="f0090-01" media-type="image/jpeg"/>
+
+<item href="images/f0094-01.jpg" id="f0094-01" media-type="image/jpeg"/>
+<item href="images/f0096-01.jpg" id="f0096-01" media-type="image/jpeg"/>
+<item href="images/f0104-01.jpg" id="f0104-01" media-type="image/jpeg"/>
+<item href="images/f0105-01.jpg" id="f0105-01" media-type="image/jpeg"/>
+<item href="images/f0116-01.jpg" id="f0116-01" media-type="image/jpeg"/>
+<item href="images/f0123-01.jpg" id="f0123-01" media-type="image/jpeg"/>
+<item href="images/f0124-01.jpg" id="f0124-01" media-type="image/jpeg"/>
+<item href="images/f0125-01.jpg" id="f0125-01" media-type="image/jpeg"/>
+<item href="images/f0131-01.jpg" id="f0131-01" media-type="image/jpeg"/>
+<item href="images/f0135-01.jpg" id="f0135-01" media-type="image/jpeg"/>
+<item href="images/f0143-01.jpg" id="f0143-01" media-type="image/jpeg"/>
+<item href="images/f0149-01.jpg" id="f0149-01" media-type="image/jpeg"/>
+<item href="images/f0150-01.jpg" id="f0150-01" media-type="image/jpeg"/>
+<item href="images/f0151-01.jpg" id="f0151-01" media-type="image/jpeg"/>
+<item href="images/f0161-01.jpg" id="f0161-01" media-type="image/jpeg"/>
+<item href="images/f0169-01.jpg" id="f0169-01" media-type="image/jpeg"/>
+<item href="images/f0171-01.jpg" id="f0171-01" media-type="image/jpeg"/>
+<item href="images/f0177-01.jpg" id="f0177-01" media-type="image/jpeg"/>
+<item href="images/f0183-01.jpg" id="f0183-01" media-type="image/jpeg"/>
+<item href="images/f0195-01.jpg" id="f0195-01" media-type="image/jpeg"/>
+<item href="images/f0202-01.jpg" id="f0202-01" media-type="image/jpeg"/>
+<item href="images/f0205-01.jpg" id="f0205-01" media-type="image/jpeg"/>
+<item href="images/f0206-01.jpg" id="f0206-01" media-type="image/jpeg"/>
+<item href="images/f0219-01.jpg" id="f0219-01" media-type="image/jpeg"/>
+<item href="images/f0225-01.jpg" id="f0225-01" media-type="image/jpeg"/>
+<item href="images/f0229-01.jpg" id="f0229-01" media-type="image/jpeg"/>
+<item href="images/f0233-01.jpg" id="f0233-01" media-type="image/jpeg"/>
+<item href="images/f0234-01.jpg" id="f0234-01" media-type="image/jpeg"/>
+<item href="images/f0235-01.jpg" id="f0235-01" media-type="image/jpeg"/>
+<item href="images/f0245-01.jpg" id="f0245-01" media-type="image/jpeg"/>
+<item href="images/f0250-01.jpg" id="f0250-01" media-type="image/jpeg"/>
+<item href="images/f0255-01.jpg" id="f0255-01" media-type="image/jpeg"/>
+<item href="images/f0261-01.jpg" id="f0261-01" media-type="image/jpeg"/>
+<item href="images/f0265-01.jpg" id="f0265-01" media-type="image/jpeg"/>
+<item href="images/f0279-01.jpg" id="f0279-01" media-type="image/jpeg"/>
+<item href="images/f0287-01.jpg" id="f0287-01" media-type="image/jpeg"/>
+<item href="images/f0289-01.jpg" id="f0289-01" media-type="image/jpeg"/>
+<item href="images/f0291-01.jpg" id="f0291-01" media-type="image/jpeg"/>
+<item href="images/f0293-01.jpg" id="f0293-01" media-type="image/jpeg"/>
+<item href="images/f0309-01.jpg" id="f0309-01" media-type="image/jpeg"/>
+<item href="images/f0309-02.jpg" id="f0309-02" media-type="image/jpeg"/>
+<item href="images/f0311-01.jpg" id="f0311-01" media-type="image/jpeg"/>
+<item href="images/f0313-01.jpg" id="f0313-01" media-type="image/jpeg"/>
+<item href="images/f0323-01.jpg" id="f0323-01" media-type="image/jpeg"/>
+<item href="images/f0327-01.jpg" id="f0327-01" media-type="image/jpeg"/>
+<item href="images/f0343-01.jpg" id="f0343-01" media-type="image/jpeg"/>
+<item href="images/f0345-01.jpg" id="f0345-01" media-type="image/jpeg"/>
+<item href="images/f0353-01.jpg" id="f0353-01" media-type="image/jpeg"/>
+<item href="images/f0361-01.jpg" id="f0361-01" media-type="image/jpeg"/>
+<item href="images/f0372-01.jpg" id="f0372-01" media-type="image/jpeg"/>
+<item href="images/f0373-01.jpg" id="f0373-01" media-type="image/jpeg"/>
+<item href="images/f0385-01.jpg" id="f0385-01" media-type="image/jpeg"/>
+<item href="images/f0400-01.jpg" id="f0400-01" media-type="image/jpeg"/>
+<item href="images/f0406-01.jpg" id="f0406-01" media-type="image/jpeg"/>
+<item href="images/logo.jpg" id="logo" media-type="image/jpeg"/>
+<item href="images/ps5.jpg" id="ps5" media-type="image/jpeg"/>
+<item href="images/titlepage.jpg" id="titlepage1" media-type="image/jpeg"/>
+</manifest>
+<spine toc="ncx">
+<itemref idref="Cover-page"/>
+<itemref idref="Titlepage"/>
+<itemref idref="Dedication"/>
+<itemref idref="Timeline"/>
+<itemref idref="Contents"/>
+<itemref idref="Part_1"/>
+<itemref idref="Chapter_1"/>
+<itemref idref="Chapter_2"/>
+<itemref idref="Chapter_3"/>
+<itemref idref="Chapter_4"/>
+<itemref idref="Part_2"/>
+<itemref idref="Chapter_5"/>
+<itemref idref="Chapter_6"/>
+<itemref idref="Chapter_7"/>
+<itemref idref="Chapter_8"/>
+<itemref idref="Part_3"/>
+<itemref idref="Chapter_9"/>
+<itemref idref="Chapter_10"/>
+<itemref idref="Chapter_11"/>
+<itemref idref="Chapter_12"/>
+<itemref idref="Chapter_13"/>
+<itemref idref="Part_4"/>
+<itemref idref="Chapter_14"/>
+<itemref idref="Chapter_15"/>
+<itemref idref="Chapter_16"/>
+<itemref idref="Chapter_17"/>
+<itemref idref="Chapter_18"/>
+<itemref idref="Chapter_19"/>
+<itemref idref="Chapter_20"/>
+<itemref idref="Afterword"/>
+<itemref idref="Acknowledgements"/>
+<itemref idref="Notes"/>
+<itemref idref="Index"/>
+<itemref idref="About_the_Author"/>
+<itemref idref="Ps"/>
+<itemref idref="Ps_Author"/>
+<itemref idref="Ps_Also"/>
+<itemref idref="Praise"/>
+<itemref idref="BA"/>
+<itemref idref="Copyright"/>
+<itemref idref="About_the_Publisher"/>
+<itemref idref="Footnote_1"/>
+<itemref idref="Footnote_2"/>
+<itemref idref="Footnote_3"/>
+<itemref idref="Footnote_4"/>
+<itemref idref="Footnote_5"/>
+<itemref idref="Footnote_6"/>
+<itemref idref="Footnote_7"/>
+</spine>
+<guide>
+<reference href="text/9780062316103_Cover.xhtml" title="Cover Image" type="cover"/>
+<reference href="text/nav.xhtml" title="Table of Contents" type="toc"/>
+<reference href="text/9780062316103_Titlepage.xhtml" title="Start" type="text"/>
+</guide>
+</package>

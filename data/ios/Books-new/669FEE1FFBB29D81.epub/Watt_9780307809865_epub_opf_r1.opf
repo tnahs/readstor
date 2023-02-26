@@ -1,0 +1,72 @@
+<package xmlns="http://www.idpf.org/2007/opf" unique-identifier="PrimaryID" version="2.0">
+	<metadata xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:opf="http://www.idpf.org/2007/opf">
+		<dc:title>The Wisdom of Insecurity</dc:title>
+		<dc:language>en-US</dc:language>
+		<dc:identifier id="PrimaryID" opf:scheme="ISBN">978-0-307-80986-5</dc:identifier>
+		<dc:creator opf:file-as="Watts, Alan W." opf:role="aut">Alan W. Watts</dc:creator>
+		<dc:publisher>Knopf Doubleday Publishing Group</dc:publisher>
+		<dc:date opf:event="publication">2011-11-16</dc:date>
+		<dc:rights>Copyright © 1951 by Pantheon Books</dc:rights>
+		<meta content="cover-image" name="cover"/>
+			<meta content="4.0.1" name="epubcheckversion"/>
+			<meta content="2017-05-23" name="epubcheckdate"/>
+	<description xmlns="http://purl.org/dc/elements/1.1/">&lt;p&gt;An exploration of man's quest for psychological security and spiritual certainty in religion and philosophy.&lt;br&gt;&lt;br&gt;&lt;i&gt;From the Trade Paperback edition.&lt;/i&gt;</description>
+</metadata>
+	<manifest>
+		<item href="Watt_9780307809865_epub_ncx_r1.ncx" id="ncx" media-type="application/x-dtbncx+xml"/>
+		<item href="OEBPS/Watt_9780307809865_epub_cvi_r1.htm" id="cvi" media-type="application/xhtml+xml"/>
+		<item href="OEBPS/Watt_9780307809865_epub_ata_r1.htm" id="ata" media-type="application/xhtml+xml"/>
+		<item href="OEBPS/Watt_9780307809865_epub_adc_r1.htm" id="adc" media-type="application/xhtml+xml"/>
+		<item href="OEBPS/Watt_9780307809865_epub_tp_r1.htm" id="tp" media-type="application/xhtml+xml"/>
+		<item href="OEBPS/Watt_9780307809865_epub_cop_r1.htm" id="cop" media-type="application/xhtml+xml"/>
+		<item href="OEBPS/Watt_9780307809865_epub_ded_r1.htm" id="ded" media-type="application/xhtml+xml"/>
+		<item href="OEBPS/Watt_9780307809865_epub_toc_r1.htm" id="toc" media-type="application/xhtml+xml"/>
+		<item href="OEBPS/Watt_9780307809865_epub_itr_r1.htm" id="itr" media-type="application/xhtml+xml"/>
+		<item href="OEBPS/Watt_9780307809865_epub_prf_r1.htm" id="prf" media-type="application/xhtml+xml"/>
+		<item href="OEBPS/Watt_9780307809865_epub_c01_r1.htm" id="c01" media-type="application/xhtml+xml"/>
+		<item href="OEBPS/Watt_9780307809865_epub_c02_r1.htm" id="c02" media-type="application/xhtml+xml"/>
+		<item href="OEBPS/Watt_9780307809865_epub_c03_r1.htm" id="c03" media-type="application/xhtml+xml"/>
+		<item href="OEBPS/Watt_9780307809865_epub_c04_r1.htm" id="c04" media-type="application/xhtml+xml"/>
+		<item href="OEBPS/Watt_9780307809865_epub_c05_r1.htm" id="c05" media-type="application/xhtml+xml"/>
+		<item href="OEBPS/Watt_9780307809865_epub_c06_r1.htm" id="c06" media-type="application/xhtml+xml"/>
+		<item href="OEBPS/Watt_9780307809865_epub_c07_r1.htm" id="c07" media-type="application/xhtml+xml"/>
+		<item href="OEBPS/Watt_9780307809865_epub_c08_r1.htm" id="c08" media-type="application/xhtml+xml"/>
+		<item href="OEBPS/Watt_9780307809865_epub_c09_r1.htm" id="c09" media-type="application/xhtml+xml"/>
+		<item href="OEBPS/Watt_9780307809865_epub_css_r1.css" id="css" media-type="text/css"/>
+		<item href="OEBPS/images/Watt_9780307809865_epub_cvi_r1.jpg" id="cover-image" media-type="image/jpeg"/>
+		<item href="OEBPS/images/Watt_9780307809865_epub_cvt_r1.jpg" id="fcvt" media-type="image/jpeg"/>
+		<item href="OEBPS/images/Watt_9780307809865_epub_tp_r1.jpg" id="ftp" media-type="image/jpeg"/>
+		<item href="OEBPS/page-template.xpgt" id="page" media-type="application/vnd.adobe-page-template+xml"/>
+		<item href="OEBPS/fonts/CharisSILB.ttf" id="font1" media-type="application/x-font-ttf"/>
+		<item href="OEBPS/fonts/CharisSILBI.ttf" id="font2" media-type="application/x-font-ttf"/>
+		<item href="OEBPS/fonts/CharisSILI.ttf" id="font3" media-type="application/x-font-ttf"/>
+		<item href="OEBPS/fonts/CharisSILR.ttf" id="font4" media-type="application/x-font-ttf"/>
+	<item href="OEBPS/next-reads-html/next-reads.xhtml" id="next-reads_template" media-type="application/xhtml+xml"/><item href="OEBPS/next-reads-html/images/next-reads_logo.jpg" id="next-reads_image_1" media-type="image/jpeg"/><item href="OEBPS/next-reads-html/fonts/Fort-Book.otf" id="next-reads_font_1" media-type="application/vnd.ms-opentype"/><item href="OEBPS/next-reads-html/fonts/Shift-BoldItalic.otf" id="next-reads_font_2" media-type="application/vnd.ms-opentype"/><item href="OEBPS/next-reads-html/fonts/Shift-Light.otf" id="next-reads_font_3" media-type="application/vnd.ms-opentype"/></manifest>
+	<spine toc="ncx">
+		<itemref idref="cvi" linear="yes"/>
+		<itemref idref="ata" linear="yes"/>
+		<itemref idref="adc" linear="yes"/>
+		<itemref idref="tp" linear="yes"/>
+		<itemref idref="cop" linear="yes"/>
+		<itemref idref="ded" linear="yes"/>
+		<itemref idref="toc" linear="yes"/>
+		<itemref idref="itr" linear="yes"/>
+		<itemref idref="prf" linear="yes"/>
+		<itemref idref="c01" linear="yes"/>
+		<itemref idref="c02" linear="yes"/>
+		<itemref idref="c03" linear="yes"/>
+		<itemref idref="c04" linear="yes"/>
+		<itemref idref="c05" linear="yes"/>
+		<itemref idref="c06" linear="yes"/>
+		<itemref idref="c07" linear="yes"/>
+		<itemref idref="c08" linear="yes"/>
+		<itemref idref="c09" linear="yes"/>
+	<itemref idref="next-reads_template" linear="yes"/></spine>
+	<guide>
+		<reference href="OEBPS/Watt_9780307809865_epub_itr_r1.htm" title="Start" type="start"/>
+		<reference href="OEBPS/Watt_9780307809865_epub_toc_r1.htm" title="Table of Contents" type="toc"/>
+		<reference href="OEBPS/Watt_9780307809865_epub_cvi_r1.htm" title="cover" type="cover"/>
+		
+		<reference href="OEBPS/Watt_9780307809865_epub_cop_r1.htm" title="Copyright" type="copyright-page"/>
+	</guide>
+</package>

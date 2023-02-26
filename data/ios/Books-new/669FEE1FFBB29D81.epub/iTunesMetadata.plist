@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>BKAllocatedSize</key>
+	<integer>6549504</integer>
+	<key>BKDisplayName</key>
+	<string>The Wisdom of Insecurity.epub</string>
+	<key>BKGenerationCount</key>
+	<integer>2</integer>
+	<key>BKInsertionDate</key>
+	<integer>538005872</integer>
+	<key>artistName</key>
+	<string>Alan W. Watts</string>
+	<key>book-info</key>
+	<dict>
+		<key>cover-image-hash</key>
+		<string>E6A0D251952859400697AF12E2CDD1A3</string>
+		<key>cover-image-path</key>
+		<string>OEBPS/images/Watt_9780307809865_epub_cvi_r1.jpg</string>
+		<key>mime-type</key>
+		<string>application/epub+zip</string>
+		<key>package-file-hash</key>
+		<string>9083F804D042DAD54894CB7745F34485</string>
+		<key>publisher-unique-id</key>
+		<string>978-0-307-80986-5</string>
+		<key>unique-id</key>
+		<integer>7191904492881659808</integer>
+		<key>update-level</key>
+		<integer>2</integer>
+	</dict>
+	<key>bookDescription</key>
+	<string>&lt;p&gt;An exploration of man's quest for psychological security and spiritual certainty in religion and philosophy.&lt;br&gt;&lt;br&gt;&lt;i&gt;From the Trade Paperback edition.&lt;/i&gt;</string>
+	<key>explicit</key>
+	<false/>
+	<key>isPreview</key>
+	<false/>
+	<key>itemName</key>
+	<string>The Wisdom of Insecurity</string>
+</dict>
+</plist>

@@ -1,0 +1,50 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<ncx xmlns="http://www.daisy.org/z3986/2005/ncx/" version="2005-1">
+<head>
+<meta name="dtb:uid" content="9780062316103"/>
+<meta name="dtb:depth" content="466"/>
+</head>
+<docTitle><text>Sapiens</text></docTitle>
+<docAuthor><text>Yuval Noah Harari</text></docAuthor>
+<navMap>
+<navPoint id="a1" playOrder="1"><navLabel><text>Cover</text></navLabel><content src="text/9780062316103_Cover.xhtml" /></navPoint>
+<navPoint id="a2" playOrder="2"><navLabel><text>Title Page</text></navLabel><content src="text/9780062316103_Titlepage.xhtml" /></navPoint>
+<navPoint id="a3" playOrder="3"><navLabel><text>Dedication</text></navLabel><content src="text/9780062316103_Dedication.xhtml" /></navPoint>
+<navPoint id="a4" playOrder="4"><navLabel><text>Timeline of History</text></navLabel><content src="text/9780062316103_Timeline.xhtml#tim" /></navPoint>
+<navPoint id="a5" playOrder="5"><navLabel><text>Contents</text></navLabel><content src="text/9780062316103_Contents.xhtml" /></navPoint>
+<navPoint id="a6" playOrder="6"><navLabel><text>Part One: The Cognitive Revolution</text></navLabel><content src="text/9780062316103_Part_1.xhtml#pt1" />
+<navPoint id="a7" playOrder="7"><navLabel><text>1. An Animal of No Significance</text></navLabel><content src="text/9780062316103_Chapter_1.xhtml#ch1" /></navPoint>
+<navPoint id="a8" playOrder="8"><navLabel><text>2. The Tree of Knowledge</text></navLabel><content src="text/9780062316103_Chapter_2.xhtml#ch2" /></navPoint>
+<navPoint id="a9" playOrder="9"><navLabel><text>3. A Day in the Life of Adam and Eve</text></navLabel><content src="text/9780062316103_Chapter_3.xhtml#ch3" /></navPoint>
+<navPoint id="a10" playOrder="10"><navLabel><text>4. The Flood</text></navLabel><content src="text/9780062316103_Chapter_4.xhtml#ch4" /></navPoint></navPoint>
+<navPoint id="a11" playOrder="11"><navLabel><text>Part Two: The Agricultural Revolution</text></navLabel><content src="text/9780062316103_Part_2.xhtml#pt2" />
+<navPoint id="a12" playOrder="12"><navLabel><text>5. History’s Biggest Fraud</text></navLabel><content src="text/9780062316103_Chapter_5.xhtml#ch5" /></navPoint>
+<navPoint id="a13" playOrder="13"><navLabel><text>6. Building Pyramids</text></navLabel><content src="text/9780062316103_Chapter_6.xhtml#ch6" /></navPoint>
+<navPoint id="a14" playOrder="14"><navLabel><text>7. Memory Overload</text></navLabel><content src="text/9780062316103_Chapter_7.xhtml#ch7" /></navPoint>
+<navPoint id="a15" playOrder="15"><navLabel><text>8. There is No Justice in History</text></navLabel><content src="text/9780062316103_Chapter_8.xhtml#ch8" /></navPoint></navPoint>
+<navPoint id="a16" playOrder="16"><navLabel><text>Part Three: The Unification of Humankind</text></navLabel><content src="text/9780062316103_Part_3.xhtml#pt3" />
+<navPoint id="a17" playOrder="17"><navLabel><text>9. The Arrow of History</text></navLabel><content src="text/9780062316103_Chapter_9.xhtml#ch9" /></navPoint>
+<navPoint id="a18" playOrder="18"><navLabel><text>10. The Scent of Money</text></navLabel><content src="text/9780062316103_Chapter_10.xhtml#ch10" /></navPoint>
+<navPoint id="a19" playOrder="19"><navLabel><text>11. Imperial Visions</text></navLabel><content src="text/9780062316103_Chapter_11.xhtml#ch11" /></navPoint>
+<navPoint id="a20" playOrder="20"><navLabel><text>12. The Law of Religion</text></navLabel><content src="text/9780062316103_Chapter_12.xhtml#ch12" /></navPoint>
+<navPoint id="a21" playOrder="21"><navLabel><text>13. The Secret of Success</text></navLabel><content src="text/9780062316103_Chapter_13.xhtml#ch13" /></navPoint></navPoint>
+<navPoint id="a22" playOrder="22"><navLabel><text>Part Four: The Scientific Revolution</text></navLabel><content src="text/9780062316103_Part_4.xhtml#pt4" />
+<navPoint id="a23" playOrder="23"><navLabel><text>14. The Discovery of Ignorance</text></navLabel><content src="text/9780062316103_Chapter_14.xhtml#ch14" /></navPoint>
+<navPoint id="a24" playOrder="24"><navLabel><text>15. The Marriage of Science and Empire</text></navLabel><content src="text/9780062316103_Chapter_15.xhtml#ch15" /></navPoint>
+<navPoint id="a25" playOrder="25"><navLabel><text>16. The Capitalist Creed</text></navLabel><content src="text/9780062316103_Chapter_16.xhtml#ch16" /></navPoint>
+<navPoint id="a26" playOrder="26"><navLabel><text>17. The Wheels of Industry</text></navLabel><content src="text/9780062316103_Chapter_17.xhtml#ch17" /></navPoint>
+<navPoint id="a27" playOrder="27"><navLabel><text>18. A Permanent Revolution</text></navLabel><content src="text/9780062316103_Chapter_18.xhtml#ch18" /></navPoint>
+<navPoint id="a28" playOrder="28"><navLabel><text>19. And They Lived Happily Ever After</text></navLabel><content src="text/9780062316103_Chapter_19.xhtml#ch19" /></navPoint>
+<navPoint id="a29" playOrder="29"><navLabel><text>20. The End of Homo Sapiens</text></navLabel><content src="text/9780062316103_Chapter_20.xhtml#ch20" /></navPoint></navPoint>
+<navPoint id="a30" playOrder="30"><navLabel><text>Afterword: The Animal that Became a God</text></navLabel><content src="text/9780062316103_Afterword.xhtml#aft" /></navPoint>
+<navPoint id="a31" playOrder="31"><navLabel><text>Acknowledgements</text></navLabel><content src="text/9780062316103_Acknowledgements.xhtml#ack" /></navPoint>
+<navPoint id="a32" playOrder="32"><navLabel><text>Notes</text></navLabel><content src="text/9780062316103_Notes.xhtml#not" /></navPoint>
+<navPoint id="a33" playOrder="33"><navLabel><text>Index</text></navLabel><content src="text/9780062316103_Index.xhtml#ind" /></navPoint>
+<navPoint id="a34" playOrder="34"><navLabel><text>About the Author</text></navLabel><content src="text/About_the_Author.xhtml#ata" /></navPoint>
+<navPoint id="a35" playOrder="35"><navLabel><text>P.S. Insights, Interviews &amp; More&#160;.&#160;.&#160;.*</text></navLabel><content src="text/9780062316103_Ps.xhtml#ps" />
+<navPoint id="a36" playOrder="36"><navLabel><text>About the Author</text></navLabel><content src="text/9780062316103_Ps_Author.xhtml#bm1" /></navPoint></navPoint>
+<navPoint id="a37" playOrder="37"><navLabel><text>Praise</text></navLabel><content src="text/9780062316103_Praise.xhtml#pra" /></navPoint>
+<navPoint id="a38" playOrder="38"><navLabel><text>Copyright</text></navLabel><content src="text/9780062316103_Copyright.xhtml#cop" /></navPoint>
+<navPoint id="a39" playOrder="39"><navLabel><text>About the Publisher</text></navLabel><content src="text/About_the_Publisher.xhtml#atp" /></navPoint>
+</navMap>
+</ncx>

@@ -1,0 +1,133 @@
+<package xmlns="http://www.idpf.org/2007/opf" unique-identifier="PrimaryID" version="2.0">
+	<metadata xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:opf="http://www.idpf.org/2007/opf">
+		<dc:title>The Righteous Mind</dc:title>
+		<dc:language>en-US</dc:language>
+		<dc:identifier id="PrimaryID" opf:scheme="ISBN">978-0-307-90703-5</dc:identifier>
+		<dc:creator opf:file-as="Haidt, Jonathan" opf:role="aut">Jonathan Haidt</dc:creator>
+		<dc:publisher>Knopf Doubleday Publishing Group</dc:publisher>
+		<dc:date opf:event="publication">2012-03-13</dc:date>
+		<dc:rights>Copyright © 2012 by Jonathan Haidt</dc:rights>
+		<meta content="cover-image" name="cover"/>
+	<meta content="4.0.1" name="epubcheckversion"/>
+	<meta content="2015-10-30" name="epubcheckdate"/>
+	<description xmlns="http://purl.org/dc/elements/1.1/">&lt;p&gt;&lt;b&gt;&lt;i&gt;New York Times&lt;/i&gt; Bestseller&lt;/b&gt;&lt;br&gt; &lt;b&gt; &lt;/b&gt;&lt;br&gt; &lt;b&gt;In this "landmark contribution to humanity's understanding of itself" (&lt;i&gt;The New York Times Book Review&lt;/i&gt;) social psychologist Jonathan Haidt&lt;i&gt; &lt;/i&gt;challenges conventional thinking about morality, politics, and religion in a way that speaks to conservatives and liberals alike. &lt;/b&gt;&lt;br&gt; &lt;br&gt; Drawing on his twenty five years of groundbreaking research on moral psychology, Haidt shows how moral judgments arise not from reason but from gut feelings. He shows why liberals, conservatives, and libertarians have such different intuitions about right and wrong, and he shows why each side is actually right about many of its central concerns. In this subtle yet accessible book, Haidt gives you the key to understanding the miracle of human cooperation, as well as the curse of our eternal divisions and conflicts. If you're ready to trade in anger for understanding, read &lt;i&gt;The Righteous Mind&lt;/i&gt;.&lt;br&gt;&lt;/p&gt;</description>
+</metadata>
+	<manifest>
+		<item href="Haid_9780307907035_epub_ncx_r1.ncx" id="ncx" media-type="application/x-dtbncx+xml"/>
+		<item href="OEBPS/Haid_9780307907035_epub_cvi_r1.htm" id="cvi" media-type="application/xhtml+xml"/>
+		<item href="OEBPS/Haid_9780307907035_epub_adc_r1.htm" id="adc" media-type="application/xhtml+xml"/>
+		<item href="OEBPS/Haid_9780307907035_epub_tp_r1.htm" id="tp" media-type="application/xhtml+xml"/>
+		<item href="OEBPS/Haid_9780307907035_epub_cop_r1.htm" id="cop" media-type="application/xhtml+xml"/>
+		<item href="OEBPS/Haid_9780307907035_epub_ded_r1.htm" id="ded" media-type="application/xhtml+xml"/>
+		<item href="OEBPS/Haid_9780307907035_epub_epi_r1.htm" id="epi" media-type="application/xhtml+xml"/>
+		<item href="OEBPS/Haid_9780307907035_epub_toc_r1.htm" id="toc" media-type="application/xhtml+xml"/>
+		<item href="OEBPS/Haid_9780307907035_epub_itr_r1.htm" id="itr" media-type="application/xhtml+xml"/>
+		<item href="OEBPS/Haid_9780307907035_epub_p01_r1.htm" id="p01" media-type="application/xhtml+xml"/>
+		<item href="OEBPS/Haid_9780307907035_epub_c01_r1.htm" id="c01" media-type="application/xhtml+xml"/>
+		<item href="OEBPS/Haid_9780307907035_epub_c02_r1.htm" id="c02" media-type="application/xhtml+xml"/>
+		<item href="OEBPS/Haid_9780307907035_epub_c03_r1.htm" id="c03" media-type="application/xhtml+xml"/>
+		<item href="OEBPS/Haid_9780307907035_epub_c04_r1.htm" id="c04" media-type="application/xhtml+xml"/>
+		<item href="OEBPS/Haid_9780307907035_epub_p02_r1.htm" id="p02" media-type="application/xhtml+xml"/>
+		<item href="OEBPS/Haid_9780307907035_epub_c05_r1.htm" id="c05" media-type="application/xhtml+xml"/>
+		<item href="OEBPS/Haid_9780307907035_epub_c06_r1.htm" id="c06" media-type="application/xhtml+xml"/>
+		<item href="OEBPS/Haid_9780307907035_epub_c07_r1.htm" id="c07" media-type="application/xhtml+xml"/>
+		<item href="OEBPS/Haid_9780307907035_epub_c08_r1.htm" id="c08" media-type="application/xhtml+xml"/>
+		<item href="OEBPS/Haid_9780307907035_epub_p03_r1.htm" id="p03" media-type="application/xhtml+xml"/>
+		<item href="OEBPS/Haid_9780307907035_epub_c09_r1.htm" id="c09" media-type="application/xhtml+xml"/>
+		<item href="OEBPS/Haid_9780307907035_epub_c10_r1.htm" id="c10" media-type="application/xhtml+xml"/>
+		<item href="OEBPS/Haid_9780307907035_epub_c11_r1.htm" id="c11" media-type="application/xhtml+xml"/>
+		<item href="OEBPS/Haid_9780307907035_epub_c12_r1.htm" id="c12" media-type="application/xhtml+xml"/>
+		<item href="OEBPS/Haid_9780307907035_epub_con_r1.htm" id="con" media-type="application/xhtml+xml"/>
+		<item href="OEBPS/Haid_9780307907035_epub_ack_r1.htm" id="ack" media-type="application/xhtml+xml"/>
+		<item href="OEBPS/Haid_9780307907035_epub_nts_r1.htm" id="nts" media-type="application/xhtml+xml"/>
+		<item href="OEBPS/Haid_9780307907035_epub_ref_r1.htm" id="ref" media-type="application/xhtml+xml"/>
+		<item href="OEBPS/Haid_9780307907035_epub_loi_r1.htm" id="loi" media-type="application/xhtml+xml"/>
+		<item href="OEBPS/Haid_9780307907035_epub_css_r1.css" id="css" media-type="text/css"/>
+		<item href="OEBPS/images/Haid_9780307907035_epub_001_r1.jpg" id="f001" media-type="image/jpeg"/>
+		<item href="OEBPS/images/Haid_9780307907035_epub_002_r1.jpg" id="f002" media-type="image/jpeg"/>
+		<item href="OEBPS/images/Haid_9780307907035_epub_003_r1.jpg" id="f003" media-type="image/jpeg"/>
+		<item href="OEBPS/images/Haid_9780307907035_epub_004_r1.jpg" id="f004" media-type="image/jpeg"/>
+		<item href="OEBPS/images/Haid_9780307907035_epub_005_r1.jpg" id="f005" media-type="image/jpeg"/>
+		<item href="OEBPS/images/Haid_9780307907035_epub_006_r1.jpg" id="f006" media-type="image/jpeg"/>
+		<item href="OEBPS/images/Haid_9780307907035_epub_007_r1.jpg" id="f007" media-type="image/jpeg"/>
+		<item href="OEBPS/images/Haid_9780307907035_epub_008_r1.jpg" id="f008" media-type="image/jpeg"/>
+		<item href="OEBPS/images/Haid_9780307907035_epub_009_r1.jpg" id="f009" media-type="image/jpeg"/>
+		<item href="OEBPS/images/Haid_9780307907035_epub_010_r1.jpg" id="f010" media-type="image/jpeg"/>
+		<item href="OEBPS/images/Haid_9780307907035_epub_011_r1.jpg" id="f011" media-type="image/jpeg"/>
+		<item href="OEBPS/images/Haid_9780307907035_epub_012_r1.jpg" id="f012" media-type="image/jpeg"/>
+		<item href="OEBPS/images/Haid_9780307907035_epub_013_r1.jpg" id="f013" media-type="image/jpeg"/>
+		<item href="OEBPS/images/Haid_9780307907035_epub_014_r1.jpg" id="f014" media-type="image/jpeg"/>
+		<item href="OEBPS/images/Haid_9780307907035_epub_015_r1.jpg" id="f015" media-type="image/jpeg"/>
+		<item href="OEBPS/images/Haid_9780307907035_epub_017_r1.jpg" id="f017" media-type="image/jpeg"/>
+		<item href="OEBPS/images/Haid_9780307907035_epub_018_r1.jpg" id="f018" media-type="image/jpeg"/>
+		<item href="OEBPS/images/Haid_9780307907035_epub_019_r1.jpg" id="f019" media-type="image/jpeg"/>
+		<item href="OEBPS/images/Haid_9780307907035_epub_020_r1.jpg" id="f020" media-type="image/jpeg"/>
+		<item href="OEBPS/images/Haid_9780307907035_epub_021_r1.jpg" id="f021" media-type="image/jpeg"/>
+		<item href="OEBPS/images/Haid_9780307907035_epub_022_r1.jpg" id="f022" media-type="image/jpeg"/>
+		<item href="OEBPS/images/Haid_9780307907035_epub_023_r1.jpg" id="f023" media-type="image/jpeg"/>
+		<item href="OEBPS/images/Haid_9780307907035_epub_024_r1.jpg" id="f024" media-type="image/jpeg"/>
+		<item href="OEBPS/images/Haid_9780307907035_epub_025_r1.jpg" id="f025" media-type="image/jpeg"/>
+		<item href="OEBPS/images/Haid_9780307907035_epub_026_r1.jpg" id="f026" media-type="image/jpeg"/>
+		<item href="OEBPS/images/Haid_9780307907035_epub_027_r1.jpg" id="f027" media-type="image/jpeg"/>
+		<item href="OEBPS/images/Haid_9780307907035_epub_028_r1.jpg" id="f028" media-type="image/jpeg"/>
+		<item href="OEBPS/images/Haid_9780307907035_epub_029_r1.jpg" id="f029" media-type="image/jpeg"/>
+		<item href="OEBPS/images/Haid_9780307907035_epub_030_r1.jpg" id="f030" media-type="image/jpeg"/>
+		<item href="OEBPS/images/Haid_9780307907035_epub_031_r1.jpg" id="f031" media-type="image/jpeg"/>
+		<item href="OEBPS/images/Haid_9780307907035_epub_032_r1.jpg" id="f032" media-type="image/jpeg"/>
+		<item href="OEBPS/images/Haid_9780307907035_epub_033_r1.jpg" id="f033" media-type="image/jpeg"/>
+		<item href="OEBPS/images/Haid_9780307907035_epub_034_r1.jpg" id="f034" media-type="image/jpeg"/>
+		<item href="OEBPS/images/Haid_9780307907035_epub_035_r1.jpg" id="f035" media-type="image/jpeg"/>
+		<item href="OEBPS/images/Haid_9780307907035_epub_036_r1.jpg" id="f036" media-type="image/jpeg"/>
+		<item href="OEBPS/images/Haid_9780307907035_epub_037_r1.jpg" id="f037" media-type="image/jpeg"/>
+		<item href="OEBPS/images/Haid_9780307907035_epub_038_r1.jpg" id="f038" media-type="image/jpeg"/>
+		<item href="OEBPS/images/Haid_9780307907035_epub_039_r1.jpg" id="f039" media-type="image/jpeg"/>
+		<item href="OEBPS/images/Haid_9780307907035_epub_040_r1.jpg" id="f040" media-type="image/jpeg"/>
+		<item href="OEBPS/images/Haid_9780307907035_epub_cvi_r1.jpg" id="cover-image" media-type="image/jpeg"/>
+		<item href="OEBPS/images/Haid_9780307907035_epub_cvt_r1.jpg" id="fcvt" media-type="image/jpeg"/>
+		<item href="OEBPS/images/Haid_9780307907035_epub_L02_r1.jpg" id="fL02" media-type="image/jpeg"/>
+		<item href="OEBPS/images/Haid_9780307907035_epub_L03_r1.jpg" id="fL03" media-type="image/jpeg"/>
+		<item href="OEBPS/images/Haid_9780307907035_epub_tp_r1.jpg" id="ftp" media-type="image/jpeg"/>
+		<item href="OEBPS/page-template.xpgt" id="page" media-type="application/vnd.adobe-page-template+xml"/>
+		<item href="OEBPS/fonts/CharisSILB.ttf" id="font1" media-type="application/x-font-ttf"/>
+		<item href="OEBPS/fonts/CharisSILBI.ttf" id="font2" media-type="application/x-font-ttf"/>
+		<item href="OEBPS/fonts/CharisSILI.ttf" id="font3" media-type="application/x-font-ttf"/>
+		<item href="OEBPS/fonts/CharisSILR.ttf" id="font4" media-type="application/x-font-ttf"/>
+	<item href="OEBPS/next-reads-html/next-reads.xhtml" id="next-reads_template" media-type="application/xhtml+xml"/><item href="OEBPS/next-reads-html/images/next-reads_logo.jpg" id="next-reads_image_1" media-type="image/jpeg"/><item href="OEBPS/next-reads-html/fonts/Fort-Book.otf" id="next-reads_font_1" media-type="application/vnd.ms-opentype"/><item href="OEBPS/next-reads-html/fonts/Shift-BoldItalic.otf" id="next-reads_font_2" media-type="application/vnd.ms-opentype"/><item href="OEBPS/next-reads-html/fonts/Shift-Light.otf" id="next-reads_font_3" media-type="application/vnd.ms-opentype"/></manifest>
+	<spine toc="ncx">
+		<itemref idref="cvi" linear="yes"/>
+		<itemref idref="adc" linear="yes"/>
+		<itemref idref="tp" linear="yes"/>
+		<itemref idref="cop" linear="yes"/>
+		<itemref idref="ded" linear="yes"/>
+		<itemref idref="epi" linear="yes"/>
+		<itemref idref="toc" linear="yes"/>
+		<itemref idref="itr" linear="yes"/>
+		<itemref idref="p01" linear="yes"/>
+		<itemref idref="c01" linear="yes"/>
+		<itemref idref="c02" linear="yes"/>
+		<itemref idref="c03" linear="yes"/>
+		<itemref idref="c04" linear="yes"/>
+		<itemref idref="p02" linear="yes"/>
+		<itemref idref="c05" linear="yes"/>
+		<itemref idref="c06" linear="yes"/>
+		<itemref idref="c07" linear="yes"/>
+		<itemref idref="c08" linear="yes"/>
+		<itemref idref="p03" linear="yes"/>
+		<itemref idref="c09" linear="yes"/>
+		<itemref idref="c10" linear="yes"/>
+		<itemref idref="c11" linear="yes"/>
+		<itemref idref="c12" linear="yes"/>
+		<itemref idref="con" linear="yes"/>
+		<itemref idref="ack" linear="yes"/>
+		<itemref idref="nts" linear="yes"/>
+		<itemref idref="ref" linear="yes"/>
+		<itemref idref="loi" linear="yes"/>
+	<itemref idref="next-reads_template" linear="yes"/></spine>
+	<guide>
+		<reference href="OEBPS/Haid_9780307907035_epub_itr_r1.htm" title="Start" type="start"/>
+		<reference href="OEBPS/Haid_9780307907035_epub_toc_r1.htm" title="Table of Contents" type="toc"/>
+		<reference href="OEBPS/Haid_9780307907035_epub_cvi_r1.htm" title="cover" type="cover"/>
+		
+		<reference href="OEBPS/Haid_9780307907035_epub_cop_r1.htm" title="Copyright" type="copyright-page"/>
+	</guide>
+</package>

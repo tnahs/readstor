@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE ncx  PUBLIC '-//NISO//DTD ncx 2005-1//EN'  'http://www.daisy.org/z3986/2005/ncx-2005-1.dtd'>
+<ncx version="2005-1" xml:lang="en-US" xmlns="http://www.daisy.org/z3986/2005/ncx/">
+	<head>
+		<meta content="978-0-307-80986-5" name="dtb:uid"/>
+		<meta content="2" name="dtb:depth"/>
+		<meta content="0" name="dtb:totalPageCount"/>
+		<meta content="0" name="dtb:maxPageNumber"/>
+	</head>
+	<docTitle><text>The Wisdom of Insecurity: A Message for an Age of Anxiety</text></docTitle>
+	<docAuthor><text>Alan W. Watts</text></docAuthor>
+	<navMap>
+		<navPoint class="cover" id="np1" playOrder="1">
+			<navLabel><text>Cover</text></navLabel>
+			<content src="OEBPS/Watt_9780307809865_epub_cvi_r1.htm"/>
+		</navPoint>
+		<navPoint class="other" id="np2" playOrder="2">
+			<navLabel><text>About the Author</text></navLabel>
+			<content src="OEBPS/Watt_9780307809865_epub_ata_r1.htm"/>
+		</navPoint>
+		<navPoint class="other" id="np3" playOrder="3">
+			<navLabel><text>Other Books by This Author</text></navLabel>
+			<content src="OEBPS/Watt_9780307809865_epub_adc_r1.htm"/>
+		</navPoint>
+		<navPoint class="titlepage" id="np4" playOrder="4">
+			<navLabel><text>Title Page</text></navLabel>
+			<content src="OEBPS/Watt_9780307809865_epub_tp_r1.htm"/>
+		</navPoint>
+		<navPoint class="copyright" id="np5" playOrder="5">
+			<navLabel><text>Copyright</text></navLabel>
+			<content src="OEBPS/Watt_9780307809865_epub_cop_r1.htm"/>
+		</navPoint>
+		<navPoint class="other" id="np6" playOrder="6">
+			<navLabel><text>Dedication</text></navLabel>
+			<content src="OEBPS/Watt_9780307809865_epub_ded_r1.htm"/>
+		</navPoint>
+		<navPoint class="other" id="np7" playOrder="7">
+			<navLabel><text>Contents</text></navLabel>
+			<content src="OEBPS/Watt_9780307809865_epub_toc_r1.htm"/>
+		</navPoint>
+		<navPoint class="other" id="np8" playOrder="8">
+			<navLabel><text>Introduction</text></navLabel>
+			<content src="OEBPS/Watt_9780307809865_epub_itr_r1.htm"/>
+		</navPoint>
+		<navPoint class="other" id="np9" playOrder="9">
+			<navLabel><text>Preface</text></navLabel>
+			<content src="OEBPS/Watt_9780307809865_epub_prf_r1.htm"/>
+		</navPoint>
+		<navPoint class="chapter" id="np10" playOrder="10">
+			<navLabel><text>I. The Age of Anxiety</text></navLabel>
+			<content src="OEBPS/Watt_9780307809865_epub_c01_r1.htm"/>
+		</navPoint>
+		<navPoint class="chapter" id="np11" playOrder="11">
+			<navLabel><text>II. Pain and Time</text></navLabel>
+			<content src="OEBPS/Watt_9780307809865_epub_c02_r1.htm"/>
+		</navPoint>
+		<navPoint class="chapter" id="np12" playOrder="12">
+			<navLabel><text>III. The Great Stream</text></navLabel>
+			<content src="OEBPS/Watt_9780307809865_epub_c03_r1.htm"/>
+		</navPoint>
+		<navPoint class="chapter" id="np13" playOrder="13">
+			<navLabel><text>IV. The Wisdom of the Body</text></navLabel>
+			<content src="OEBPS/Watt_9780307809865_epub_c04_r1.htm"/>
+		</navPoint>
+		<navPoint class="chapter" id="np14" playOrder="14">
+			<navLabel><text>V. On Being Aware</text></navLabel>
+			<content src="OEBPS/Watt_9780307809865_epub_c05_r1.htm"/>
+		</navPoint>
+		<navPoint class="chapter" id="np15" playOrder="15">
+			<navLabel><text>VI. The Marvelous Moment</text></navLabel>
+			<content src="OEBPS/Watt_9780307809865_epub_c06_r1.htm"/>
+		</navPoint>
+		<navPoint class="chapter" id="np16" playOrder="16">
+			<navLabel><text>VII. The Transformation of Life</text></navLabel>
+			<content src="OEBPS/Watt_9780307809865_epub_c07_r1.htm"/>
+		</navPoint>
+		<navPoint class="chapter" id="np17" playOrder="17">
+			<navLabel><text>VIII. Creative Morality</text></navLabel>
+			<content src="OEBPS/Watt_9780307809865_epub_c08_r1.htm"/>
+		</navPoint>
+		<navPoint class="chapter" id="np18" playOrder="18">
+			<navLabel><text>IX. Religion Reviewed</text></navLabel>
+			<content src="OEBPS/Watt_9780307809865_epub_c09_r1.htm"/>
+		</navPoint>
+	</navMap>
+</ncx>

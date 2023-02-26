@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>Books</key>
+	<array>
+		<dict>
+			<key>Name</key><string>The Wisdom of Insecurity</string>
+			<key>Artist</key><string>Alan W. Watts</string>
+			<key>Sort Name</key><string>Wisdom of Insecurity</string>
+			<key>Persistent ID</key><string>669FEE1FFBB29D81</string>
+			<key>Has Artwork</key><false/>
+			<key>Kind</key><string>unknown</string>
+			<key>Is Protected</key><false/>
+			<key>Cover Hash</key><string>E6A0D251952859400697AF12E2CDD1A3</string>
+			<key>Cover Path</key><string>OEBPS/images/Watt_9780307809865_epub_cvi_r1.jpg</string>
+			<key>Package Hash</key><string>9083F804D042DAD54894CB7745F34485</string>
+			<key>Publisher Unique ID</key><string>978-0-307-80986-5</string>
+			<key>Unique ID</key><string>63CEC7082CBF47A0</string>
+			<key>Extension</key><string>epub</string>
+			<key>MIME Type</key><string>application/epub+zip</string>
+		</dict>
+		<dict>
+			<key>Name</key><string>Sapiens</string>
+			<key>Artist</key><string>Yuval Noah Harari</string>
+			<key>Persistent ID</key><string>F788455723912C6D</string>
+			<key>Has Artwork</key><false/>
+			<key>Kind</key><string>unknown</string>
+			<key>Is Protected</key><false/>
+			<key>Cover Hash</key><string>AEA47CC2D76CA06602E3CAD11CA99FCB</string>
+			<key>Cover Path</key><string>OEBPS/images/9780062316103_Cover.jpg</string>
+			<key>Package Hash</key><string>07B4BBF8CB409B439C0B5F14622C32F4</string>
+			<key>Publisher Unique ID</key><string>9780062316103</string>
+			<key>Unique ID</key><string>B1332BB37C9FF9EE</string>
+			<key>Extension</key><string>epub</string>
+			<key>MIME Type</key><string>application/epub+zip</string>
+		</dict>
+		<dict>
+			<key>Name</key><string>The Righteous Mind</string>
+			<key>Artist</key><string>Jonathan Haidt</string>
+			<key>Sort Name</key><string>Righteous Mind</string>
+			<key>Persistent ID</key><string>376FAA7E4CF81729</string>
+			<key>Has Artwork</key><false/>
+			<key>Kind</key><string>unknown</string>
+			<key>Is Protected</key><false/>
+			<key>Cover Hash</key><string>5A7D1FF56D2BE4E64B5CAD212713FD62</string>
+			<key>Cover Path</key><string>OEBPS/images/Haid_9780307907035_epub_cvi_r1.jpg</string>
+			<key>Package Hash</key><string>9E6143AA0FAC031691359779729F9B37</string>
+			<key>Publisher Unique ID</key><string>978-0-307-90703-5</string>
+			<key>Unique ID</key><string>973E6002291A6CDE</string>
+			<key>Extension</key><string>epub</string>
+			<key>MIME Type</key><string>application/epub+zip</string>
+		</dict>
+	</array>
+</dict>
+</plist>
