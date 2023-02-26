@@ -3,7 +3,7 @@
 
 function print_help {
     cat <<EOF
-Archive the Apple Books library
+Archive macOS's Apple Books library
 
 Usage: archive-library.sh [PATH]
 

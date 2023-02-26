@@ -55,7 +55,7 @@ readstor render \
    Continue? [y/N]: █
 ```
 
-> <i class="fa fa-exclamation-circle"></i> This prompt can be auto-confirmed by
+> <i class="fa fa-info-circle"></i> This prompt can be auto-confirmed by
 > passing the [`--auto-confirm-filter`](#auto-confirm-filter) flag.
 
 ### Filter Syntax

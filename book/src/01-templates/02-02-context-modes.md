@@ -79,7 +79,7 @@ names:
   directory: Robert Henri - The Art Spirit
 ```
 
-> <i class="fa fa-exclamation-circle"></i> See [Context Reference - Book][book]
+> <i class="fa fa-info-circle"></i> See [Context Reference - Book][book]
 > for more information.
 
 ## The Annotation Context
@@ -126,7 +126,7 @@ names:
   directory: Robert Henri - The Art Spirit
 ```
 
-> <i class="fa fa-exclamation-circle"></i> See
+> <i class="fa fa-info-circle"></i> See
 > [Context Reference - Annotation][annotation] for more information.
 
 ## <i class="fa fa-exclamation-circle"></i> A Note On Output Structure

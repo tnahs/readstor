@@ -6,7 +6,7 @@ The following options affect only the [`render`][render] commands.
 
 Set a custom templates directory.
 
-> <i class="fa fa-exclamation-circle"></i> See the default
+> <i class="fa fa-info-circle"></i> See the default
 > [templates][templates] for fully working examples.
 
 ## `--template-group <GROUP>`

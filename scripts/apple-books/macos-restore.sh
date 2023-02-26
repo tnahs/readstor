@@ -3,7 +3,7 @@
 
 function print_help {
     cat <<EOF
-Restore a previously archived Apple Books library
+Restore a previously archived macOS Apple Books library
 
 Usage: restore-library.sh [PATH]
 
