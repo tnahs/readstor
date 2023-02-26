@@ -1,0 +1,10 @@
+<!-- readstor
+group: invalid-book-annotations
+context: book
+structure: flat
+extension: txt
+-->
+
+{% for annotation in annotations %}
+  {{ annotation.invalid }}
+{% endfor %}

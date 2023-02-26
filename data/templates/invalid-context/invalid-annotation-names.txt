@@ -1,0 +1,10 @@
+<!-- readstor
+group: invalid-annotation-names
+context: annotation
+structure: flat
+extension: txt
+-->
+
+{% for name in names.annotations %}
+  {{ name.invalid }}
+{% endfor %}

@@ -37,9 +37,9 @@ extension: txt
 {{ names }}
 {{ names.book }}
 {% for name in names.annotations %}
-	{{ name.filename }}
-	{{ name.created }}
-	{{ name.modified }}
-	{{ name.location }}
+  {{ name.filename }}
+  {{ name.created }}
+  {{ name.modified }}
+  {{ name.location }}
 {% endfor %}
 {{ names.directory }}

@@ -12,8 +12,6 @@ use walkdir::DirEntry;
 use crate::contexts::annotation::AnnotationContext;
 use crate::contexts::book::BookContext;
 use crate::contexts::entry::EntryContext;
-use crate::models::annotation::Annotation;
-use crate::models::book::Book;
 use crate::models::entry::Entry;
 use crate::result::{Error, Result};
 
@@ -73,11 +71,14 @@ impl Templates {
     ///
     /// Will return `Err` if:
     /// * A template contains either syntax errors or contains variables that
-    /// reference non-existent fields in a [`Book`]/[`Annotation`].
+    /// reference non-existent fields in a [`Book`][book]/[`Annotation`][annotation].
     /// * A template's config block isn't formatted correctly, has syntax errors
     /// or is missing required fields.
     /// * A requested template-group does not exist.
     /// * Any IO errors are encountered.
+    ///
+    /// [book]: crate::models::book::Book
+    /// [annotation]: crate::models::annotation::Annotation
     pub fn init(&mut self) -> Result<()> {
         if let Some(path) = &self.options.templates_directory {
             // Cloning here to prevent mutable & immutable borrows.
@@ -253,10 +254,13 @@ impl Templates {
     ///
     /// Will return `Err` if:
     /// * A template contains either syntax errors or contains variables that
-    /// reference non-existent fields in a [`Book`]/[`Annotation`].
+    /// reference non-existent fields in a [`Book`][book]/[`Annotation`][annotation].
     /// * A template's config block isn't formatted correctly, has syntax errors
     /// or is missing required fields.
     /// * Any IO errors are encountered.
+    ///
+    /// [book]: crate::models::book::Book
+    /// [annotation]: crate::models::annotation::Annotation
     fn build_from_directory(&mut self, path: &Path) -> Result<()> {
         // When a normal template is registered it's validated to make sure it
         // contains no syntax error or variables that reference non-existent
@@ -343,7 +347,7 @@ impl Templates {
     }
 
     /// Validates that a template does not contain variables that reference
-    /// non-existent fields in an [`Entry`], [`Book`], [`Annotation`],
+    /// non-existent fields in an [`Entry`], [`Book`][book], [`Annotation`][annotation],
     /// [`NamesRender`].
     ///
     /// Tera checks for invalid syntax when a new template is registered however
@@ -358,31 +362,25 @@ impl Templates {
     /// # Errors
     ///
     /// Will return `Err` if the template contains variables that reference
-    /// non-existent fields in an [`Entry`]/[`Book`]/[`Annotation`].
-    //
-    // FIXME: There's a fundamental error in how this is validating templates.
-    // If the data type is a sequence, the default length is zero. This
-    // prevents the excecution of `for` loops within a template and therefore
-    // never gets a chance to validate the blocks inside said loops.
+    /// non-existent fields in an [`Entry`]/[`Book`][book]/[`Annotation`][annotation].
+    ///
+    /// [book]: crate::models::book::Book
+    /// [annotation]: crate::models::annotation::Annotation
     fn validate_template(&self, template: &TemplateRaw) -> Result<()> {
-        let names = NamesRender::default();
+        let entry = Entry::dummy();
+        let entry = EntryContext::from(&entry);
+        let names = NamesRender::new(&entry, template)?;
 
         match template.context_mode {
             ContextMode::Book => {
-                let entry = Entry::default();
-                let entry = EntryContext::from(&entry);
-
                 let context = TemplateContext::book(&entry.book, &entry.annotations, &names);
 
                 self.render_template(template, context)?;
             }
             ContextMode::Annotation => {
-                let book = Book::default();
-                let book = BookContext::from(&book);
-                let annotation = Annotation::default();
-                let annotation = AnnotationContext::from(&annotation);
-
-                let context = TemplateContext::annotation(&book, &annotation, &names);
+                // This should be safe as a dummy `Entry` contains three annotations.
+                let annotation = &entry.annotations[0];
+                let context = TemplateContext::annotation(&entry.book, annotation, &names);
 
                 self.render_template(template, context)?;
             }
@@ -391,7 +389,7 @@ impl Templates {
         Ok(())
     }
 
-    /// Renders an [`Entry`]'s [`Book`] to a single [`TemplateRender`].
+    /// Renders an [`Entry`]'s [`Book`][book] to a single [`TemplateRender`].
     ///
     /// # Arguments
     ///
@@ -404,6 +402,8 @@ impl Templates {
     /// # Errors
     ///
     /// Will return `Err` if Tera encounters an error.
+    ///
+    /// [book]: crate::models::book::Book
     fn render_book(
         &self,
         template: &TemplateRaw,
@@ -421,7 +421,7 @@ impl Templates {
         Ok(render)
     }
 
-    /// Renders an [`Entry`]'s [`Annotation`]s to multiple [`TemplateRender`]s.
+    /// Renders an [`Entry`]'s [`Annotation`][annotation]s to multiple [`TemplateRender`]s.
     ///
     /// # Arguments
     ///
@@ -434,6 +434,8 @@ impl Templates {
     /// # Errors
     ///
     /// Will return `Err` if Tera encounters an error.
+    ///
+    /// [annotation]: crate::models::annotation::Annotation
     fn render_annotations(
         &self,
         template: &TemplateRaw,
@@ -655,6 +657,24 @@ mod test_templates {
         #[test]
         fn invalid_attribute() {
             test_invalid_context(DIRECTORY, "invalid-attribute.txt");
+        }
+
+        // Tests that an invalid annotation attribute within a `book` context returns an error.
+        #[test]
+        fn invalid_book_annotations() {
+            test_invalid_context(DIRECTORY, "invalid-book-annotations.txt");
+        }
+
+        // Tests that an invalid names attribute within a `book` context returns an error.
+        #[test]
+        fn invalid_book_names() {
+            test_invalid_context(DIRECTORY, "invalid-book-names.txt");
+        }
+
+        // Tests that an invalid names attribute within an `annotation` context returns an error.
+        #[test]
+        fn invalid_annotation_names() {
+            test_invalid_context(DIRECTORY, "invalid-annotation-names.txt");
         }
     }
 
