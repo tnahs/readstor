@@ -53,14 +53,17 @@ impl Default for Names {
 }
 
 impl Names {
+    /// Returns the default template for a book's filename.
     fn default_book() -> String {
         super::defaults::FILENAME_TEMPLATE_BOOK.to_owned()
     }
 
+    /// Returns the default template for an annotation's filename.
     fn default_annotation() -> String {
         super::defaults::FILENAME_TEMPLATE_ANNOTATION.to_owned()
     }
 
+    /// Returns the default template for a directory.
     fn default_directory() -> String {
         super::defaults::DIRECTORY_TEMPLATE.to_owned()
     }
@@ -151,6 +154,14 @@ impl NamesRender {
             .clone()
     }
 
+    /// Renders the filename for a template with [`ContextMode::Book`][context-mode].
+    ///
+    /// # Arguments
+    ///
+    /// * `entry` - The context to inject into the template.
+    /// * `template` - The template to render.
+    ///
+    /// [context-mode]: crate::render::template::ContextMode::Book
     fn render_book_filename(entry: &EntryContext<'_>, template: &TemplateRaw) -> Result<String> {
         let context = NamesContext::book(&entry.book, &entry.annotations);
 
@@ -160,6 +171,14 @@ impl NamesRender {
         Ok(filename)
     }
 
+    /// Renders the filename for a template with [`ContextMode::Annotation`][context-mode].
+    ///
+    /// # Arguments
+    ///
+    /// * `entry` - The context to inject into the template.
+    /// * `template` - The template to render.
+    ///
+    /// [context-mode]: crate::render::template::ContextMode::Annotation
     fn render_annotation_filenames(
         entry: &EntryContext<'_>,
         template: &TemplateRaw,
@@ -181,6 +200,16 @@ impl NamesRender {
         Ok(annotations)
     }
 
+    /// Renders the directory name for a template with [`StructureMode::Nested`][nested]
+    /// or [`StructureMode::NestedGouped`][nested-grouped].
+    ///
+    /// # Arguments
+    ///
+    /// * `entry` - The context to inject into the template.
+    /// * `template` - The template to render.
+    ///
+    /// [nested]: crate::render::template::StructureMode::Nested
+    /// [nested-grouped]: crate::render::template::StructureMode::NestedGrouped
     fn render_directory_name(entry: &EntryContext<'_>, template: &TemplateRaw) -> Result<String> {
         let context = NamesContext::directory(&entry.book);
 
@@ -204,15 +233,17 @@ impl NamesRender {
 /// [annotation-metadata]: crate::models::annotation::AnnotationMetadata
 /// [context-mode]: crate::render::template::ContextMode::Annotation
 #[derive(Debug, Default, Clone, Serialize)]
-#[allow(missing_docs)]
 pub struct AnnotationNameAttributes {
     /// The rendered filename for a template with
     /// [`ContextMode::Annotation`][context-mode].
     ///
     /// [context-mode]: crate::render::template::ContextMode
     pub filename: String,
+    #[allow(missing_docs)]
     pub created: DateTimeUtc,
+    #[allow(missing_docs)]
     pub modified: DateTimeUtc,
+    #[allow(missing_docs)]
     pub location: String,
 }
 
@@ -228,20 +259,34 @@ impl AnnotationNameAttributes {
     }
 }
 
+/// An enum representing the different template contexts for rendering file
+/// and directory names.
 #[derive(Debug, Serialize)]
 #[serde(untagged)]
 enum NamesContext<'a> {
+    /// The context when rendering a filename for a template with
+    /// [`ContextMode::Book`][context-mode].
+    ///
+    /// [context-mode]: crate::render::template::ContextMode::Book
     Book {
         book: &'a BookContext<'a>,
         annotations: &'a [AnnotationContext<'a>],
     },
+    /// The context when rendering a filename for a template with
+    /// [`ContextMode::Annotation`][context-mode].
+    ///
+    /// [context-mode]: crate::render::template::ContextMode::Annotation
     Annotation {
         book: &'a BookContext<'a>,
         annotation: &'a AnnotationContext<'a>,
     },
-    Directory {
-        book: &'a BookContext<'a>,
-    },
+    /// The context when rendering the directory name for a template with
+    /// [`StructureMode::Nested`][nested] or
+    /// [`StructureMode::NestedGouped`][nested-grouped].
+    ///
+    /// [nested]: crate::render::template::StructureMode::Nested
+    /// [nested-grouped]: crate::render::template::StructureMode::NestedGrouped
+    Directory { book: &'a BookContext<'a> },
 }
 
 impl<'a> NamesContext<'a> {

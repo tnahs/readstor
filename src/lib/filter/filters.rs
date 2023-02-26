@@ -13,7 +13,7 @@ use crate::models::entry::Entries;
 ///
 /// # Arguments
 ///
-/// * `entries`: The [`Entry`][entry]s to filter.
+/// * `entries` - The [`Entry`][entry]s to filter.
 ///
 /// [annotation]: crate::models::annotation::Annotation
 /// [entry]: crate::models::entry::Entry
@@ -26,8 +26,8 @@ pub fn contains_no_annotations(entries: &mut Entries) {
 ///
 /// # Arguments
 ///
-/// * `queries`: A list of strings to filter against.
-/// * `entries`: The [`Entry`][entry]s to filter.
+/// * `queries` - A list of strings to filter against.
+/// * `entries` - The [`Entry`][entry]s to filter.
 ///
 /// [book]: crate::models::book::Book::title
 /// [entry]: crate::models::entry::Entry
@@ -44,8 +44,8 @@ pub fn by_title_any(queries: &[String], entries: &mut Entries) {
 ///
 /// # Arguments
 ///
-/// * `queries`: A list of strings to filter against.
-/// * `entries`: The [`Entry`][entry]s to filter.
+/// * `queries` - A list of strings to filter against.
+/// * `entries` - The [`Entry`][entry]s to filter.
 ///
 /// [book]: crate::models::book::Book::title
 /// [entry]: crate::models::entry::Entry
@@ -62,8 +62,8 @@ pub fn by_title_all(queries: &[String], entries: &mut Entries) {
 ///
 /// # Arguments
 ///
-/// * `query`: A strings to filter against.
-/// * `entries`: The [`Entry`][entry]s to filter.
+/// * `query` - A strings to filter against.
+/// * `entries` - The [`Entry`][entry]s to filter.
 ///
 /// [book]: crate::models::book::Book::title
 /// [entry]: crate::models::entry::Entry
@@ -76,8 +76,8 @@ pub fn by_title_exact(query: &str, entries: &mut Entries) {
 ///
 /// # Arguments
 ///
-/// * `queries`: A list of strings to filter against.
-/// * `entries`: The [`Entry`][entry]s to filter.
+/// * `queries` - A list of strings to filter against.
+/// * `entries` - The [`Entry`][entry]s to filter.
 ///
 /// [author]: crate::models::book::Book::author
 /// [entry]: crate::models::entry::Entry
@@ -94,8 +94,8 @@ pub fn by_author_any(query: &[String], entries: &mut Entries) {
 ///
 /// # Arguments
 ///
-/// * `queries`: A list of strings to filter against.
-/// * `entries`: The [`Entry`][entry]s to filter.
+/// * `queries` - A list of strings to filter against.
+/// * `entries` - The [`Entry`][entry]s to filter.
 ///
 /// [author]: crate::models::book::Book::author
 /// [entry]: crate::models::entry::Entry
@@ -112,8 +112,8 @@ pub fn by_author_all(query: &[String], entries: &mut Entries) {
 ///
 /// # Arguments
 ///
-/// * `query`: A strings to filter against.
-/// * `entries`: The [`Entry`][entry]s to filter.
+/// * `query` - A strings to filter against.
+/// * `entries` - The [`Entry`][entry]s to filter.
 ///
 /// [author]: crate::models::book::Book::author
 /// [entry]: crate::models::entry::Entry
@@ -126,8 +126,8 @@ pub fn by_author_exact(query: &str, entries: &mut Entries) {
 ///
 /// # Arguments
 ///
-/// * `tags`: A list of `#tags` to filter against.
-/// * `entries`: The [`Entry`][entry]s to filter.
+/// * `tags` - A list of `#tags` to filter against.
+/// * `entries` - The [`Entry`][entry]s to filter.
 ///
 /// [annotation]: crate::models::annotation::Annotation
 /// [entry]: crate::models::entry::Entry
@@ -145,8 +145,8 @@ pub fn by_tags_any(tags: &BTreeSet<&String>, entries: &mut Entries) {
 ///
 /// # Arguments
 ///
-/// * `tags`: A list of `#tags` to filter against.
-/// * `entries`: The [`Entry`][entry]s to filter.
+/// * `tags` - A list of `#tags` to filter against.
+/// * `entries` - The [`Entry`][entry]s to filter.
 ///
 /// [annotation]: crate::models::annotation::Annotation
 /// [entry]: crate::models::entry::Entry
@@ -164,8 +164,8 @@ pub fn by_tags_all(tags: &BTreeSet<&String>, entries: &mut Entries) {
 ///
 /// # Arguments
 ///
-/// * `tags`: A list of `#tags` to filter against.
-/// * `entries`: The [`Entry`][entry]s to filter.
+/// * `tags` - A list of `#tags` to filter against.
+/// * `entries` - The [`Entry`][entry]s to filter.
 ///
 /// [annotation]: crate::models::annotation::Annotation
 /// [entry]: crate::models::entry::Entry

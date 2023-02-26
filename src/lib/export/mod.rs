@@ -112,6 +112,12 @@ impl ExportRunner {
         Ok(())
     }
 
+    /// Renders the directory name from a template string and an [`Entry`].
+    ///
+    /// # Arguments
+    ///
+    /// * `template` - The template string to render.
+    /// * `entry` - The [`Entry`] providing the template context.
     fn render_directory_name(template: &str, entry: &Entry) -> Result<String> {
         let context = BookContext::from(&entry.book);
         let context = ExportContext::from(&context);
@@ -129,6 +135,9 @@ pub struct ExportOptions {
     pub overwrite_existing: bool,
 }
 
+/// An struct represening the template context for exports.
+///
+/// This is primarily used for generating directory names.
 #[derive(Debug, Serialize)]
 struct ExportContext<'a> {
     book: &'a BookContext<'a>,

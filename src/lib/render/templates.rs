@@ -50,7 +50,7 @@ impl Templates {
     ///
     /// # Arguments
     ///
-    /// * `options` - The [`Templates`]' options.
+    /// * `options` - The render options.
     /// * `default` - A string representing the contents of a template to build
     /// as the default. Used when no templates directory is specified.
     #[must_use]
@@ -97,7 +97,7 @@ impl Templates {
     ///
     /// # Arguments
     ///
-    /// * `entry` - The [`Entry`] to be rendered.
+    /// * `entry` - The entry to be rendered.
     ///
     /// # Errors
     ///
@@ -395,9 +395,9 @@ impl Templates {
     ///
     /// # Arguments
     ///
-    /// * `template` - The [`TemplateRaw`] to render.
-    /// * `entry` - The [`EntryContext`] to inject.
-    /// * `names` - A [`NamesRender`] instance.
+    /// * `template` - The template to render.
+    /// * `entry` - The context to inject into the template.
+    /// * `names` - The names to inject into the template context.
     /// * `path` - The path to where the template will be written to. This path
     /// should be relative to the final output directory.
     ///
@@ -425,9 +425,9 @@ impl Templates {
     ///
     /// # Arguments
     ///
-    /// * `template` - The [`TemplateRaw`] to render.
-    /// * `entry` - The [`EntryContext`] to inject.
-    /// * `names` - A [`NamesRender`] instance.
+    /// * `template` - The template to render.
+    /// * `entry` - The context to inject into the template.
+    /// * `names` - The names to inject into the template context.
     /// * `path` - The path to where the template will be written to. This path
     /// should be relative to the final output directory.
     ///

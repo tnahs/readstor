@@ -12,7 +12,7 @@ use once_cell::sync::Lazy;
 ///
 /// The full path:
 /// ```plaintext
-/// /Users/[user]/Library/Containers/com.apple.iBooksX/Data/Documents
+/// ~/Library/Containers/com.apple.iBooksX/Data/Documents
 /// ```
 pub static DATABASES: Lazy<PathBuf> = Lazy::new(|| {
     let mut path = crate::defaults::HOME.to_owned();

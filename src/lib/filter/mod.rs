@@ -43,6 +43,16 @@ impl FilterRunner {
         filters::contains_no_annotations(entries);
     }
 
+    /// Filters out [`Entry`][entry]s by their [`Book::title`][book].
+    ///
+    /// # Arguments
+    ///
+    /// * `query` - A list of strings to filter against.
+    /// * `operator` - The [`FilterOperator`] to use.
+    /// * `entries` - The [`Entry`][entry]s to filter.
+    ///
+    /// [book]: crate::models::book::Book::title
+    /// [entry]: crate::models::entry::Entry
     fn filter_by_title(query: &[String], operator: FilterOperator, entries: &mut Entries) {
         match operator {
             FilterOperator::Any => filters::by_title_any(query, entries),
@@ -51,6 +61,16 @@ impl FilterRunner {
         }
     }
 
+    /// Filters out [`Entry`][entry]s by their [`Book::author`][book].
+    ///
+    /// # Arguments
+    ///
+    /// * `query` - A list of strings to filter against.
+    /// * `operator` - The [`FilterOperator`] to use.
+    /// * `entries` - The [`Entry`][entry]s to filter.
+    ///
+    /// [book]: crate::models::book::Book::author
+    /// [entry]: crate::models::entry::Entry
     fn filter_by_author(query: &[String], operator: FilterOperator, entries: &mut Entries) {
         match operator {
             FilterOperator::Any => filters::by_author_any(query, entries),
@@ -59,6 +79,16 @@ impl FilterRunner {
         }
     }
 
+    /// Filters out [`Entry`][entry]s by their [`Book::tags`][book].
+    ///
+    /// # Arguments
+    ///
+    /// * `query` - A list of strings to filter against.
+    /// * `operator` - The [`FilterOperator`] to use.
+    /// * `entries` - The [`Entry`][entry]s to filter.
+    ///
+    /// [book]: crate::models::book::Book::tags
+    /// [entry]: crate::models::entry::Entry
     fn filter_by_tags(query: &[String], operator: FilterOperator, entries: &mut Entries) {
         let tags = BTreeSet::from_iter(query);
 

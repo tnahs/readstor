@@ -148,7 +148,6 @@ pub struct RenderOptions {
 #[derive(Debug, Clone, Default, Parser)]
 pub struct ExportOptions {
     /// Set the output directory template
-    // TODO: Rename option?
     #[arg(short = 't', long, value_name = "TEMPLATE")]
     pub directory_template: Option<String>,
 
@@ -160,7 +159,6 @@ pub struct ExportOptions {
 #[derive(Debug, Clone, Default, Parser)]
 pub struct BackupOptions {
     /// Set the output directory template
-    // TODO: Rename option?
     #[arg(short = 't', long, value_name = "TEMPLATE")]
     pub directory_template: Option<String>,
 }

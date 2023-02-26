@@ -102,8 +102,13 @@ impl BackupRunner {
         Ok(())
     }
 
+    /// Renders the directory name from a template string.
+    ///
+    /// # Arguments
+    ///
+    /// * `template` - The template string to render.
     fn render_directory_name(template: &str) -> Result<String> {
-        let context = BackupContext::default();
+        let context = BackupNameContext::default();
         crate::utils::render_and_sanitize(template, context)
     }
 }
@@ -115,13 +120,19 @@ pub struct BackupOptions {
     pub directory_template: Option<String>,
 }
 
+/// A struct represening the template context for back-ups.
+///
+/// This is primarily used for generating directory names.
 #[derive(Debug, Serialize)]
-struct BackupContext {
+struct BackupNameContext {
+    /// The current datetime.
     now: DateTime<Local>,
+
+    /// The currently installed version of Apple Books for macOS.
     version: String,
 }
 
-impl Default for BackupContext {
+impl Default for BackupNameContext {
     fn default() -> Self {
         Self {
             now: Local::now(),
@@ -148,7 +159,7 @@ mod test_backup {
     fn context() {
         let template = load_raw_template("valid-context", "valid-backup.txt");
 
-        let context = BackupContext::default();
+        let context = BackupNameContext::default();
         let context = &tera::Context::from_serialize(context).unwrap();
 
         Tera::one_off(&template, context, false).unwrap();
@@ -156,7 +167,7 @@ mod test_backup {
 
     #[test]
     fn default_template() {
-        let context = BackupContext::default();
+        let context = BackupNameContext::default();
         let context = &tera::Context::from_serialize(context).unwrap();
 
         Tera::one_off(DIRECTORY_TEMPLATE, context, false).unwrap();

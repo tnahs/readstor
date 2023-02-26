@@ -13,7 +13,7 @@
     rust_2021_compatibility,
 )]
 #![allow(
-    // rustdoc::private_intra_doc_links,
+    rustdoc::private_intra_doc_links,
     clippy::module_name_repetitions,
     clippy::multiple_crate_versions
 )]
