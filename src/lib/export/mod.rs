@@ -23,7 +23,7 @@ impl ExportRunner {
     ///
     /// # Arguments
     ///
-    /// * `entries` - The [`Entry`][entry]s to export.
+    /// * `entries` - The entries to export.
     /// * `path` - The ouput directory.
     /// * `options` - The export options.
     ///
@@ -33,7 +33,6 @@ impl ExportRunner {
     /// * Any IO errors are encountered.
     /// * [`serde_json`][serde-json] encounters any errors.
     ///
-    /// [entry]: crate::models::entry::Entry
     /// [serde-json]: https://docs.rs/serde_json/latest/serde_json/
     pub fn run<O>(entries: &mut Entries, path: &Path, options: O) -> Result<()>
     where
@@ -50,7 +49,7 @@ impl ExportRunner {
     ///
     /// # Arguments
     ///
-    /// * `entries` - The [`Entry`][entry]s to export.
+    /// * `entries` - The entries to export.
     /// * `path` - The ouput directory.
     /// * `options` - The export options.
     ///
@@ -74,12 +73,14 @@ impl ExportRunner {
     /// * Any IO errors are encountered.
     /// * [`serde_json`][serde-json] encounters any errors.
     ///
-    /// [entry]: crate::models::entry::Entry
     /// [serde-json]: https://docs.rs/serde_json/latest/serde_json/
     fn export(entries: &mut Entries, path: &Path, options: ExportOptions) -> Result<()> {
-        let directory_template = options
-            .directory_template
-            .unwrap_or_else(|| DIRECTORY_TEMPLATE.to_string());
+        let directory_template = if let Some(template) = options.directory_template {
+            Self::validate_template(&template)?;
+            template
+        } else {
+            DIRECTORY_TEMPLATE.to_string()
+        };
 
         for entry in entries.values() {
             // -> [author-title]
@@ -110,6 +111,18 @@ impl ExportRunner {
         }
 
         Ok(())
+    }
+
+    /// Validates a template by rendering it.
+    ///
+    /// The template is rendered and an empty [`Result`] is returned.
+    ///
+    /// # Arguments
+    ///
+    /// * `template` - The template string to validate.
+    fn validate_template(template: &str) -> Result<()> {
+        let entry = Entry::dummy();
+        Self::render_directory_name(template, &entry).map(|_| ())
     }
 
     /// Renders the directory name from a template string and an [`Entry`].
@@ -154,18 +167,31 @@ mod test_export {
 
     use tera::Tera;
 
-    use crate::defaults::TEST_TEMPLATES;
     use crate::models::book::Book;
 
     use super::*;
 
     fn load_raw_template(directory: &str, filename: &str) -> String {
-        let path = TEST_TEMPLATES.join(directory).join(filename);
+        let path = crate::defaults::TEST_TEMPLATES
+            .join(directory)
+            .join(filename);
         std::fs::read_to_string(path).unwrap()
     }
 
+    // Tests that the default template returns no error.
     #[test]
-    fn context() {
+    fn default_template() {
+        let book = Book::default();
+        let context = BookContext::from(&book);
+        let context = ExportContext { book: &context };
+        let context = &tera::Context::from_serialize(context).unwrap();
+
+        Tera::one_off(DIRECTORY_TEMPLATE, context, false).unwrap();
+    }
+
+    // Tests that all valid context fields return no errors.
+    #[test]
+    fn valid_context() {
         let template = load_raw_template("valid-context", "valid-export.txt");
 
         let book = Book::default();
@@ -176,13 +202,17 @@ mod test_export {
         Tera::one_off(&template, context, false).unwrap();
     }
 
+    // Tests that an invalid context field returns an error.
     #[test]
-    fn default_template() {
+    #[should_panic]
+    fn invalid_context() {
+        let template = load_raw_template("invalid-context", "invalid-export.txt");
+
         let book = Book::default();
         let context = BookContext::from(&book);
-        let context = ExportContext { book: &context };
+        let context = ExportContext::from(&context);
         let context = &tera::Context::from_serialize(context).unwrap();
 
-        Tera::one_off(DIRECTORY_TEMPLATE, context, false).unwrap();
+        Tera::one_off(&template, context, false).unwrap();
     }
 }

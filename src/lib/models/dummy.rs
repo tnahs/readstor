@@ -4,14 +4,14 @@ use std::collections::BTreeSet;
 
 use uuid::Uuid;
 
-use crate::models::annotation::{Annotation, AnnotationMetadata, AnnotationStyle};
-use crate::models::book::{Book, BookMetadata};
-use crate::models::datetime::DateTimeUtc;
-use crate::models::entry::Entry;
+use super::annotation::{Annotation, AnnotationMetadata, AnnotationStyle};
+use super::book::{Book, BookMetadata};
+use super::datetime::DateTimeUtc;
+use super::entry::Entry;
 
 impl Entry {
     #[must_use]
-    pub(super) fn dummy() -> Self {
+    pub(crate) fn dummy() -> Self {
         let id = uuid::Uuid::new_v4();
         Self {
             book: Book::dummy(id),
@@ -26,7 +26,7 @@ impl Entry {
 
 impl Book {
     #[must_use]
-    pub(super) fn dummy(id: Uuid) -> Self {
+    pub(crate) fn dummy(id: Uuid) -> Self {
         Self {
             title: "Excepteur Sit Commodo".to_string(),
             author: "Laborum Cillum".to_string(),
@@ -41,7 +41,7 @@ impl Book {
 
 impl Annotation {
     #[must_use]
-    pub(super) fn dummy(book_id: Uuid) -> Self {
+    pub(crate) fn dummy(book_id: Uuid) -> Self {
         Self {
             body: "Elit consequat pariatur incididunt excepteur mollit.".to_string(),
             style: AnnotationStyle::Underline,

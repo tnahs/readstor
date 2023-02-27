@@ -3,5 +3,6 @@
 pub mod annotation;
 pub mod book;
 pub mod datetime;
+pub mod dummy;
 pub mod entry;
 pub mod epubcfi;

@@ -77,9 +77,12 @@ impl BackupRunner {
     ///
     /// [abmacos]: crate::applebooks::macos::ABMacos
     pub fn backup(databases: &Path, output: &Path, options: BackupOptions) -> Result<()> {
-        let directory_template = options
-            .directory_template
-            .unwrap_or_else(|| DIRECTORY_TEMPLATE.to_string());
+        let directory_template = if let Some(template) = options.directory_template {
+            Self::validate_template(&template)?;
+            template
+        } else {
+            DIRECTORY_TEMPLATE.to_string()
+        };
 
         // -> [YYYY-MM-DD-HHMMSS]-[VERSION]
         let directory_name = Self::render_directory_name(&directory_template)?;
@@ -100,6 +103,19 @@ impl BackupRunner {
         }
 
         Ok(())
+    }
+
+    /// Validates a template by rendering it.
+    ///
+    /// Seeing as [`BackupNameContext`] requires no external context, this is a pretty
+    /// straightforward validation check. The template is rendered and an empty [`Result`] is
+    /// returned.
+    ///
+    /// # Arguments
+    ///
+    /// * `template` - The template string to validate.
+    fn validate_template(template: &str) -> Result<()> {
+        Self::render_directory_name(template).map(|_| ())
     }
 
     /// Renders the directory name from a template string.
@@ -146,17 +162,27 @@ mod test_backup {
 
     use tera::Tera;
 
-    use crate::defaults::TEST_TEMPLATES;
-
     use super::*;
 
     fn load_raw_template(directory: &str, filename: &str) -> String {
-        let path = TEST_TEMPLATES.join(directory).join(filename);
+        let path = crate::defaults::TEST_TEMPLATES
+            .join(directory)
+            .join(filename);
         std::fs::read_to_string(path).unwrap()
     }
 
+    // Tests that the default template returns no error.
     #[test]
-    fn context() {
+    fn default_template() {
+        let context = BackupNameContext::default();
+        let context = &tera::Context::from_serialize(context).unwrap();
+
+        Tera::one_off(DIRECTORY_TEMPLATE, context, false).unwrap();
+    }
+
+    // Tests that all valid context fields return no errors.
+    #[test]
+    fn valid_context() {
         let template = load_raw_template("valid-context", "valid-backup.txt");
 
         let context = BackupNameContext::default();
@@ -165,11 +191,15 @@ mod test_backup {
         Tera::one_off(&template, context, false).unwrap();
     }
 
+    // Tests that an invalid context field returns an error.
     #[test]
-    fn default_template() {
+    #[should_panic]
+    fn invalid_context() {
+        let template = load_raw_template("invalid-context", "invalid-backup.txt");
+
         let context = BackupNameContext::default();
         let context = &tera::Context::from_serialize(context).unwrap();
 
-        Tera::one_off(DIRECTORY_TEMPLATE, context, false).unwrap();
+        Tera::one_off(&template, context, false).unwrap();
     }
 }

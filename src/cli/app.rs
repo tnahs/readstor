@@ -757,4 +757,83 @@ mod test_app {
             assert_eq!(app.data.iter_annotations().count(), 1);
         }
     }
+
+    mod backup {
+        use std::path::PathBuf;
+
+        use lib::result::Error;
+
+        use crate::cli::defaults::MockDatabases;
+        use crate::cli::BackupOptions;
+
+        use super::*;
+
+        // Tests that a valid template returns no error.
+        #[test]
+        fn valid_template() {
+            let options = BackupOptions {
+                directory_template: Some("{{ now }}".to_string()),
+            };
+
+            let databases: PathBuf = MockDatabases::Empty.into();
+            let output = crate::cli::defaults::TEMP_OUTPUT_DIRECTORY.join("tests");
+
+            BackupRunner::run(&databases, &output, options).unwrap();
+        }
+
+        // Tests that an invalid template returns an error.
+        #[test]
+        fn invalid_template() {
+            let options = BackupOptions {
+                directory_template: Some("{{ invalid }}".to_string()),
+            };
+
+            let databases: PathBuf = MockDatabases::Empty.into();
+            let output = crate::cli::defaults::TEMP_OUTPUT_DIRECTORY.join("tests");
+
+            let result = BackupRunner::run(&databases, &output, options);
+
+            assert!(matches!(result, Err(Error::InvalidTemplate(_))));
+        }
+    }
+
+    mod export {
+        use std::collections::HashMap;
+
+        use lib::result::Error;
+
+        use crate::cli::ExportOptions;
+
+        use super::*;
+
+        // Tests that a valid template returns no error.
+        #[test]
+        fn valid_template() {
+            let options = ExportOptions {
+                directory_template: Some("{{ book.author }} - {{ book.title }}".to_string()),
+                ..Default::default()
+            };
+
+            let mut entries = HashMap::new();
+            let path = crate::cli::defaults::TEMP_OUTPUT_DIRECTORY.join("tests");
+
+            ExportRunner::run(&mut entries, &path, options).unwrap();
+        }
+
+        // Tests that an invalid template returns an error.
+        #[test]
+        fn invalid_template() {
+            let options = ExportOptions {
+                directory_template: Some("{{ invalid }}".to_string()),
+                ..Default::default()
+            };
+
+            let mut entries = HashMap::new();
+            let path = crate::cli::defaults::TEMP_OUTPUT_DIRECTORY.join("tests");
+
+            let result = ExportRunner::run(&mut entries, &path, options);
+
+            assert!(matches!(result, Err(Error::InvalidTemplate(_))));
+        }
+    }
 }
