@@ -165,13 +165,16 @@ impl<'a> From<&'a BookContext<'a>> for ExportContext<'a> {
 #[cfg(test)]
 mod test_export {
 
+    use super::*;
+
     use tera::Tera;
 
     use crate::models::book::Book;
 
-    use super::*;
-
-    fn load_raw_template(directory: &str, filename: &str) -> String {
+    // Loads a test template from the `TEST_TEMPLATES` directory.
+    //
+    // The test templates are located at: [crate-root]/data/templates/[directory]/[filename]
+    fn load_test_template(directory: &str, filename: &str) -> String {
         let path = crate::defaults::TEST_TEMPLATES
             .join(directory)
             .join(filename);
@@ -192,7 +195,7 @@ mod test_export {
     // Tests that all valid context fields return no errors.
     #[test]
     fn valid_context() {
-        let template = load_raw_template("valid-context", "valid-export.txt");
+        let template = load_test_template("valid-context", "valid-export.txt");
 
         let book = Book::default();
         let context = BookContext::from(&book);
@@ -206,7 +209,7 @@ mod test_export {
     #[test]
     #[should_panic]
     fn invalid_context() {
-        let template = load_raw_template("invalid-context", "invalid-export.txt");
+        let template = load_test_template("invalid-context", "invalid-export.txt");
 
         let book = Book::default();
         let context = BookContext::from(&book);

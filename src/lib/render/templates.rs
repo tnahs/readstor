@@ -590,21 +590,25 @@ impl<'a> TemplateContext<'a> {
 #[cfg(test)]
 mod test_templates {
 
-    use crate::defaults::{EXAMPLE_TEMPLATES, TEST_TEMPLATES};
-    use crate::result::Error;
-
     use super::*;
 
-    fn load_template(directory: &str, filename: &str) -> TemplateRaw {
-        let path = TEST_TEMPLATES.join(directory).join(filename);
-        let string = std::fs::read_to_string(path).unwrap();
+    use crate::result::Error;
 
-        TemplateRaw::new(filename, &string).unwrap()
+    // Loads a test template from the `TEST_TEMPLATES` directory.
+    //
+    // The test templates are located at: [crate-root]/data/templates/[directory]/[filename]
+    fn load_test_template(directory: &str, filename: &str) -> TemplateRaw {
+        let path = crate::defaults::TEST_TEMPLATES
+            .join(directory)
+            .join(filename);
+
+        let template = std::fs::read_to_string(path).unwrap();
+
+        TemplateRaw::new(filename, &template).unwrap()
     }
 
-    fn validate_context(directory: &str, filename: &str) -> Result<()> {
-        let template = load_template(directory, filename);
-
+    // Validates that a template does not contain variables that reference non-existent fields.
+    fn validate_template_context(template: &TemplateRaw) -> Result<()> {
         let mut templates = Templates::default();
 
         templates
@@ -612,12 +616,11 @@ mod test_templates {
             .add_raw_template(&template.id, &template.contents)
             .unwrap();
 
-        templates.validate_template(&template)
+        templates.validate_template(template)
     }
 
-    fn validate_syntax(directory: &str, filename: &str) -> Result<()> {
-        let template = load_template(directory, filename);
-
+    // Validates that a template does not contain syntax errors.
+    fn validate_template_syntax(template: &TemplateRaw) -> Result<()> {
         let mut templates = Templates::default();
 
         templates
@@ -627,54 +630,55 @@ mod test_templates {
         Ok(())
     }
 
-    // https://stackoverflow.com/a/68919527/16968574
-    fn test_invalid_context(directory: &str, filename: &str) {
-        let result = validate_context(directory, filename);
-
-        assert!(matches!(result, Err(Error::InvalidTemplate(_))));
-    }
-
-    // https://stackoverflow.com/a/68919527/16968574
-    fn test_valid_context(directory: &str, filename: &str) {
-        let result = validate_context(directory, filename);
-
-        assert!(matches!(result, Ok(_)));
-    }
-
     mod invalid_context {
 
         use super::*;
 
         const DIRECTORY: &str = "invalid-context";
 
-        // Tests that an invalid object (`invalid.title`) returns an error.
+        // Tests that an invalid object (`invalid.[attribute]`) returns an error.
         #[test]
         fn invalid_object() {
-            test_invalid_context(DIRECTORY, "invalid-object.txt");
+            let template = load_test_template(DIRECTORY, "invalid-object.txt");
+            let result = validate_template_context(&template);
+
+            assert!(matches!(result, Err(Error::InvalidTemplate(_))));
         }
 
-        // Tests that an invalid attribute (`book.invalid`) returns an error.
+        // Tests that an invalid attribute (`[object].invalid`) returns an error.
         #[test]
         fn invalid_attribute() {
-            test_invalid_context(DIRECTORY, "invalid-attribute.txt");
+            let template = load_test_template(DIRECTORY, "invalid-attribute.txt");
+            let result = validate_template_context(&template);
+
+            assert!(matches!(result, Err(Error::InvalidTemplate(_))));
         }
 
         // Tests that an invalid annotation attribute within a `book` context returns an error.
         #[test]
         fn invalid_book_annotations() {
-            test_invalid_context(DIRECTORY, "invalid-book-annotations.txt");
+            let template = load_test_template(DIRECTORY, "invalid-book-annotations.txt");
+            let result = validate_template_context(&template);
+
+            assert!(matches!(result, Err(Error::InvalidTemplate(_))));
         }
 
         // Tests that an invalid names attribute within a `book` context returns an error.
         #[test]
         fn invalid_book_names() {
-            test_invalid_context(DIRECTORY, "invalid-book-names.txt");
+            let template = load_test_template(DIRECTORY, "invalid-book-names.txt");
+            let result = validate_template_context(&template);
+
+            assert!(matches!(result, Err(Error::InvalidTemplate(_))));
         }
 
         // Tests that an invalid names attribute within an `annotation` context returns an error.
         #[test]
         fn invalid_annotation_names() {
-            test_invalid_context(DIRECTORY, "invalid-annotation-names.txt");
+            let template = load_test_template(DIRECTORY, "invalid-annotation-names.txt");
+            let result = validate_template_context(&template);
+
+            assert!(matches!(result, Err(Error::InvalidTemplate(_))));
         }
     }
 
@@ -687,13 +691,19 @@ mod test_templates {
         // Tests that all `Book` fields are valid.
         #[test]
         fn valid_book() {
-            test_valid_context(DIRECTORY, "valid-book.txt");
+            let template = load_test_template(DIRECTORY, "valid-book.txt");
+            let result = validate_template_syntax(&template);
+
+            assert!(matches!(result, Ok(_)));
         }
 
         // Tests that all `Annotation` fields are valid.
         #[test]
         fn valid_annotation() {
-            test_valid_context(DIRECTORY, "valid-annotation.txt");
+            let template = load_test_template(DIRECTORY, "valid-annotation.txt");
+            let result = validate_template_syntax(&template);
+
+            assert!(matches!(result, Ok(_)));
         }
     }
 
@@ -706,7 +716,8 @@ mod test_templates {
         // Tests that an invalid syntax returns an error.
         #[test]
         fn invalid_syntax() {
-            let result = validate_syntax(DIRECTORY, "invalid-syntax.txt");
+            let template = load_test_template(DIRECTORY, "invalid-syntax.txt");
+            let result = validate_template_syntax(&template);
 
             assert!(matches!(result, Err(Error::InvalidTemplate(_))));
         }
@@ -721,22 +732,25 @@ mod test_templates {
         // Tests that a valid syntax returns no errors.
         #[test]
         fn valid_syntax() {
-            let result = validate_syntax(DIRECTORY, "valid-syntax.txt");
+            let template = load_test_template(DIRECTORY, "valid-syntax.txt");
+            let result = validate_template_syntax(&template);
 
             assert!(matches!(result, Ok(_)));
         }
     }
 
-    // Tests that all example templates return no errors.
     mod example_templates {
 
         use super::*;
 
+        // Tests that all example templates return no errors.
         #[test]
-        fn examples() {
+        fn example_templates() {
             let mut templates = Templates::default();
 
-            templates.build_from_directory(&EXAMPLE_TEMPLATES).unwrap();
+            templates
+                .build_from_directory(&crate::defaults::EXAMPLE_TEMPLATES)
+                .unwrap();
         }
     }
 }

@@ -398,14 +398,13 @@ mod test_cli {
 
     use super::*;
 
+    // Tests that strings are properly converted into `FilterType`s.
     mod parse_filter {
 
         use super::*;
 
-        // Title
-
         #[test]
-        fn test_title_any() {
+        fn title_any() {
             assert_eq!(
                 FilterType::from_str("?title:art think").unwrap(),
                 FilterType::Title {
@@ -416,7 +415,7 @@ mod test_cli {
         }
 
         #[test]
-        fn test_title_all() {
+        fn title_all() {
             assert_eq!(
                 FilterType::from_str("*title:joking feynman").unwrap(),
                 FilterType::Title {
@@ -427,7 +426,7 @@ mod test_cli {
         }
 
         #[test]
-        fn test_title_exact() {
+        fn title_exact() {
             assert_eq!(
                 FilterType::from_str("=title:the art spirit").unwrap(),
                 FilterType::Title {
@@ -437,10 +436,8 @@ mod test_cli {
             );
         }
 
-        // Author
-
         #[test]
-        fn test_author_any() {
+        fn author_any() {
             assert_eq!(
                 FilterType::from_str("?author:robert richard").unwrap(),
                 FilterType::Author {
@@ -451,7 +448,7 @@ mod test_cli {
         }
 
         #[test]
-        fn test_author_all() {
+        fn author_all() {
             assert_eq!(
                 FilterType::from_str("*author:richard feynman").unwrap(),
                 FilterType::Author {
@@ -462,7 +459,7 @@ mod test_cli {
         }
 
         #[test]
-        fn test_author_exact() {
+        fn author_exact() {
             assert_eq!(
                 FilterType::from_str("=author:richard p. feynman").unwrap(),
                 FilterType::Author {
@@ -476,10 +473,8 @@ mod test_cli {
             );
         }
 
-        // Tags
-
         #[test]
-        fn test_tags_any() {
+        fn tags_any() {
             assert_eq!(
                 FilterType::from_str("?tags:#artist #death").unwrap(),
                 FilterType::Tags {
@@ -490,7 +485,7 @@ mod test_cli {
         }
 
         #[test]
-        fn test_tags_all() {
+        fn tags_all() {
             assert_eq!(
                 FilterType::from_str("*tags:#death #impermanence").unwrap(),
                 FilterType::Tags {
@@ -501,7 +496,7 @@ mod test_cli {
         }
 
         #[test]
-        fn test_tags_exact() {
+        fn tags_exact() {
             assert_eq!(
                 FilterType::from_str("=tags:#artist #being").unwrap(),
                 FilterType::Tags {

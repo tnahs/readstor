@@ -160,11 +160,14 @@ impl Default for BackupNameContext {
 #[cfg(test)]
 mod test_backup {
 
-    use tera::Tera;
-
     use super::*;
 
-    fn load_raw_template(directory: &str, filename: &str) -> String {
+    use tera::Tera;
+
+    // Loads a test template from the `TEST_TEMPLATES` directory.
+    //
+    // The test templates are located at: [crate-root]/data/templates/[directory]/[filename]
+    fn load_test_template(directory: &str, filename: &str) -> String {
         let path = crate::defaults::TEST_TEMPLATES
             .join(directory)
             .join(filename);
@@ -183,7 +186,7 @@ mod test_backup {
     // Tests that all valid context fields return no errors.
     #[test]
     fn valid_context() {
-        let template = load_raw_template("valid-context", "valid-backup.txt");
+        let template = load_test_template("valid-context", "valid-backup.txt");
 
         let context = BackupNameContext::default();
         let context = &tera::Context::from_serialize(context).unwrap();
@@ -195,7 +198,7 @@ mod test_backup {
     #[test]
     #[should_panic]
     fn invalid_context() {
-        let template = load_raw_template("invalid-context", "invalid-backup.txt");
+        let template = load_test_template("invalid-context", "invalid-backup.txt");
 
         let context = BackupNameContext::default();
         let context = &tera::Context::from_serialize(context).unwrap();

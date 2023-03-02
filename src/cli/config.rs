@@ -107,12 +107,12 @@ impl DataDirectory {
 }
 
 #[cfg(test)]
-pub mod tests {
+pub mod test_config {
+
+    use super::*;
 
     use crate::cli::defaults::MockDatabases;
     use crate::cli::defaults::MockPlists;
-
-    use super::*;
 
     impl Config {
         fn test_macos(databases: MockDatabases) -> Self {

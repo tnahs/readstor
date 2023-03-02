@@ -379,38 +379,18 @@ pub enum ContextMode {
 }
 
 #[cfg(test)]
-mod test_templates {
-
-    use crate::defaults::TEST_TEMPLATES;
+mod test_template {
 
     use super::*;
 
-    fn load_template_string(directory: &str, filename: &str) -> String {
-        let path = TEST_TEMPLATES.join(directory).join(filename);
+    // Loads a test template from the `TEST_TEMPLATES` directory.
+    //
+    // The test templates are located at: [crate-root]/data/templates/[directory]/[filename]
+    fn load_test_template(directory: &str, filename: &str) -> String {
+        let path = crate::defaults::TEST_TEMPLATES
+            .join(directory)
+            .join(filename);
         std::fs::read_to_string(path).unwrap()
-    }
-
-    // https://stackoverflow.com/a/68919527/16968574
-    fn test_invalid_template_config(directory: &str, filename: &str) {
-        let string = load_template_string(directory, filename);
-        let result = TemplateRaw::parse(&string).ok_or(Error::InvalidTemplateConfig {
-            path: filename.to_string(),
-        });
-
-        assert!(matches!(
-            result,
-            Err(Error::InvalidTemplateConfig { path: _ })
-        ));
-    }
-
-    // https://stackoverflow.com/a/68919527/16968574
-    fn test_valid_template_config(directory: &str, filename: &str) {
-        let string = load_template_string(directory, filename);
-        let result = TemplateRaw::parse(&string).ok_or(Error::InvalidTemplateConfig {
-            path: filename.to_string(),
-        });
-
-        assert!(matches!(result, Ok(_)));
     }
 
     mod invalid_config {
@@ -421,50 +401,66 @@ mod test_templates {
 
         // Tests that a missing config block returns an error.
         #[test]
+        #[should_panic]
         fn missing_config() {
-            test_invalid_template_config(DIRECTORY, "missing-config.txt");
+            let template = load_test_template(DIRECTORY, "missing-config.txt");
+            TemplateRaw::parse(&template).unwrap();
         }
 
         // Tests that a missing closing tag returns an error.
         #[test]
+        #[should_panic]
         fn missing_closing_tag() {
-            test_invalid_template_config(DIRECTORY, "missing-closing-tag.txt");
+            let template = load_test_template(DIRECTORY, "missing-closing-tag.txt");
+            TemplateRaw::parse(&template).unwrap();
         }
 
         // Tests that missing `readstor` in the opening tag returns an error.
         #[test]
+        #[should_panic]
         fn incomplete_opening_tag_01() {
-            test_invalid_template_config(DIRECTORY, "incomplete-opening-tag-01.txt");
+            let template = load_test_template(DIRECTORY, "incomplete-opening-tag-01.txt");
+            TemplateRaw::parse(&template).unwrap();
         }
 
         // Tests that missing the `!` in the opening tag returns an error.
         #[test]
+        #[should_panic]
         fn incomplete_opening_tag_02() {
-            test_invalid_template_config(DIRECTORY, "incomplete-opening-tag-02.txt");
+            let template = load_test_template(DIRECTORY, "incomplete-opening-tag-02.txt");
+            TemplateRaw::parse(&template).unwrap();
         }
 
         // Tests that no linebreak after `readstor` returns an error.
         #[test]
+        #[should_panic]
         fn missing_linebreak_01() {
-            test_invalid_template_config(DIRECTORY, "missing-linebreak-01.txt");
+            let template = load_test_template(DIRECTORY, "missing-linebreak-01.txt");
+            TemplateRaw::parse(&template).unwrap();
         }
 
         // Tests that no linebreak after the config body returns an error.
         #[test]
+        #[should_panic]
         fn missing_linebreak_02() {
-            test_invalid_template_config(DIRECTORY, "missing-linebreak-02.txt");
+            let template = load_test_template(DIRECTORY, "missing-linebreak-02.txt");
+            TemplateRaw::parse(&template).unwrap();
         }
 
         // Tests that no linebreak after the closing tag returns an error.
         #[test]
+        #[should_panic]
         fn missing_linebreak_03() {
-            test_invalid_template_config(DIRECTORY, "missing-linebreak-03.txt");
+            let template = load_test_template(DIRECTORY, "missing-linebreak-03.txt");
+            TemplateRaw::parse(&template).unwrap();
         }
 
         // Tests that no linebreak before the opening tag returns an error.
         #[test]
+        #[should_panic]
         fn missing_linebreak_04() {
-            test_invalid_template_config(DIRECTORY, "missing-linebreak-04.txt");
+            let template = load_test_template(DIRECTORY, "missing-linebreak-04.txt");
+            TemplateRaw::parse(&template).unwrap();
         }
     }
 
@@ -478,28 +474,29 @@ mod test_templates {
         #[test]
         fn minimum_required_keys() {
             let filename = "minimum-required-keys.txt";
-            let string = load_template_string(DIRECTORY, filename);
-            let result = TemplateRaw::new(filename, &string);
-
-            assert!(matches!(result, Ok(_)));
+            let template = load_test_template(DIRECTORY, filename);
+            TemplateRaw::new(filename, &template).unwrap();
         }
 
         // Tests that a template with pre- and post-config-content returns no error.
         #[test]
         fn pre_and_post_config_content() {
-            test_valid_template_config(DIRECTORY, "pre-and-post-config-content.txt");
+            let template = load_test_template(DIRECTORY, "pre-and-post-config-content.txt");
+            TemplateRaw::parse(&template).unwrap();
         }
 
         // Tests that a template with pre-config-content returns no error.
         #[test]
         fn pre_config_content() {
-            test_valid_template_config(DIRECTORY, "pre-config-content.txt");
+            let template = load_test_template(DIRECTORY, "pre-config-content.txt");
+            TemplateRaw::parse(&template).unwrap();
         }
 
         // Tests that a template with post-config-content returns no error.
         #[test]
         fn post_config_content() {
-            test_valid_template_config(DIRECTORY, "post-config-content.txt");
+            let template = load_test_template(DIRECTORY, "post-config-content.txt");
+            TemplateRaw::parse(&template).unwrap();
         }
     }
 }

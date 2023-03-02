@@ -189,13 +189,14 @@ impl From<usize> for AnnotationStyle {
 }
 
 #[cfg(test)]
-mod test_annotations {
+mod test_annotation {
 
     use super::*;
 
+    // Tests that annotation ordering is properly evaluated from an `epubcfi` string.
     // TODO: Base function to start testing annotation order using `<` and `>`.
     #[test]
-    fn test_cmp_annotations() {
+    fn cmp_annotations() {
         let mut a1 = Annotation::default();
         a1.metadata.location = epubcfi::parse("epubcfi(/6/10[c01]!/4/10/3,:335,:749)");
 

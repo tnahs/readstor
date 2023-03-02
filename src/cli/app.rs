@@ -345,15 +345,16 @@ impl App {
 #[cfg(test)]
 mod test_app {
 
-    use crate::cli::config::tests::TestConfig;
-
     use super::*;
 
+    use crate::cli::config::test_config::TestConfig;
+
+    // Tests dealing with macOS's Apple Books databases.
     mod macos {
 
         use super::*;
 
-        // Tests that empty databases return zero books and zero annotations.
+        // Tests that empty data returns zero books and zero annotations.
         #[test]
         fn test_empty() {
             let config = TestConfig::macos_empty();
@@ -365,8 +366,7 @@ mod test_app {
             assert_eq!(app.data.iter_annotations().count(), 0);
         }
 
-        // Tests that databases with un-annotated books return zero books and
-        // zero annotations.
+        // Tests that un-annotated books return zero books and zero annotations.
         #[test]
         fn test_books_new() {
             let config = TestConfig::macos_new();
@@ -379,8 +379,7 @@ mod test_app {
             assert_eq!(app.data.iter_annotations().count(), 0);
         }
 
-        // Tests that databases with annotated books return non-zero books and
-        // non-zero annotations.
+        // Tests that annotated books return non-zero books and non-zero annotations.
         #[test]
         fn test_books_annotated() {
             let config = TestConfig::macos_annotated();
@@ -411,11 +410,12 @@ mod test_app {
         }
     }
 
+    // Tests dealing with iOS's Apple Books plists.
     mod ios {
 
         use super::*;
 
-        // Tests that empty plist files return zero books and zero annotations.
+        // Tests that empty data returns zero books and zero annotations.
         #[test]
         fn test_empty() {
             let config = TestConfig::ios_empty();
@@ -427,8 +427,7 @@ mod test_app {
             assert_eq!(app.data.iter_annotations().count(), 0);
         }
 
-        // Tests that plist files with un-annotated books return zero books and
-        // zero annotation.
+        // Tests that un-annotated books return zero books and zero annotations.
         #[test]
         fn test_books_new() {
             let config = TestConfig::ios_new();
@@ -441,8 +440,7 @@ mod test_app {
             assert_eq!(app.data.iter_annotations().count(), 0);
         }
 
-        // Tests that plist files with annotated books return non-zero books and
-        // non-zero annotations.
+        // Tests that annotated books return non-zero books and non-zero annotations.
         #[test]
         fn test_books_annotated() {
             let config = TestConfig::ios_annotated();
@@ -473,12 +471,12 @@ mod test_app {
         }
     }
 
+    // Tests dealing with both iOS's plists and macOS's databases.
     mod both {
 
         use super::*;
 
-        // Tests that empty databases and plist files return zero books and
-        // zero annotations.
+        // Tests that empty data returns zero books and zero annotations.
         #[test]
         fn test_empty() {
             let config = TestConfig::both_empty();
@@ -490,8 +488,7 @@ mod test_app {
             assert_eq!(app.data.iter_annotations().count(), 0);
         }
 
-        // Tests that databses and plist files with un-annotated books return
-        // zero books and zero annotation.
+        // Tests that un-annotated books return zero books and zero annotations.
         #[test]
         fn test_books_new() {
             let config = TestConfig::both_new();
@@ -504,8 +501,7 @@ mod test_app {
             assert_eq!(app.data.iter_annotations().count(), 0);
         }
 
-        // Tests that databases and plist files with annotated books return non-
-        // zero books and non-zero annotations.
+        // Tests that annotated books return non-zero books and non-zero annotations.
         #[test]
         fn test_books_annotated() {
             let config = TestConfig::both_annotated();
@@ -536,12 +532,14 @@ mod test_app {
         }
     }
 
+    // Tests dealing with filtering annotations before outputting.
     mod filter {
 
         use super::*;
 
-        // Title
-
+        // Keeps annotations where their book's title contains either "art" or "think".
+        //
+        // The raw filter string would be: "?title:art think".
         #[test]
         fn test_title_any() {
             let config = TestConfig::both_annotated();
@@ -549,7 +547,6 @@ mod test_app {
 
             app.init_data().unwrap();
 
-            // Filter string: "?title:art think"
             App::run_filters(
                 &mut app.data,
                 vec![cli::FilterType::Title {
@@ -562,6 +559,9 @@ mod test_app {
             assert_eq!(app.data.iter_annotations().count(), 9);
         }
 
+        // Keeps annotations where their book's title contains both "joking" and "feynman".
+        //
+        // The raw filter string would be: "*title:joking feynman".
         #[test]
         fn test_title_all() {
             let config = TestConfig::both_annotated();
@@ -569,7 +569,6 @@ mod test_app {
 
             app.init_data().unwrap();
 
-            // Filter string: "*title:joking feynman"
             App::run_filters(
                 &mut app.data,
                 vec![cli::FilterType::Title {
@@ -582,6 +581,9 @@ mod test_app {
             assert_eq!(app.data.iter_annotations().count(), 1);
         }
 
+        // Keeps annotations where their book's title exactly matches "the art spirit".
+        //
+        // The raw filter string would be: "=title:the art spirit"
         #[test]
         fn test_title_exact() {
             let config = TestConfig::both_annotated();
@@ -589,7 +591,6 @@ mod test_app {
 
             app.init_data().unwrap();
 
-            // Filter string: "=title:the art spirit"
             App::run_filters(
                 &mut app.data,
                 vec![cli::FilterType::Title {
@@ -602,8 +603,9 @@ mod test_app {
             assert_eq!(app.data.iter_annotations().count(), 4);
         }
 
-        // Author
-
+        // Keeps annotations where their book's author contains either "robert" or "richard".
+        //
+        // The raw filter string would be: "?author:robert richard"
         #[test]
         fn test_author_any() {
             let config = TestConfig::both_annotated();
@@ -611,7 +613,6 @@ mod test_app {
 
             app.init_data().unwrap();
 
-            // Filter string: "?author:robert richard"
             App::run_filters(
                 &mut app.data,
                 vec![cli::FilterType::Author {
@@ -624,6 +625,9 @@ mod test_app {
             assert_eq!(app.data.iter_annotations().count(), 5);
         }
 
+        // Keeps annotations where their book's author contains both "richard" and "feyman".
+        //
+        // The raw filter string would be: "*author:richard feynman"
         #[test]
         fn test_author_all() {
             let config = TestConfig::both_annotated();
@@ -631,7 +635,6 @@ mod test_app {
 
             app.init_data().unwrap();
 
-            // Filter string: "*author:richard feynman"
             App::run_filters(
                 &mut app.data,
                 vec![cli::FilterType::Author {
@@ -644,6 +647,9 @@ mod test_app {
             assert_eq!(app.data.iter_annotations().count(), 1);
         }
 
+        // Keeps annotations where their book's author exactly matches "richard p. feynman".
+        //
+        // The raw filter string would be: "=author:richard p. feynman"
         #[test]
         fn test_author_exact() {
             let config = TestConfig::both_annotated();
@@ -651,7 +657,6 @@ mod test_app {
 
             app.init_data().unwrap();
 
-            // Filter string: "=author:richard p. feynman"
             App::run_filters(
                 &mut app.data,
                 vec![cli::FilterType::Author {
@@ -668,8 +673,9 @@ mod test_app {
             assert_eq!(app.data.iter_annotations().count(), 1);
         }
 
-        // Tags
-
+        // Keeps annotations where their tags contain either "#art" or "#death".
+        //
+        // The raw filter string would be: "?tags:#artist #death"
         #[test]
         fn test_tags_any() {
             let config = TestConfig::both_annotated();
@@ -686,7 +692,6 @@ mod test_app {
                 },
             );
 
-            // Filter string: "?tags:#artist #death"
             App::run_filters(
                 &mut app.data,
                 vec![cli::FilterType::Tags {
@@ -699,6 +704,9 @@ mod test_app {
             assert_eq!(app.data.iter_annotations().count(), 2);
         }
 
+        // Keeps annotations where their tags contain both "#death" and "#impermanence".
+        //
+        // The raw filter string would be: "*tags:#death #impermanence"
         #[test]
         fn test_tags_all() {
             let config = TestConfig::both_annotated();
@@ -715,7 +723,6 @@ mod test_app {
                 },
             );
 
-            // Filter string: "*tags:#death #impermanence"
             App::run_filters(
                 &mut app.data,
                 vec![cli::FilterType::Tags {
@@ -728,6 +735,9 @@ mod test_app {
             assert_eq!(app.data.iter_annotations().count(), 1);
         }
 
+        // Keeps annotations where their tags contain exactly "#artist" and "#being".
+        //
+        // The raw filter string would be: "=tags:#artist #being"
         #[test]
         fn test_tags_exact() {
             let config = TestConfig::both_annotated();
@@ -744,7 +754,6 @@ mod test_app {
                 },
             );
 
-            // Filter string: "=tags:#artist #being"
             App::run_filters(
                 &mut app.data,
                 vec![cli::FilterType::Tags {
@@ -758,15 +767,17 @@ mod test_app {
         }
     }
 
+    // Tests dealing with running back-ups.
     mod backup {
+
+        use super::*;
+
         use std::path::PathBuf;
 
         use lib::result::Error;
 
         use crate::cli::defaults::MockDatabases;
         use crate::cli::BackupOptions;
-
-        use super::*;
 
         // Tests that a valid template returns no error.
         #[test]
@@ -797,14 +808,16 @@ mod test_app {
         }
     }
 
+    // Tests dealing with running exports.
     mod export {
+
+        use super::*;
+
         use std::collections::HashMap;
 
         use lib::result::Error;
 
         use crate::cli::ExportOptions;
-
-        use super::*;
 
         // Tests that a valid template returns no error.
         #[test]

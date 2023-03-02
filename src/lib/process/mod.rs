@@ -223,43 +223,51 @@ pub struct PostProcessOptions {
 #[cfg(test)]
 mod test_processes {
 
-    use std::collections::BTreeSet;
-
-    use crate::models::annotation::Annotation;
-    use crate::models::book::Book;
-
     use super::*;
 
-    #[test]
-    fn test_extracted_tags() {
-        let mut entry = Entry {
-            book: Book::default(),
-            annotations: vec![
-                Annotation {
-                    notes: "#tag01 #tag02".to_string(),
-                    ..Default::default()
-                },
-                Annotation {
-                    notes: "#tag02 #tag03".to_string(),
-                    ..Default::default()
-                },
-                Annotation {
-                    notes: "#tag03 #tag01".to_string(),
-                    ..Default::default()
-                },
-            ],
-        };
+    mod tags {
 
-        PreProcessRunner::extract_tags(&mut entry);
+        use super::*;
 
-        for annotation in entry.annotations {
-            assert_eq!(annotation.tags.len(), 2);
-            assert!(annotation.notes.is_empty());
+        use std::collections::BTreeSet;
+
+        use crate::models::annotation::Annotation;
+        use crate::models::book::Book;
+
+        // Tests that tags are properly extracted from `Annotation::notes`, placed into the
+        // `Annotation::tags` field and finally compiled, deduped and placed into their respective
+        // book's `Book::tags` field.
+        #[test]
+        fn test_extracted_tags() {
+            let mut entry = Entry {
+                book: Book::default(),
+                annotations: vec![
+                    Annotation {
+                        notes: "#tag01 #tag02".to_string(),
+                        ..Default::default()
+                    },
+                    Annotation {
+                        notes: "#tag02 #tag03".to_string(),
+                        ..Default::default()
+                    },
+                    Annotation {
+                        notes: "#tag03 #tag01".to_string(),
+                        ..Default::default()
+                    },
+                ],
+            };
+
+            PreProcessRunner::extract_tags(&mut entry);
+
+            for annotation in entry.annotations {
+                assert_eq!(annotation.tags.len(), 2);
+                assert!(annotation.notes.is_empty());
+            }
+
+            assert_eq!(
+                entry.book.tags,
+                BTreeSet::from(["#tag01", "#tag02", "#tag03"].map(String::from))
+            );
         }
-
-        assert_eq!(
-            entry.book.tags,
-            BTreeSet::from(["#tag01", "#tag02", "#tag03"].map(String::from))
-        );
     }
 }

@@ -180,7 +180,9 @@ pub enum FilterOperator {
 }
 
 #[cfg(test)]
-mod test_filters {
+mod test_filter {
+
+    use super::*;
 
     use std::collections::HashMap;
 
@@ -188,41 +190,41 @@ mod test_filters {
     use crate::models::book::Book;
     use crate::models::entry::Entry;
 
-    use super::*;
-
     fn create_test_entries() -> Entries {
         let annotations = vec![
             Annotation {
-                tags: create_test_tags_from_str(&["#tag01"]),
+                tags: create_test_tags(&["#tag01"]),
                 ..Default::default()
             },
             Annotation {
-                tags: create_test_tags_from_str(&["#tag02"]),
+                tags: create_test_tags(&["#tag02"]),
                 ..Default::default()
             },
             Annotation {
-                tags: create_test_tags_from_str(&["#tag03"]),
+                tags: create_test_tags(&["#tag03"]),
                 ..Default::default()
             },
             Annotation {
-                tags: create_test_tags_from_str(&["#tag01", "#tag02", "#tag03"]),
+                tags: create_test_tags(&["#tag01", "#tag02", "#tag03"]),
                 ..Default::default()
             },
         ];
 
         let entry_00 = Entry {
             book: Book {
-                title: "Book One".to_string(),
-                author: "Author One".to_string(),
+                title: "Incididunt Sint".to_string(),
+                author: "Quis Sint".to_string(),
                 ..Default::default()
             },
             annotations: annotations.clone(),
         };
 
+        // Laboris Incididunt Esse Commodo Do Tempor Ut
+        // Lorem aliqua do ex cillum
         let entry_01 = Entry {
             book: Book {
-                title: "Book Two: The Return".to_string(),
-                author: "Author No. Two".to_string(),
+                title: "Laboris Ex Cillum".to_string(),
+                author: "Lorem Du Quis".to_string(),
                 ..Default::default()
             },
             annotations,
@@ -235,18 +237,17 @@ mod test_filters {
         data
     }
 
-    fn create_test_tags_from_str(tags: &[&str]) -> BTreeSet<String> {
+    fn create_test_tags(tags: &[&str]) -> BTreeSet<String> {
         tags.iter().map(std::string::ToString::to_string).collect()
     }
 
-    // Title
-
+    // Keeps annotations where their book's title contains "incididunt" or "laboris".
     #[test]
-    fn test_title_any() {
+    fn title_any() {
         let mut entries = create_test_entries();
 
         FilterRunner::run(
-            FilterType::title(&["book"], FilterOperator::Any),
+            FilterType::title(&["incididunt", "laboris"], FilterOperator::Any),
             &mut entries,
         );
 
@@ -259,12 +260,13 @@ mod test_filters {
         assert_eq!(annotations, 8);
     }
 
+    // Keeps annotations where their book's title contains both "laboris" and "cillum".
     #[test]
-    fn test_title_all() {
+    fn title_all() {
         let mut entries = create_test_entries();
 
         FilterRunner::run(
-            FilterType::title(&["two", "return"], FilterOperator::All),
+            FilterType::title(&["laboris", "cillum"], FilterOperator::All),
             &mut entries,
         );
 
@@ -277,12 +279,13 @@ mod test_filters {
         assert_eq!(annotations, 4);
     }
 
+    // Keeps annotations where their book's title is exactly "incididunt sint".
     #[test]
-    fn test_title_exact() {
+    fn title_exact() {
         let mut entries = create_test_entries();
 
         FilterRunner::run(
-            FilterType::title(&["book", "one"], FilterOperator::Exact),
+            FilterType::title(&["incididunt", "sint"], FilterOperator::Exact),
             &mut entries,
         );
 
@@ -295,14 +298,13 @@ mod test_filters {
         assert_eq!(annotations, 4);
     }
 
-    // Author
-
+    // Keeps annotations where their book's author contains "quis".
     #[test]
-    fn test_author_any() {
+    fn author_any() {
         let mut entries = create_test_entries();
 
         FilterRunner::run(
-            FilterType::author(&["author"], FilterOperator::Any),
+            FilterType::author(&["quis"], FilterOperator::Any),
             &mut entries,
         );
 
@@ -315,12 +317,32 @@ mod test_filters {
         assert_eq!(annotations, 8);
     }
 
+    // Keeps annotations where their book's author contains both "lorem" and "sint".
     #[test]
-    fn test_author_all() {
+    fn author_all() {
         let mut entries = create_test_entries();
 
         FilterRunner::run(
-            FilterType::author(&["author", "no."], FilterOperator::All),
+            FilterType::author(&["lorem", "sint"], FilterOperator::All),
+            &mut entries,
+        );
+
+        let annotations = entries
+            .values()
+            .flat_map(|entry| &entry.annotations)
+            .count();
+
+        assert_eq!(entries.len(), 0);
+        assert_eq!(annotations, 0);
+    }
+
+    // Keeps annotations where their book's author is exactly "lorem du quis".
+    #[test]
+    fn author_exact() {
+        let mut entries = create_test_entries();
+
+        FilterRunner::run(
+            FilterType::author(&["lorem", "du", "quis"], FilterOperator::Exact),
             &mut entries,
         );
 
@@ -333,28 +355,9 @@ mod test_filters {
         assert_eq!(annotations, 4);
     }
 
+    // Keeps annotations where their tags contain "#tag01" or "#tag03".
     #[test]
-    fn test_author_exact() {
-        let mut entries = create_test_entries();
-
-        FilterRunner::run(
-            FilterType::author(&["author", "no.", "two"], FilterOperator::Exact),
-            &mut entries,
-        );
-
-        let annotations = entries
-            .values()
-            .flat_map(|entry| &entry.annotations)
-            .count();
-
-        assert_eq!(entries.len(), 1);
-        assert_eq!(annotations, 4);
-    }
-
-    // Tags
-
-    #[test]
-    fn test_tags_any() {
+    fn tags_any() {
         let mut entries = create_test_entries();
 
         FilterRunner::run(
@@ -371,8 +374,9 @@ mod test_filters {
         assert_eq!(annotations, 6);
     }
 
+    // Keeps annotations where their tags contain both "#tag01" and "#tag03".
     #[test]
-    fn test_tags_all() {
+    fn tags_all() {
         let mut entries = create_test_entries();
 
         FilterRunner::run(
@@ -389,8 +393,9 @@ mod test_filters {
         assert_eq!(annotations, 2);
     }
 
+    // Keeps annotations where their tags contain exactly "#tag01", "#tag02" and "#tag03".
     #[test]
-    fn test_tags_exact() {
+    fn tags_exact() {
         let mut entries = create_test_entries();
 
         FilterRunner::run(
@@ -407,8 +412,9 @@ mod test_filters {
         assert_eq!(annotations, 2);
     }
 
+    // Tests that tag declaration order doesn't matter when performing exact match filtering.
     #[test]
-    fn test_tags_exact_different_order() {
+    fn tags_exact_different_order() {
         let mut entries = create_test_entries();
 
         FilterRunner::run(
@@ -425,24 +431,23 @@ mod test_filters {
         assert_eq!(annotations, 2);
     }
 
-    // Multi
-
+    // Tests that multiple filters produce the expected result.
     #[test]
-    fn test_multi() {
+    fn multi() {
         let mut entries = create_test_entries();
 
         FilterRunner::run(
-            FilterType::title(&["one"], FilterOperator::Any),
+            FilterType::title(&["sint"], FilterOperator::Any),
             &mut entries,
         );
 
         FilterRunner::run(
-            FilterType::author(&["author", "one"], FilterOperator::Exact),
+            FilterType::author(&["quis", "sint"], FilterOperator::Exact),
             &mut entries,
         );
 
         FilterRunner::run(
-            FilterType::tags(&["#tag02"], FilterOperator::Exact),
+            FilterType::tags(&["#tag02"], FilterOperator::Any),
             &mut entries,
         );
 
@@ -452,6 +457,6 @@ mod test_filters {
             .count();
 
         assert_eq!(entries.len(), 1);
-        assert_eq!(annotations, 1);
+        assert_eq!(annotations, 2);
     }
 }

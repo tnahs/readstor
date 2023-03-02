@@ -181,12 +181,12 @@ pub fn parse(raw: &str) -> String {
 }
 
 #[cfg(test)]
-mod test_epubcfi_parser {
+mod test_epubcfi {
 
     use super::*;
 
     // https://stackoverflow.com/a/34666891/16968574
-    macro_rules! test_parse {
+    macro_rules! test_parse_epubcfi {
         ($($name:ident: $value:expr,)*) => {
             $(
                 #[test]
@@ -200,7 +200,7 @@ mod test_epubcfi_parser {
     }
 
     // https://stackoverflow.com/a/34666891/16968574
-    macro_rules! test_compare {
+    macro_rules! test_compare_epubcfi {
         ($($name:ident: ($lhs:tt $cmp:tt $rhs:tt),)*) => {
             $(
                 #[test]
@@ -214,151 +214,148 @@ mod test_epubcfi_parser {
     }
 
     // <https://github.com/fread-ink/epub-cfi-resolver/blob/master/tests/simple.js>
-    test_parse! {
-        test_parse_00: (
+    test_parse_epubcfi! {
+        parse_epubcfi_00: (
             "epubcfi(/1/2)",
             "1.2",
         ),
-        test_parse_01: (
+        parse_epubcfi_01: (
             "epubcfi(/1/0)",
             "1.0",
         ),
-        test_parse_02: (
+        parse_epubcfi_02: (
             "epubcfi(/1/2:3[pre,post])",
             "1.2:3",
         ),
-        test_parse_03: (
+        parse_epubcfi_03: (
             "epubcfi(/1/2:3[,post])",
             "1.2:3",
         ),
-        test_parse_04: (
+        parse_epubcfi_04: (
             "epubcfi(/1/2:3[pre,])",
             "1.2:3",
         ),
-        test_parse_05: (
+        parse_epubcfi_05: (
             "epubcfi(/1[^^^]])",
             "1",
         ),
-        test_parse_06: (
+        parse_epubcfi_06: (
             "epubcfi(/6/14[cha!/p05ref]!/4[bo!/dy01]/10/2/1[foo]:5[don't!/ panic;s=b])",
             "6.14.4.10.2.1:5",
         ),
-        test_parse_07: (
+        parse_epubcfi_07: (
             "epubcfi(/6/4[chap01ref]!/4[body01]/10[para05]/3:5)",
             "6.4.4.10.3:5",
         ),
-        test_parse_08: (
+        parse_epubcfi_08: (
             "epubcfi(/6/4[chap01ref]!/4/10/0)",
             "6.4.4.10.0",
         ),
-        test_parse_09: (
+        parse_epubcfi_09: (
             "epubcfi(/6/4[chap01ref]!/4/10/999)",
             "6.4.4.10.999",
         ),
-        test_parse_10: (
+        parse_epubcfi_10: (
             "epubcfi(/6/4[chap01ref]!/4[body01],/10[para05]/3:5,/10[para05]/3:8)",
             "6.4.4.10.3:5",
         ),
-        test_parse_11: (
+        parse_epubcfi_11: (
             "epubcfi(/6/4[chap01ref]!/4[body01]/10[para05]/3:3[34,67])",
             "6.4.4.10.3:3",
         ),
-        test_parse_12: (
+        parse_epubcfi_12: (
             "epubcfi(/6/14[cha!/p05ref]!/4[bo!/dy01]/10/2/1[foo]~42.43@100:101)",
             "6.14.4.10.2.1",
         ),
-        test_parse_13: (
-            // Test that 'Temporal' and 'Spatial' offsets are ignored on all
-            // but last subpart.
+        // Test that 'Temporal' and 'Spatial' offsets are ignored on all but last subpart.
+        parse_epubcfi_13: (
             "epubcfi(/2~42.43@100:101/4!/6/8:100/6:200)",
             "2.4.6.8.6:200",
         ),
-        test_parse_14: (
-            // Test that parser ignores vendor extensions.
-            // <https://w3c.github.io/epub-specs/epub33/epubcfi/#sec-extensions>
+        // Test that parser ignores vendor extensions.
+        // <https://w3c.github.io/epub-specs/epub33/epubcfi/#sec-extensions>
+        parse_epubcfi_14: (
             "epubcfi(/2/4vnd.foo/6foo.bar:20)",
             "2.4.6:20",
         ),
-        test_parse_15: (
+        parse_epubcfi_15: (
             "epubcfi(/6/4[chap01ref]!/4[body01]/10[para05],/2/1:1,/3:4)",
             "6.4.4.10.2.1:1",
         ),
-        test_parse_16: (
+        parse_epubcfi_16: (
             "epubcfi(/6/4[chap01ref]!/4[body01]/10[para05]/1:3[xx,y])",
             "6.4.4.10.1:3",
         ),
-        test_parse_17: (
+        parse_epubcfi_17: (
             "epubcfi(/6/28[chap06]!/4/24[para06]/1,:4,:44)",
-            // TODO: Could this --------------------^^ cause an error? Should it
-            // be padded with a `0` so it doesn't look like its attached to the
-            // wrong step? -> '6.28.4.24.1.0:4'
+            // TODO: Could this --------------------^^ cause an error? Should it be padded with a
+            // `0` so it doesn't look like its attached to the wrong step? -> '6.28.4.24.1.0:4'
             "6.28.4.24.1:4",
         ),
-        test_parse_18: (
+        parse_epubcfi_18: (
             "epubcfi(/2/4[node-id]!/6/7:5[pre,post;s=b])",
             "2.4.6.7:5",
         ),
-        test_parse_19: (
+        parse_epubcfi_19: (
             "epubcfi(/2/4@4:2)",
             "2.4",
         ),
-        test_parse_20: (
+        parse_epubcfi_20: (
             "epubcfi(/2/4~3.14)",
             "2.4",
         ),
-        test_parse_21: (
+        parse_epubcfi_21: (
             "epubcfi(/2/4~3.14@4:2)",
             "2.4",
         ),
     }
 
     // <https://github.com/fread-ink/epub-cfi-resolver/blob/master/tests/compare.js>
-    test_compare! {
-        test_compare_00: (
+    test_compare_epubcfi! {
+        compare_epubcfi_00: (
             "epubcfi(/2)" < "epubcfi(/6)"
         ),
-        test_compare_01: (
+        compare_epubcfi_01: (
             "epubcfi(/2/4!/6)" < "epubcfi(/2/4!/7)"
         ),
-        test_compare_02: (
+        compare_epubcfi_02: (
             "epubcfi(/2/4!/8)" > "epubcfi(/2/4!/7)"
         ),
-        test_compare_03: (
+        compare_epubcfi_03: (
             "epubcfi(/2/4!/6[foo]/42!/12:100[lol])" < "epubcfi(/2/4!/6[bar]/44!/12:100[cat])"
         ),
-        test_compare_04: (
-            // Test that node ids and text location assertions are ignored.
+        // Test that node ids and text location assertions are ignored.
+        compare_epubcfi_04: (
             "epubcfi(/2/4!/6[foo]/44!/12:100[lol])" == "epubcfi(/2/4!/6[bar]/44!/12:100[cat])"
         ),
-        test_compare_05: (
+        compare_epubcfi_05: (
             "epubcfi(/2/4!/6[bar]/44!/12:100[cat])" == "epubcfi(/2/4!/6[bar]/44!/12:100[cat])"
         ),
-        test_compare_06: (
-            // Test that temporal and spatial offsets are ignored on character
-            // (text/cdata) nodes
+        // Test that temporal and spatial offsets are ignored on character (text/cdata) nodes
+        compare_epubcfi_06: (
             "epubcfi(/2/4!/6[bar]/44!/3~1.11@1:1)" == "epubcfi(/2/4!/6[bar]/44!/3~2.22@2:2)"
         ),
-        test_compare_07: (
-            // Compare identical ranges.
+        // Compare identical ranges.
+        compare_epubcfi_07: (
             "epubcfi(/2/4,/6/8,/10/12)" == "epubcfi(/2/4,/6/8,/10/12)"
         ),
-        test_compare_08: (
-            // Compare ranges with different [range-start].
+        // Compare ranges with different [range-start].
+        compare_epubcfi_08: (
             "epubcfi(/2/4,/6/7,/10/11)" < "epubcfi(/2/4,/6/8,/10/12)"
         ),
-        test_compare_09: (
-            // Compare ranges with different [parent-path].
+        // Compare ranges with different [parent-path].
+        compare_epubcfi_09: (
             "epubcfi(/2/2,/6/8,/10/12)" < "epubcfi(/2/4,/6/8,/10/12)"
         ),
-        test_compare_10: (
-            // Compare a range against a non-range.
+        // Compare a range against a non-range.
+        compare_epubcfi_10: (
             "epubcfi(/2/4,/6/8,/10/13)" > "epubcfi(/2/4/6/7)"
         ),
-        test_compare_11: (
-            // Compare a range against a non-range
+        // Compare a range against a non-range
+        compare_epubcfi_11: (
             "epubcfi(/2/4,/6/8,/10/13)" == "epubcfi(/2/4/6/8)"
         ),
-        test_compare_12: (
+        compare_epubcfi_12: (
             "epubcfi(/2/4!/6[bar]/44!/12:100[hah])" < "epubcfi(/2/4!/6[bar]/44!/12:200[cat])"
         ),
     }
