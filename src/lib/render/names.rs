@@ -117,8 +117,8 @@ impl NamesRender {
     ///
     /// # Arguments
     ///
-    /// * `entry` - The [`EntryContext`] injected into the filename templates.
-    /// * `template` - The [`TemplateRaw`] containing the filename templates.
+    /// * `entry` - The context injected into the filename templates.
+    /// * `template` - The template containing the filename templates.
     ///
     /// # Errors
     ///
