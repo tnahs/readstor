@@ -20,7 +20,7 @@ Apple Books for macOS stores its data in two locations:
 However, archiving and restoring only these directories might miss some metadata. Searching
 `~/Library/Containers` for anything that contains `Books` yields some other directories:
 
-```shell
+```bash
 find ~/Library/Containers -type d -name "*Books*"
 
 ./com.apple.BKAgentService/Data/Documents/iBooks
@@ -38,7 +38,7 @@ find ~/Library/Containers -type d -name "*Books*"
 
 Using `BK` as a proxy for `Books` yields no additional directories:
 
-```shell
+```bash
 find ~/Library/Containers -type d -name "*BK*"
 
 ./com.apple.BKAgentService
@@ -67,7 +67,7 @@ library files.
 
 For example:
 
-```shell
+```bash
 find ~/Library/Containers/com.apple.BKAgentService \
     -type f -a -exec grep -l --exclude=\*.{htm,html,xhtml} $USER {} +
 
@@ -76,7 +76,7 @@ find ~/Library/Containers/com.apple.BKAgentService \
 .../Data/Documents/iBooks/Books/Books.plist
 ```
 
-```shell
+```bash
 find ~/Library/Containers/com.apple.iBooksX* \
     -type f -a -exec grep -l --exclude=\*.{htm,html,xhtml} $USER {} +
 
@@ -103,7 +103,7 @@ Archiving the library is as simple as running two `rsync` commands. This should 
 relevant Apple Books data and metadata to a single directory. Make sure to replace
 `[PATH-TO-ARCHIVE]` with a valid path to said directory.
 
-```shell
+```bash
 rsync \
     --archive \
     --extended-attributes \
@@ -126,7 +126,7 @@ For example, if `[PATH-TO-ARCHIVE]` is:
 
 Our `rsync` commands would be:
 
-```shell
+```bash
 rsync \
     --archive \
     --extended-attributes \
@@ -174,7 +174,7 @@ Restoring the library takes an extra step. First we need to clear out the curren
 library. We can delete all the library files and directories by using the paths we determined from
 [What To Archive/Restore?](#what-to-archiverestore).
 
-```shell
+```bash
 rm -rf $HOME/Library/Containers/com.apple.BK*
 rm -rf $HOME/Library/Containers/com.apple.iBooks*
 rm -rf $HOME/Library/Group\ Containers/group.com.apple.iBooks
@@ -183,7 +183,7 @@ rm -rf $HOME/Library/Group\ Containers/group.com.apple.iBooks
 Finally, we can run the reverse `rsync` commands and restore the archive we previously made. Make
 sure to replace `[PATH-TO-ARCHIVE]` with a valid path.
 
-```shell
+```bash
 rsync \
     --archive \
     --extended-attributes \
@@ -209,7 +209,7 @@ For example, if `[PATH-TO-ARCHIVE]` is:
 
 Our `rsync` command would be:
 
-```shell
+```bash
 rsync \
     --archive \
     --extended-attributes \

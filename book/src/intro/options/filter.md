@@ -12,7 +12,7 @@ Currently, this is available for the [`export`][export] and [`render`][render] c
 For example, this filter would only [`render`][render] annotations where its respective book's title
 is _exactly_ `the art spirit` AND their tags _contain_ the `#star` tag.
 
-```shell
+```bash
 readstor render \
     --extract-tags \
     --filter "=title:the art spirit" \
@@ -22,7 +22,7 @@ readstor render \
 This filter would [`export`][export] annotations where its respective book's author _contains_ the
 string `krishnamurti` AND their tags _contain either_ `#star` or `#love`.
 
-```shell
+```bash
 readstor export \
     --extract-tags \
     --filter "author:krishnmurti" \
@@ -36,7 +36,7 @@ readstor export \
 After all the filters are run, a confirmation prompt is shown with a brief summary of the filtered
 down books/annotations.
 
-```shell
+```bash
 readstor render \
     --extract-tags \
     --filter "=title:the art spirit" \

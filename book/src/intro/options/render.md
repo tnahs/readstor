@@ -18,7 +18,7 @@ Render specified [Template Groups][template-groups].
 
 Multiple [Template Groups][template-groups] can be passed using the following syntax.
 
-```shell
+```bash
 readstor \
     # ...
     --template-group basic

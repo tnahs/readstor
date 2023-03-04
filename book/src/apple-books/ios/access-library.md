@@ -36,7 +36,7 @@ once complete.
 
 3. Install `ifuse`
 
-   ```shell
+   ```bash
    brew install gromgit/fuse/ifuse-mac
    ```
 
@@ -46,7 +46,7 @@ once complete.
 
 First we create a mount point. This can be anywhere and named anything.
 
-```shell
+```bash
 mkdir /tmp/my-device
 ```
 
@@ -54,7 +54,7 @@ mkdir /tmp/my-device
 
 If only a single device is connected, it can be mounted by simply running:
 
-```shell
+```bash
 ifuse /tmp/my-device
 ```
 
@@ -65,7 +65,7 @@ Assuming the device is an `iPhone`, run the following command:
 
 <!-- TODO: Verify this works with other devices too. -->
 
-```shell
+```bash
 system_profiler SPUSBDataType -detailLevel mini | grep -e iPhone -e Serial
 ```
 
@@ -86,7 +86,7 @@ XXXXXXXX-XXXXXXXXXXXXXXXX
 
 Finally, to mount the device, pass it to the command after the `--udid` flag to mount it:
 
-```shell
+```bash
 ifuse /tmp/my-device --udid XXXXXXXX-XXXXXXXXXXXXXXXX
 ```
 
