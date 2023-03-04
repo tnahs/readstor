@@ -11,10 +11,10 @@
 
 ### Features
 
-- Extracting data from iOS's Apple Books plists is now supported. Currently,
-  this will require the user to retrieve and manually pipe in the directory
-  containing the data. See the [documentation][documentation] for more
-  information.
+- Extracting data from iOS's Apple Books plists is now supported. Currently, this will require the
+  user to retrieve and manually pipe in the directory containing the data. Note that this feature is
+  considered experimental as it hasn't been tested as thoroughly as its macOS counterpart. See the
+  [documentation][documentation] for more information.
 
 ### Changes
 
@@ -25,6 +25,18 @@
   command.
 - The short option name for `--directory-template` is now `-t` in the `export`
   and `backup` command.
+- Directory templates for `export` and `backup` are now validated before execution.
+
+### Bug Fixes
+
+- `for` loops within templates are now properly validated before excecution. For example,
+  previously, the following returned an error only after templates had begun rendering:
+
+  ```jinja
+  {% for annotation in annotations %}
+    {{ annotation.invalid }}
+  {% endfor %}
+  ```
 
 ## v0.5.1 (2023-02-05)
 
