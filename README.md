@@ -38,9 +38,11 @@ cargo install readstor
 
 ## Version Support
 
-Apple Books' database schema can change with any update. The following versions
-have been verified as working. This is an ever-growing list, if a version isn't
+Apple Books' data schema can change with any update. The following versions have been verified
+as working. This is an ever-growing, non-exhaustive list of verified versions. If a version isn't
 listed, it doesn't necessarily mean it isn't supported.
+
+### macOS
 
 - macOS Ventura 13.x
   - Apple Books 5.0
@@ -51,7 +53,13 @@ listed, it doesn't necessarily mean it isn't supported.
 - macOS Big Sur 11.x
   - Apple Books 3.2
 
-_Note that libraries that are synced with iCloud Drive are not supported!_
+### iOS
+
+- iOS 16.x
+
+## Limitations
+
+Libraries that are synced with iCloud Drive are not supported.
 
 [documentation]: https://tnahs.github.io/readstor/
 [tera]: https://tera.netlify.app/
