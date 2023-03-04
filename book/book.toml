@@ -10,7 +10,7 @@ src = "src"
 build-dir = "build"
 
 [output.html]
-default-theme = "ayu"
+default-theme = "light"
 preferred-dark-theme = "ayu"
 git-repository-url = "https://www.github.com/tnahs/readstor"
 edit-url-template = "https://github.com/tnahs/readstor/edit/main/book/{path}"
