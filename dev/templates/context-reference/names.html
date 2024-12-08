@@ -3,8 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Page not found - ReadStor</title>
-        <base href="/">
+        <title>Names - ReadStor</title>
 
 
         <!-- Custom HTML head -->
@@ -13,33 +12,33 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff">
 
-        <link rel="icon" href="favicon.svg">
-        <link rel="shortcut icon" href="favicon.png">
-        <link rel="stylesheet" href="css/variables.css">
-        <link rel="stylesheet" href="css/general.css">
-        <link rel="stylesheet" href="css/chrome.css">
-        <link rel="stylesheet" href="css/print.css" media="print">
+        <link rel="icon" href="../../favicon.svg">
+        <link rel="shortcut icon" href="../../favicon.png">
+        <link rel="stylesheet" href="../../css/variables.css">
+        <link rel="stylesheet" href="../../css/general.css">
+        <link rel="stylesheet" href="../../css/chrome.css">
+        <link rel="stylesheet" href="../../css/print.css" media="print">
 
         <!-- Fonts -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-        <link rel="stylesheet" href="fonts/fonts.css">
+        <link rel="stylesheet" href="../../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../../fonts/fonts.css">
 
         <!-- Highlight.js Stylesheets -->
-        <link rel="stylesheet" href="highlight.css">
-        <link rel="stylesheet" href="tomorrow-night.css">
-        <link rel="stylesheet" href="ayu-highlight.css">
+        <link rel="stylesheet" href="../../highlight.css">
+        <link rel="stylesheet" href="../../tomorrow-night.css">
+        <link rel="stylesheet" href="../../ayu-highlight.css">
 
         <!-- Custom theme stylesheets -->
-        <link rel="stylesheet" href="src/css/custom.css">
+        <link rel="stylesheet" href="../../src/css/custom.css">
 
 
         <!-- Provide site root to javascript -->
         <script>
-            var path_to_root = "";
+            var path_to_root = "../../";
             var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "ayu" : "light";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="toc.js"></script>
+        <script src="../../toc.js"></script>
     </head>
     <body>
     <div id="body-container">
@@ -91,7 +90,7 @@
             <!-- populated by js -->
             <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
             <noscript>
-                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+                <iframe class="sidebar-iframe-outer" src="../../toc.html"></iframe>
             </noscript>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle">
                 <div class="sidebar-resize-indicator"></div>
@@ -125,11 +124,14 @@
                     <h1 class="menu-title">ReadStor</h1>
 
                     <div class="right-buttons">
-                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                        <a href="../../print.html" title="Print this book" aria-label="Print this book">
                             <i id="print-button" class="fa fa-print"></i>
                         </a>
                         <a href="https://www.github.com/tnahs/readstor" title="Git repository" aria-label="Git repository">
                             <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+                        <a href="https://github.com/tnahs/readstor/edit/main/book/src/templates/context-reference/names.md" title="Suggest an edit" aria-label="Suggest an edit">
+                            <i id="git-edit-button" class="fa fa-edit"></i>
                         </a>
 
                     </div>
@@ -157,14 +159,87 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="document-not-found-404"><a class="header" href="#document-not-found-404">Document not found (404)</a></h1>
-<p>This URL is invalid, sorry. Please use the navigation bar or search to continue.</p>
+                        <h1 id="names"><a class="header" href="#names">Names</a></h1>
+<p>A single <code>names</code> object is injected into all template contexts regardless of the template's
+<a href="/templates/configuration/context-modes.html">Context Mode</a>. These contain all the file and directory names rendered from the
+<code>names</code> key in the template's config. See <a href="/templates/configuration/names.html">Names</a> for more information.</p>
+<h2 id="template-fields---names"><a class="header" href="#template-fields---names">Template Fields - Names</a></h2>
+<div class="table-wrapper"><table><thead><tr><th>Attribute</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>names</code></td><td>dictionary</td><td>names object</td></tr>
+<tr><td><code>names.book</code></td><td>string</td><td>rendered book filename</td></tr>
+<tr><td><code>names.annotations</code></td><td>list[dictionary]</td><td>annotation names</td></tr>
+<tr><td><code>names.directory</code></td><td>string</td><td>rendered directory name</td></tr>
+</tbody></table>
+</div>
+<p>The <code>names.annotations</code> object is a list of dictionaries, where each dictionary refers to a rendered
+annotation file and contains its filename along with metadata about its respective annotation. Each
+dictionary consists of the following attributes:</p>
+<div class="table-wrapper"><table><thead><tr><th>Attribute</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>filename</code></td><td>string</td><td>rendered annotation filename</td></tr>
+<tr><td><code>created</code></td><td>datetime</td><td>date created</td></tr>
+<tr><td><code>modified</code></td><td>datetime</td><td>date modified</td></tr>
+<tr><td><code>location</code></td><td>string</td><td>location string</td></tr>
+</tbody></table>
+</div>
+<p>These attributes allow the sorting of the <code>names.annotations</code> list using <a href="https://tera.netlify.app/">Tera</a>'s
+<a href="https://tera.netlify.app/docs/#sort"><code>sort</code></a> filter. See <a href="/templates/backlinks.html">Backlinks</a> for example usage.</p>
+<h2 id="example-data---names"><a class="header" href="#example-data---names">Example Data - Names</a></h2>
+<p>With the following <code>names</code> configuration:</p>
+<pre><code class="language-yaml">names:
+  book: "{{ book.author }} - {{ book.title }}"
+  annotation: "{{ annotation.slugs.metadata.created }}-{{ book.slugs.title }}"
+  directory: "{{ book.author }} - {{ book.title }}"
+</code></pre>
+<pre><code class="language-json">{
+  "book": "Robert Henri - The Art Spirit.md",
+  "annotations": [
+    {
+      "filename": "2021-11-02-181510-the-art-spirit.md",
+      "created": "2021-11-02T18:15:10.700510978Z",
+      "modified": "2021-11-02T18:15:20.879488945Z",
+      "location": "6.26.4.2.636.2.1:0"
+    },
+    {
+      "filename": "2021-11-02-180445-the-art-spirit.md",
+      "created": "2021-11-02T18:04:45.184863090Z",
+      "modified": "2021-11-02T18:12:30.355533123Z",
+      "location": "6.26.4.2.446.2.1:0"
+    },
+    {
+      "filename": "2021-11-02-181325-the-art-spirit.md",
+      "created": "2021-11-02T18:13:25.905355930Z",
+      "modified": "2021-11-02T18:14:12.444134950Z",
+      "location": "6.24.4.2.296.2.1:0"
+    },
+    {
+      "filename": "2021-11-02-181250-the-art-spirit.md",
+      "created": "2021-11-02T18:12:50.826642036Z",
+      "modified": "2021-11-02T18:12:51.831905841Z",
+      "location": "6.18.4.2.20.2.1:0"
+    }
+  ],
+  "directory": "Robert Henri - The Art Spirit"
+}
+</code></pre>
+<h2 id="example-template---names"><a class="header" href="#example-template---names">Example Template - Names</a></h2>
+<pre><code class="language-jinja2"># {{ book.author }} - {{ book.title }}
+
+{% for name in names.annotations | sort(attribute="location") -%}
+![[{{ name.filename }}]]
+{% endfor %}
+</code></pre>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../../templates/context-reference/annotation.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
 
+                            <a rel="next prefetch" href="../../apple-books/index.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
 
                         <div style="clear: both"></div>
                     </nav>
@@ -172,7 +247,13 @@
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../../templates/context-reference/annotation.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
 
+                    <a rel="next prefetch" href="../../apple-books/index.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
             </nav>
 
         </div>
@@ -185,13 +266,13 @@
         </script>
 
 
-        <script src="elasticlunr.min.js"></script>
-        <script src="mark.min.js"></script>
-        <script src="searcher.js"></script>
+        <script src="../../elasticlunr.min.js"></script>
+        <script src="../../mark.min.js"></script>
+        <script src="../../searcher.js"></script>
 
-        <script src="clipboard.min.js"></script>
-        <script src="highlight.js"></script>
-        <script src="book.js"></script>
+        <script src="../../clipboard.min.js"></script>
+        <script src="../../highlight.js"></script>
+        <script src="../../book.js"></script>
 
         <!-- Custom JS scripts -->
 

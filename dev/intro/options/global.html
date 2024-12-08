@@ -3,8 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Page not found - ReadStor</title>
-        <base href="/">
+        <title>Global - ReadStor</title>
 
 
         <!-- Custom HTML head -->
@@ -13,33 +12,33 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff">
 
-        <link rel="icon" href="favicon.svg">
-        <link rel="shortcut icon" href="favicon.png">
-        <link rel="stylesheet" href="css/variables.css">
-        <link rel="stylesheet" href="css/general.css">
-        <link rel="stylesheet" href="css/chrome.css">
-        <link rel="stylesheet" href="css/print.css" media="print">
+        <link rel="icon" href="../../favicon.svg">
+        <link rel="shortcut icon" href="../../favicon.png">
+        <link rel="stylesheet" href="../../css/variables.css">
+        <link rel="stylesheet" href="../../css/general.css">
+        <link rel="stylesheet" href="../../css/chrome.css">
+        <link rel="stylesheet" href="../../css/print.css" media="print">
 
         <!-- Fonts -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-        <link rel="stylesheet" href="fonts/fonts.css">
+        <link rel="stylesheet" href="../../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../../fonts/fonts.css">
 
         <!-- Highlight.js Stylesheets -->
-        <link rel="stylesheet" href="highlight.css">
-        <link rel="stylesheet" href="tomorrow-night.css">
-        <link rel="stylesheet" href="ayu-highlight.css">
+        <link rel="stylesheet" href="../../highlight.css">
+        <link rel="stylesheet" href="../../tomorrow-night.css">
+        <link rel="stylesheet" href="../../ayu-highlight.css">
 
         <!-- Custom theme stylesheets -->
-        <link rel="stylesheet" href="src/css/custom.css">
+        <link rel="stylesheet" href="../../src/css/custom.css">
 
 
         <!-- Provide site root to javascript -->
         <script>
-            var path_to_root = "";
+            var path_to_root = "../../";
             var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "ayu" : "light";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="toc.js"></script>
+        <script src="../../toc.js"></script>
     </head>
     <body>
     <div id="body-container">
@@ -91,7 +90,7 @@
             <!-- populated by js -->
             <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
             <noscript>
-                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+                <iframe class="sidebar-iframe-outer" src="../../toc.html"></iframe>
             </noscript>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle">
                 <div class="sidebar-resize-indicator"></div>
@@ -125,11 +124,14 @@
                     <h1 class="menu-title">ReadStor</h1>
 
                     <div class="right-buttons">
-                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                        <a href="../../print.html" title="Print this book" aria-label="Print this book">
                             <i id="print-button" class="fa fa-print"></i>
                         </a>
                         <a href="https://www.github.com/tnahs/readstor" title="Git repository" aria-label="Git repository">
                             <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+                        <a href="https://github.com/tnahs/readstor/edit/main/book/src/intro/options/global.md" title="Suggest an edit" aria-label="Suggest an edit">
+                            <i id="git-edit-button" class="fa fa-edit"></i>
                         </a>
 
                     </div>
@@ -157,14 +159,67 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="document-not-found-404"><a class="header" href="#document-not-found-404">Document not found (404)</a></h1>
-<p>This URL is invalid, sorry. Please use the navigation bar or search to continue.</p>
+                        <h1 id="global"><a class="header" href="#global">Global</a></h1>
+<p>The following options affect all <a href="/intro/commands.html">Commands</a>.</p>
+<h2 id="--output-directory-path"><a class="header" href="#--output-directory-path"><code>--output-directory &lt;PATH&gt;</code></a></h2>
+<p>Set the output directory for all <a href="/intro/commands.html">Commands</a>.</p>
+<p>Default: <code>~/.readstor</code>.</p>
+<h2 id="--databases-directory-path"><a class="header" href="#--databases-directory-path"><code>--databases-directory &lt;PATH&gt;</code></a></h2>
+<p>Set the directory containing macOS's Apple Books databases</p>
+<p>Default: <code>~/Library/Containers/com.apple.iBooksX/Data/Documents</code></p>
+<p>The databases directory should contain the databases for macOS's Apple Books. These databases are:
+<code>AEAnnotation*.sqlite</code> and <code>BKLibrary*.sqlite</code>. The directory should follow the following structure:</p>
+<pre><code class="language-plaintext">[databases-directory]
+ │
+ ├── AEAnnotation
+ │   ├── AEAnnotation*.sqlite
+ │   └── ...
+ │
+ ├── BKLibrary
+ │   ├── BKLibrary*.sqlite
+ │   └── ...
+ └── ...
+</code></pre>
+<blockquote>
+<p><i class="fa fa-info-circle"></i> This can be useful when running ReadStor on databases backed-up
+with the <a href="/intro/commands.html#backup"><code>backup</code></a> command. Note that the <a href="/intro/commands.html#backup"><code>backup</code></a> command produces an output
+structure identical to this. So backing up and extracting data would require little effort.</p>
+</blockquote>
+<h2 id="--plists-directory-path"><a class="header" href="#--plists-directory-path"><code>--plists-directory &lt;PATH&gt;</code></a></h2>
+<p>Set the directory containing iOS's Apple Books plists</p>
+<blockquote>
+<p><i class="fa fa-exclamation-circle"></i> Experimental! Extracting data from Apple Books for iOS
+hasn't been tested as thoroughly as its macOS counterpart. Please submit an <a href="https://github.com/tnahs/readstor/issues">issue</a>
+if you run into any.</p>
+</blockquote>
+<p>The plists directory should contain the <code>Books.plist</code> and <code>com.apple.ibooks-sync.plist</code>. The
+directory should follow the following structure:</p>
+<pre><code class="language-plaintext">[plists-directory]
+ │
+ ├── Books.plist
+ ├── com.apple.ibooks-sync.plist
+ └── ...
+</code></pre>
+<blockquote>
+<p><i class="fa fa-info-circle"></i> See <a href="/apple-books/ios/library-location.html">iOS - Library Location</a> and
+<a href="/apple-books/ios/access-library.html">iOS - Access Library</a> on how to retrieve these files.</p>
+</blockquote>
+<h2 id="--force"><a class="header" href="#--force"><code>--force</code></a></h2>
+<p>Run even if Apple Books is currently running.</p>
+<h2 id="--quiet"><a class="header" href="#--quiet"><code>--quiet</code></a></h2>
+<p>Silence output messages.</p>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../../intro/options/index.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
 
+                            <a rel="next prefetch" href="../../intro/options/render.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
 
                         <div style="clear: both"></div>
                     </nav>
@@ -172,7 +227,13 @@
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../../intro/options/index.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
 
+                    <a rel="next prefetch" href="../../intro/options/render.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
             </nav>
 
         </div>
@@ -185,13 +246,13 @@
         </script>
 
 
-        <script src="elasticlunr.min.js"></script>
-        <script src="mark.min.js"></script>
-        <script src="searcher.js"></script>
+        <script src="../../elasticlunr.min.js"></script>
+        <script src="../../mark.min.js"></script>
+        <script src="../../searcher.js"></script>
 
-        <script src="clipboard.min.js"></script>
-        <script src="highlight.js"></script>
-        <script src="book.js"></script>
+        <script src="../../clipboard.min.js"></script>
+        <script src="../../highlight.js"></script>
+        <script src="../../book.js"></script>
 
         <!-- Custom JS scripts -->
 

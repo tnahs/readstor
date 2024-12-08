@@ -1,5 +1,5 @@
 <!DOCTYPE HTML>
-<html lang="en" class="sidebar-visible no-js ayu">
+<html lang="en" class="light sidebar-visible" dir="ltr">
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
@@ -7,10 +7,10 @@
 
 
         <!-- Custom HTML head -->
-        
+
         <meta name="description" content="A CLI for Apple Books annotations">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta name="theme-color" content="#ffffff" />
+        <meta name="theme-color" content="#ffffff">
 
         <link rel="icon" href="favicon.svg">
         <link rel="shortcut icon" href="favicon.png">
@@ -31,15 +31,17 @@
         <!-- Custom theme stylesheets -->
         <link rel="stylesheet" href="src/css/custom.css">
 
-    </head>
-    <body>
-    <div id="body-container">
+
         <!-- Provide site root to javascript -->
         <script>
             var path_to_root = "";
-            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "ayu" : "ayu";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "ayu" : "light";
         </script>
-
+        <!-- Start loading toc.js asap -->
+        <script src="toc.js"></script>
+    </head>
+    <body>
+    <div id="body-container">
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script>
             try {
@@ -61,41 +63,49 @@
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
             if (theme === null || theme === undefined) { theme = default_theme; }
-            var html = document.querySelector('html');
-            html.classList.remove('no-js')
-            html.classList.remove('ayu')
+            const html = document.documentElement;
+            html.classList.remove('light')
             html.classList.add(theme);
-            html.classList.add('js');
+            html.classList.add("js");
         </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
 
         <!-- Hide / unhide sidebar before it is displayed -->
         <script>
-            var html = document.querySelector('html');
-            var sidebar = 'hidden';
+            var sidebar = null;
+            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
             if (document.body.clientWidth >= 1080) {
                 try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
                 sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
             }
+            sidebar_toggle.checked = sidebar === 'visible';
             html.classList.remove('sidebar-visible');
             html.classList.add("sidebar-" + sidebar);
         </script>
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
-            <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded "><a href="00-intro/00-intro.html" class="active"><strong aria-hidden="true">1.</strong> Introduction</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="00-intro/01-commands.html"><strong aria-hidden="true">1.1.</strong> Commands</a></li><li class="chapter-item expanded "><a href="00-intro/02-00-options.html"><strong aria-hidden="true">1.2.</strong> Options</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="00-intro/02-01-global.html"><strong aria-hidden="true">1.2.1.</strong> Global</a></li><li class="chapter-item expanded "><a href="00-intro/02-02-render.html"><strong aria-hidden="true">1.2.2.</strong> Render</a></li><li class="chapter-item expanded "><a href="00-intro/02-03-export.html"><strong aria-hidden="true">1.2.3.</strong> Export</a></li><li class="chapter-item expanded "><a href="00-intro/02-04-backup.html"><strong aria-hidden="true">1.2.4.</strong> Backup</a></li><li class="chapter-item expanded "><a href="00-intro/02-05-filter.html"><strong aria-hidden="true">1.2.5.</strong> Filter</a></li><li class="chapter-item expanded "><a href="00-intro/02-06-preprocess.html"><strong aria-hidden="true">1.2.6.</strong> Pre-process</a></li><li class="chapter-item expanded "><a href="00-intro/02-07-postprocess.html"><strong aria-hidden="true">1.2.7.</strong> Post-process</a></li></ol></li></ol></li><li class="chapter-item expanded "><a href="01-templates/00-templates.html"><strong aria-hidden="true">2.</strong> Templates</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="01-templates/01-an-example-template.html"><strong aria-hidden="true">2.1.</strong> An Example Template</a></li><li class="chapter-item expanded "><a href="01-templates/02-00-configuration.html"><strong aria-hidden="true">2.2.</strong> Configuration</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="01-templates/02-01-template-groups.html"><strong aria-hidden="true">2.2.1.</strong> Template Groups</a></li><li class="chapter-item expanded "><a href="01-templates/02-02-context-modes.html"><strong aria-hidden="true">2.2.2.</strong> Context Modes</a></li><li class="chapter-item expanded "><a href="01-templates/02-03-structure-modes.html"><strong aria-hidden="true">2.2.3.</strong> Structure Modes</a></li><li class="chapter-item expanded "><a href="01-templates/02-04-file-extensions.html"><strong aria-hidden="true">2.2.4.</strong> File Extensions</a></li><li class="chapter-item expanded "><a href="01-templates/02-05-names.html"><strong aria-hidden="true">2.2.5.</strong> Names</a></li></ol></li><li class="chapter-item expanded "><a href="01-templates/03-partial-templates.html"><strong aria-hidden="true">2.3.</strong> Partial Templates</a></li><li class="chapter-item expanded "><a href="01-templates/04-backlinks.html"><strong aria-hidden="true">2.4.</strong> Backlinks</a></li><li class="chapter-item expanded "><a href="01-templates/05-string-sanitization.html"><strong aria-hidden="true">2.5.</strong> String Sanitization</a></li><li class="chapter-item expanded "><a href="01-templates/06-00-context-reference.html"><strong aria-hidden="true">2.6.</strong> Context Reference</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="01-templates/06-01-book.html"><strong aria-hidden="true">2.6.1.</strong> Book</a></li><li class="chapter-item expanded "><a href="01-templates/06-02-annotation.html"><strong aria-hidden="true">2.6.2.</strong> Annotation</a></li><li class="chapter-item expanded "><a href="01-templates/06-03-names.html"><strong aria-hidden="true">2.6.3.</strong> Names</a></li></ol></li></ol></li><li class="chapter-item expanded "><a href="02-apple-books/00-apple-books.html"><strong aria-hidden="true">3.</strong> Apple Books</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="02-apple-books/01-00-macos.html"><strong aria-hidden="true">3.1.</strong> macOS</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="02-apple-books/01-01-library-location.html"><strong aria-hidden="true">3.1.1.</strong> Library Location</a></li><li class="chapter-item expanded "><a href="02-apple-books/01-02-archive-restore-library.html"><strong aria-hidden="true">3.1.2.</strong> Archive/Restore Library</a></li></ol></li><li class="chapter-item expanded "><a href="02-apple-books/02-00-ios.html"><strong aria-hidden="true">3.2.</strong> iOS</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="02-apple-books/02-01-library-location.html"><strong aria-hidden="true">3.2.1.</strong> Library Location</a></li><li class="chapter-item expanded "><a href="02-apple-books/02-01-access-library.html"><strong aria-hidden="true">3.2.2.</strong> Access Library</a></li><li class="chapter-item expanded "><a href="02-apple-books/02-02-archive-restore-library.html"><strong aria-hidden="true">3.2.3.</strong> Archive/Restore Library</a></li></ol></li></ol></li></ol>
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
             </div>
-            <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
 
         <div id="page-wrapper" class="page-wrapper">
 
             <div class="page">
-                                <div id="menu-bar-hover-placeholder"></div>
-                <div id="menu-bar" class="menu-bar sticky bordered">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
                     <div class="left-buttons">
-                        <button id="sidebar-toggle" class="icon-button" type="button" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
                             <i class="fa fa-bars"></i>
-                        </button>
+                        </label>
                         <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
                             <i class="fa fa-paint-brush"></i>
                         </button>
@@ -120,7 +130,7 @@
                         <a href="https://www.github.com/tnahs/readstor" title="Git repository" aria-label="Git repository">
                             <i id="git-repository-button" class="fa fa-github"></i>
                         </a>
-                        <a href="https://github.com/tnahs/readstor/edit/main/book/src/00-intro/00-intro.md" title="Suggest an edit" aria-label="Suggest an edit">
+                        <a href="https://github.com/tnahs/readstor/edit/main/book/src/intro/index.md" title="Suggest an edit" aria-label="Suggest an edit">
                             <i id="git-edit-button" class="fa fa-edit"></i>
                         </a>
 
@@ -150,22 +160,21 @@
                 <div id="content" class="content">
                     <main>
                         <h1 id="introduction"><a class="header" href="#introduction">Introduction</a></h1>
-<p>ReadStor is a simple CLI for exporting user-generated data from Apple Books. The
-goal of this project is to facilitate data-migration from Apple Books to any
-other platform. Currently, Apple Books provides no simple way to do this.
-Exporting is possible but not ideal and often times truncates long annotations.</p>
-<p>Version <code>0.1.x</code> contained the core functionality: (1) save all annotations and
-notes as JSON (2) render them via a custom (or the default) template using the
-<a href="https://tera.netlify.app/">Tera</a> syntax or (3) backup the current Apple Books databases.</p>
-<p>Note that this repository is a heavy work-in-progress and things are bound to
-change.</p>
+<p>ReadStor is a simple CLI for exporting user-generated data from Apple Books. The goal of this
+project is to facilitate data-migration from Apple Books to any other platform. Currently, Apple
+Books provides no simple way to do this. Exporting is possible but not ideal and often times
+truncates long annotations.</p>
+<p>Version <code>0.1.x</code> contained the core functionality: (1) save all annotations and notes as JSON (2)
+render them via a custom (or the default) template using the <a href="https://tera.netlify.app/">Tera</a> syntax or (3) backup the
+current Apple Books databases.</p>
+<p>Note that this repository is a heavy work-in-progress and things are bound to change.</p>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
 
-                            <a rel="next" href="00-intro/01-commands.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="intro/commands.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -176,7 +185,7 @@ change.</p>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
 
-                    <a rel="next" href="00-intro/01-commands.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="intro/commands.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>
