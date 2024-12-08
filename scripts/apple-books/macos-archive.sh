@@ -1,29 +1,11 @@
 #!/usr/bin/env zsh
 
 
-function print_help {
-    cat <<EOF
-Archive macOS's Apple Books library
-
-Usage: archive-library.sh [PATH]
-
-Arguments:
-    PATH    Path to save archive to
-
-Options:
-    -h, --help    Print help information
-EOF
-}
-
-
-function print_usage {
-    cat <<EOF
-
-Usage: archive-library.sh [PATH]
-
-For more information try '--help'.
-EOF
-}
+if [ -n "$ZSH_VERSION" ]; then
+    script_name=$(basename "${(%):-%N}")
+else
+    script_name=$(basename "$0")
+fi
 
 
 function quit_applebooks {
@@ -43,33 +25,50 @@ function archive_library {
     echo "Archiving the Apple Books library..."
     echo "This may take a few minutes..."
 
-    rsync \
-        --archive \
-        --extended-attributes \
-        $HOME/Library/Containers/com.apple.BK* \
-        $HOME/Library/Containers/com.apple.iBooks* \
-        "$archive"/Containers
+    rsync                                            \
+        --archive                                    \
+        --extended-attributes                        \
+        "$HOME/Library/Containers/com.apple.BK*"     \
+        "$HOME/Library/Containers/com.apple.iBooks*" \
+        "$archive/Containers"
 
-    rsync \
-        --archive \
-        --extended-attributes \
-        $HOME/Library/Group\ Containers/group.com.apple.iBooks \
-        "$archive"/Group\ Containers
+    rsync                                                       \
+        --archive                                               \
+        --extended-attributes                                   \
+        "$HOME/Library/Group Containers/group.com.apple.iBooks" \
+        "$archive/Group Containers"
+}
+
+
+function print_help {
+    cat <<EOF
+Archive macOS's Apple Books library
+
+\e[4mUsage:\e[0m ${script_name} [PATH]"
+
+\e[4mArguments:\e[0m
+  PATH   Path to save archive to
+
+\e[4mOptions:\e[0m
+  -h, --help   Show help
+EOF
 }
 
 
 function main {
-    if [[ $1 == "--help" ||  $1 == "-h" ]] then;
+    if [[ "$1" == "--help" ||  "$1" == "-h" ]]; then
+        print_help
+        exit 0
+    elif [[ $# -lt 1 ]]; then
+        echo "Error: Missing required positional argument: PATH"
+        echo
         print_help
         exit 1
-    elif [[ $# -lt 1 ]] then;
-        echo "error: Missing required positional argument: PATH"
-        print_usage
-        exit 2
-    elif [[ $# -gt 1 ]] then;
-        echo "error: Invalid or missing arguments"
-        print_usage
-        exit 2
+    elif [[ $# -gt 1 ]]; then
+        echo "Error: Invalid or missing arguments"
+        echo
+        print_help
+        exit 1
     else
         quit_applebooks
         archive_library "$1"
