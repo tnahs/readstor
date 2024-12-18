@@ -41,17 +41,15 @@ function archive_library {
 
 
 function print_help {
-    cat <<EOF
-Archive macOS's Apple Books library
+    echo -e "Archive macOS's Apple Books library
 
-\e[4mUsage:\e[0m ${script_name} [PATH]"
+\e[4mUsage:\e[0m ${script_name} [PATH]
 
 \e[4mArguments:\e[0m
   PATH   Path to save archive to
 
 \e[4mOptions:\e[0m
-  -h, --help   Show help
-EOF
+  -h, --help   Show help"
 }
 
 

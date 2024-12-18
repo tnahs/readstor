@@ -49,17 +49,15 @@ function restore_library {
 
 
 function print_help {
-    cat <<EOF
-Restore a previously archived macOS Apple Books library
+    echo -e "Restore a previously archived macOS Apple Books library
 
-\e[4mUsage:\e[0m ${script_name} [PATH]"
+\e[4mUsage:\e[0m ${script_name} [PATH]
 
 \e[4mArguments:\e[0m
   PATH   Path to restore archive from
 
 \e[4mOptions:\e[0m
-  -h, --help   Show help
-EOF
+  -h, --help   Show help"
 }
 
 
