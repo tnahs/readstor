@@ -8,9 +8,17 @@
       converted to a tag-aware one: `https://github.com/tnahs/readstor/v0.3.0`.
       Is it possible to automate this nicely for every release?
 - [ ] Add more documentation for each annotation/book field.
+- [ ] Format book to 100-character line length.
+
+## v0.6.0
+
+- [ ] How do we handle `date_last_opened` for a book on iOS?
+- [ ] Remove `tags` from `book.json`. No need for redundant data.
+- [ ] Add `slug-symbols` filter that converts all symbols to `-`es.
 
 ## Next
 
+- [ ] Check `cargo clippy` GitHub Action.
 - [ ] Update README to be more focused on template outputs and exporting rather
       than a general purpose CLI.
 - [ ] Update how the summaries are printed out. With the ability to skip
@@ -66,9 +74,17 @@
     • rendered 1 template into 99 files to /path/to/output/directory
   ```
 
+- [ ] Add more `FilterType`s and `FilterOperator`s.
+
 ## Internal
 
+- [ ] Document `cli` crate.
+- [ ] Add more tests in:
+  - `lib/process/processors.rs`
+  - `lib/process/mod.rs`
+- [ ] Improve `epubcfi` parser.
 - [ ] Add teardown for testing.
+- [ ] Use 100-120 character line-length for comments.
 - [ ] Can we add tests inside the `lib::render::template.rs` to verify that the
       example template configs are valid? This should also check the `names`
       field for any errors in requested values.
