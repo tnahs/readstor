@@ -21,10 +21,8 @@
 - CLI options are now grouped for better readability.
 - The short option name for `--force` is now `-F`.
 - The short option name for `--overwrite-existing` is now `-O`.
-- The short option name for `--template-directory` is now `-t` in the `render`
-  command.
-- The short option name for `--directory-template` is now `-t` in the `export`
-  and `backup` command.
+- The short option name for `--template-directory` is now `-t` in the `render` command.
+- The short option name for `--directory-template` is now `-t` in the `export` and `backup` command.
 - Directory templates for `export` and `backup` are now validated before execution.
 
 ### Bug Fixes
