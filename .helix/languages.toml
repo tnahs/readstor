@@ -1,12 +1,12 @@
 [[language]]
 name = "rust"
 auto-format = true
-max-line-length = 100
+text-width = 100
 
-[language.config]
+[language-server.rust-analyzer.config]
 checkOnSave.command = "clippy"
 
 [[language]]
 name = "markdown"
 auto-format = true
-max-line-length = 100
+text-width = 100
