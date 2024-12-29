@@ -3,11 +3,11 @@ repos:
   rev: v5.0.0
   hooks:
   - id: check-added-large-files
-    exclude: ^(data/ios)
+    exclude: ^(data)
   - id: check-executables-have-shebangs
-    exclude: ^(data/ios)
+    exclude: ^(src|tests|data)
   - id: check-shebang-scripts-are-executable
-    exclude: ^(data/databases)
+    exclude: ^(src|tests|data)
   - id: check-toml
   - id: check-yaml
   - id: end-of-file-fixer
