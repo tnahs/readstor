@@ -138,7 +138,7 @@ impl std::fmt::Debug for TemplateRaw {
             .field("group", &self.group)
             .field("context_mode", &self.context_mode)
             .field("structure_mode", &self.structure_mode)
-            .finish()
+            .finish_non_exhaustive()
     }
 }
 
@@ -192,7 +192,7 @@ impl std::fmt::Debug for TemplatePartialRaw {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.debug_struct("TemplatePartialRaw")
             .field("id", &self.id)
-            .finish()
+            .finish_non_exhaustive()
     }
 }
 
@@ -229,7 +229,7 @@ impl std::fmt::Debug for TemplateRender {
         f.debug_struct("TemplateRender")
             .field("path", &self.path)
             .field("filename", &self.filename)
-            .finish()
+            .finish_non_exhaustive()
     }
 }
 
@@ -401,7 +401,7 @@ mod test_template {
 
         // Tests that a missing config block returns an error.
         #[test]
-        #[should_panic]
+        #[should_panic(expected = "called `Option::unwrap()` on a `None` value")]
         fn missing_config() {
             let template = load_test_template(DIRECTORY, "missing-config.txt");
             TemplateRaw::parse(&template).unwrap();
@@ -409,7 +409,7 @@ mod test_template {
 
         // Tests that a missing closing tag returns an error.
         #[test]
-        #[should_panic]
+        #[should_panic(expected = "called `Option::unwrap()` on a `None` value")]
         fn missing_closing_tag() {
             let template = load_test_template(DIRECTORY, "missing-closing-tag.txt");
             TemplateRaw::parse(&template).unwrap();
@@ -417,7 +417,7 @@ mod test_template {
 
         // Tests that missing `readstor` in the opening tag returns an error.
         #[test]
-        #[should_panic]
+        #[should_panic(expected = "called `Option::unwrap()` on a `None` value")]
         fn incomplete_opening_tag_01() {
             let template = load_test_template(DIRECTORY, "incomplete-opening-tag-01.txt");
             TemplateRaw::parse(&template).unwrap();
@@ -425,7 +425,7 @@ mod test_template {
 
         // Tests that missing the `!` in the opening tag returns an error.
         #[test]
-        #[should_panic]
+        #[should_panic(expected = "called `Option::unwrap()` on a `None` value")]
         fn incomplete_opening_tag_02() {
             let template = load_test_template(DIRECTORY, "incomplete-opening-tag-02.txt");
             TemplateRaw::parse(&template).unwrap();
@@ -433,7 +433,7 @@ mod test_template {
 
         // Tests that no linebreak after `readstor` returns an error.
         #[test]
-        #[should_panic]
+        #[should_panic(expected = "called `Option::unwrap()` on a `None` value")]
         fn missing_linebreak_01() {
             let template = load_test_template(DIRECTORY, "missing-linebreak-01.txt");
             TemplateRaw::parse(&template).unwrap();
@@ -441,7 +441,7 @@ mod test_template {
 
         // Tests that no linebreak after the config body returns an error.
         #[test]
-        #[should_panic]
+        #[should_panic(expected = "called `Option::unwrap()` on a `None` value")]
         fn missing_linebreak_02() {
             let template = load_test_template(DIRECTORY, "missing-linebreak-02.txt");
             TemplateRaw::parse(&template).unwrap();
@@ -449,7 +449,7 @@ mod test_template {
 
         // Tests that no linebreak after the closing tag returns an error.
         #[test]
-        #[should_panic]
+        #[should_panic(expected = "called `Option::unwrap()` on a `None` value")]
         fn missing_linebreak_03() {
             let template = load_test_template(DIRECTORY, "missing-linebreak-03.txt");
             TemplateRaw::parse(&template).unwrap();
@@ -457,7 +457,7 @@ mod test_template {
 
         // Tests that no linebreak before the opening tag returns an error.
         #[test]
-        #[should_panic]
+        #[should_panic(expected = "called `Option::unwrap()` on a `None` value")]
         fn missing_linebreak_04() {
             let template = load_test_template(DIRECTORY, "missing-linebreak-04.txt");
             TemplateRaw::parse(&template).unwrap();

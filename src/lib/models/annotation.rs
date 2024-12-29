@@ -99,7 +99,7 @@ impl Ord for Annotation {
 
 impl PartialOrd for Annotation {
     fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
-        self.metadata.partial_cmp(&other.metadata)
+        Some(self.metadata.cmp(&other.metadata))
     }
 }
 
@@ -143,7 +143,7 @@ impl Ord for AnnotationMetadata {
 
 impl PartialOrd for AnnotationMetadata {
     fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
-        self.location.partial_cmp(&other.location)
+        Some(self.location.cmp(&other.location))
     }
 }
 

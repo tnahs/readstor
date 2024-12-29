@@ -10,8 +10,7 @@ use sysinfo::{System, SystemExt};
 /// Returns the version Apple Books for macOS as `v[short]-[long]` e.g. `v3.2-2217`.
 ///
 /// * Returns `v?` if the Apple Books application cannot be found.
-/// * Returns `v[short]-?`, `v?-[long]` or `v?-?` depending on what version
-/// numbers can be located.
+/// * Returns `v[short]-?`, `v?-[long]` or `v?-?` depending on what version numbers can be located.
 pub static APPLEBOOKS_VERSION: Lazy<String> = Lazy::new(|| {
     let path: PathBuf = [
         "/",

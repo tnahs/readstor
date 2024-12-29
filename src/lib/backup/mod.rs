@@ -196,7 +196,7 @@ mod test_backup {
 
     // Tests that an invalid context field returns an error.
     #[test]
-    #[should_panic]
+    #[should_panic(expected = "Failed to render '__tera_one_off'")]
     fn invalid_context() {
         let template = load_test_template("invalid-context", "invalid-backup.txt");
 

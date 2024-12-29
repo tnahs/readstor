@@ -49,8 +49,8 @@ impl Templates {
     /// # Arguments
     ///
     /// * `options` - The render options.
-    /// * `default` - A string representing the contents of a template to build
-    /// as the default. Used when no templates directory is specified.
+    /// * `default` - A string representing the contents of a template to build as the default. Used
+    ///   when no templates directory is specified.
     #[must_use]
     pub fn new<O>(options: O, default: String) -> Self
     where
@@ -70,10 +70,10 @@ impl Templates {
     /// # Errors
     ///
     /// Will return `Err` if:
-    /// * A template contains either syntax errors or contains variables that
-    /// reference non-existent fields in a [`Book`][book]/[`Annotation`][annotation].
-    /// * A template's config block isn't formatted correctly, has syntax errors
-    /// or is missing required fields.
+    /// * A template contains either syntax errors or contains variables that reference non-existent
+    ///   fields in a [`Book`][book]/[`Annotation`][annotation].
+    /// * A template's config block isn't formatted correctly, has syntax errors or is missing
+    ///   required fields.
     /// * A requested template-group does not exist.
     /// * Any IO errors are encountered.
     ///
@@ -151,9 +151,8 @@ impl Templates {
     ///
     /// # Arguments
     ///
-    /// * `path` - The path to the write the rendered templates to. Each
-    /// rendered template's path is appened to this path to determine its full
-    /// path.
+    /// * `path` - The path to the write the rendered templates to. Each rendered template's path is
+    ///   appened to this path to determine its full path.
     ///
     /// # Errors
     ///
@@ -253,10 +252,10 @@ impl Templates {
     /// # Errors
     ///
     /// Will return `Err` if:
-    /// * A template contains either syntax errors or contains variables that
-    /// reference non-existent fields in a [`Book`][book]/[`Annotation`][annotation].
-    /// * A template's config block isn't formatted correctly, has syntax errors
-    /// or is missing required fields.
+    /// * A template contains either syntax errors or contains variables that reference non-existent
+    ///   fields in a [`Book`][book]/[`Annotation`][annotation].
+    /// * A template's config block isn't formatted correctly, has syntax errors or is missing
+    ///   required fields.
     /// * Any IO errors are encountered.
     ///
     /// [book]: crate::models::book::Book
@@ -396,8 +395,8 @@ impl Templates {
     /// * `template` - The template to render.
     /// * `entry` - The context to inject into the template.
     /// * `names` - The names to inject into the template context.
-    /// * `path` - The path to where the template will be written to. This path
-    /// should be relative to the final output directory.
+    /// * `path` - The path to where the template will be written to. This path should be relative
+    ///   to the final output directory.
     ///
     /// # Errors
     ///
@@ -428,8 +427,8 @@ impl Templates {
     /// * `template` - The template to render.
     /// * `entry` - The context to inject into the template.
     /// * `names` - The names to inject into the template context.
-    /// * `path` - The path to where the template will be written to. This path
-    /// should be relative to the final output directory.
+    /// * `path` - The path to where the template will be written to. This path should be relative
+    ///   to the final output directory.
     ///
     /// # Errors
     ///
@@ -694,7 +693,7 @@ mod test_templates {
             let template = load_test_template(DIRECTORY, "valid-book.txt");
             let result = validate_template_syntax(&template);
 
-            assert!(matches!(result, Ok(_)));
+            assert!(result.is_ok());
         }
 
         // Tests that all `Annotation` fields are valid.
@@ -703,7 +702,7 @@ mod test_templates {
             let template = load_test_template(DIRECTORY, "valid-annotation.txt");
             let result = validate_template_syntax(&template);
 
-            assert!(matches!(result, Ok(_)));
+            assert!(result.is_ok());
         }
     }
 
@@ -735,7 +734,7 @@ mod test_templates {
             let template = load_test_template(DIRECTORY, "valid-syntax.txt");
             let result = validate_template_syntax(&template);
 
-            assert!(matches!(result, Ok(_)));
+            assert!(result.is_ok());
         }
     }
 

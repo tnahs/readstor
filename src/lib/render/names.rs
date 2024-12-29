@@ -142,6 +142,7 @@ impl NamesRender {
     ///
     /// * `annotation_id` - The annotation's id.
     #[must_use]
+    #[allow(clippy::missing_panics_doc)]
     pub fn get_annotation_filename(&self, annotation_id: &str) -> String {
         self.annotations
             .get(annotation_id)
