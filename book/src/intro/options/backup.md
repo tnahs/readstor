@@ -16,8 +16,8 @@ Set the output directory template
 > nest a pipe `|` inside a markdown table. In other words, the default value does not contain
 > a backslash.
 
-For example, using the default template, the non-rendered ouput structure would
-look like the following:
+For example, using the default template, the non-rendered ouput structure would look like the
+following:
 
 ```plaintext
 [ouput-directory]

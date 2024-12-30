@@ -7,8 +7,8 @@ use once_cell::sync::Lazy;
 
 /// The root databases directory.
 ///
-/// This assembles the full path to macOS's Apple Books directory containing
-/// the `BKLibrary*.sqlite` and `AEAnnotation*.sqlite` databases.
+/// This assembles the full path to macOS's Apple Books directory containing the `BKLibrary*.sqlite`
+/// and `AEAnnotation*.sqlite` databases.
 ///
 /// The full path:
 /// ```plaintext

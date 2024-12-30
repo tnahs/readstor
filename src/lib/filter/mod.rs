@@ -102,9 +102,8 @@ impl FilterRunner {
 
 /// An enum representing possible filter types.
 ///
-/// A filter generally consists of three elements: (1) the field to use for
-/// filtering, (2) a list of queries and (3) a [`FilterOperator`] to determine
-/// how to handle the queries.
+/// A filter generally consists of three elements: (1) the field to use for filtering, (2) a list of
+/// queries and (3) a [`FilterOperator`] to determine how to handle the queries.
 #[derive(Debug, Clone)]
 pub enum FilterType {
     /// Sets the filter to use the [`Book::title`][book] field for filtering.
@@ -127,8 +126,7 @@ pub enum FilterType {
         operator: FilterOperator,
     },
 
-    /// Sets the filter to use the [`Annotation::tags`][annotation] field for
-    /// filtering.
+    /// Sets the filter to use the [`Annotation::tags`][annotation] field for filtering.
     ///
     /// [annotation]: crate::models::annotation::Annotation::tags
     Tags {

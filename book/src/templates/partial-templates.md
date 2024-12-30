@@ -22,11 +22,11 @@ Partial templates are included using the `include` tag:
 {% include "_my-partial-template.md" %}
 ```
 
-Where `"_my-partial-template.md"` is a path relative to the
-[templates directory][templates-directory]. Therefore, this would be pointing to a template at the
-root of the [templates directory][templates-directory]. If we wanted to organize our templates
-into different directories we would have to add the directory names for any directories between the
-including template and the [templates directory][templates-directory].
+Where `"_my-partial-template.md"` is a path relative to the [templates
+directory][templates-directory]. Therefore, this would be pointing to a template at the root of the
+[templates directory][templates-directory]. If we wanted to organize our templates into different
+directories we would have to add the directory names for any directories between the including
+template and the [templates directory][templates-directory].
 
 For example, with the following structure:
 

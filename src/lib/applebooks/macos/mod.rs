@@ -1,8 +1,8 @@
 //! Defines types for interacting with the macOS's Apple Books databases.
 //!
-//! The [`ABMacos`] struct, is used to to directly interact with the Apple
-//! Books databases while the [`ABQuery`] trait provides an interface for
-//! generating types from either of the Apple Books databases.
+//! The [`ABMacos`] struct, is used to to directly interact with the Apple ! Books databases while
+//! the [`ABQuery`] trait provides an interface for ! generating types from either of the Apple Books
+//! databases.
 
 pub mod defaults;
 pub mod utils;
@@ -17,8 +17,8 @@ use self::utils::APPLEBOOKS_VERSION;
 
 /// A struct for interacting with macOS's Apple Books databases.
 ///
-/// A directory containing macOS's Apple Books databases should conform to the
-/// following structure as this is how the official directory is structured.
+/// A directory containing macOS's Apple Books databases should conform to the following structure
+/// as this is how the official directory is structured.
 ///
 /// ```plaintext
 /// [databases]
@@ -42,8 +42,7 @@ impl ABMacos {
     ///
     /// * `path` - The path to a directory containing macOS's Apple Books databases.
     ///
-    /// See [`ABMacos`] for more information on how the databases directory
-    /// should be structured.
+    /// See [`ABMacos`] for more information on how the databases directory should be structured.
     ///
     /// # Errors
     ///
@@ -63,8 +62,7 @@ impl ABMacos {
     ///
     /// * `path` - The path to a directory containing macOS's Apple Books databases.
     ///
-    /// See [`ABMacos`] for more information on how the databases directory
-    /// should be structured.
+    /// See [`ABMacos`] for more information on how the databases directory should be structured.
     ///
     /// # Errors
     ///
@@ -85,8 +83,7 @@ impl ABMacos {
     /// * `path` - The path to a directory containing macOS's Apple Books databases.
     /// * `database` - Which database to query.
     ///
-    /// See [`ABMacos`] for more information on how the databases directory
-    /// should be structured.
+    /// See [`ABMacos`] for more information on how the databases directory should be structured.
     ///
     /// # Errors
     ///
@@ -108,10 +105,9 @@ impl ABMacos {
              });
          };
 
-        // This will only fail if the database schema has changes. This means
-        // that the Apple Books database schema is different than the one the
-        // query has been designed against. In that case,  the currently
-        // installed version of Apple Books is unsupported.
+        // This will only fail if the database schema has changes. This means that the Apple Books
+        // database schema is different than the one the query has been designed against. In that
+        // case,  the currently installed version of Apple Books is unsupported.
         let mut statement = match connection.prepare(T::QUERY) {
             Ok(statement) => statement,
             Err(error) => {
@@ -124,16 +120,13 @@ impl ABMacos {
 
         let items = statement
             .query_map([], |row| Ok(T::from_row(row)))
-            // The `rusqlite` documentation for `query_map` states 'Will return
-            // Err if binding parameters fails.' So this should be safe because
-            // `query_map` is given no parameters.
+            // The `rusqlite` documentation for `query_map` states 'Will return Err if binding
+            // parameters fails.' So this should be safe because `query_map` is given no parameters.
             .unwrap()
-            // Using `filter_map` here because we know from a few lines above
-            // that all the items are wrapped in an `Ok`. At this point the
-            // there should be nothing that would fail in regards to querying
-            // and creating an instance of T unless there's an error in the
-            // implementation of the `ABQuery` trait. See `ABQuery` for more
-            // information.
+            // Using `filter_map` here because we know from a few lines above that all the items
+            // are wrapped in an `Ok`. At this point the there should be nothing that would fail
+            // in regards to querying and creating an instance of T unless there's an error in the
+            // implementation of the `ABQuery` trait. See `ABQuery` for more information.
             .filter_map(std::result::Result::ok)
             .collect();
 
@@ -147,8 +140,7 @@ impl ABMacos {
     /// * `path` - The path to a directory containing macOS's Apple Books databases.
     /// * `database` - Which database path to get.
     ///
-    /// See [`ABMacos`] for more information on how the databases directory
-    /// should be structured.
+    /// See [`ABMacos`] for more information on how the databases directory should be structured.
     fn get_database(path: &Path, database: ABDatabase) -> Result<PathBuf> {
         // (a) -> `/path/to/databases/DATABASE_NAME/`
         let path = path.join(database.to_string());
@@ -159,17 +151,16 @@ impl ABMacos {
         let pattern = pattern.to_string_lossy();
 
         let mut databases: Vec<PathBuf> = glob::glob(&pattern)
-            // This should be safe to unwrap seeing we know the pattern is valid
-            // and in production the path (b) will always be valid UTF-8 as it's
-            // a path to a default macOS application's container.
+            // This should be safe to unwrap seeing we know the pattern is valid and in production
+            // the path (b) will always be valid UTF-8 as it's a path to a default macOS
+            // application's container.
             .unwrap()
             .filter_map(std::result::Result::ok)
             .collect();
 
-        // macOS's default Apple Books database directory contains only a single
-        // database file that starts with the `DATABASE_NAME` and ends with
-        // `.sqlite`. If there are more then we'd possibly run into unexpected
-        // behaviors.
+        // macOS's default Apple Books database directory contains only a single database file that
+        // starts with the `DATABASE_NAME` and ends with `.sqlite`. If there are more then we'd
+        // possibly run into unexpected behaviors.
         match &databases[..] {
             [_] => Ok(databases.pop().unwrap()),
             _ => Err(Error::MissingDefaultDatabase),
@@ -177,18 +168,16 @@ impl ABMacos {
     }
 }
 
-/// A trait for standardizing how types are created from the Apple Books
-/// databases.
+/// A trait for standardizing how types are created from the Apple Books databases.
 ///
-/// This trait allows for instances to be created generically over the rows of
-/// their respective databases `BKLibrary*.sqlite` and `AEAnnotation*.sqlite`.
+/// This trait allows for instances to be created generically over the rows of their respective
+/// databases `BKLibrary*.sqlite` and `AEAnnotation*.sqlite`.
 ///
-/// The [`ABQuery::from_row()`] and [`ABQuery::QUERY`] methods are strongly
-/// coupled in that the declared rows in the `SELECT` statement *must* map
-/// directly to the `rusqlite`'s `Row::get()` method e.g. the first row of the
-/// `SELECT` statement maps to `row.get(0)` etc. The `unwrap` on the
-/// `Row::get()` methods will panic if the index is out of range or the there's
-/// a type mismatch to the struct field it's been mapped to.
+/// The [`ABQuery::from_row()`] and [`ABQuery::QUERY`] methods are strongly coupled in that the
+/// declared rows in the `SELECT` statement *must* map directly to the `rusqlite`'s `Row::get()`
+/// method e.g. the first row of the `SELECT` statement maps to `row.get(0)` etc. The `unwrap` on
+/// the `Row::get()` methods will panic if the index is out of range or the there's a type mismatch
+/// to the struct field it's been mapped to.
 ///
 /// The databases seem to be related via a UUID field.
 ///

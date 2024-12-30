@@ -141,8 +141,7 @@ Example `annotations.json`:
 ]
 ```
 
-> <i class="fa fa-info-circle"></i> This `export` was run with the [`--extract-tags`][extract-tags]
-> option.
+> <i class="fa fa-info-circle"></i> This `export` was run with the [`--extract-tags`][extract-tags] option.
 
 ## `backup`
 

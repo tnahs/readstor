@@ -10,8 +10,8 @@
 
 At render time, each template is injected with a "context", in other words, the data it will render.
 ReadStor provides two different context modes: `book` and `annotation`. The context mode dictates
-not just the data within the context but also changes the number of output files. See
-[A Note On Output Structure](#a-note-on-output-structure) for more information.
+not just the data within the context but also changes the number of output files. See [A Note On
+Output Structure](#a-note-on-output-structure) for more information.
 
 ## The Book Context
 
@@ -122,8 +122,7 @@ names:
   directory: Robert Henri - The Art Spirit
 ```
 
-> <i class="fa fa-info-circle"></i> See [Context Reference - Annotation][annotation] for more
-> information.
+> <i class="fa fa-info-circle"></i> See [Context Reference - Annotation][annotation] for more information.
 
 ## <i class="fa fa-exclamation-circle"></i> A Note On Output Structure
 

@@ -19,12 +19,11 @@ pub struct Config {
 
 impl Default for Config {
     fn default() -> Self {
-        // Creates the appropriate `Config` depending on the environment. In
-        // a development environment this sets the output directory to a temp
-        // directory on disk.
+        // Creates the appropriate `Config` depending on the environment. In a development
+        // environment this sets the output directory to a temp directory on disk.
         //
-        // Note that the appropriate environment variable to signal a
-        // development env should be set in the `.cargo/config.toml` file.
+        // Note that the appropriate environment variable to signal a development env should be set
+        // in the `.cargo/config.toml` file.
         let output_directory = if is_development_env() {
             super::defaults::TEMP_OUTPUT_DIRECTORY.to_owned()
         } else {
@@ -78,12 +77,11 @@ pub enum DataDirectory {
 
 impl Default for DataDirectory {
     fn default() -> Self {
-        // Creates the appropriate `DataDirectory` depending on the environment.
-        // In a development environment this sets the path to a local mock
-        // databases directory.
+        // Creates the appropriate `DataDirectory` depending on the environment. In a development
+        // environment this sets the path to a local mock databases directory.
         //
-        // Note that the appropriate environment variable to signal a
-        // development env should be set in the `.cargo/config.toml` file.
+        // Note that the appropriate environment variable to signal a development env should be set
+        // in the `.cargo/config.toml` file.
         if is_development_env() {
             Self::Macos(super::defaults::MockDatabases::BooksAnnotated.into())
         } else {

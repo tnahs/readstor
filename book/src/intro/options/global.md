@@ -53,8 +53,8 @@ directory should follow the following structure:
  └── ...
 ```
 
-> <i class="fa fa-info-circle"></i> See [iOS - Library Location][ios-library-location] and
-> [iOS - Access Library][ios-access-library] on how to retrieve these files.
+> <i class="fa fa-info-circle"></i> See [iOS - Library Location][ios-library-location] and [iOS -
+> Access Library][ios-access-library] on how to retrieve these files.
 
 ## `--force`
 

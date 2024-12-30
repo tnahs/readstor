@@ -7,8 +7,8 @@ exists in a single folder. A simple drag/drop, copy/paste or zip/unzip should su
 > version of iOS and the version the archive was created from are identical. Not doing so could lead
 > to unexpected results.
 
-> <i class="fa fa-info-circle"></i> See [iOS - Library Location][ios-library-location] and
-> [iOS - Access Library][ios-access-library] for more information.
+> <i class="fa fa-info-circle"></i> See [iOS - Library Location][ios-library-location] and [iOS -
+> Access Library][ios-access-library] for more information.
 
 [ios-library-location]: /apple-books/ios/library-location.md
 [ios-access-library]: /apple-books/ios/access-library.md

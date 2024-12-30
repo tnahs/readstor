@@ -9,12 +9,10 @@
       converted to a tag-aware one: `https://github.com/tnahs/readstor/v0.3.0`.
       Is it possible to automate this nicely for every release?
 - [ ] Add more documentation for each annotation/book field.
-- [ ] Format book to 100-character line length.
 
 ## v0.6.0
 
 - [ ] How do we handle `date_last_opened` for a book on iOS?
-- [ ] Format docs to 100-character line length.
 
 ## Next
 

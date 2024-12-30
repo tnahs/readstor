@@ -1,7 +1,6 @@
 //! Defines filter functions.
 //!
-//! Filters are used for filtering out [`Entry`][entry]s from [`Entries`]
-//! based on specific criteria.
+//! Filters are used for filtering out [`Entry`][entry]s from [`Entries`] based on specific criteria.
 //!
 //! [entry]: crate::models::entry::Entry
 
@@ -21,8 +20,7 @@ pub fn contains_no_annotations(entries: &mut Entries) {
     entries.retain(|_, entry| !entry.annotations.is_empty());
 }
 
-/// Filters out [`Entry`][entry]s where their [`Book::title`][book] doesn't
-/// match any of the queries.
+/// Filters out [`Entry`][entry]s where their [`Book::title`][book] doesn't match any of the queries.
 ///
 /// # Arguments
 ///
@@ -39,8 +37,7 @@ pub fn by_title_any(queries: &[String], entries: &mut Entries) {
     });
 }
 
-/// Filters out [`Entry`][entry]s where their [`Book::title`][book] doesn't
-/// match all of the queries.
+/// Filters out [`Entry`][entry]s where their [`Book::title`][book] doesn't match all of the queries.
 ///
 /// # Arguments
 ///
@@ -57,8 +54,7 @@ pub fn by_title_all(queries: &[String], entries: &mut Entries) {
     });
 }
 
-/// Filters out [`Entry`][entry]s where their [`Book::title`][book] does't
-/// exactly match the query.
+/// Filters out [`Entry`][entry]s where their [`Book::title`][book] does't exactly match the query.
 ///
 /// # Arguments
 ///
@@ -71,8 +67,7 @@ pub fn by_title_exact(query: &str, entries: &mut Entries) {
     entries.retain(|_, entry| entry.book.title.to_lowercase() == query);
 }
 
-/// Filters out [`Entry`][entry]s where their [`Book::author`][author] doesn't
-/// match any of the queries.
+/// Filters out [`Entry`][entry]s where their [`Book::author`][author] doesn't match any of the queries.
 ///
 /// # Arguments
 ///
@@ -89,8 +84,7 @@ pub fn by_author_any(query: &[String], entries: &mut Entries) {
     });
 }
 
-/// Filters out [`Entry`][entry]s where their [`Book::author`][author] doesn't
-/// match all of the queries.
+/// Filters out [`Entry`][entry]s where their [`Book::author`][author] doesn't match all of the queries.
 ///
 /// # Arguments
 ///
@@ -107,8 +101,7 @@ pub fn by_author_all(query: &[String], entries: &mut Entries) {
     });
 }
 
-/// Filters out [`Entry`][entry]s where their [`Book::author`][author] does't
-/// exactly match the query.
+/// Filters out [`Entry`][entry]s where their [`Book::author`][author] does't exactly match the query.
 ///
 /// # Arguments
 ///
@@ -121,8 +114,8 @@ pub fn by_author_exact(query: &str, entries: &mut Entries) {
     entries.retain(|_, entry| entry.book.author.to_lowercase() == query);
 }
 
-/// Filters out [`Annotation`][annotation]s where their [`tags`][tags] don't
-/// match any of the target `#tags`.
+/// Filters out [`Annotation`][annotation]s where their [`tags`][tags] don't match any of the target
+/// `#tags`.
 ///
 /// # Arguments
 ///
@@ -140,8 +133,8 @@ pub fn by_tags_any(tags: &BTreeSet<&String>, entries: &mut Entries) {
     }
 }
 
-/// Filters out [`Annotation`][annotation]s where their [`tags`][tags] don't
-/// match all of the target `#tags`.
+/// Filters out [`Annotation`][annotation]s where their [`tags`][tags] don't match all of the target
+/// `#tags`.
 ///
 /// # Arguments
 ///
@@ -159,8 +152,8 @@ pub fn by_tags_all(tags: &BTreeSet<&String>, entries: &mut Entries) {
     }
 }
 
-/// Filters out [`Annotation`][annotation]s where their [`tags`][tags] don't
-/// exactly match the target `#tags`.
+/// Filters out [`Annotation`][annotation]s where their [`tags`][tags] don't exactly match the
+/// target `#tags`.
 ///
 /// # Arguments
 ///

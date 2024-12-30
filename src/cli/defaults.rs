@@ -2,13 +2,13 @@ use std::path::PathBuf;
 
 use once_cell::sync::Lazy;
 
-/// Defines the environment variable key used to determine whether the
-/// application is being developed on or not. If so, the Apple Books databases
-/// path is bypassed and redirected to a local testing/dev database.
+/// Defines the environment variable key used to determine whether the application is being
+/// developed on or not. If so, the Apple Books databases path is bypassed and redirected to a local
+/// testing/dev database.
 pub const READSTOR_DEV: &str = "READSTOR_DEV";
 
-/// Defines the environment variable key used to set the application's log
-/// level. Valid values are: `error`, `warn`, `info`, `debug` and `trace`.
+/// Defines the environment variable key used to set the application's log level. Valid values are:
+/// `error`, `warn`, `info`, `debug` and `trace`.
 pub const READSTOR_LOG: &str = "READSTOR_LOG";
 
 /// Defines the default output directory.
@@ -19,12 +19,11 @@ pub const READSTOR_LOG: &str = "READSTOR_LOG";
 /// ```
 pub static OUTPUT_DIRECTORY: Lazy<PathBuf> = Lazy::new(|| lib::defaults::HOME.join(".readstor"));
 
-/// Returns a path to a temp directory to use for reading and writing data
-/// during development/testing.
+/// Returns a path to a temp directory to use for reading and writing data during
+/// development/testing.
 ///
-/// Internally this returns the value of the TMPDIR environment variable if it
-/// is set, otherwise it returns `/tmp`. See [`std::env::temp_dir()`] for more
-/// information.
+/// Internally this returns the value of the TMPDIR environment variable if it is set, otherwise it
+/// returns `/tmp`. See [`std::env::temp_dir()`] for more information.
 ///
 /// The full path:
 ///
@@ -40,8 +39,8 @@ pub static OUTPUT_DIRECTORY: Lazy<PathBuf> = Lazy::new(|| lib::defaults::HOME.jo
 pub static TEMP_OUTPUT_DIRECTORY: Lazy<PathBuf> =
     Lazy::new(|| std::env::temp_dir().join("readstor"));
 
-/// Defines the default template string. This is used as a fallback if the user
-/// doesn't supply a templates directory.
+/// Defines the default template string. This is used as a fallback if the user doesn't supply a
+/// templates directory.
 pub static TEMPLATE: &str = include_str!(concat!(
     env!("CARGO_MANIFEST_DIR"),
     "/templates/basic/basic.jinja2"

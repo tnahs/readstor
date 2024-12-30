@@ -42,7 +42,6 @@ The annotations plist is located at:
 [ios-device]/Books/com.apple.ibooks-sync.plist
 ```
 
-> <i class="fa fa-info-circle"></i> See [iOS - Access Library][ios-access-library] for more
-> information.
+> <i class="fa fa-info-circle"></i> See [iOS - Access Library][ios-access-library] for more information.
 
 [ios-access-library]: /apple-books/ios/access-library.md

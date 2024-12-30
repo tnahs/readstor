@@ -23,10 +23,7 @@ fn main() -> Result<()> {
     log::debug!("{:#?}", &args);
 
     if !args.options.force && applebooks_is_running() {
-        println!(
-            "Apple Books is currently running. \
-            To ignore this, use the `-f, --force` flag."
-        );
+        println!("Apple Books is currently running. To ignore this, use the `-f, --force` flag.");
         return Ok(());
     }
 

@@ -10,8 +10,7 @@ use self::models::{AnnotationRaw, AnnotationsPlist, BookRaw, BooksPlist};
 
 /// A struct for interacting with iOS's Apple Books plists.
 ///
-/// A directory containing iOS's Apple Books plists should conform to the
-/// following structure:
+/// A directory containing iOS's Apple Books plists should conform to the following structure:
 ///
 /// ```plaintext
 /// [plists]
@@ -30,8 +29,7 @@ impl ABIos {
     ///
     /// * `path` - The path to a directory containing iOS's Apple Books plists.
     ///
-    /// See [`ABIos`] for more information on how the databases directory
-    /// should be structured.
+    /// See [`ABIos`] for more information on how the databases directory should be structured.
     ///
     /// # Errors
     ///
@@ -65,8 +63,7 @@ impl ABIos {
     ///
     /// * `path` - The path to a directory containing iOS's Apple Books plists.
     ///
-    /// See [`ABIos`] for more information on how the databases directory
-    /// should be structured.
+    /// See [`ABIos`] for more information on how the databases directory should be structured.
     ///
     /// # Errors
     ///
@@ -90,10 +87,10 @@ impl ABIos {
             }
         };
 
-        // This should be safe as the structure of the incoming data is enforced
-        // by `serde`. Therefore guaranteeing that the unwrap is safe. `serde`
-        // would return an error in the previous block if the structure of the
-        // plist didn't match the model used for deserializing it.
+        // This should be safe as the structure of the incoming data is enforced by `serde`.
+        // Therefore guaranteeing that the unwrap is safe. `serde` would return an error in
+        // the previous block if the structure of the plist didn't match the model used for
+        // deserializing it.
         let mut annotations = data.into_values().next().unwrap().bookmarks;
 
         // Filter out any deleted annotations.

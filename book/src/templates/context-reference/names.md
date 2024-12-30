@@ -1,8 +1,8 @@
 # Names
 
-A single `names` object is injected into all template contexts regardless of the template's
-[Context Mode][context-modes]. These contain all the file and directory names rendered from the
-`names` key in the template's config. See [Names][names] for more information.
+A single `names` object is injected into all template contexts regardless of the template's [Context
+Mode][context-modes]. These contain all the file and directory names rendered from the `names` key
+in the template's config. See [Names][names] for more information.
 
 ## Template Fields - Names
 

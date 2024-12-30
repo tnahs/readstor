@@ -9,8 +9,9 @@ Extract `#tags` from [`annotation.notes`][annotation].
 All matches are removed from [`annotation.notes`][annotation] and placed into
 [`annotation.tags`][annotation].
 
-> <i class="fa fa-exclamation-circle"></i> Tags _must_ start with a hash symbol `#` followed by a
-> letter `[a-zA-Z]`.
+> <i class="fa fa-exclamation-circle"></i> Tags _must_ start with a hash symbol `#` followed by
+> a letter `[a-zA-Z]` and then a series of any characters. A tag ends when a space or another `#`
+> is encountered.
 
 ## `--normalize-whitespace`
 

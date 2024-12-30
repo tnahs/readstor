@@ -349,8 +349,8 @@ impl FromStr for FilterType {
             return Err("filters must follow the format '[op]{field}:{query}'".into());
         };
 
-        // These unwraps are safe as they will only panic if the capture-group
-        // name does not exist. These are all defined above.
+        // These unwraps are safe as they will only panic if the capture-group name does not exist.
+        // These are all defined above.
         let operator = captures.name("operator").unwrap().as_str();
         let field = captures.name("field").unwrap().as_str().to_lowercase();
         let query = captures.name("query").unwrap();

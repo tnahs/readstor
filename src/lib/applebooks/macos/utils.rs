@@ -63,8 +63,8 @@ pub fn applebooks_is_running() -> bool {
         .map(String::from)
         .collect();
 
-    // "Returns true if self has no elements in common with other. This is
-    // equivalent to checking for an empty intersection."
+    // "Returns true if self has no elements in common with other. This is equivalent to checking
+    // for an empty intersection."
     //
     // https://doc.rust-lang.org/std/collections/hash_set/struct.HashSet.html#method.is_disjoint
     !super::defaults::APPLEBOOKS_NAMES.is_disjoint(&process_names)

@@ -15,20 +15,19 @@ use crate::cli::app::Result;
 pub struct Data(Entries);
 
 impl Data {
-    /// Builds [`Book`]s and [`Annotation`]s from macOS's Apple Books databases
-    /// converts them to [`Entry`]s and appends them to the data model.
+    /// Builds [`Book`]s and [`Annotation`]s from macOS's Apple Books databases converts them to
+    /// [`Entry`]s and appends them to the data model.
     ///
     /// # Arguments
     ///
     /// * `path` - The path to a directory containing macOS's Apple Books databases.
     ///
-    /// See [`ABMacos`] for more information on how the databases directory
-    /// should be structured.
+    /// See [`ABMacos`] for more information on how the databases directory should be structured.
     ///
     /// # Errors
     ///
-    /// See [`ABMacos::extract_books()`] and [`ABMacos::extract_annotations()`]
-    /// for information as these are the only sources of possible errors.
+    /// See [`ABMacos::extract_books()`] and [`ABMacos::extract_annotations()`] for information as
+    /// these are the only sources of possible errors.
     pub fn init_macos(&mut self, path: &Path) -> Result<()> {
         let books = ABMacos::extract_books(path)?;
         let annotations = ABMacos::extract_annotations(path)?;
@@ -50,20 +49,19 @@ impl Data {
         Ok(())
     }
 
-    /// Builds [`Book`]s and [`Annotation`]s from iOS's Apple Books plists,
-    /// converts them to [`Entry`]s and appends them to the data model.
+    /// Builds [`Book`]s and [`Annotation`]s from iOS's Apple Books plists, converts them to
+    /// [`Entry`]s and appends them to the data model.
     ///
     /// # Arguments
     ///
     /// * `path` - The path to a directory containing iOS's Apple Books plists.
     ///
-    /// See [`ABIos`] for more information on how the plists directory should
-    /// be structured.
+    /// See [`ABIos`] for more information on how the plists directory should be structured.
     ///
     /// # Errors
     ///
-    /// See [`ABIos::extract_books()`] and [`ABIos::extract_annotations()`]
-    /// for information as these are the only sources of possible errors.
+    /// See [`ABIos::extract_books()`] and [`ABIos::extract_annotations()`] for information as these
+    /// are the only sources of possible errors.
     pub fn init_ios(&mut self, path: &Path) -> Result<()> {
         let books = ABIos::extract_books(path)?;
         let annotations = ABIos::extract_annotations(path)?;
@@ -85,13 +83,12 @@ impl Data {
         Ok(())
     }
 
-    /// Converts [`Book`]s and [`Annotation`]s to [`Entry`]s, then sorts and
-    /// filters them before adding them to the data model.
+    /// Converts [`Book`]s and [`Annotation`]s to [`Entry`]s, then sorts and filters them before
+    /// adding them to the data model.
     fn init_data(&mut self, books: Vec<Book>, annotations: Vec<Annotation>) {
-        // `Entry`s are created from `Book`s. Note that `book.metadata.id` is
-        // set as the key for each entry into the `Data`. This is later used to
-        // compare with each `Annotation` to determine if the `Annotation`
-        // belongs to a `Book` and therefore its `Entry`.
+        // `Entry`s are created from `Book`s. Note that `book.metadata.id` is set as the key for
+        // each entry into the `Data`. This is later used to compare with each `Annotation` to
+        // determine if the `Annotation` belongs to a `Book` and therefore its `Entry`.
         //
         // See https://stackoverflow.com/q/69274529/16968574
         let mut data: Entries = books

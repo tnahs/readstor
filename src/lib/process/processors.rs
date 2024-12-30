@@ -12,8 +12,8 @@ use deunicode::deunicode;
 use once_cell::sync::Lazy;
 use regex::Regex;
 
-/// Captures a `#tag`. Tags *must* start with a hash symbol `#` followed by a
-/// letter `[a-zA-Z]`.
+/// Captures a `#tag`. Tags *must* start with a hash symbol `#` followed by a letter in `[a-zA-Z]`
+/// and then a series of any characters. A tag ends when a space or another `#` is encountered.
 static RE_TAG: Lazy<Regex> = Lazy::new(|| Regex::new(r"#[a-zA-Z][^\s#]+\s?").unwrap());
 
 /// Captures three or more consecutive linebreaks.

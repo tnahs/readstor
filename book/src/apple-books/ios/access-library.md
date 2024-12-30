@@ -96,11 +96,11 @@ ifuse /tmp/my-device --udid XXXXXXXX-XXXXXXXXXXXXXXXX
 > Starting with the iPhone X, Apple changed `UDID`s to use 24 bytes > and a dash (`-`) instead of
 > the old 40-byte format.
 >
-> If you get `Failed to connect to lockdownd service on the device. Try again. If it still
-fails try rebooting your device.` ensure that your device is connected, and isn't displaying a
-> "Trust this computer" dialog. You'll need to approve that first. If you then get
-> `ERROR: Device 000000000000000000000000 returned unhandled error code -13` you'll need to
-> disconnect and reconnect the device.
+> If you get `Failed to connect to lockdownd service on the device. Try again. If it still fails try
+rebooting your device.` ensure that your device is connected, and isn't displaying a
+> "Trust this computer" dialog. You'll need to approve that first. If you then get `ERROR: Device
+000000000000000000000000 returned unhandled error code -13` you'll need to disconnect and
+> reconnect the device.
 
 via <https://reincubate.com/support/how-to/mount-iphone-files/>
 

@@ -40,8 +40,8 @@ And finally comments can be added like so:
 ```
 
 > <i class="fa fa-info-circle"></i> See Tera's [documentation][tera-documentation] to learn more
-> about these and more advanced features, including template [inheritance][tera-inheritance], the
-> [include][tera-include] tag, [macros][tera-macros] and the full list of available
+> about these and more advanced features, including template [inheritance][tera-inheritance],
+> the [include][tera-include] tag, [macros][tera-macros] and the full list of available
 > [filters][tera-filters].
 
 ## Template
@@ -85,12 +85,12 @@ last-opened: {{ book.metadata.last_opened | date(format="%Y-%m-%dT%H:%M") }}
 
 ## Output Structure
 
-The output structure is primarily determined by the `structure` and `context` keys. With the
-`structure` set to `flat` all the output files will be placed inside the
-[output directory][output-directory] with no structure. With the `context` set to `book`, a
-single file will be created for each book and, if the template body requests, will contain all its
-respective annotations. See [Context Modes][context-modes] and [Structure Modes][structure-modes]
-for more information.
+The output structure is primarily determined by the `structure` and `context` keys. With
+the `structure` set to `flat` all the output files will be placed inside the [output
+directory][output-directory] with no structure. With the `context` set to `book`, a single file
+will be created for each book and, if the template body requests, will contain all its respective
+annotations. See [Context Modes][context-modes] and [Structure Modes][structure-modes] for more
+information.
 
 ```plaintext
 [output-directory]

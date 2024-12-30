@@ -1,9 +1,9 @@
 # Annotation
 
-The number of `annotation` objects injected into a template depends on the template's
-[Context Mode][context-modes]. When the [Context Mode][context-modes-annotation] is set to
-`annotation`, a single `annotation` object is injected into the template's context. When the
-[Context Mode][context-modes-book] is set to `book`, multiple `annotation` objects, under the name
+The number of `annotation` objects injected into a template depends on the template's [Context
+Mode][context-modes]. When the [Context Mode][context-modes-annotation] is set to `annotation`,
+a single `annotation` object is injected into the template's context. When the [Context
+Mode][context-modes-book] is set to `book`, multiple `annotation` objects, under the name
 `annotations`, are injected into the template's context.
 
 ## Template Fields - Annotation

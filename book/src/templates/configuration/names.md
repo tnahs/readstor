@@ -6,17 +6,17 @@
 | `names.annotation` | `annotation` |
 | `names.directory`  | `book`       |
 
-Output files and directory names can be customized using the same [Tera][tera] syntax. ReadStor will
-inject a different context into each `names` during render time and set the template's output
+Output files and directory names can be customized using the same [Tera][tera] syntax. ReadStor
+will inject a different context into each `names` during render time and set the template's output
 file/directory name to the resulting string.
 
-> <i class="fa fa-exclamation-circle"></i> The rendered book, annotation and directory names are
-> sanitized to make sure they interact well with the file system. See
-> [String Sanitization][string-sanitization] for more information.
+> <i class="fa fa-exclamation-circle"></i> The rendered book, annotation and directory
+> names are sanitized to make sure they interact well with the file system. See [String
+> Sanitization][string-sanitization] for more information.
 
 Additionally, all the rendered values from these keys are available within the template's context
-under the `names` variable regardless of the current context mode. See
-[Context Reference - Names][names] for more information.
+under the `names` variable regardless of the current context mode. See [ContextReference -
+Names][names] for more information.
 
 > <i class="fa fa-exclamation-circle"></i> Note that the template's `context` matters when setting
 > `names`.
