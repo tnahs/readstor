@@ -85,7 +85,7 @@ impl TemplateRaw {
             path: path.display().to_string(),
         })?;
 
-        let mut template: Self = serde_yaml::from_str(config)?;
+        let mut template: Self = serde_yaml_ng::from_str(config)?;
 
         template.id = path.display().to_string();
         template.contents = contents;

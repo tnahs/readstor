@@ -86,7 +86,7 @@ pub enum Error {
     ///
     /// [serde-yaml]: https://docs.rs/serde_yaml/latest/serde_yaml/
     #[error(transparent)]
-    YamlDeserializationError(#[from] serde_yaml::Error),
+    YamlDeserializationError(#[from] serde_yaml_ng::Error),
 
     /// Error returned if any other IO errors are encountered.
     #[error(transparent)]

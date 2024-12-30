@@ -5,7 +5,7 @@ use std::path::PathBuf;
 
 use once_cell::sync::Lazy;
 use plist::Value;
-use sysinfo::{System, SystemExt};
+use sysinfo::System;
 
 /// Returns the version Apple Books for macOS as `v[short]-[long]` e.g. `v3.2-2217`.
 ///
@@ -59,7 +59,7 @@ pub fn applebooks_is_running() -> bool {
     let process_names: HashSet<String> = System::new_all()
         .processes()
         .values()
-        .map(sysinfo::ProcessExt::name)
+        .map(|process| process.name().to_string_lossy())
         .map(String::from)
         .collect();
 
