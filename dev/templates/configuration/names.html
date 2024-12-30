@@ -166,17 +166,17 @@
 <tr><td><code>names.directory</code></td><td><code>book</code></td></tr>
 </tbody></table>
 </div>
-<p>Output files and directory names can be customized using the same <a href="https://tera.netlify.app/">Tera</a> syntax. ReadStor will
-inject a different context into each <code>names</code> during render time and set the template's output
+<p>Output files and directory names can be customized using the same <a href="https://tera.netlify.app/">Tera</a> syntax. ReadStor
+will inject a different context into each <code>names</code> during render time and set the template's output
 file/directory name to the resulting string.</p>
 <blockquote>
-<p><i class="fa fa-exclamation-circle"></i> The rendered book, annotation and directory names are
-sanitized to make sure they interact well with the file system. See
-<a href="/templates/string-sanitization.html">String Sanitization</a> for more information.</p>
+<p><i class="fa fa-exclamation-circle"></i> The rendered book, annotation and directory
+names are sanitized to make sure they interact well with the file system. See <a href="/templates/string-sanitization.html">String
+Sanitization</a> for more information.</p>
 </blockquote>
 <p>Additionally, all the rendered values from these keys are available within the template's context
-under the <code>names</code> variable regardless of the current context mode. See
-<a href="/templates/context-reference/names.html">Context Reference - Names</a> for more information.</p>
+under the <code>names</code> variable regardless of the current context mode. See <a href="/templates/context-reference/names.html">ContextReference -
+Names</a> for more information.</p>
 <blockquote>
 <p><i class="fa fa-exclamation-circle"></i> Note that the template's <code>context</code> matters when setting
 <code>names</code>.</p>

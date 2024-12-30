@@ -296,8 +296,7 @@ templates.</p>
 ]
 </code></pre>
 <blockquote>
-<p><i class="fa fa-info-circle"></i> This <code>export</code> was run with the <a href="intro//intro/options/preprocess.html#--extract-tags"><code>--extract-tags</code></a>
-option.</p>
+<p><i class="fa fa-info-circle"></i> This <code>export</code> was run with the <a href="intro//intro/options/preprocess.html#--extract-tags"><code>--extract-tags</code></a> option.</p>
 </blockquote>
 <h2 id="backup"><a class="header" href="#backup"><code>backup</code></a></h2>
 <p>Back-up macOS's Apple Books databases.</p>
@@ -399,8 +398,8 @@ directory should follow the following structure:</p>
  └── ...
 </code></pre>
 <blockquote>
-<p><i class="fa fa-info-circle"></i> See <a href="intro/options//apple-books/ios/library-location.html">iOS - Library Location</a> and
-<a href="intro/options//apple-books/ios/access-library.html">iOS - Access Library</a> on how to retrieve these files.</p>
+<p><i class="fa fa-info-circle"></i> See <a href="intro/options//apple-books/ios/library-location.html">iOS - Library Location</a> and <a href="intro/options//apple-books/ios/access-library.html">iOS -
+Access Library</a> on how to retrieve these files.</p>
 </blockquote>
 <h2 id="--force"><a class="header" href="#--force"><code>--force</code></a></h2>
 <p>Run even if Apple Books is currently running.</p>
@@ -437,8 +436,7 @@ will return an error.</p>
 <tr><td>Example</td><td><code>Robert Henri - The Art Spirit</code></td></tr>
 </tbody></table>
 </div>
-<p>For example, using the default template, the non-rendered ouput structure would look like the
-following:</p>
+<p>For example, using the default template, the non-rendered ouput structure would look like the following:</p>
 <pre><code class="language-plaintext">[ouput-directory]
  ├── {{ book.author }} - {{ book.title }}
  │    ├── book.json
@@ -478,8 +476,8 @@ following:</p>
 nest a pipe <code>|</code> inside a markdown table. In other words, the default value does not contain
 a backslash.</p>
 </blockquote>
-<p>For example, using the default template, the non-rendered ouput structure would
-look like the following:</p>
+<p>For example, using the default template, the non-rendered ouput structure would look like the
+following:</p>
 <pre><code class="language-plaintext">[ouput-directory]
  └── {{ now | date(format='%Y-%m-%d-%H%M%S') }}-{{ version }}
       ├── AEAnnotation
@@ -632,8 +630,9 @@ specified <a href="intro/options/filter.html#operator"><code>operator</code></a>
 <p>All matches are removed from <a href="intro/options//templates/context-reference/annotation.html"><code>annotation.notes</code></a> and placed into
 <a href="intro/options//templates/context-reference/annotation.html"><code>annotation.tags</code></a>.</p>
 <blockquote>
-<p><i class="fa fa-exclamation-circle"></i> Tags <em>must</em> start with a hash symbol <code>#</code> followed by a
-letter <code>[a-zA-Z]</code>.</p>
+<p><i class="fa fa-exclamation-circle"></i> Tags <em>must</em> start with a hash symbol <code>#</code> followed by
+a letter <code>[a-zA-Z]</code> and then a series of any characters. A tag ends when a space or another <code>#</code>
+is encountered.</p>
 </blockquote>
 <h2 id="--normalize-whitespace"><a class="header" href="#--normalize-whitespace"><code>--normalize-whitespace</code></a></h2>
 <p>Normalize whitespace in <a href="intro/options//templates/context-reference/annotation.html"><code>annotation.body</code></a>.</p>
@@ -686,8 +685,7 @@ results. Values above <code>80</code> or so are recommended.</p>
 can be designed to output almost any kind of text-based file format including: Markdown, HTML, CSV.
 PDFs are possible as well but would require an extra step to convert an HTML file to the final PDF.</p>
 <blockquote>
-<p><i class="fa fa-info-circle"></i> See the default <a href="https://github.com/tnahs/readstor/tree/main/templates">templates</a> for fully working
-examples.</p>
+<p><i class="fa fa-info-circle"></i> See the default <a href="https://github.com/tnahs/readstor/tree/main/templates">templates</a> for fully working examples.</p>
 </blockquote>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="an-example-template"><a class="header" href="#an-example-template">An Example Template</a></h1>
 <p>The following is an example template along with its expected output and output structure. In fact,
@@ -713,8 +711,8 @@ a space as a delimiter.</p>
 </code></pre>
 <blockquote>
 <p><i class="fa fa-info-circle"></i> See Tera's <a href="https://tera.netlify.app/docs/">documentation</a> to learn more
-about these and more advanced features, including template <a href="https://tera.netlify.app/docs/#inheritance">inheritance</a>, the
-<a href="https://tera.netlify.app/docs/#include">include</a> tag, <a href="https://tera.netlify.app/docs/#macros">macros</a> and the full list of available
+about these and more advanced features, including template <a href="https://tera.netlify.app/docs/#inheritance">inheritance</a>,
+the <a href="https://tera.netlify.app/docs/#include">include</a> tag, <a href="https://tera.netlify.app/docs/#macros">macros</a> and the full list of available
 <a href="https://tera.netlify.app/docs/#built-in-filters">filters</a>.</p>
 </blockquote>
 <h2 id="template"><a class="header" href="#template">Template</a></h2>
@@ -752,12 +750,12 @@ last-opened: {{ book.metadata.last_opened | date(format="%Y-%m-%dT%H:%M") }}
 {% endfor %}
 </code></pre>
 <h2 id="output-structure"><a class="header" href="#output-structure">Output Structure</a></h2>
-<p>The output structure is primarily determined by the <code>structure</code> and <code>context</code> keys. With the
-<code>structure</code> set to <code>flat</code> all the output files will be placed inside the
-<a href="templates//intro/options/global.html#--output-directory-path">output directory</a> with no structure. With the <code>context</code> set to <code>book</code>, a
-single file will be created for each book and, if the template body requests, will contain all its
-respective annotations. See <a href="templates//templates/configuration/context-modes.html">Context Modes</a> and <a href="templates//templates/configuration/structure-modes.html">Structure Modes</a>
-for more information.</p>
+<p>The output structure is primarily determined by the <code>structure</code> and <code>context</code> keys. With
+the <code>structure</code> set to <code>flat</code> all the output files will be placed inside the <a href="templates//intro/options/global.html#--output-directory-path">output
+directory</a> with no structure. With the <code>context</code> set to <code>book</code>, a single file
+will be created for each book and, if the template body requests, will contain all its respective
+annotations. See <a href="templates//templates/configuration/context-modes.html">Context Modes</a> and <a href="templates//templates/configuration/structure-modes.html">Structure Modes</a> for more
+information.</p>
 <pre><code class="language-plaintext">[output-directory]
  ├── Krishnamurti - Think on These Things.md
  ├── Richard P. Feynman - "Surely You're Joking, Mr. Feynman!".md
@@ -1014,8 +1012,8 @@ structure: nested-grouped
 </div>
 <p>At render time, each template is injected with a "context", in other words, the data it will render.
 ReadStor provides two different context modes: <code>book</code> and <code>annotation</code>. The context mode dictates
-not just the data within the context but also changes the number of output files. See
-<a href="templates/configuration/context-modes.html#a-note-on-output-structure">A Note On Output Structure</a> for more information.</p>
+not just the data within the context but also changes the number of output files. See <a href="templates/configuration/context-modes.html#a-note-on-output-structure">A Note On
+Output Structure</a> for more information.</p>
 <h2 id="the-book-context"><a class="header" href="#the-book-context">The Book Context</a></h2>
 <div class="table-wrapper"><table><thead><tr><th></th><th></th></tr></thead><tbody>
 <tr><td>Context Mode</td><td><code>book</code></td></tr>
@@ -1120,8 +1118,7 @@ names:
   directory: Robert Henri - The Art Spirit
 </code></pre>
 <blockquote>
-<p><i class="fa fa-info-circle"></i> See <a href="templates/configuration//templates/context-reference/annotation.html">Context Reference - Annotation</a> for more
-information.</p>
+<p><i class="fa fa-info-circle"></i> See <a href="templates/configuration//templates/context-reference/annotation.html">Context Reference - Annotation</a> for more information.</p>
 </blockquote>
 <h2 id="a-note-on-output-structure"><a class="header" href="#a-note-on-output-structure"><i class="fa fa-exclamation-circle"></i> A Note On Output Structure</a></h2>
 <p>When selecting a context mode it's important to understand how the output files will look. The
@@ -1287,17 +1284,17 @@ filenames with the format <code>[filename].[extension]</code>.</p>
 <tr><td><code>names.directory</code></td><td><code>book</code></td></tr>
 </tbody></table>
 </div>
-<p>Output files and directory names can be customized using the same <a href="https://tera.netlify.app/">Tera</a> syntax. ReadStor will
-inject a different context into each <code>names</code> during render time and set the template's output
+<p>Output files and directory names can be customized using the same <a href="https://tera.netlify.app/">Tera</a> syntax. ReadStor
+will inject a different context into each <code>names</code> during render time and set the template's output
 file/directory name to the resulting string.</p>
 <blockquote>
-<p><i class="fa fa-exclamation-circle"></i> The rendered book, annotation and directory names are
-sanitized to make sure they interact well with the file system. See
-<a href="templates/configuration//templates/string-sanitization.html">String Sanitization</a> for more information.</p>
+<p><i class="fa fa-exclamation-circle"></i> The rendered book, annotation and directory
+names are sanitized to make sure they interact well with the file system. See <a href="templates/configuration//templates/string-sanitization.html">String
+Sanitization</a> for more information.</p>
 </blockquote>
 <p>Additionally, all the rendered values from these keys are available within the template's context
-under the <code>names</code> variable regardless of the current context mode. See
-<a href="templates/configuration//templates/context-reference/names.html">Context Reference - Names</a> for more information.</p>
+under the <code>names</code> variable regardless of the current context mode. See <a href="templates/configuration//templates/context-reference/names.html">ContextReference -
+Names</a> for more information.</p>
 <blockquote>
 <p><i class="fa fa-exclamation-circle"></i> Note that the template's <code>context</code> matters when setting
 <code>names</code>.</p>
@@ -1413,11 +1410,11 @@ working example.</p>
 <p>Partial templates are included using the <code>include</code> tag:</p>
 <pre><code class="language-jinja2">{% include "_my-partial-template.md" %}
 </code></pre>
-<p>Where <code>"_my-partial-template.md"</code> is a path relative to the
-<a href="templates//intro/options/render.html#--templates-directory-path">templates directory</a>. Therefore, this would be pointing to a template at the
-root of the <a href="templates//intro/options/render.html#--templates-directory-path">templates directory</a>. If we wanted to organize our templates
-into different directories we would have to add the directory names for any directories between the
-including template and the <a href="templates//intro/options/render.html#--templates-directory-path">templates directory</a>.</p>
+<p>Where <code>"_my-partial-template.md"</code> is a path relative to the <a href="templates//intro/options/render.html#--templates-directory-path">templates
+directory</a>. Therefore, this would be pointing to a template at the root of the
+<a href="templates//intro/options/render.html#--templates-directory-path">templates directory</a>. If we wanted to organize our templates into different
+directories we would have to add the directory names for any directories between the including
+template and the <a href="templates//intro/options/render.html#--templates-directory-path">templates directory</a>.</p>
 <p>For example, with the following structure:</p>
 <pre><code class="language-plaintext">[templates-directory]
  └── my-vault-templates
@@ -1591,9 +1588,8 @@ on anyway.
 tags: #inspiration
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="string-sanitization"><a class="header" href="#string-sanitization">String Sanitization</a></h1>
-<p>To avoid any unexpected behavior, certain user-provided strings are sanitized
-before they are used for naming files or directories. Characters are either
-removed or replaced with an underscore <code>_</code>.</p>
+<p>To avoid any unexpected behavior, certain user-provided strings are sanitized before they are used
+for naming files or directories. Characters are either removed or replaced with an underscore <code>_</code>.</p>
 <div class="table-wrapper"><table><thead><tr><th>Character</th><th style="text-align: center">Removed</th><th style="text-align: center">Replaced</th></tr></thead><tbody>
 <tr><td><code>\n</code></td><td style="text-align: center"><i class="fa fa-check"></i></td><td style="text-align: center"></td></tr>
 <tr><td><code>\r</code></td><td style="text-align: center"><i class="fa fa-check"></i></td><td style="text-align: center"></td></tr>
@@ -1664,10 +1660,10 @@ last-opened: {{ book.metadata.last_opened | date(format="%Y-%m-%d-%H:%M") }}
 a <code>datetime</code> object into a human-readable date.</p>
 </blockquote>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="annotation"><a class="header" href="#annotation">Annotation</a></h1>
-<p>The number of <code>annotation</code> objects injected into a template depends on the template's
-<a href="templates/context-reference//templates/configuration/context-modes.html">Context Mode</a>. When the <a href="templates/context-reference//templates/configuration/context-modes.html#the-annotation-context">Context Mode</a> is set to
-<code>annotation</code>, a single <code>annotation</code> object is injected into the template's context. When the
-<a href="templates/context-reference//templates/configuration/context-modes.html#the-book-context">Context Mode</a> is set to <code>book</code>, multiple <code>annotation</code> objects, under the name
+<p>The number of <code>annotation</code> objects injected into a template depends on the template's <a href="templates/context-reference//templates/configuration/context-modes.html">Context
+Mode</a>. When the <a href="templates/context-reference//templates/configuration/context-modes.html#the-annotation-context">Context Mode</a> is set to <code>annotation</code>,
+a single <code>annotation</code> object is injected into the template's context. When the <a href="templates/context-reference//templates/configuration/context-modes.html#the-book-context">Context
+Mode</a> is set to <code>book</code>, multiple <code>annotation</code> objects, under the name
 <code>annotations</code>, are injected into the template's context.</p>
 <h2 id="template-fields---annotation"><a class="header" href="#template-fields---annotation">Template Fields - Annotation</a></h2>
 <div class="table-wrapper"><table><thead><tr><th>Attribute</th><th>Type</th><th>Description</th></tr></thead><tbody>
@@ -1727,9 +1723,9 @@ a <code>datetime</code> object into a human-readable date.</p>
 an array of items into a space-separated string.</p>
 </blockquote>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="names-1"><a class="header" href="#names-1">Names</a></h1>
-<p>A single <code>names</code> object is injected into all template contexts regardless of the template's
-<a href="templates/context-reference//templates/configuration/context-modes.html">Context Mode</a>. These contain all the file and directory names rendered from the
-<code>names</code> key in the template's config. See <a href="templates/context-reference//templates/configuration/names.html">Names</a> for more information.</p>
+<p>A single <code>names</code> object is injected into all template contexts regardless of the template's <a href="templates/context-reference//templates/configuration/context-modes.html">Context
+Mode</a>. These contain all the file and directory names rendered from the <code>names</code> key
+in the template's config. See <a href="templates/context-reference//templates/configuration/names.html">Names</a> for more information.</p>
 <h2 id="template-fields---names"><a class="header" href="#template-fields---names">Template Fields - Names</a></h2>
 <div class="table-wrapper"><table><thead><tr><th>Attribute</th><th>Type</th><th>Description</th></tr></thead><tbody>
 <tr><td><code>names</code></td><td>dictionary</td><td>names object</td></tr>
@@ -1906,8 +1902,8 @@ library files.</p>
 <p><i class="fa fa-info-circle"></i> The following snippet is taken from
 <a href="https://github.com/tnahs/readstor/tree/main/scripts/apple-books/macos-archive.sh">scripts/apple-books/macos-archive.sh</a>.</p>
 </blockquote>
-<p>Archiving the library is as simple as running two <code>rsync</code> commands. This should save all the
-relevant Apple Books data and metadata to a single directory. Make sure to replace
+<p>Archiving the library is as simple as running two <code>rsync</code> commands. This should save all
+the relevant Apple Books data and metadata to a single directory. Make sure to replace
 <code>[PATH-TO-ARCHIVE]</code> with a valid path to said directory.</p>
 <pre><code class="language-bash">rsync \
     --archive \
@@ -1975,15 +1971,15 @@ rm -rf $HOME/Library/Group\ Containers/group.com.apple.iBooks
 </code></pre>
 <p>Finally, we can run the reverse <code>rsync</code> commands and restore the archive we previously made. Make
 sure to replace <code>[PATH-TO-ARCHIVE]</code> with a valid path.</p>
-<pre><code class="language-bash">rsync \
-    --archive \
-    --extended-attributes \
+<pre><code class="language-bash">rsync                             \
+    --archive                     \
+    --extended-attributes         \
     [PATH-TO-ARCHIVE]/Containers/ \
     $HOME/Library/Containers/
 
-rsync \
-    --archive \
-    --extended-attributes \
+rsync                                    \
+    --archive                            \
+    --extended-attributes                \
     [PATH-TO-ARCHIVE]/Group\ Containers/ \
     $HOME/Library/Group\ Containers/
 </code></pre>
@@ -1996,15 +1992,15 @@ into the target. Otherwise, it would move the archive <em>directory</em> into th
 <pre><code class="language-plaintext">~/archives/2022-10-08--apple-books-v4.4-5177--macos-v12.6
 </code></pre>
 <p>Our <code>rsync</code> command would be:</p>
-<pre><code class="language-bash">rsync \
-    --archive \
-    --extended-attributes \
+<pre><code class="language-bash">rsync                                                                     \
+    --archive                                                             \
+    --extended-attributes                                                 \
     ~/archives/2022-10-08--apple-books-v4.4-5177--macos-v12.6/Containers/ \
     $HOME/Library/Containers/  # Note the forward-slash! ---------------^
 
-rsync \
-    --archive \
-    --extended-attributes \
+rsync                                                                            \
+    --archive                                                                    \
+    --extended-attributes                                                        \
     ~/archives/2022-10-08--apple-books-v4.4-5177--macos-v12.6/Group\ Containers/ \
     $HOME/Library/Group\ Containers/  # Note the forward-slash! ---------------^
 </code></pre>
@@ -2041,8 +2037,7 @@ syncing with iCloud Drive is disabled!</p>
 <pre><code class="language-plaintext">[ios-device]/Books/com.apple.ibooks-sync.plist
 </code></pre>
 <blockquote>
-<p><i class="fa fa-info-circle"></i> See <a href="apple-books/ios//apple-books/ios/access-library.html">iOS - Access Library</a> for more
-information.</p>
+<p><i class="fa fa-info-circle"></i> See <a href="apple-books/ios//apple-books/ios/access-library.html">iOS - Access Library</a> for more information.</p>
 </blockquote>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="ios---access-library"><a class="header" href="#ios---access-library">iOS - Access Library</a></h1>
 <p>There are roughly two different methods for accessing iOS's Apple Books library. A (possibly-paid)
@@ -2113,9 +2108,8 @@ number.</p>
 Starting with the iPhone X, Apple changed <code>UDID</code>s to use 24 bytes &gt; and a dash (<code>-</code>) instead of
 the old 40-byte format.</p>
 <p>If you get <code>Failed to connect to lockdownd service on the device. Try again. If it still fails try rebooting your device.</code> ensure that your device is connected, and isn't displaying a
-"Trust this computer" dialog. You'll need to approve that first. If you then get
-<code>ERROR: Device 000000000000000000000000 returned unhandled error code -13</code> you'll need to
-disconnect and reconnect the device.</p>
+"Trust this computer" dialog. You'll need to approve that first. If you then get <code>ERROR: Device 000000000000000000000000 returned unhandled error code -13</code> you'll need to disconnect and
+reconnect the device.</p>
 </blockquote>
 <p>via <a href="https://reincubate.com/support/how-to/mount-iphone-files/">https://reincubate.com/support/how-to/mount-iphone-files/</a></p>
 <h3 id="sources"><a class="header" href="#sources">Sources</a></h3>
@@ -2132,8 +2126,8 @@ version of iOS and the version the archive was created from are identical. Not d
 to unexpected results.</p>
 </blockquote>
 <blockquote>
-<p><i class="fa fa-info-circle"></i> See <a href="apple-books/ios//apple-books/ios/library-location.html">iOS - Library Location</a> and
-<a href="apple-books/ios//apple-books/ios/access-library.html">iOS - Access Library</a> for more information.</p>
+<p><i class="fa fa-info-circle"></i> See <a href="apple-books/ios//apple-books/ios/library-location.html">iOS - Library Location</a> and <a href="apple-books/ios//apple-books/ios/access-library.html">iOS -
+Access Library</a> for more information.</p>
 </blockquote>
 
                     </main>

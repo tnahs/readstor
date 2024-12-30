@@ -181,11 +181,11 @@ working example.</p>
 <p>Partial templates are included using the <code>include</code> tag:</p>
 <pre><code class="language-jinja2">{% include "_my-partial-template.md" %}
 </code></pre>
-<p>Where <code>"_my-partial-template.md"</code> is a path relative to the
-<a href="/intro/options/render.html#--templates-directory-path">templates directory</a>. Therefore, this would be pointing to a template at the
-root of the <a href="/intro/options/render.html#--templates-directory-path">templates directory</a>. If we wanted to organize our templates
-into different directories we would have to add the directory names for any directories between the
-including template and the <a href="/intro/options/render.html#--templates-directory-path">templates directory</a>.</p>
+<p>Where <code>"_my-partial-template.md"</code> is a path relative to the <a href="/intro/options/render.html#--templates-directory-path">templates
+directory</a>. Therefore, this would be pointing to a template at the root of the
+<a href="/intro/options/render.html#--templates-directory-path">templates directory</a>. If we wanted to organize our templates into different
+directories we would have to add the directory names for any directories between the including
+template and the <a href="/intro/options/render.html#--templates-directory-path">templates directory</a>.</p>
 <p>For example, with the following structure:</p>
 <pre><code class="language-plaintext">[templates-directory]
  └── my-vault-templates
