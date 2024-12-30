@@ -1,0 +1,8 @@
+<!-- readstor
+group: test
+context: book
+structure: flat
+extension: txt
+-->
+
+{{ book.title | strip(true) }}

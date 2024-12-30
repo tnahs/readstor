@@ -3,6 +3,7 @@
 ## Book
 
 - [ ] Add a quick-start/cheatsheet to `README.md` and book.
+- [ ] Add docs for new filters: `strip`& `slugify`.
 - [ ] Links to example templates refer to `main` and not the current release.
       All links containing `https://github.com/tnahs/readstor/main` must be
       converted to a tag-aware one: `https://github.com/tnahs/readstor/v0.3.0`.
@@ -14,7 +15,7 @@
 
 - [ ] How do we handle `date_last_opened` for a book on iOS?
 - [ ] Remove `tags` from `book.json`. No need for redundant data.
-- [ ] Add `slug-symbols` filter that converts all symbols to `-`es.
+- [ ] Format docs to 100-character line length.
 
 ## Next
 

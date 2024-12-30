@@ -15,6 +15,12 @@
   user to retrieve and manually pipe in the directory containing the data. Note that this feature is
   considered experimental as it hasn't been tested as thoroughly as its macOS counterpart. See the
   [documentation][documentation] for more information.
+- Added two template filters.
+  - `strip` - Accepts a string of characters to remove from the input string.
+    - For example: `{{ value | strip(chars=".-'")}}`.
+  - `slugify` - Reimplementation of [`slug-rs`][slug-rs] but with the option to toggle dropping the
+    case of the input string.
+    - For example: `{{ value | slugify(lowercase=false}}`.
 
 ### Changes
 
@@ -208,4 +214,5 @@
 [export]: https://tnahs.github.io/readstor/latest/00-intro/02-03-export.html
 [filtering]: https://tnahs.github.io/readstor/latest/00-intro/02-01-filter.md
 [names]: https://tnahs.github.io/readstor/latest/01-templates/06-03-names.html
+[slug-rs]: https://github.com/Stebalien/slug-rs/
 [tera]: https://tera.netlify.app/

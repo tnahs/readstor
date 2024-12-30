@@ -1,0 +1,10 @@
+<!-- readstor
+group: test
+context: book
+structure: flat
+extension: txt
+-->
+
+{{ book.title | slugify }}
+{{ book.title | slugify(lowercase=false) }}
+{{ book.title | slugify(lowercase=true) }}

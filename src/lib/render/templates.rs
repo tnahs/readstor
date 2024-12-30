@@ -15,6 +15,7 @@ use crate::contexts::entry::EntryContext;
 use crate::models::entry::Entry;
 use crate::result::{Error, Result};
 
+use super::filters;
 use super::names::NamesRender;
 use super::template::{
     ContextMode, StructureMode, TemplatePartialRaw, TemplateRaw, TemplateRender,
@@ -89,7 +90,16 @@ impl Templates {
 
         self.validate_requested_template_groups()?;
 
+        self.register_filters();
+
         Ok(())
+    }
+
+    /// Registers template filters.
+    pub fn register_filters(&mut self) {
+        for (name, function) in filters::FILTER_MAPPING.iter() {
+            self.registry.register_filter(name, function);
+        }
     }
 
     /// Iterates through all [`TemplateRaw`]s and renders them based on their
@@ -609,6 +619,7 @@ mod test_templates {
     // Validates that a template does not contain variables that reference non-existent fields.
     fn validate_template_context(template: &TemplateRaw) -> Result<()> {
         let mut templates = Templates::default();
+        templates.register_filters();
 
         templates
             .registry
@@ -621,6 +632,7 @@ mod test_templates {
     // Validates that a template does not contain syntax errors.
     fn validate_template_syntax(template: &TemplateRaw) -> Result<()> {
         let mut templates = Templates::default();
+        templates.register_filters();
 
         templates
             .registry
@@ -712,7 +724,7 @@ mod test_templates {
 
         const DIRECTORY: &str = "invalid-syntax";
 
-        // Tests that an invalid syntax returns an error.
+        // Tests that invalid syntax returns an error.
         #[test]
         fn invalid_syntax() {
             let template = load_test_template(DIRECTORY, "invalid-syntax.txt");
@@ -728,11 +740,67 @@ mod test_templates {
 
         const DIRECTORY: &str = "valid-syntax";
 
-        // Tests that a valid syntax returns no errors.
+        // Tests that valid syntax returns no errors.
         #[test]
         fn valid_syntax() {
             let template = load_test_template(DIRECTORY, "valid-syntax.txt");
             let result = validate_template_syntax(&template);
+
+            assert!(result.is_ok());
+        }
+    }
+
+    // Tests that invalid filter calls return an error.
+    mod invalid_filter {
+
+        use super::*;
+
+        const DIRECTORY: &str = "invalid-filter";
+
+        #[test]
+        #[should_panic(expected = "Failed to parse 'invalid-strip-01.txt'")]
+        fn invalid_filter_strip_01() {
+            let template = load_test_template(DIRECTORY, "invalid-strip-01.txt");
+
+            validate_template_context(&template).unwrap();
+        }
+
+        #[test]
+        #[should_panic(expected = "Failed to parse 'invalid-strip-02.txt'")]
+        fn invalid_filter_strip_02() {
+            let template = load_test_template(DIRECTORY, "invalid-strip-02.txt");
+
+            validate_template_context(&template).unwrap();
+        }
+
+        #[test]
+        #[should_panic(expected = "Failed to parse 'invalid-slugify.txt'")]
+        fn invalid_filter_slugify() {
+            let template = load_test_template(DIRECTORY, "invalid-slugify.txt");
+
+            validate_template_context(&template).unwrap();
+        }
+    }
+
+    // Tests that valid filter calls return no errors.
+    mod valid_filter {
+
+        use super::*;
+
+        const DIRECTORY: &str = "valid-filter";
+
+        #[test]
+        fn valid_filter_strip() {
+            let template = load_test_template(DIRECTORY, "valid-strip.txt");
+            let result = validate_template_context(&template);
+
+            assert!(result.is_ok());
+        }
+
+        #[test]
+        fn valid_filter_slugify() {
+            let template = load_test_template(DIRECTORY, "valid-slugify.txt");
+            let result = validate_template_context(&template);
 
             assert!(result.is_ok());
         }
