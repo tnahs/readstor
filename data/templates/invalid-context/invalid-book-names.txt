@@ -1,5 +1,5 @@
 <!-- readstor
-group: invalid-book-names
+group: test
 context: book
 structure: flat
 extension: txt

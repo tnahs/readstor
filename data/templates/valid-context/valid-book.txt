@@ -1,5 +1,5 @@
 <!-- readstor
-group: valid-book
+group: test
 context: book
 structure: flat
 extension: txt

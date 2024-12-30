@@ -1,5 +1,5 @@
 <!-- readstor
-group: valid-annotation
+group: test
 context: annotation
 structure: flat
 extension: txt

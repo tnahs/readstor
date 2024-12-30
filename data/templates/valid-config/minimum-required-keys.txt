@@ -1,5 +1,5 @@
 <!-- readstor
-group: minimum-required-keys
+group: test
 context: book
 structure: flat
 extension: txt
