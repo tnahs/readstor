@@ -5,20 +5,19 @@ Mode][context-modes].
 
 ## Template Fields - Book
 
-| Attribute                         | Type           | Description                |
-| --------------------------------- | -------------- | -------------------------- |
-| `book`                            | dictionary     | book object                |
-| `book.title`                      | string         | title                      |
-| `book.author`                     | string         | author                     |
-| `book.tags`                       | list\[string\] | the book's tags            |
-| `book.metadata`                   | dictionary     | metadata                   |
-| `book.metadata.id`                | string         | unique id                  |
-| `book.metadata.last_opened`       | datetime       | date last opened           |
-| `book.slugs`                      | dictionary     | slugs object               |
-| `book.slugs.title`                | string         | title slugified            |
-| `book.slugs.author`               | string         | author slugified           |
-| `book.slugs.metadata`             | datetime       | slugs metadata object      |
-| `book.slugs.metadata.last_opened` | datetime       | date last opened slugified |
+| Attribute                         | Type       | Description                |
+| --------------------------------- | ---------- | -------------------------- |
+| `book`                            | dictionary | book object                |
+| `book.title`                      | string     | title                      |
+| `book.author`                     | string     | author                     |
+| `book.metadata`                   | dictionary | metadata                   |
+| `book.metadata.id`                | string     | unique id                  |
+| `book.metadata.last_opened`       | datetime   | date last opened           |
+| `book.slugs`                      | dictionary | slugs object               |
+| `book.slugs.title`                | string     | title slugified            |
+| `book.slugs.author`               | string     | author slugified           |
+| `book.slugs.metadata`             | datetime   | slugs metadata object      |
+| `book.slugs.metadata.last_opened` | datetime   | date last opened slugified |
 
 ## Example Data - Book
 
@@ -44,7 +43,6 @@ Mode][context-modes].
 ---
 title: {{ book.title }}
 author: {{ book.author }}
-tags: {{ book.tags | join(sep=" ") }}
 id: {{ book.metadata.id }}
 last-opened: {{ book.metadata.last_opened | date(format="%Y-%m-%d-%H:%M") }}
 ---

@@ -1,7 +1,5 @@
 //! Defines the context for [`Book`] data.
 
-use std::collections::BTreeSet;
-
 use serde::Serialize;
 
 use crate::models::book::{Book, BookMetadata};
@@ -16,11 +14,9 @@ pub struct BookContext<'a> {
     #[allow(missing_docs)]
     pub author: &'a String,
     #[allow(missing_docs)]
-    pub tags: &'a BTreeSet<String>,
-    #[allow(missing_docs)]
     pub metadata: &'a BookMetadata,
 
-    /// An [`Book`]s slugified strings.
+    /// A [`Book`]s slugified strings.
     pub slugs: BookSlugs,
 }
 
@@ -29,7 +25,6 @@ impl<'a> From<&'a Book> for BookContext<'a> {
         Self {
             title: &book.title,
             author: &book.author,
-            tags: &book.tags,
             metadata: &book.metadata,
             slugs: BookSlugs {
                 title: crate::utils::to_slug_string(&book.title, '-'),

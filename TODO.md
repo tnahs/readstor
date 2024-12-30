@@ -14,7 +14,6 @@
 ## v0.6.0
 
 - [ ] How do we handle `date_last_opened` for a book on iOS?
-- [ ] Remove `tags` from `book.json`. No need for redundant data.
 - [ ] Format docs to 100-character line length.
 
 ## Next

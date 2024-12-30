@@ -30,6 +30,7 @@
 - The short option name for `--template-directory` is now `-t` in the `render` command.
 - The short option name for `--directory-template` is now `-t` in the `export` and `backup` command.
 - Directory templates for `export` and `backup` are now validated before execution.
+- Removed `tags` from `Book` context.
 
 ### Bug Fixes
 

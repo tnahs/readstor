@@ -79,7 +79,7 @@ impl FilterRunner {
         }
     }
 
-    /// Filters out [`Entry`][entry]s by their [`Book::tags`][book].
+    /// Filters out [`Entry`][entry]s by their [`tags`][tags].
     ///
     /// # Arguments
     ///
@@ -87,8 +87,8 @@ impl FilterRunner {
     /// * `operator` - The [`FilterOperator`] to use.
     /// * `entries` - The [`Entry`][entry]s to filter.
     ///
-    /// [book]: crate::models::book::Book::tags
     /// [entry]: crate::models::entry::Entry
+    /// [tags]: crate::models::annotation::Annotation::tags
     fn filter_by_tags(query: &[String], operator: FilterOperator, entries: &mut Entries) {
         let tags = BTreeSet::from_iter(query);
 

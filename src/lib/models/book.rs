@@ -1,7 +1,5 @@
 //! Defines the [`Book`] struct.
 
-use std::collections::BTreeSet;
-
 use rusqlite::Row;
 use serde::Serialize;
 
@@ -18,11 +16,6 @@ pub struct Book {
 
     /// The author of the book.
     pub author: String,
-
-    /// The book's `#tags` compiled from its [`Annotation`][annotation]s.
-    ///
-    /// [annotation]: crate::models::annotation::Annotation
-    pub tags: BTreeSet<String>,
 
     /// The book's metadata.
     pub metadata: BookMetadata,
@@ -45,7 +38,6 @@ impl ABQuery for Book {
         Self {
             title: row.get_unwrap(0),
             author: row.get_unwrap(1),
-            tags: BTreeSet::new(),
             metadata: BookMetadata {
                 id: row.get_unwrap(2),
                 last_opened: DateTimeUtc::from(last_opened),
@@ -59,7 +51,6 @@ impl From<BookRaw> for Book {
         Self {
             title: book.title,
             author: book.author,
-            tags: BTreeSet::new(),
             metadata: BookMetadata {
                 id: book.id,
                 // FIXME: How can we find the `last_opened` date?

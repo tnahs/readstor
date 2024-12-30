@@ -30,7 +30,6 @@ impl Book {
         Self {
             title: "Excepteur Sit Commodo".to_string(),
             author: "Laborum Cillum".to_string(),
-            tags: BTreeSet::from_iter(["#laboris", "#magna", "#nisi"].map(String::from)),
             metadata: BookMetadata {
                 id: id.to_string(),
                 last_opened: DateTimeUtc::default(),

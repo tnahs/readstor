@@ -7,8 +7,7 @@ The following options affect only the [`render`][render] and [`export`][export] 
 Extract `#tags` from [`annotation.notes`][annotation].
 
 All matches are removed from [`annotation.notes`][annotation] and placed into
-[`annotation.tags`][annotation]. Additionally, all `#tags` within a book are compiled and placed
-them into [`book.tags`][book].
+[`annotation.tags`][annotation].
 
 > <i class="fa fa-exclamation-circle"></i> Tags _must_ start with a hash symbol `#` followed by a
 > letter `[a-zA-Z]`.

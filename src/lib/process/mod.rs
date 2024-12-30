@@ -2,8 +2,6 @@
 
 pub mod processors;
 
-use std::collections::BTreeSet;
-
 use crate::models::entry::{Entries, Entry};
 use crate::render::template::TemplateRender;
 
@@ -56,10 +54,9 @@ impl PreProcessRunner {
         entry.annotations.sort();
     }
 
-    /// Extracts `#tags` from [`Annotation::notes`][annotation-notes] and
-    /// places them into [`Annotation::tags`][annotation-tags]. Additionally,
-    /// compiles all `#tags` and places them into [`Book::tags`][book-tags].
-    /// The `#tags` are removed from [`Annotation::notes`][annotation-notes].
+    /// Extracts `#tags` from [`Annotation::notes`][annotation-notes] and places
+    /// them into [`Annotation::tags`][annotation-tags]. The `#tags` are removed from
+    /// [`Annotation::notes`][annotation-notes].
     ///
     /// # Arguments
     ///
@@ -67,23 +64,11 @@ impl PreProcessRunner {
     ///
     /// [annotation-notes]: crate::models::annotation::Annotation::notes
     /// [annotation-tags]: crate::models::annotation::Annotation::tags
-    /// [book-tags]: crate::models::book::Book::tags
     fn extract_tags(entry: &mut Entry) {
         for annotation in &mut entry.annotations {
             annotation.tags = processors::extract_tags(&annotation.notes);
             annotation.notes = processors::remove_tags(&annotation.notes);
         }
-
-        // Compile/insert unique list of `#tags` into `Book::tags`.
-        let mut tags = entry
-            .annotations
-            .iter()
-            .flat_map(|annotation| annotation.tags.clone())
-            .collect::<Vec<String>>();
-
-        tags.sort();
-
-        entry.book.tags = BTreeSet::from_iter(tags);
     }
 
     /// Normalizes whitespace in [`Annotation::body`][body].
@@ -229,14 +214,11 @@ mod test_processes {
 
         use super::*;
 
-        use std::collections::BTreeSet;
-
         use crate::models::annotation::Annotation;
         use crate::models::book::Book;
 
         // Tests that tags are properly extracted from `Annotation::notes`, placed into the
-        // `Annotation::tags` field and finally compiled, deduped and placed into their respective
-        // book's `Book::tags` field.
+        // `Annotation::tags` field.
         #[test]
         fn test_extracted_tags() {
             let mut entry = Entry {
@@ -263,11 +245,6 @@ mod test_processes {
                 assert_eq!(annotation.tags.len(), 2);
                 assert!(annotation.notes.is_empty());
             }
-
-            assert_eq!(
-                entry.book.tags,
-                BTreeSet::from(["#tag01", "#tag02", "#tag03"].map(String::from))
-            );
         }
     }
 }
