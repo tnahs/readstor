@@ -188,7 +188,6 @@ mod test_processors {
                 ["#tag01", "#tag02"]
             ),
             // Tests tags without spacing.
-            // TODO: Do we want to support this?
             process_tags_05: (
                 "Lorem ipsum.#tag01#tag02",
                 "Lorem ipsum.",
