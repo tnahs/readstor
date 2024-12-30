@@ -167,7 +167,6 @@ Mode</a>.</p>
 <tr><td><code>book</code></td><td>dictionary</td><td>book object</td></tr>
 <tr><td><code>book.title</code></td><td>string</td><td>title</td></tr>
 <tr><td><code>book.author</code></td><td>string</td><td>author</td></tr>
-<tr><td><code>book.tags</code></td><td>list[string]</td><td>the book's tags</td></tr>
 <tr><td><code>book.metadata</code></td><td>dictionary</td><td>metadata</td></tr>
 <tr><td><code>book.metadata.id</code></td><td>string</td><td>unique id</td></tr>
 <tr><td><code>book.metadata.last_opened</code></td><td>datetime</td><td>date last opened</td></tr>
@@ -197,7 +196,6 @@ Mode</a>.</p>
 <pre><code class="language-jinja2">---
 title: {{ book.title }}
 author: {{ book.author }}
-tags: {{ book.tags | join(sep=" ") }}
 id: {{ book.metadata.id }}
 last-opened: {{ book.metadata.last_opened | date(format="%Y-%m-%d-%H:%M") }}
 ---

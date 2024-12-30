@@ -630,8 +630,7 @@ specified <a href="intro/options/filter.html#operator"><code>operator</code></a>
 <h2 id="--extract-tags"><a class="header" href="#--extract-tags"><code>--extract-tags</code></a></h2>
 <p>Extract <code>#tags</code> from <a href="intro/options//templates/context-reference/annotation.html"><code>annotation.notes</code></a>.</p>
 <p>All matches are removed from <a href="intro/options//templates/context-reference/annotation.html"><code>annotation.notes</code></a> and placed into
-<a href="intro/options//templates/context-reference/annotation.html"><code>annotation.tags</code></a>. Additionally, all <code>#tags</code> within a book are compiled and placed
-them into <a href="intro/options//templates/context-reference/book.html"><code>book.tags</code></a>.</p>
+<a href="intro/options//templates/context-reference/annotation.html"><code>annotation.tags</code></a>.</p>
 <blockquote>
 <p><i class="fa fa-exclamation-circle"></i> Tags <em>must</em> start with a hash symbol <code>#</code> followed by a
 letter <code>[a-zA-Z]</code>.</p>
@@ -1627,7 +1626,6 @@ Mode</a>.</p>
 <tr><td><code>book</code></td><td>dictionary</td><td>book object</td></tr>
 <tr><td><code>book.title</code></td><td>string</td><td>title</td></tr>
 <tr><td><code>book.author</code></td><td>string</td><td>author</td></tr>
-<tr><td><code>book.tags</code></td><td>list[string]</td><td>the book's tags</td></tr>
 <tr><td><code>book.metadata</code></td><td>dictionary</td><td>metadata</td></tr>
 <tr><td><code>book.metadata.id</code></td><td>string</td><td>unique id</td></tr>
 <tr><td><code>book.metadata.last_opened</code></td><td>datetime</td><td>date last opened</td></tr>
@@ -1657,7 +1655,6 @@ Mode</a>.</p>
 <pre><code class="language-jinja2">---
 title: {{ book.title }}
 author: {{ book.author }}
-tags: {{ book.tags | join(sep=" ") }}
 id: {{ book.metadata.id }}
 last-opened: {{ book.metadata.last_opened | date(format="%Y-%m-%d-%H:%M") }}
 ---
