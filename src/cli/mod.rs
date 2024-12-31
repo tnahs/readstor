@@ -8,7 +8,7 @@ use std::path::PathBuf;
 use std::result::Result;
 use std::str::FromStr;
 
-use clap::builder::styling::{AnsiColor, Effects};
+use clap::builder::styling::AnsiColor;
 use clap::builder::Styles;
 use clap::{Parser, Subcommand};
 use once_cell::sync::Lazy;
