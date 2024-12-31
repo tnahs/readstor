@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Introduction - ReadStor</title>
+        <title>Quickstart - ReadStor</title>
 
 
         <!-- Custom HTML head -->
@@ -130,7 +130,7 @@
                         <a href="https://www.github.com/tnahs/readstor" title="Git repository" aria-label="Git repository">
                             <i id="git-repository-button" class="fa fa-github"></i>
                         </a>
-                        <a href="https://github.com/tnahs/readstor/edit/main/book/src/intro/index.md" title="Suggest an edit" aria-label="Suggest an edit">
+                        <a href="https://github.com/tnahs/readstor/edit/main/book/src/intro/quickstart.md" title="Suggest an edit" aria-label="Suggest an edit">
                             <i id="git-edit-button" class="fa fa-edit"></i>
                         </a>
 
@@ -159,22 +159,129 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="introduction"><a class="header" href="#introduction">Introduction</a></h1>
-<p>ReadStor is a simple CLI for exporting user-generated data from Apple Books. The goal of this
-project is to facilitate data-migration from Apple Books to any other platform. Currently, Apple
-Books provides no simple way to do this. Exporting is possible but not ideal and often times
-truncates long annotations.</p>
-<p>Version <code>0.1.x</code> contained the core functionality: (1) save all annotations and notes as JSON (2)
-render them via a custom (or the default) template using the <a href="https://tera.netlify.app/">Tera</a> syntax or (3) backup the
-current Apple Books databases.</p>
-<p>Note that this repository is a heavy work-in-progress and things are bound to change.</p>
+                        <h1 id="quickstart"><a class="header" href="#quickstart">Quickstart</a></h1>
+<p>The following is an overview of some of the more common options.</p>
+<h2 id="default-directories"><a class="header" href="#default-directories">Default Directories</a></h2>
+<p>Running <code>readstor</code> with no arguments uses the following default directories:</p>
+<ul>
+<li>databases directory: <code>~/Library/Containers/com.apple.iBooksX/Data/Documents</code></li>
+<li>output directory: <code>~/.readstor</code></li>
+</ul>
+<p>We can change the output directory using the <a href="/intro/options/global.html#--output-directory-path"><code>--output-directory</code></a> option:</p>
+<pre><code class="language-bash">readstor [COMMAND] --output-directory "/path/to/output"
+</code></pre>
+<p>And change the databases directory using the <a href="/intro/options/global.html#--databases-directory-path"><code>--databases-directory</code></a> option:</p>
+<pre><code class="language-bash">readstor [COMMAND] --databases-directory "/path/to/databases"
+</code></pre>
+<h2 id="filter"><a class="header" href="#filter">Filter</a></h2>
+<p><a href="/intro/options/filter.html">Filters</a> can be used to run commands on a subset of annotations. <em>Note that all filters
+are case-insensitive.</em></p>
+<p>We can filter annotations where the book's title is <em>exactly</em> <code>the art spirit</code>:</p>
+<pre><code class="language-bash">readstor [COMMAND] --filter "=title:the art spirit"
+# '=' operator: exact -------^
+</code></pre>
+<p>Or, filter annotations where the book's author <em>contains</em> <code>henri</code>:</p>
+<pre><code class="language-bash">readstor [COMMAND] --filter "author:henri"
+# no operator: contains ----^
+</code></pre>
+<p>Or, filter annotations that contain the tag <code>#star</code>:</p>
+<pre><code class="language-bash">readstor [COMMAND] --filter "tag:#star" --extract-tags
+</code></pre>
+<p>We can alos combine filters:</p>
+<pre><code class="language-bash">readstor [COMMAND]                   \
+    --filter "=title:the art spirit" \
+    --filter "tag:#star"             \
+    --extract-tags
+</code></pre>
+<h2 id="custom-templates"><a class="header" href="#custom-templates">Custom Templates</a></h2>
+<p>A custom <a href="/intro/options/render.html#--template-group-group">templates directory</a> can be declared by using the
+<code>--templates-directory</code> option. A template directory can contain any number of templates structured
+in any way, therefore <a href="/intro/options/render.html#--templates-directory-path">template groups</a> are used to name them and define relations
+between them.</p>
+<p>Render a single template group found inside a custom templates directory:</p>
+<pre><code class="language-bash">readstor render                                \
+    --templates-directory "/path/to/templates" \
+    --template-group "my-template-group"
+</code></pre>
+<p>In this example, <code>my-template-group</code> refers not to any file or directory name but rather the <code>group</code>
+declared within any of the templates found inside the <code>/path/to/templates</code> directory.</p>
+<p>For example <code>/path/to/templates/my-template.jinja2</code>:</p>
+<pre><code class="language-jinja">&lt;!-- readstor
+group: my-template-group
+context: book
+structure: flat
+extension: md
+--&gt;
+
+# {{ book.author }} - {{ book.title }}
+
+{% for annotation in annotations -%}
+{{ annotation.body }}
+
+{% endfor %}
+</code></pre>
+<h2 id="pre--and-post-processing"><a class="header" href="#pre--and-post-processing">Pre- and Post-processing</a></h2>
+<p>We can run pre- and post-processors on the data to modify it before completing the command.
+Pre-processors are run on the raw data while post-processors are run on the output data. Therefore
+pre-processors apply only to the <code>render</code> and <code>export</code> commands while post-processors only apply to
+the <code>render</code> command.</p>
+<p>Generate easily editable text by normalizing whitespace, converting any "smart" Unicode symbols to
+ASCII and hard-wrapping the text to 100 characters.</p>
+<pre><code class="language-bash">readstor render            \
+    --normalize-whitespace \
+    --ascii-symbols        \
+    --trim-blocks          \
+    --wrap-text 100
+</code></pre>
+<blockquote>
+<p><i class="fa fa-info-circle"></i> See <a href="/intro/options/preprocess.html#--normalize-whitespace">normalize whitespace</a>, <a href="/intro/options/preprocess.html#--ascii-symbols">ascii
+symbols</a>, <a href="/intro/options/postprocess.html#--trim-blocks">trim blocks</a>, <a href="/intro/options/postprocess.html#--wrap-text-width">wrap text</a> for more information.</p>
+</blockquote>
+<h2 id="complete-examples"><a class="header" href="#complete-examples">Complete Examples</a></h2>
+<h3 id="render"><a class="header" href="#render">Render</a></h3>
+<p>Renders all annotations containing the <code>#star</code> tag using a template named <code>my-template-group</code> found
+inside the <code>/path/to/templates</code> directory. Runs the pre-processes: <code>ascii-symbols</code>, <code>extract-tags</code>
+and <code>normalize-whitespace</code>, and the post-processes <code>trim-blocks</code> and <code>wrap-text</code>. The resulting
+files are output to <code>/path/to/output</code>.</p>
+<pre><code class="language-bash">readstor render                                \
+    --output-directory "/path/to/output"       \
+    --templates-directory "/path/to/templates" \
+    --template-group "my-template-group"       \
+    --filter "tag:#star"                       \
+    --ascii-symbols                            \
+    --extract-tags                             \
+    --normalize-whitespace                     \
+    --trim-blocks                              \
+    --wrap-text 100
+</code></pre>
+<h3 id="export"><a class="header" href="#export">Export</a></h3>
+<p>Exports all annotations. Runs the pre-processes: <code>ascii-symbols</code>, <code>extract-tags</code> and
+<code>normalize-whitespace</code>. The resulting files are output to <code>/path/to/output</code> using a custom
+<a href="/intro/options/export.html#--directory-template-template">directory template</a>.</p>
+<pre><code class="language-bash">readstor export                                                  \
+    --output-directory "/path/to/output"                         \
+    --directory-template "{{ book.title }} by {{ book.author }}" \
+    --ascii-symbols                                              \
+    --extract-tags                                               \
+    --normalize-whitespace
+</code></pre>
+<h3 id="back-up"><a class="header" href="#back-up">Back-up</a></h3>
+<p>Backs-up macOS's Apple Books databases to <code>/path/to/output</code> using a custom <a href="/intro/options/export.html#--directory-template-template">directory
+template</a>.</p>
+<pre><code class="language-bash">readstor backup                          \
+    --output-directory "/path/to/output" \
+    --directory-template "{{ now | date(format='%Y-%m-%d') }}-v{{ version }}"
+</code></pre>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../intro/index.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
 
-                            <a rel="next prefetch" href="../intro/quickstart.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../intro/commands.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -184,8 +291,11 @@ current Apple Books databases.</p>
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../intro/index.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
 
-                    <a rel="next prefetch" href="../intro/quickstart.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../intro/commands.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>

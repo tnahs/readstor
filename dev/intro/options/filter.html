@@ -167,17 +167,17 @@
 Currently, this is available for the <a href="/intro/commands.html#export"><code>export</code></a> and <a href="/intro/commands.html#render"><code>render</code></a> commands.</p>
 <p>For example, this filter would only <a href="/intro/commands.html#render"><code>render</code></a> annotations where its respective book's title
 is <em>exactly</em> <code>the art spirit</code> AND their tags <em>contain</em> the <code>#star</code> tag.</p>
-<pre><code class="language-bash">readstor render \
-    --extract-tags \
+<pre><code class="language-bash">readstor render                      \
     --filter "=title:the art spirit" \
-    --filter "tag:#star"
+    --filter "tag:#star"             \
+    --extract-tags
 </code></pre>
 <p>This filter would <a href="/intro/commands.html#export"><code>export</code></a> annotations where its respective book's author <em>contains</em> the
 string <code>krishnamurti</code> AND their tags <em>contain either</em> <code>#star</code> or <code>#love</code>.</p>
-<pre><code class="language-bash">readstor export \
-    --extract-tags \
+<pre><code class="language-bash">readstor export                   \
     --filter "author:krishnmurti" \
-    --filter "?tag:#star #love"
+    --filter "?tag:#star #love"   \
+    --extract-tags
 </code></pre>
 <blockquote>
 <p><i class="fa fa-exclamation-circle"></i> Note that filters are case-insensitive.</p>
@@ -185,10 +185,10 @@ string <code>krishnamurti</code> AND their tags <em>contain either</em> <code>#s
 <h3 id="filter-results"><a class="header" href="#filter-results">Filter Results</a></h3>
 <p>After all the filters are run, a confirmation prompt is shown with a brief summary of the filtered
 down books/annotations.</p>
-<pre><code class="language-bash">readstor render \
-    --extract-tags \
+<pre><code class="language-bash">readstor render                      \
     --filter "=title:the art spirit" \
-    --filter "tag:#star"
+    --filter "tag:#star"             \
+    --extract-tags
 ...
    ----------------------------------------------------------------
    Found 9 annotations from 2 books:
@@ -207,9 +207,9 @@ down books/annotations.</p>
 <pre><code class="language-plaintext">[operator]{field}:{query}
 </code></pre>
 <p>For example, breaking down the command from above:</p>
-<pre><code class="language-plaintext">readstor render \
-    --extract-tags \
-    --filter "=title:the art spirit" \
+<pre><code class="language-plaintext">readstor render
+    --extract-tags
+    --filter "=title:the art spirit"
               │└──┬┘ └───────────┬┘
               │   │              │
               │   │              └────────── query: the art spirit
