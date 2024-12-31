@@ -13,27 +13,25 @@ use crate::render::template::TemplateRaw;
 use crate::result::Result;
 use crate::utils;
 
-/// A struct representing the raw template strings for generating output file
-/// and directory names.
+/// A struct representing the raw template strings for generating output file and directory names.
 #[derive(Debug, Clone, Deserialize)]
 pub struct Names {
-    /// The default template used when generating an output filename for the
-    /// template when its context mode is [`ContextMode::Book`][book].
+    /// The default template used when generating an output filename for the template when its
+    /// context mode is [`ContextMode::Book`][book].
     ///
     /// [book]: crate::render::template::ContextMode::Book
     #[serde(default = "Names::default_book")]
     pub book: String,
 
-    /// The default template used when generating an output filename for the
-    /// template when its context mode is [`ContextMode::Annotation`][annotation].
+    /// The default template used when generating an output filename for the template when its
+    /// context mode is [`ContextMode::Annotation`][annotation].
     ///
     /// [annotation]: crate::render::template::ContextMode::Annotation
     #[serde(default = "Names::default_annotation")]
     pub annotation: String,
 
-    /// The default template used when generating a nested output directory for
-    /// the template when its structure mode is either
-    /// [`StructureMode::Nested`][nested] or
+    /// The default template used when generating a nested output directory for the
+    /// template when its structure mode is either [`StructureMode::Nested`][nested] or
     /// [`StructureMode::NestedGrouped`][nested-grouped].
     ///
     /// [nested]: crate::render::template::StructureMode::Nested
@@ -69,12 +67,12 @@ impl Names {
     }
 }
 
-/// A struct representing the rendered template strings for all the output file
-/// and directory names for a given template.
+/// A struct representing the rendered template strings for all the output file and directory names
+/// for a given template.
 ///
-/// This is used to (1) name files and directories when rendering templates to
-/// disk and (2) is included in the template's context so that files/direcories
-/// related to the template can be references within the tenplate.
+/// This is used to (1) name files and directories when rendering templates to disk and (2) is
+/// included in the template's context so that files/direcories related to the template can be
+/// references within the tenplate.
 ///
 /// See [`Templates::render()`][render] for more information.
 ///
@@ -86,18 +84,16 @@ pub struct NamesRender {
     /// [book]: crate::render::template::ContextMode::Book
     pub book: String,
 
-    /// The output filenames for a template with
-    /// [`ContextMode::Annotation`][annotation].
+    /// The output filenames for a template with [`ContextMode::Annotation`][annotation].
     ///
-    /// Internally this field is stored as a `HashMap` but is converted into a
-    /// `Vec` before it's injected into a template.
+    /// Internally this field is stored as a `HashMap` but is converted into a `Vec` before it's
+    /// injected into a template.
     ///
     /// [annotation]: crate::render::template::ContextMode::Annotation
     #[serde(serialize_with = "utils::serialize_hashmap_to_vec")]
     pub annotations: HashMap<String, AnnotationNameAttributes>,
 
-    /// The directory name for a template with
-    /// [`StructureMode::Nested`][nested] or
+    /// The directory name for a template with [`StructureMode::Nested`][nested] or
     /// [`StructureMode::NestedGrouped`][nested-grouped].
     ///
     /// [nested]: crate::render::template::StructureMode::Nested
@@ -108,12 +104,10 @@ pub struct NamesRender {
 impl NamesRender {
     /// Creates a new instance of [`NamesRender`].
     ///
-    /// Note that all names are generated regardless of the template's
-    /// [`ContextMode`][context-mode]. For example, when a separate template
-    /// is used to render a [`Book`][book] and another for its
-    /// [`Annotation`][annotation]s, it's important that both templates have
-    /// access to the other's filenames so they can link to one another if the
-    /// user desires.
+    /// Note that all names are generated regardless of the template's [`ContextMode`][context-mode].
+    /// For example, when a separate template is used to render a [`Book`][book] and another for its
+    /// [`Annotation`][annotation]s, it's important that both templates have access to the other's
+    /// filenames so they can link to one another if the user desires.
     ///
     /// # Arguments
     ///
@@ -122,8 +116,8 @@ impl NamesRender {
     ///
     /// # Errors
     ///
-    /// Will return `Err` if any templates have syntax errors or are
-    /// referencing non-existent fields in their respective contexts.
+    /// Will return `Err` if any templates have syntax errors or are referencing non-existent fields
+    /// in their respective contexts.
     ///
     /// [annotation]: crate::models::annotation::Annotation
     /// [book]: crate::models::book::Book
@@ -146,10 +140,9 @@ impl NamesRender {
     pub fn get_annotation_filename(&self, annotation_id: &str) -> String {
         self.annotations
             .get(annotation_id)
-            // This should theoretically never fail as the `NamesRender`
-            // instance is created from the `Entry`. This means they contain
-            // the same exact keys and it should therefore be safe to unwrap.
-            // An error here would be critical and should fail.
+            // This should theoretically never fail as the `NamesRender` instance is created from
+            // the `Entry`. This means they contain the same exact keys and it should therefore be
+            // safe to unwrap. An error here would be critical and should fail.
             .expect("`NamesRender` instance missing `Annotation` present in `Entry`")
             .filename
             .clone()
@@ -201,8 +194,8 @@ impl NamesRender {
         Ok(annotations)
     }
 
-    /// Renders the directory name for a template with [`StructureMode::Nested`][nested]
-    /// or [`StructureMode::NestedGouped`][nested-grouped].
+    /// Renders the directory name for a template with [`StructureMode::Nested`][nested] or
+    /// [`StructureMode::NestedGouped`][nested-grouped].
     ///
     /// # Arguments
     ///
@@ -219,8 +212,8 @@ impl NamesRender {
 }
 
 /// A struct representing the rendered filename for a template with
-/// [`ContextMode::Annotation`][context-mode] along with a set of attributes
-/// used for sorting within a template.
+/// [`ContextMode::Annotation`][context-mode] along with a set of attributes used for sorting within
+/// a template.
 ///
 /// For example:
 ///
@@ -260,21 +253,18 @@ impl AnnotationNameAttributes {
     }
 }
 
-/// An enum representing the different template contexts for rendering file
-/// and directory names.
+/// An enum representing the different template contexts for rendering file and directory names.
 #[derive(Debug, Serialize)]
 #[serde(untagged)]
 enum NamesContext<'a> {
-    /// The context when rendering a filename for a template with
-    /// [`ContextMode::Book`][context-mode].
+    /// The context when rendering a filename for a template with [`ContextMode::Book`][context-mode].
     ///
     /// [context-mode]: crate::render::template::ContextMode::Book
     Book {
         book: &'a BookContext<'a>,
         annotations: &'a [AnnotationContext<'a>],
     },
-    /// The context when rendering a filename for a template with
-    /// [`ContextMode::Annotation`][context-mode].
+    /// The context when rendering a filename for a template with [`ContextMode::Annotation`][context-mode].
     ///
     /// [context-mode]: crate::render::template::ContextMode::Annotation
     Annotation {
@@ -282,8 +272,7 @@ enum NamesContext<'a> {
         annotation: &'a AnnotationContext<'a>,
     },
     /// The context when rendering the directory name for a template with
-    /// [`StructureMode::Nested`][nested] or
-    /// [`StructureMode::NestedGouped`][nested-grouped].
+    /// [`StructureMode::Nested`][nested] or [`StructureMode::NestedGouped`][nested-grouped].
     ///
     /// [nested]: crate::render::template::StructureMode::Nested
     /// [nested-grouped]: crate::render::template::StructureMode::NestedGrouped

@@ -1,7 +1,7 @@
 //! Defines pre- and post-processor functions.
 //!
-//! Pre-processors are used to mutate fields within an [`Entry`][entry] while
-//! post-processors mutate those within a [`TemplateRender`][template-render].
+//! Pre-processors are used to mutate fields within an [`Entry`][entry] while post-processors mutate
+//! those within a [`TemplateRender`][template-render].
 //!
 //! [entry]: crate::models::entry::Entry
 //! [template-render]: crate::render::template::TemplateRender
@@ -76,8 +76,7 @@ pub fn convert_all_to_ascii(string: &str) -> String {
 
 /// Converts a subset of "smart" Unicode symbols to their ASCII equivalents.
 ///
-/// See [`UNICODE_TO_ASCII_SYMBOLS`][symbols] for list of symbols and their
-/// ASCII equivalents.
+/// See [`UNICODE_TO_ASCII_SYMBOLS`][symbols] for list of symbols and their ASCII equivalents.
 ///
 /// # Arguments
 ///
@@ -95,13 +94,12 @@ pub fn convert_symbols_to_ascii(string: &str) -> String {
     string
 }
 
-/// Normalizes linebreaks by replacing three or more consecutive linebreaks
-/// with two consecutive linebreaks while leaving a single trailing linebreak.
+/// Normalizes linebreaks by replacing three or more consecutive linebreaks with two consecutive
+/// linebreaks while leaving a single trailing linebreak.
 ///
-/// NOTE: This is a temporary solution that naively mimicks what [`tera`][tera]
-/// would do if/when it adds [`trim_blocks`][github-tera]. It is by no means
-/// smart and will just normalize whitespace regardless of what the template
-/// requested.
+/// NOTE: This is a temporary solution that naively mimicks what [`tera`][tera] would do if/when it
+/// adds [`trim_blocks`][github-tera]. It is by no means smart and will just normalize whitespace
+/// regardless of what the template requested.
 ///
 /// # Arguments
 ///
@@ -150,8 +148,8 @@ mod test_processors {
     }
 
         // Tests that extracting and removing tags from a string produces the expected results. Only
-        // tags, e.g. contigious strings starting with a hashtag, should be extracted and removed from
-        // the original string.
+        // tags, e.g. contigious strings starting with a hashtag, should be extracted and removed
+        // from the original string.
         //
         // "Lorem ipsum. #tag",  // Input string
         // "Lorem ipsum.",       // Expected: tags removed

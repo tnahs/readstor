@@ -126,9 +126,8 @@ pub struct AnnotationMetadata {
     /// The date the annotation was last modified.
     pub modified: DateTimeUtc,
 
-    /// A location string used for sorting annotations into their order of
-    /// appearance inside their respective book. This string is generated from
-    /// the annotation's `epubcfi`.
+    /// A location string used for sorting annotations into their order of appearance inside their
+    /// respective book. This string is generated from the annotation's `epubcfi`.
     pub location: String,
 
     /// The annotation's raw `epubcfi`.

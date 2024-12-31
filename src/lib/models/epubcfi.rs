@@ -1,6 +1,5 @@
-//! Defines a parser to convert an [epubcfi][epubcfi] into a sortable string
-//! for sorting annotations into their order of appearance inside their
-//! respective books.
+//! Defines a parser to convert an [epubcfi][epubcfi] into a sortable string for sorting annotations
+//! into their order of appearance inside their respective books.
 //!
 //! [epubcfi]: https://w3c.github.io/epub-specs/epub33/epubcfi/
 
@@ -16,8 +15,8 @@ static RE_STEP_REFERENCE: Lazy<Regex> = Lazy::new(|| Regex::new(r"/[0-9]+").unwr
 
 /// Captures an 'XML ID Assertion / Text Location Assertion' e.g. `[chap01]`
 ///
-/// The specific difference between these two doesn't matter for our purposes.
-/// We just need to strip out anything that resembles an 'Assertion'.
+/// The specific difference between these two doesn't matter for our purposes. We just need to strip
+/// out anything that resembles an 'Assertion'.
 ///
 /// <https://w3c.github.io/epub-specs/epub33/epubcfi/#sec-path-xmlid>
 /// <https://w3c.github.io/epub-specs/epub33/epubcfi/#sec-path-text-location>
@@ -54,8 +53,8 @@ static RE_SPACIAL_OFFSET: Lazy<Regex> = Lazy::new(|| Regex::new(r"@[0-9.]+:[0-9.
 
 /// Returns a simplified location string from a `epubcfi`.
 ///
-/// This is a super simple EPUB CFI parser with a focus on extracting location
-/// information for sorting [`Annotation`][annotation]s.
+/// This is a super simple EPUB CFI parser with a focus on extracting location information for
+/// sorting [`Annotation`][annotation]s.
 ///
 /// Examples:
 ///
@@ -95,8 +94,8 @@ pub fn parse(raw: &str) -> String {
     // -> C: /2/4!/6[bar]/44!/3~1.11@1:1
     let mut location = raw[8..raw.len() - 1].to_owned();
 
-    // Dropping the following elements means they are not taken into
-    // consideration during sorting comparisons between `Annotation`s.
+    // Dropping the following elements means they are not taken into consideration during sorting
+    // comparisons between `Annotation`s.
 
     // Remove any type of 'Assertion'.
     //
@@ -119,8 +118,8 @@ pub fn parse(raw: &str) -> String {
     // -> C: /2/4!/6/44!/3
     location = RE_SPACIAL_OFFSET.replace_all(&location, "").into_owned();
 
-    // "EPUB CFIs allow the expression of simple ranges extending from a start
-    // location to an end location."
+    // "EPUB CFIs allow the expression of simple ranges extending from a start location to an end
+    // location."
     //
     // <https://w3c.github.io/epub-specs/epub33/epubcfi/#sec-ranges>
     //
@@ -128,8 +127,8 @@ pub fn parse(raw: &str) -> String {
     //
     //     epubcfi([parent-path],[range-start],[range-end])
     //
-    // We only care about the [parent-path] and [range-start] which gives us
-    // the absolute path to where an `Annotation` begins.
+    // We only care about the [parent-path] and [range-start] which gives us the absolute path to
+    // where an `Annotation` begins.
     let mut parts: Vec<&str> = location.split(',').collect();
     parts = match parts[..] {
         [parent_path, range_start, _] => {

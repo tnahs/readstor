@@ -84,9 +84,8 @@ impl PreProcessRunner {
         }
     }
 
-    /// Converts all Unicode characters found in [`Annotation::body`][body],
-    /// [`Book::title`][title] and [`Book::author`][author] to their ASCII
-    /// equivalents.
+    /// Converts all Unicode characters found in [`Annotation::body`][body], [`Book::title`][title]
+    /// and [`Book::author`][author] to their ASCII equivalents.
     ///
     /// # Arguments
     ///
@@ -104,9 +103,8 @@ impl PreProcessRunner {
         }
     }
 
-    /// Converts a subset of "smart" Unicode symbols found in
-    /// [`Annotation::body`][body], [`Book::title`][title] and
-    /// [`Book::author`][author] to their ASCII equivalents.
+    /// Converts a subset of "smart" Unicode symbols found in [`Annotation::body`][body],
+    /// [`Book::title`][title] and [`Book::author`][author] to their ASCII equivalents.
     ///
     /// # Arguments
     ///

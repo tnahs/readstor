@@ -15,10 +15,9 @@ use super::names::Names;
 pub struct TemplateRaw {
     /// The template's id.
     ///
-    /// This is typically a file path relative to the templates directory. It
-    /// serves to identify a template within the registry when rendering. This
-    /// is one of two fields that are passed to Tera when registering the
-    /// template. The other one being [`Self::contents`].
+    /// This is typically a file path relative to the templates directory. It serves to identify a
+    /// template within the registry when rendering. This is one of two fields that are passed to
+    /// Tera when registering the template. The other one being [`Self::contents`].
     ///
     /// ```plaintext
     /// --> /path/to/templates/nested/template.md
@@ -29,16 +28,14 @@ pub struct TemplateRaw {
 
     /// The unparsed contents of the template.
     ///
-    /// This gets parsed and validated during registration. This is one of two
-    /// fields that are passed to Tera when registering the template. The other
-    /// one being [`Self::id`].
+    /// This gets parsed and validated during registration. This is one of two fields that are
+    /// passed to Tera when registering the template. The other one being [`Self::id`].
     #[serde(skip_deserializing)]
     pub contents: String,
 
     /// The template's group name.
     ///
-    /// See [`StructureMode::FlatGrouped`] and [`StructureMode::NestedGrouped`]
-    /// for more information.
+    /// See [`StructureMode::FlatGrouped`] and [`StructureMode::NestedGrouped`] for more information.
     #[serde(deserialize_with = "crate::utils::deserialize_and_sanitize")]
     pub group: String,
 
@@ -93,8 +90,7 @@ impl TemplateRaw {
         Ok(template)
     }
 
-    /// Returns a tuple containing the template's configuration and its contents
-    /// respectively.
+    /// Returns a tuple containing the template's configuration and its contents respectively.
     ///
     /// Returns `None` if the template's config block is formatted incorrectly.
     fn parse(string: &str) -> Option<(&str, String)> {
@@ -107,9 +103,8 @@ impl TemplateRaw {
         // ...and offset it by the length of the config opening tag.
         config_start += CONFIG_TAG_OPEN.len();
 
-        // Starting from where we found the opening tag, search for a closing
-        // tag. If we don't offset the starting point we might find another
-        // closing tag located before the opening tag.
+        // Starting from where we found the opening tag, search for a closing tag. If we don't offset
+        // the starting point we might find another closing tag located before the opening tag.
         let mut config_end = string[config_start..].find(CONFIG_TAG_CLOSE)?;
         // Remove the offset we just used.
         config_end += config_start;
@@ -144,16 +139,14 @@ impl std::fmt::Debug for TemplateRaw {
 
 /// A struct representing an unconfigured partial template.
 ///
-/// Partial templates get their configuration from the normal templates that
-/// `include` them.
+/// Partial templates get their configuration from the normal templates that `include` them.
 #[derive(Clone)]
 pub struct TemplatePartialRaw {
     /// The template's id.
     ///
-    /// This is typically a file path relative to the templates directory.
-    /// It serves to identify a partial template when called in an `include`
-    /// tag from within a normal template. This field is passed to Tera when
-    /// registering the template.
+    /// This is typically a file path relative to the templates directory. It serves to identify a
+    /// partial template when called in an `include` tag from within a normal template. This field
+    /// is passed to Tera when registering the template.
     ///
     /// ```plaintext
     /// --> /path/to/templates/nested/template.md
@@ -164,9 +157,8 @@ pub struct TemplatePartialRaw {
 
     /// The unparsed contents of the template.
     ///
-    /// This gets parsed and validated only when a normal template that includes
-    /// it is being parsed and valiated. This field is passed to Tera when
-    /// registering the template.
+    /// This gets parsed and validated only when a normal template that includes it is being parsed
+    /// and valiated. This field is passed to Tera when registering the template.
     pub contents: String,
 }
 
@@ -201,8 +193,8 @@ impl std::fmt::Debug for TemplatePartialRaw {
 pub struct TemplateRender {
     /// The path to where the template will be written to.
     ///
-    /// This path should be relative to the final output directory as this path
-    /// is appended to it to determine the the full output path.
+    /// This path should be relative to the final output directory as this path is appended to it to
+    /// determine the the full output path.
     pub path: PathBuf,
 
     /// The final output filename.
@@ -237,8 +229,7 @@ impl std::fmt::Debug for TemplateRender {
 #[derive(Debug, Clone, Copy, Deserialize)]
 #[serde(rename_all = "kebab-case")]
 pub enum StructureMode {
-    /// When selected, the template is rendered to the output directory without
-    /// any structure.
+    /// When selected, the template is rendered to the output directory without any structure.
     ///
     /// ```yaml
     /// output-mode: flat
@@ -253,10 +244,9 @@ pub enum StructureMode {
     /// ```
     Flat,
 
-    /// When selected, the template is rendered to the output directory and
-    /// placed inside a directory named after its `group`. This useful if there
-    /// are multiple related and unrelated templates being rendered to the same
-    /// directory.
+    /// When selected, the template is rendered to the output directory and placed inside a
+    /// directory named after its `group`. This useful if there are multiple related and unrelated
+    /// templates being rendered to the same directory.
     ///
     /// ```yaml
     /// output-mode: flat-grouped
@@ -276,12 +266,10 @@ pub enum StructureMode {
     /// ```
     FlatGrouped,
 
-    /// When selected, the template is rendered to the output directory and
-    /// placed inside a directory named after its `nested-directory-template`.
-    /// This useful if multiple templates are used to represent a single book
-    /// i.e. a book template used to render a book's information to a single
-    /// file and an annotation template used to render each annotation to a
-    /// separate file.
+    /// When selected, the template is rendered to the output directory and placed inside a
+    /// directory named after its `nested-directory-template`. This useful if multiple templates are
+    /// used to represent a single book i.e. a book template used to render a book's information to
+    /// a single file and an annotation template used to render each annotation to a separate file.
     ///
     /// ```yaml
     /// output-mode: nested
@@ -301,12 +289,11 @@ pub enum StructureMode {
     /// ```
     Nested,
 
-    /// When selected, the template is rendered to the output directory and
-    /// placed inside a directory named after its `group` and another named
-    /// after its `nested-directory-template`. This useful if multiple templates
-    /// are used to represent a single book i.e. a book template and an
-    /// annotation template and there are multiple related and unrelated
-    /// templates being rendered to the same directory.
+    /// When selected, the template is rendered to the output directory and placed inside a
+    /// directory named after its `group` and another named after its `nested-directory-template`.
+    /// This useful if multiple templates are used to represent a single book i.e. a book template
+    /// and an annotation template and there are multiple related and unrelated templates being
+    /// rendered to the same directory.
     ///
     ///
     /// ```yaml
@@ -342,8 +329,8 @@ pub enum StructureMode {
 #[derive(Debug, Clone, Copy, Deserialize)]
 #[serde(rename_all = "lowercase")]
 pub enum ContextMode {
-    /// When selected, the template is rendered to a single file containing a
-    /// [`Book`][book] and all its [`Annotation`][annotation]s.
+    /// When selected, the template is rendered to a single file containing a [`Book`][book] and all
+    /// its [`Annotation`][annotation]s.
     ///
     /// ```yaml
     /// render-context: book
@@ -358,8 +345,8 @@ pub enum ContextMode {
     /// [annotation]: crate::models::annotation::Annotation
     Book,
 
-    /// When selected, the template is rendered to multiple files containing a
-    /// [`Book`][book] and only one its [`Annotation`][annotation]s.
+    /// When selected, the template is rendered to multiple files containing a [`Book`][book] and
+    /// only one its [`Annotation`][annotation]s.
     ///
     /// ```yaml
     /// render-context: annotation

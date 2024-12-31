@@ -293,8 +293,8 @@ impl App {
         PostProcessRunner::run(templates.renders_mut().collect(), options);
     }
 
-    /// Prompts the user to confirm the filter results. Returns a boolean
-    /// representing whether or not to continue.
+    /// Prompts the user to confirm the filter results. Returns a boolean representing whether or
+    /// not to continue.
     fn confirm_filter_results(&self) -> bool {
         let indent = " ".repeat(3);
         let line = "-".repeat(64);

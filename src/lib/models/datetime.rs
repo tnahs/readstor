@@ -6,19 +6,16 @@ use std::time::UNIX_EPOCH;
 use chrono::{DateTime, Utc};
 use serde::Serialize;
 
-/// A newtype around [`chrono`]'s [`DateTime<Utc>`] to allow implementation of
-/// the [`Default`] trait.
+/// A newtype around [`chrono`]'s [`DateTime<Utc>`] to allow implementation of the [`Default`] trait.
 ///
 /// Why do we need a Default implementation?
 ///
-/// When a new template is added to the [`Templates`][templates] struct, it
-/// needs to be validated both for its syntax and for the fields that its
-/// variables reference. In order to achieve the latter, a dummy
-/// [`Entry`][entry] struct---its Default implementation---is passed to
-/// validate the template's variables. Seeing as `DateTime` does not have a
-/// Default implementation, it was either we implement a hand written Default
-/// of [`Entry`][entry] which would include multiple nested structs or wrap
-/// [`DateTime<Utc>`] and provide a Default implementation.
+/// When a new template is added to the [`Templates`][templates] struct, it needs to be validated
+/// both for its syntax and for the fields that its variables reference. In order to achieve the
+/// latter, a dummy [`Entry`][entry] struct---its Default implementation---is passed to validate the
+/// template's variables. Seeing as `DateTime` does not have a Default implementation, it was either
+/// we implement a hand written Default of [`Entry`][entry] which would include multiple nested
+/// structs or wrap [`DateTime<Utc>`] and provide a Default implementation.
 ///
 /// See [`Templates`][templates] for more information.
 ///
@@ -49,10 +46,9 @@ impl DerefMut for DateTimeUtc {
 
 /// Converts a `Core Data` timestamp (f64) to `DateTime`.
 ///
-/// A `Core Data` timestamp is the number of seconds (or nanoseconds) since
-/// midnight, January 1, 2001, GMT. The difference between a `Core Data`
-/// timestamp and a Unix timestamp (seconds since 1/1/1970) is 978307200
-/// seconds.
+/// A `Core Data` timestamp is the number of seconds (or nanoseconds) since midnight, January 1,
+/// 2001, GMT. The difference between a `Core Data` timestamp and a Unix timestamp (seconds since
+/// 1/1/1970) is 978307200 seconds.
 ///
 /// <https://www.epochconverter.com/coredata>
 #[allow(clippy::cast_possible_truncation, clippy::cast_sign_loss)]

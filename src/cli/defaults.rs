@@ -19,8 +19,7 @@ pub const READSTOR_LOG: &str = "READSTOR_LOG";
 /// ```
 pub static OUTPUT_DIRECTORY: Lazy<PathBuf> = Lazy::new(|| lib::defaults::HOME.join(".readstor"));
 
-/// Returns a path to a temp directory to use for reading and writing data during
-/// development/testing.
+/// Returns a path to a temp directory to use for reading and writing data during development/testing.
 ///
 /// Internally this returns the value of the TMPDIR environment variable if it is set, otherwise it
 /// returns `/tmp`. See [`std::env::temp_dir()`] for more information.

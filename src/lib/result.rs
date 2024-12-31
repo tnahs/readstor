@@ -19,12 +19,11 @@ pub enum Error {
         path: String,
     },
 
-    /// Error returned when the currently installed version of Apple Books for
-    /// macOS is unsupported.
+    /// Error returned when the currently installed version of Apple Books for macOS is unsupported.
     ///
-    /// This most likely means that the database schema is different than
-    /// the one the query has been designed for. In that case, the currently
-    /// installed version of Apple Books is considered unsupported.
+    /// This most likely means that the database schema is different than the one the query has been
+    /// designed for. In that case, the currently installed version of Apple Books is considered
+    /// unsupported.
     #[error("unsupported version of Apple Books for macOS: {version}")]
     UnsupportedMacosVersion {
         /// The currently installed Apple Books for macOS version number.
@@ -33,12 +32,11 @@ pub enum Error {
         error: String,
     },
 
-    /// Error returned when the currently installed version of Apple Books for
-    /// iOS is unsupported.
+    /// Error returned when the currently installed version of Apple Books for iOS is unsupported.
     ///
-    /// This most likely means that the plist schema is different than
-    /// the one used for deserialization. In that case, the currently
-    /// installed version of Apple Books for iOS  is considered unsupported.
+    /// This most likely means that the plist schema is different than the one used for
+    /// deserialization. In that case, the currently installed version of Apple Books for iOS  is
+    /// considered unsupported.
     // TODO: Is there a way to retrieve the iOS version from the device?
     #[error("unsupported version of Apple Books for iOS: {error}")]
     UnsupportedIosVersion {
@@ -46,8 +44,8 @@ pub enum Error {
         error: String,
     },
 
-    /// Error returned when a syntax error is detected in how a template's
-    /// config block is defined. This does not include YAML syntax error.
+    /// Error returned when a syntax error is detected in how a template's config block is defined.
+    /// This does not include YAML syntax error.
     #[error("cannot read config for: {path}")]
     InvalidTemplateConfig {
         /// The partial path to the template e.g. `nested/template.md`.
@@ -67,22 +65,19 @@ pub enum Error {
     #[error(transparent)]
     InvalidTemplate(#[from] tera::Error),
 
-    /// Error returned if [`serde_json`][serde-json] encounters any errors
-    /// during serialization.
+    /// Error returned if [`serde_json`][serde-json] encounters any errors during serialization.
     ///
     /// [serde-json]: https://docs.rs/serde_json/latest/serde_json/
     #[error(transparent)]
     JsonSerializationError(#[from] serde_json::Error),
 
-    /// Error returned if [`plist`][plist] encounters any errors during
-    /// deserialization.
+    /// Error returned if [`plist`][plist] encounters any errors during deserialization.
     ///
     /// [plist]: https://docs.rs/plist/latest/plist/
     #[error(transparent)]
     PlistDeserializationError(#[from] plist::Error),
 
-    /// Error returned if [`serde_yaml`][serde-yaml] encounters any errors
-    /// during deserialization.
+    /// Error returned if [`serde_yaml`][serde-yaml] encounters any errors during deserialization.
     ///
     /// [serde-yaml]: https://docs.rs/serde_yaml/latest/serde_yaml/
     #[error(transparent)]

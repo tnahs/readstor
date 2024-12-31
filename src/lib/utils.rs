@@ -197,9 +197,9 @@ where
 
 /// Builds a filename from a file stem and extension and sanitizes the output string.
 ///
-/// This is a helper method to replace `PathBuf::set_extension()` as some file
-/// stems might include a period `.`. If we used `PathBuf::set_extension()`,
-/// the text after the last period would be replaced with the extension.
+/// This is a helper method to replace `PathBuf::set_extension()` as some file stems might include
+/// a period `.`. If we used `PathBuf::set_extension()`, the text after the last period would be
+/// replaced with the extension.
 ///
 /// # Arguments
 ///

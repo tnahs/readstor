@@ -64,9 +64,8 @@ impl Templates {
         }
     }
 
-    /// Initializes [`Templates`] by building [`TemplateRaw`]s depending on
-    /// whether a templates directory is provided or not. If none is provided
-    /// then the default template is built.
+    /// Initializes [`Templates`] by building [`TemplateRaw`]s depending on whether a templates
+    /// directory is provided or not. If none is provided then the default template is built.
     ///
     /// # Errors
     ///
@@ -102,9 +101,8 @@ impl Templates {
         }
     }
 
-    /// Iterates through all [`TemplateRaw`]s and renders them based on their
-    /// [`StructureMode`] and [`ContextMode`]. See respective enums for more
-    /// information.
+    /// Iterates through all [`TemplateRaw`]s and renders them based on their [`StructureMode`] and
+    /// [`ContextMode`]. See respective enums for more information.
     ///
     /// # Arguments
     ///
@@ -121,8 +119,8 @@ impl Templates {
         for template in self.iter_requested_templates() {
             let names = NamesRender::new(&entry, template)?;
 
-            // Builds a path, relative to the [output-directory], to where the
-            // the rendered template will be written to.
+            // Builds a path, relative to the [output-directory], to where the the rendered template
+            // will be written to.
             let path = match template.structure_mode {
                 StructureMode::Flat => {
                     // -> [output-directory]
@@ -252,8 +250,7 @@ impl Templates {
             .into_iter()
     }
 
-    /// Builds and registers [`TemplateRaw`]s from a directory containing user-
-    /// generated templates.
+    /// Builds and registers [`TemplateRaw`]s from a directory containing user- generated templates.
     ///
     /// # Arguments
     ///
@@ -271,16 +268,14 @@ impl Templates {
     /// [book]: crate::models::book::Book
     /// [annotation]: crate::models::annotation::Annotation
     fn build_from_directory(&mut self, path: &Path) -> Result<()> {
-        // When a normal template is registered it's validated to make sure it
-        // contains no syntax error or variables that reference non-existent
-        // fields. Partial templates however are registered without directly
-        // being validation as their validation happens when a normal template
-        // includes them. Therefore it's important that partial templates are
-        // registered before normal ones.
+        // When a normal template is registered it's validated to make sure it contains no syntax
+        // error or variables that reference non-existent fields. Partial templates however are
+        // registered without directly being validation as their validation happens when a normal
+        // template includes them. Therefore it's important that partial templates are registered
+        // before normal ones.
 
         for item in Self::iter_templates_directory(&path, TemplateKind::Partial) {
-            // Returns the path to the template relative to the root templates
-            // directory.
+            // Returns the path to the template relative to the root templates directory.
             //
             // --> /path/to/templates/
             // --> /path/to/templates/nested/template.md
@@ -288,8 +283,7 @@ impl Templates {
             //
             // This is used to uniquely identify each template.
             //
-            // This unwrap is safe seeing as both `item` and `path` should both
-            // be absolute paths.
+            // This unwrap is safe seeing as both `item` and `path` should both be absolute paths.
             let path = pathdiff::diff_paths(&item, path).unwrap();
 
             let partial_template = std::fs::read_to_string(&item)?;
@@ -308,8 +302,7 @@ impl Templates {
         for item in Self::iter_templates_directory(&path, TemplateKind::Normal) {
             // See above.
             //
-            // This unwrap is safe seeing as both `item` and `path` should both
-            // be absolute paths.
+            // This unwrap is safe seeing as both `item` and `path` should both be absolute paths.
             let path = pathdiff::diff_paths(&item, path).unwrap();
 
             let template = std::fs::read_to_string(&item)?;
@@ -318,9 +311,9 @@ impl Templates {
             self.registry
                 .add_raw_template(&template.id, &template.contents)?;
 
-            // Templates are validated *after* being registered (1) because the
-            // registry is used to retrieve templates because (2) this ensures
-            // that any partial templates included can also be retrieved.
+            // Templates are validated *after* being registered (1) because the registry is used to
+            // retrieve templates because (2) this ensures that any partial templates included can
+            // also be retrieved.
             self.validate_template(&template)?;
 
             self.raws.push(template);
@@ -346,8 +339,7 @@ impl Templates {
 
         self.registry
             .add_raw_template(&template.id, &template.contents)
-            // Unwrap should be okay here as were not building a template
-            // inheritance chain.
+            // Unwrap should be okay here as were not building a template inheritance chain.
             .unwrap();
 
         self.raws.push(template);
@@ -355,14 +347,12 @@ impl Templates {
         log::debug!("built the default template");
     }
 
-    /// Validates that a template does not contain variables that reference
-    /// non-existent fields in an [`Entry`], [`Book`][book], [`Annotation`][annotation],
-    /// [`NamesRender`].
+    /// Validates that a template does not contain variables that reference non-existent fields in
+    /// an [`Entry`], [`Book`][book], [`Annotation`][annotation], [`NamesRender`].
     ///
-    /// Tera checks for invalid syntax when a new template is registered however
-    /// the template's use of variables can only be checked when a context is
-    /// supplied. This method performs a test render with a dummy context to
-    /// check for valid use of variables.
+    /// Tera checks for invalid syntax when a new template is registered however the template's use
+    /// of variables can only be checked when a context is supplied. This method performs a test
+    /// render with a dummy context to check for valid use of variables.
     ///
     /// # Arguments
     ///
@@ -370,8 +360,8 @@ impl Templates {
     ///
     /// # Errors
     ///
-    /// Will return `Err` if the template contains variables that reference
-    /// non-existent fields in an [`Entry`]/[`Book`][book]/[`Annotation`][annotation].
+    /// Will return `Err` if the template contains variables that reference non-existent fields in
+    /// an [`Entry`]/[`Book`][book]/[`Annotation`][annotation].
     ///
     /// [book]: crate::models::book::Book
     /// [annotation]: crate::models::annotation::Annotation
@@ -517,12 +507,10 @@ pub struct RenderOptions {
     /// A path to a directory containing user-generated templates.
     pub templates_directory: Option<PathBuf>,
 
-    /// A list of template-groups to render. All template-groups are rendered
-    /// if none are specified.
+    /// A list of template-groups to render. All template-groups are rendered if none are specified.
     ///
-    /// These are considered 'requested' template-groups. If they exist, their
-    /// respective templates are considered 'requested' templates and are
-    /// set to be rendered.
+    /// These are considered 'requested' template-groups. If they exist, their respective templates
+    /// are considered 'requested' templates and are set to be rendered.
     pub template_groups: Vec<String>,
 
     /// Toggles whether or not to overwrite existing files.
@@ -532,25 +520,23 @@ pub struct RenderOptions {
 /// An enum representing the two different template types.
 #[derive(Debug, Clone, Copy)]
 enum TemplateKind {
-    /// A [`TemplateRaw`] template. Requires a configuration block and should
-    /// not start with an underscore.
+    /// A [`TemplateRaw`] template. Requires a configuration block and should not start with an
+    /// underscore.
     Normal,
 
-    /// A [`TemplatePartialRaw`] template. Must start with an underscore `_`
-    /// but does not require a configuration block.
+    /// A [`TemplatePartialRaw`] template. Must start with an underscore `_` but does not require a
+    /// configuration block.
     Partial,
 }
 
 /// An enum representing all possible template contexts.
 ///
-/// This primarily used to shuffle data to fit a certain shape before it's
-/// injected into a template.
+/// This primarily used to shuffle data to fit a certain shape before it's injected into a template.
 #[derive(Debug, Serialize)]
 #[serde(untagged)]
 enum TemplateContext<'a> {
-    /// Used when rendering both a [`Book`][book] and its
-    /// [`Annotation`][annotation]s in a template. Includes all the output
-    /// filenames and the nested directory name.
+    /// Used when rendering both a [`Book`][book] and its [`Annotation`][annotation]s in a template.
+    /// Includes all the output filenames and the nested directory name.
     ///
     /// [book]: crate::models::book::Book
     /// [annotation]: crate::models::annotation::Annotation
@@ -559,8 +545,8 @@ enum TemplateContext<'a> {
         annotations: &'a [AnnotationContext<'a>],
         names: &'a NamesRender,
     },
-    /// Used when rendering a single [`Annotation`][annotation] in a template.
-    /// Includes all the output filenames and the nested directory name.
+    /// Used when rendering a single [`Annotation`][annotation] in a template. Includes all the
+    /// output filenames and the nested directory name.
     ///
     /// [annotation]: crate::models::annotation::Annotation
     Annotation {
