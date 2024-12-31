@@ -19,7 +19,7 @@ Render specified [Template Groups][template-groups].
 Multiple [Template Groups][template-groups] can be passed using the following syntax.
 
 ```bash
-readstor \
+readstor
     # ...
     --template-group basic
     --template-group using-backlinks

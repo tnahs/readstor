@@ -1,6 +1,7 @@
 # Summary
 
 - [Introduction](./intro/index.md)
+  - [Quickstart](./intro/quickstart.md)
   - [Commands](./intro/commands.md)
   - [Options](./intro/options/index.md)
     - [Global](./intro/options/global.md)

@@ -31,6 +31,7 @@
 - The short option name for `--directory-template` is now `-t` in the `export` and `backup` command.
 - Directory templates for `export` and `backup` are now validated before execution.
 - Removed `tags` from `Book` context.
+- Added a [quickstart][quickstart] to the documentation.
 
 ### Bug Fixes
 
@@ -212,6 +213,7 @@
 [backup]: https://tnahs.github.io/readstor/latest/00-intro/02-04-backup.html
 [crates-io]: https://crates.io
 [documentation]: https://tnahs.github.io/readstor/latest/
+[quickstart]: https://tnahs.github.io/readstor/latest/intro/quickstart.html
 [export]: https://tnahs.github.io/readstor/latest/00-intro/02-03-export.html
 [filtering]: https://tnahs.github.io/readstor/latest/00-intro/02-01-filter.md
 [names]: https://tnahs.github.io/readstor/latest/01-templates/06-03-names.html

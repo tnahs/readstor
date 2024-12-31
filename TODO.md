@@ -2,7 +2,6 @@
 
 ## Book
 
-- [ ] Add a quick-start/cheatsheet to `README.md` and book.
 - [ ] Add docs for new filters: `strip`& `slugify`.
 - [ ] Links to example templates refer to `main` and not the current release.
       All links containing `https://github.com/tnahs/readstor/main` must be

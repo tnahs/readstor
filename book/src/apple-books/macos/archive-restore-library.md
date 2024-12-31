@@ -53,9 +53,9 @@ Therefore, these two globs along with Apple Books' `Group Container` should be u
 and restoring:
 
 ```plaintext
-~/Library/Containers/com.apple.BK*
-~/Library/Containers/com.apple.iBooks*
-~/Library/Group\ Containers/group.com.apple.iBooks
+"~/Library/Containers/com.apple.BK*"
+"~/Library/Containers/com.apple.iBooks*"
+"~/Library/Group Containers/group.com.apple.iBooks"
 ```
 
 ## <i class="fa fa-exclamation-circle"></i> Important Note
@@ -68,7 +68,7 @@ library files.
 For example:
 
 ```bash
-find ~/Library/Containers/com.apple.BKAgentService \
+find "~/Library/Containers/com.apple.BKAgentService" \
     -type f -a -exec grep -l --exclude=\*.{htm,html,xhtml} $USER {} +
 
 .../.com.apple.containermanagerd.metadata.plist
@@ -77,7 +77,7 @@ find ~/Library/Containers/com.apple.BKAgentService \
 ```
 
 ```bash
-find ~/Library/Containers/com.apple.iBooksX* \
+find "~/Library/Containers/com.apple.iBooksX*" \
     -type f -a -exec grep -l --exclude=\*.{htm,html,xhtml} $USER {} +
 
 .../com.apple.iBooksX/.com.apple.containermanagerd.metadata.plist
@@ -104,18 +104,18 @@ the relevant Apple Books data and metadata to a single directory. Make sure to r
 `[PATH-TO-ARCHIVE]` with a valid path to said directory.
 
 ```bash
-rsync \
-    --archive \
-    --extended-attributes \
-    $HOME/Library/Containers/com.apple.BK* \
-    $HOME/Library/Containers/com.apple.iBooks* \
-    [PATH-TO-ARCHIVE]/Containers
+rsync                                            \
+    --archive                                    \
+    --extended-attributes                        \
+    "$HOME/Library/Containers/com.apple.BK*"     \
+    "$HOME/Library/Containers/com.apple.iBooks*" \
+    "[PATH-TO-ARCHIVE]/Containers"
 
-rsync \
-    --archive \
-    --extended-attributes \
-    $HOME/Library/Group\ Containers/group.com.apple.iBooks \
-    [PATH-TO-ARCHIVE]/Group\ Containers
+rsync                                                       \
+    --archive                                               \
+    --extended-attributes                                   \
+    "$HOME/Library/Group Containers/group.com.apple.iBooks" \
+    "[PATH-TO-ARCHIVE]/Group Containers"
 ```
 
 For example, if `[PATH-TO-ARCHIVE]` is:
@@ -127,18 +127,18 @@ For example, if `[PATH-TO-ARCHIVE]` is:
 Our `rsync` commands would be:
 
 ```bash
-rsync \
-    --archive \
-    --extended-attributes \
-    $HOME/Library/Containers/com.apple.BK* \
-    $HOME/Library/Containers/com.apple.iBooks* \
-    ~/archives/2022-10-08--apple-books-v4.4-5177--macos-v12.6/Containers
+rsync                                            \
+    --archive                                    \
+    --extended-attributes                        \
+    "$HOME/Library/Containers/com.apple.BK*"     \
+    "$HOME/Library/Containers/com.apple.iBooks*" \
+    "~/archives/2022-10-08--apple-books-v4.4-5177--macos-v12.6/Containers"
 
-rsync \
-    --archive \
-    --extended-attributes \
-    $HOME/Library/Group\ Containers/group.com.apple.iBooks \
-    ~/archives/2022-10-08--apple-books-v4.4-5177--macos-v12.6/Group\ Containers
+rsync                                                       \
+    --archive                                               \
+    --extended-attributes                                   \
+    "$HOME/Library/Group Containers/group.com.apple.iBooks" \
+    "~/archives/2022-10-08--apple-books-v4.4-5177--macos-v12.6/Group Containers"
 ```
 
 And the resulting archive would resemble:
@@ -175,31 +175,31 @@ library. We can delete all the library files and directories by using the paths 
 [What To Archive/Restore?](#what-to-archiverestore).
 
 ```bash
-rm -rf $HOME/Library/Containers/com.apple.BK*
-rm -rf $HOME/Library/Containers/com.apple.iBooks*
-rm -rf $HOME/Library/Group\ Containers/group.com.apple.iBooks
+rm -rf "$HOME/Library/Containers/com.apple.BK*"
+rm -rf "$HOME/Library/Containers/com.apple.iBooks*"
+rm -rf "$HOME/Library/Group Containers/group.com.apple.iBooks"
 ```
 
 Finally, we can run the reverse `rsync` commands and restore the archive we previously made. Make
 sure to replace `[PATH-TO-ARCHIVE]` with a valid path.
 
 ```bash
-rsync                             \
-    --archive                     \
-    --extended-attributes         \
-    [PATH-TO-ARCHIVE]/Containers/ \
-    $HOME/Library/Containers/
+rsync                               \
+    --archive                       \
+    --extended-attributes           \
+    "[PATH-TO-ARCHIVE]/Containers/" \
+    "$HOME/Library/Containers/"
 
-rsync                                    \
-    --archive                            \
-    --extended-attributes                \
-    [PATH-TO-ARCHIVE]/Group\ Containers/ \
-    $HOME/Library/Group\ Containers/
+rsync                                     \
+    --archive                             \
+    --extended-attributes                 \
+    "[PATH-TO-ARCHIVE]/Group Containers/" \
+    "$HOME/Library/Group Containers/"
 ```
 
-> <i class="fa fa-exclamation-circle"></i> The trailing forward-slash after `Containers` and
-> `Group\Containers` here is important. It tells `rsync` to move the archive directory's _contents_
-> into the target. Otherwise, it would move the archive _directory_ into the target.
+> <i class="fa fa-exclamation-circle"></i> The trailing forward-slash after `Containers` and `Group
+Containers` here is important. It tells `rsync` to move the archive directory's _contents_ into
+> the target. Otherwise, it would move the archive _directory_ into the target.
 
 For example, if `[PATH-TO-ARCHIVE]` is:
 
@@ -210,17 +210,17 @@ For example, if `[PATH-TO-ARCHIVE]` is:
 Our `rsync` command would be:
 
 ```bash
-rsync                                                                     \
-    --archive                                                             \
-    --extended-attributes                                                 \
-    ~/archives/2022-10-08--apple-books-v4.4-5177--macos-v12.6/Containers/ \
-    $HOME/Library/Containers/  # Note the forward-slash! ---------------^
+rsync                                                                       \
+    --archive                                                               \
+    --extended-attributes                                                   \
+    "~/archives/2022-10-08--apple-books-v4.4-5177--macos-v12.6/Containers/" \
+    "$HOME/Library/Containers/"  # Note the forward-slash! --------------^
 
-rsync                                                                            \
-    --archive                                                                    \
-    --extended-attributes                                                        \
-    ~/archives/2022-10-08--apple-books-v4.4-5177--macos-v12.6/Group\ Containers/ \
-    $HOME/Library/Group\ Containers/  # Note the forward-slash! ---------------^
+rsync                                                                             \
+    --archive                                                                     \
+    --extended-attributes                                                         \
+    "~/archives/2022-10-08--apple-books-v4.4-5177--macos-v12.6/Group Containers/" \
+    "$HOME/Library/Group Containers/"  # Note the forward-slash! --------------^
 ```
 
 [macos-library-location]: /apple-books/macos/library-location.md

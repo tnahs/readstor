@@ -19,7 +19,7 @@ Export data as JSON.
 Outputs using the following structure:
 
 ```plaintext
-[ouput-directory]
+[output-directory]
  ├── [author-title]
  │    ├── book.json
  │    └── annotations.json
@@ -32,7 +32,7 @@ Outputs using the following structure:
 Example output structure:
 
 ```plaintext
-[ouput-directory]
+[output-directory]
  ├── Krishnamurti - Think on These Things
  │   ├── annotations.json
  │   └── book.json
@@ -150,7 +150,7 @@ Back-up macOS's Apple Books databases.
 Outputs using the following structure:
 
 ```plaintext
-[ouput-directory]
+[output-directory]
  └── [YYYY-MM-DD-HHMMSS-VERSION]
       ├── AEAnnotation
       │   ├── AEAnnotation*.sqlite
@@ -163,7 +163,7 @@ Outputs using the following structure:
 Example output:
 
 ```plaintext
-[ouput-directory]
+[output-directory]
  └── 2022-10-09-152506-v4.4-5177
      ├── AEAnnotation
      │   ├── AEAnnotation_v10312011_1727_local.sqlite

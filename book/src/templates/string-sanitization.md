@@ -16,7 +16,7 @@ This following values are sanitized:
 - [Template Group][template-groups] set in the `group` config key.
 - The rendered values from [Names][names] set in the `names` config key.
 
-<!-- TODO: Provde some examples. -->
+<!-- TODO: Provide some examples. -->
 
 [names]: /templates/configuration/names.md
 [template-groups]: /templates/configuration/template-groups.md

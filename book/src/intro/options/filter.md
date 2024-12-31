@@ -13,20 +13,20 @@ For example, this filter would only [`render`][render] annotations where its res
 is _exactly_ `the art spirit` AND their tags _contain_ the `#star` tag.
 
 ```bash
-readstor render \
-    --extract-tags \
+readstor render                      \
     --filter "=title:the art spirit" \
-    --filter "tag:#star"
+    --filter "tag:#star"             \
+    --extract-tags
 ```
 
 This filter would [`export`][export] annotations where its respective book's author _contains_ the
 string `krishnamurti` AND their tags _contain either_ `#star` or `#love`.
 
 ```bash
-readstor export \
-    --extract-tags \
+readstor export                   \
     --filter "author:krishnmurti" \
-    --filter "?tag:#star #love"
+    --filter "?tag:#star #love"   \
+    --extract-tags
 ```
 
 > <i class="fa fa-exclamation-circle"></i> Note that filters are case-insensitive.
@@ -37,10 +37,10 @@ After all the filters are run, a confirmation prompt is shown with a brief summa
 down books/annotations.
 
 ```bash
-readstor render \
-    --extract-tags \
+readstor render                      \
     --filter "=title:the art spirit" \
-    --filter "tag:#star"
+    --filter "tag:#star"             \
+    --extract-tags
 ...
    ----------------------------------------------------------------
    Found 9 annotations from 2 books:
@@ -65,9 +65,9 @@ A filter consists of three parts: an optional [`operator`](#operator), a [`field
 For example, breaking down the command from above:
 
 ```plaintext
-readstor render \
-    --extract-tags \
-    --filter "=title:the art spirit" \
+readstor render
+    --extract-tags
+    --filter "=title:the art spirit"
               │└──┬┘ └───────────┬┘
               │   │              │
               │   │              └────────── query: the art spirit
