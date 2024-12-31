@@ -8,6 +8,8 @@ use std::path::PathBuf;
 use std::result::Result;
 use std::str::FromStr;
 
+use clap::builder::styling::{AnsiColor, Effects};
+use clap::builder::Styles;
 use clap::{Parser, Subcommand};
 use once_cell::sync::Lazy;
 use regex::Regex;
@@ -35,7 +37,8 @@ static RE_FILTER_QUERY: Lazy<Regex> = Lazy::new(|| {
     author,
     version,
     about,
-    after_help = "See the documentation for more information: https://tnahs.github.io/readstor"
+    after_help = "See the documentation for more information: https://tnahs.github.io/readstor",
+    styles = cli_styles(),
 )]
 pub struct Cli {
     #[clap(flatten)]
@@ -80,7 +83,7 @@ pub struct Options {
     )]
     pub plists_directory: Option<PathBuf>,
 
-    /// Run even if Apple Books is open
+    /// Run command even if Apple Books is currently running
     #[arg(short = 'F', long, global = true, help_heading = "Global")]
     pub force: bool,
 
@@ -91,7 +94,7 @@ pub struct Options {
 
 #[derive(Debug, Subcommand)]
 pub enum Command {
-    /// Render data via templates
+    /// Render books/annotation via templates
     Render {
         #[clap(flatten)]
         filter_options: FilterOptions,
@@ -254,9 +257,17 @@ pub struct PostProcessOptions {
     #[arg(short = 'b', long, help_heading = "Post-process")]
     pub trim_blocks: bool,
 
-    /// Wrap text to a maximum character width.
+    /// Wrap text to a maximum character width
     #[arg(short = 'w', long, value_name = "WIDTH", help_heading = "Post-process")]
     pub wrap_text: Option<usize>,
+}
+
+fn cli_styles() -> Styles {
+    Styles::styled()
+        .usage(AnsiColor::Green.on_default())
+        .header(AnsiColor::Green.on_default())
+        .literal(AnsiColor::Cyan.on_default())
+        .placeholder(AnsiColor::Yellow.on_default())
 }
 
 pub fn validate_path_exists(value: &str) -> Result<PathBuf, String> {
