@@ -2,7 +2,7 @@
 
 ## Book
 
-- [ ] Add docs for new filters: `strip`& `slugify`.
+- [ ] Add docs for new filters: `strip` & `slugify`.
 - [ ] Links to example templates refer to `main` and not the current release.
       All links containing `https://github.com/tnahs/readstor/main` must be
       converted to a tag-aware one: `https://github.com/tnahs/readstor/v0.3.0`.
@@ -15,13 +15,11 @@
 
 ## Next
 
+- [ ] Simplify template-groups file naming workflow. Add internal awareness of template groups.
+- [ ] Update README to focus on template outputs and exporting rather than a general purpose CLI.
 - [ ] Check `cargo clippy` GitHub Action.
-- [ ] Update README to be more focused on template outputs and exporting rather
-      than a general purpose CLI.
-- [ ] Update how the summaries are printed out. With the ability to skip
-      writing files, the current method will display incorrect information.
-- [ ] Add `display` command to display annotations in the terminal with
-      [`minus`][minus].
+- [ ] Update how the summaries are printed out. With the ability to skip writing files, the current
+      method will display incorrect information.
 - [ ] Display a more information-rich table when filtering:
 
   ```plaintext
@@ -36,15 +34,11 @@
   Continue? [y/N]: █
   ```
 
-- [ ] Simplify template-groups file naming workflow. Add internal awareness of
-      template groups.
-
 ## Ideas
 
 - [ ] Convert `Book::authors` into a list of authors?
-- [ ] Should we add pre- and post-processing options to the template's config?
-      We could also keep the cli pre- and post-processing options and merge
-      them with the ones local to each template.
+- [ ] Should we add pre- and post-processing options to the template's config? We could also keep
+      the cli pre- and post-processing options and merge them with the ones local to each template.
 
   ```yaml
   group: extended-config
@@ -81,12 +75,9 @@
   - `lib/process/mod.rs`
 - [ ] Improve `epubcfi` parser.
 - [ ] Add teardown for testing.
-- [ ] Use 100-120 character line-length for comments.
-- [ ] Can we add tests inside the `lib::render::template.rs` to verify that the
-      example template configs are valid? This should also check the `names`
-      field for any errors in requested values.
-- [ ] Add filsystem tests for when skipping/overwriting files using the
-      `export` and `render` commands.
+- [ ] Can we add tests inside the `lib::render::template.rs` to verify that the example template
+      configs are valid? This should also check the `names` field for any errors in requested values.
+- [ ] Add filsystem tests for when skipping/overwriting files using the `export` and `render` commands.
 - [ ] Document `cli` module.
 - [ ] Is there a way to consolidate clippy lints between bin/lib?
 - [ ] Test [Tera][tera] macros and inheritances.
