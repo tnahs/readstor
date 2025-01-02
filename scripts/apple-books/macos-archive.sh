@@ -1,11 +1,8 @@
 #!/usr/bin/env zsh
 
 
-if [ -n "$ZSH_VERSION" ]; then
-    script_name=$(basename "${(%):-%N}")
-else
-    script_name=$(basename "$0")
-fi
+# shellcheck disable=2296
+NAME=$(basename "${(%):-%N}")
 
 
 function quit_applebooks {
@@ -30,26 +27,44 @@ function archive_library {
         --extended-attributes                        \
         "$HOME/Library/Containers/com.apple.BK*"     \
         "$HOME/Library/Containers/com.apple.iBooks*" \
-        "$archive/Containers"
+        "$archive/Containers"                        \
+        || {
+            echo "Error: encountered error during rsync for 'Containers'"
+            return 1
+        }
 
     rsync                                                       \
         --archive                                               \
         --extended-attributes                                   \
         "$HOME/Library/Group Containers/group.com.apple.iBooks" \
-        "$archive/Group Containers"
+        "$archive/Group Containers"                             \
+        || {
+            echo "Error: encountered error during rsync for 'Group Containers'"
+            return 1
+        }
+
+    echo "Archiving complete!"
+}
+
+
+function check_requirements_are_installed {
+    if ! hash rsync 2> /dev/null; then
+        echo "Error: 'rsync' not installed"
+        return 1
+    fi
 }
 
 
 function print_help {
-    echo -e "Archive macOS's Apple Books library
+    echo -e "Archive macOS's Apple Books library.
 
-\e[4mUsage:\e[0m ${script_name} [PATH]
+\e[4mUsage:\e[0m ${NAME} [OPTIONS] PATH
 
 \e[4mArguments:\e[0m
-  PATH   Path to save archive to
+  path  Path to save archive to
 
 \e[4mOptions:\e[0m
-  -h, --help   Show help"
+  -h, --help  Show help"
 }
 
 
@@ -57,21 +72,25 @@ function main {
     if [[ "$1" == "--help" ||  "$1" == "-h" ]]; then
         print_help
         exit 0
-    elif [[ $# -lt 1 ]]; then
-        echo "Error: Missing required positional argument: PATH"
-        echo
-        print_help
-        exit 1
-    elif [[ $# -gt 1 ]]; then
-        echo "Error: Invalid or missing arguments"
-        echo
-        print_help
-        exit 1
-    else
-        quit_applebooks
-        archive_library "$1"
-        echo "Archiving complete!"
     fi
+
+    if ! check_requirements_are_installed; then
+        exit 1
+    fi
+
+    if [[ $# -ne 1 ]]; then
+        echo "Error: missing required positional argument 'path'"
+        print_help
+        exit 1
+    fi
+
+    if [[ ! -d "$1" ]]; then
+        echo "Error: input path '$1' does not exist"
+        exit 1
+    fi
+
+    quit_applebooks
+    archive_library "$1"
 }
 
 

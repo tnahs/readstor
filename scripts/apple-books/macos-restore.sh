@@ -1,11 +1,8 @@
 #!/usr/bin/env zsh
 
 
-if [ -n "$ZSH_VERSION" ]; then
-    script_name=$(basename "${(%):-%N}")
-else
-    script_name=$(basename "$0")
-fi
+# shellcheck disable=2296
+NAME=$(basename "${(%):-%N}")
 
 
 function quit_applebooks {
@@ -26,38 +23,59 @@ function delete_old_library {
 #     --progress    prints per-file transfer progress
 #     --stats       prints file transfer stats on completion
 function restore_library {
-    # The trailing forward-slash here is important. It tells 'rsync' to move the
-    # archive directory's *contents* into the target. Otherwise it would
-    # move the archive *directory* into the target.
-    local archive="$1"/
+    local archive="$1"
 
     echo "Restoring archived Apple Books library..."
     echo "This may take a few minutes..."
 
-    rsync                     \
-        --archive             \
-        --extended-attributes \
-        "$archive/Containers" \
-        "$HOME/Library/Containers/"
+    # The trailing forward-slashes at the end of the source directories is
+    # important. It tells 'rsync' to move the archive directory's *contents*
+    # into the target directory. Otherwise it would move the source *directory*
+    # into the target directory.
 
     rsync                           \
         --archive                   \
         --extended-attributes       \
-        "$archive/Group Containers" \
-        "$HOME/Library/Group Containers/"
+        "$archive/Containers/"      \
+        "$HOME/Library/Containers/" \
+        || {
+            echo "Error: encountered error during rsync for 'Containers'"
+            return 1
+        }
+
+    rsync                                 \
+        --archive                         \
+        --extended-attributes             \
+        "$archive/Group Containers/"      \
+        "$HOME/Library/Group Containers/" \
+        || {
+            echo "Error: encountered error during rsync for 'Group Containers'"
+            return 1
+        }
+
+        echo "Restore complete!"
+        echo "Please restart before running Apple Books."
+}
+
+
+function check_requirements_are_installed {
+    if ! hash rsync 2> /dev/null; then
+        echo "Error: 'rsync' not installed."
+        return 1
+    fi
 }
 
 
 function print_help {
-    echo -e "Restore a previously archived macOS Apple Books library
+    echo -e "Restore a previously archived macOS Apple Books library.
 
-\e[4mUsage:\e[0m ${script_name} [PATH]
+\e[4mUsage:\e[0m ${NAME} [OPTIONS] PATH
 
 \e[4mArguments:\e[0m
-  PATH   Path to restore archive from
+  path  Path to restore archive from
 
 \e[4mOptions:\e[0m
-  -h, --help   Show help"
+  -h, --help  Show help"
 }
 
 
@@ -65,23 +83,26 @@ function main {
     if [[ "$1" == "--help" ||  "$1" == "-h" ]]; then
         print_help
         exit 0
-    elif [[ $# -lt 1 ]]; then
-        echo "Error: Missing required positional argument: PATH"
-        echo
-        print_help
-        exit 1
-    elif [[ $# -gt 1 ]]; then
-        echo "Error: Invalid or missing arguments"
-        echo
-        print_help
-        exit 1
-    else
-        quit_applebooks
-        delete_old_library
-        restore_library "$1"
-        echo "Restore complete!"
-        echo "Please restart before running Apple Books."
     fi
+
+    if ! check_requirements_are_installed; then
+        exit 1
+    fi
+
+    if [[ $# -ne 1 ]]; then
+        echo "Error: missing required positional argument 'path'"
+        print_help
+        exit 1
+    fi
+
+    if [[ ! -d "$1" ]]; then
+        echo "Error: input path '$1' does not exist"
+        exit 1
+    fi
+
+    quit_applebooks
+    delete_old_library
+    restore_library "$1"
 }
 
 
