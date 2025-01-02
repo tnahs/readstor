@@ -46,7 +46,7 @@ Or, filter annotations that contain the tag `#star`:
 readstor [COMMAND] --filter "tag:#star" --extract-tags
 ```
 
-We can alos combine filters:
+We can also combine filters:
 
 ```bash
 readstor [COMMAND]                   \
