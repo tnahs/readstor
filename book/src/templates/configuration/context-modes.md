@@ -124,7 +124,7 @@ names:
 
 > <i class="fa fa-info-circle"></i> See [Context Reference - Annotation][annotation] for more information.
 
-## <i class="fa fa-exclamation-circle"></i> A Note On Output Structure
+## A Note On Output Structure
 
 When selecting a context mode it's important to understand how the output files will look. The
 following is a quick visualization.
