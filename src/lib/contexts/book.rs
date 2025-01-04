@@ -3,6 +3,7 @@
 use serde::Serialize;
 
 use crate::models::book::{Book, BookMetadata};
+use crate::strings;
 
 /// A struct representing a [`Book`] within a template context.
 ///
@@ -27,10 +28,10 @@ impl<'a> From<&'a Book> for BookContext<'a> {
             author: &book.author,
             metadata: &book.metadata,
             slugs: BookSlugs {
-                title: crate::utils::to_slug_string(&book.title, '-'),
-                author: crate::utils::to_slug_string(&book.author, '-'),
+                title: strings::to_slug(&book.title, true),
+                author: strings::to_slug(&book.author, true),
                 metadata: BookMetadataSlugs {
-                    last_opened: crate::utils::to_slug_date(&book.metadata.last_opened),
+                    last_opened: strings::to_slug_date(&book.metadata.last_opened),
                 },
             },
         }

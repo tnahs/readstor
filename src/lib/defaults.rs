@@ -28,6 +28,8 @@ pub static EXAMPLE_TEMPLATES: Lazy<PathBuf> = Lazy::new(|| {
 });
 
 /// Defines the root path to the testing templates.
+///
+/// The test templates are located at: [crate-root]/data/templates/[directory]/[filename]
 #[cfg(test)]
 pub static TEST_TEMPLATES: Lazy<PathBuf> = Lazy::new(|| {
     let mut path = CRATE_ROOT.to_owned();

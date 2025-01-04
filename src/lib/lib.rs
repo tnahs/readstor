@@ -10,4 +10,5 @@ pub mod models;
 pub mod process;
 pub mod render;
 pub mod result;
+pub mod strings;
 pub mod utils;

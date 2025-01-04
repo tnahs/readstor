@@ -8,6 +8,7 @@ use serde::Serialize;
 use crate::contexts::book::BookContext;
 use crate::models::entry::{Entries, Entry};
 use crate::result::Result;
+use crate::strings;
 
 /// The default export directory template.
 ///
@@ -74,7 +75,7 @@ impl ExportRunner {
     /// * [`serde_json`][serde-json] encounters any errors.
     ///
     /// [serde-json]: https://docs.rs/serde_json/latest/serde_json/
-    fn export(entries: &mut Entries, path: &Path, options: ExportOptions) -> Result<()> {
+    fn export(entries: &Entries, path: &Path, options: ExportOptions) -> Result<()> {
         let directory_template = if let Some(template) = options.directory_template {
             Self::validate_template(&template)?;
             template
@@ -134,7 +135,7 @@ impl ExportRunner {
     fn render_directory_name(template: &str, entry: &Entry) -> Result<String> {
         let context = BookContext::from(&entry.book);
         let context = ExportContext::from(&context);
-        crate::utils::render_and_sanitize(template, context)
+        strings::render_and_sanitize(template, context)
     }
 }
 
@@ -167,19 +168,9 @@ mod test_export {
 
     use super::*;
 
-    use tera::Tera;
-
     use crate::models::book::Book;
-
-    // Loads a test template from the `TEST_TEMPLATES` directory.
-    //
-    // The test templates are located at: [crate-root]/data/templates/[directory]/[filename]
-    fn load_test_template(directory: &str, filename: &str) -> String {
-        let path = crate::defaults::TEST_TEMPLATES
-            .join(directory)
-            .join(filename);
-        std::fs::read_to_string(path).unwrap()
-    }
+    use crate::render::engine::RenderEngine;
+    use crate::utils;
 
     // Tests that the default template returns no error.
     #[test]
@@ -187,35 +178,38 @@ mod test_export {
         let book = Book::default();
         let context = BookContext::from(&book);
         let context = ExportContext { book: &context };
-        let context = &tera::Context::from_serialize(context).unwrap();
 
-        Tera::one_off(DIRECTORY_TEMPLATE, context, false).unwrap();
+        RenderEngine::default()
+            .render_str(DIRECTORY_TEMPLATE, context)
+            .unwrap();
     }
 
     // Tests that all valid context fields return no errors.
     #[test]
     fn valid_context() {
-        let template = load_test_template("valid-context", "valid-export.txt");
+        let template = utils::load_test_template_str("valid-context", "valid-export.txt");
 
         let book = Book::default();
         let context = BookContext::from(&book);
         let context = ExportContext::from(&context);
-        let context = &tera::Context::from_serialize(context).unwrap();
 
-        Tera::one_off(&template, context, false).unwrap();
+        RenderEngine::default()
+            .render_str(&template, context)
+            .unwrap();
     }
 
     // Tests that an invalid context field returns an error.
     #[test]
     #[should_panic(expected = "Failed to render '__tera_one_off'")]
     fn invalid_context() {
-        let template = load_test_template("invalid-context", "invalid-export.txt");
+        let template = utils::load_test_template_str("invalid-context", "invalid-export.txt");
 
         let book = Book::default();
         let context = BookContext::from(&book);
         let context = ExportContext::from(&context);
-        let context = &tera::Context::from_serialize(context).unwrap();
 
-        Tera::one_off(&template, context, false).unwrap();
+        RenderEngine::default()
+            .render_str(&template, context)
+            .unwrap();
     }
 }

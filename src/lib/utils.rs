@@ -6,15 +6,10 @@ use std::hash::BuildHasher;
 use std::io;
 use std::path::Path;
 
-use chrono::DateTime;
-use chrono::Local;
-use chrono::Utc;
-use deunicode::deunicode;
 use serde::ser::SerializeSeq;
 use serde::{de, ser, Deserialize, Serialize};
-use tera::Tera;
 
-use super::result::Result;
+use super::strings;
 
 /// Recursively copies all files from one directory into another.
 ///
@@ -102,116 +97,6 @@ where
     path.as_ref().file_stem().and_then(OsStr::to_str)
 }
 
-/// Returns today's date using the default `strftime` format string.
-#[must_use]
-pub fn today() -> String {
-    Local::now()
-        .format(crate::defaults::DATE_FORMAT)
-        .to_string()
-}
-
-/// Returns today's date using a custom `strftime` format string.
-///
-/// # Arguments
-///
-/// * `format` - An `strftime` format string.
-#[must_use]
-pub fn today_format(format: &str) -> String {
-    Local::now().format(format).to_string()
-}
-
-/// Removes/replaces problematic characters from a string.
-///
-/// # Arguments
-///
-/// * `string` - The string to sanitize.
-#[must_use]
-pub fn sanitize_string(string: &str) -> String {
-    // These characters can potentially cause problems in filenames.
-    let remove = &['\n', '\r', '\0'];
-    let replace = &['/', ':'];
-
-    let sanitized: String = string
-        .chars()
-        .filter(|c| !remove.contains(c))
-        .map(|c| if replace.contains(&c) { '_' } else { c })
-        .collect();
-
-    let sanitized = OsStr::new(&sanitized);
-    let sanitized = sanitized.to_string_lossy().to_string();
-
-    if sanitized != string {
-        log::warn!("the string '{}' contained invalid characters", string);
-    };
-
-    sanitized
-}
-
-/// Slugifies a string.
-///
-/// # Arguments
-///
-/// * `string` - The string to slugify.
-/// * `delimeter` - The slug delimeter.
-#[must_use]
-pub fn to_slug_string(string: &str, delimiter: char) -> String {
-    let slug = deunicode(string)
-        .trim()
-        .split(' ')
-        .filter(|s| !s.is_empty())
-        .collect::<Vec<&str>>()
-        .join(" ")
-        .to_lowercase()
-        .replace(' ', &delimiter.to_string());
-
-    slug.chars()
-        .filter(|c| c.is_alphanumeric() || c == &delimiter)
-        .collect()
-}
-
-/// Slugifies a date.
-///
-/// # Arguments
-///
-/// * `date` - The date to slugify.
-#[must_use]
-pub fn to_slug_date(date: &DateTime<Utc>) -> String {
-    date.format(crate::defaults::DATE_FORMAT).to_string()
-}
-
-/// Renders a template string with a context and sanitizes the output string.
-///
-/// # Errors
-///
-/// Will return `Err` if Tera encounters an error.
-pub fn render_and_sanitize<C>(template: &str, context: C) -> Result<String>
-where
-    C: Serialize,
-{
-    let context = &tera::Context::from_serialize(context)?;
-
-    let string = Tera::one_off(template, context, false)?;
-
-    Ok(sanitize_string(&string))
-}
-
-/// Builds a filename from a file stem and extension and sanitizes the output string.
-///
-/// This is a helper method to replace `PathBuf::set_extension()` as some file stems might include
-/// a period `.`. If we used `PathBuf::set_extension()`, the text after the last period would be
-/// replaced with the extension.
-///
-/// # Arguments
-///
-/// * `file_stem` - The file stem.
-/// * `extension` - The file extension.
-#[must_use]
-pub fn build_and_sanitize_filename(file_stem: &str, extension: &str) -> String {
-    let filename = format!("{file_stem}.{extension}");
-
-    sanitize_string(&filename)
-}
-
 /// Custom deserialization method to deserialize and sanitize a string.
 #[allow(clippy::missing_errors_doc)]
 pub fn deserialize_and_sanitize<'de, D>(deserializer: D) -> std::result::Result<String, D::Error>
@@ -219,7 +104,7 @@ where
     D: de::Deserializer<'de>,
 {
     let s: &str = Deserialize::deserialize(deserializer)?;
-    Ok(sanitize_string(s))
+    Ok(strings::sanitize(s))
 }
 
 /// Custom serialization method to convert a `HashMap<K, V>` to `Vec<V>`.
@@ -240,4 +125,22 @@ where
         seq.serialize_element(value)?;
     }
     seq.end()
+}
+
+/// Loads a test template from the [`TEST_TEMPLATES`][test-templates] directory.
+///
+/// # Arguments
+///
+/// * `directory` - The template directory.
+/// * `filename` - The template filename.
+///
+/// [test-templates]: crate::defaults::TEST_TEMPLATES
+#[cfg(test)]
+#[allow(clippy::missing_panics_doc)]
+pub fn load_test_template_str(directory: &str, filename: &str) -> String {
+    let path = crate::defaults::TEST_TEMPLATES
+        .join(directory)
+        .join(filename);
+
+    std::fs::read_to_string(path).unwrap()
 }

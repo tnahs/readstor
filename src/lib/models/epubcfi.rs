@@ -185,7 +185,7 @@ mod test_epubcfi {
     use super::*;
 
     // https://stackoverflow.com/a/34666891/16968574
-    macro_rules! test_parse_epubcfi {
+    macro_rules! parse_epubcfi {
         ($($name:ident: $value:expr,)*) => {
             $(
                 #[test]
@@ -199,7 +199,7 @@ mod test_epubcfi {
     }
 
     // https://stackoverflow.com/a/34666891/16968574
-    macro_rules! test_compare_epubcfi {
+    macro_rules! compare_epubcfi {
         ($($name:ident: ($lhs:tt $cmp:tt $rhs:tt),)*) => {
             $(
                 #[test]
@@ -213,7 +213,7 @@ mod test_epubcfi {
     }
 
     // <https://github.com/fread-ink/epub-cfi-resolver/blob/master/tests/simple.js>
-    test_parse_epubcfi! {
+    parse_epubcfi! {
         parse_epubcfi_00: (
             "epubcfi(/1/2)",
             "1.2",
@@ -287,8 +287,6 @@ mod test_epubcfi {
         ),
         parse_epubcfi_17: (
             "epubcfi(/6/28[chap06]!/4/24[para06]/1,:4,:44)",
-            // TODO: Could this --------------------^^ cause an error? Should it be padded with a
-            // `0` so it doesn't look like its attached to the wrong step? -> '6.28.4.24.1.0:4'
             "6.28.4.24.1:4",
         ),
         parse_epubcfi_18: (
@@ -310,7 +308,7 @@ mod test_epubcfi {
     }
 
     // <https://github.com/fread-ink/epub-cfi-resolver/blob/master/tests/compare.js>
-    test_compare_epubcfi! {
+    compare_epubcfi! {
         compare_epubcfi_00: (
             "epubcfi(/2)" < "epubcfi(/6)"
         ),

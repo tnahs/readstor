@@ -12,12 +12,11 @@ use super::names::Names;
 /// A struct representing a fully configured template.
 #[derive(Clone, Deserialize)]
 #[serde(rename_all = "kebab-case")]
-pub struct TemplateRaw {
+pub struct Template {
     /// The template's id.
     ///
-    /// This is typically a file path relative to the templates directory. It serves to identify a
-    /// template within the registry when rendering. This is one of two fields that are passed to
-    /// Tera when registering the template. The other one being [`Self::contents`].
+    /// This is the file path relative to the templates directory. It serves to identify a template
+    /// within the registry when rendering.
     ///
     /// ```plaintext
     /// --> /path/to/templates/nested/template.md
@@ -28,8 +27,7 @@ pub struct TemplateRaw {
 
     /// The unparsed contents of the template.
     ///
-    /// This gets parsed and validated during registration. This is one of two fields that are
-    /// passed to Tera when registering the template. The other one being [`Self::id`].
+    /// This gets parsed and validated during template registration.
     #[serde(skip_deserializing)]
     pub contents: String,
 
@@ -59,8 +57,8 @@ pub struct TemplateRaw {
     pub names: Names,
 }
 
-impl TemplateRaw {
-    /// Creates a new instance of [`TemplateRaw`].
+impl Template {
+    /// Creates a new instance of [`Template`].
     ///
     /// # Arguments
     ///
@@ -126,9 +124,9 @@ impl TemplateRaw {
     }
 }
 
-impl std::fmt::Debug for TemplateRaw {
+impl std::fmt::Debug for Template {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        f.debug_struct("TemplateRaw")
+        f.debug_struct("Template")
             .field("id", &self.id)
             .field("group", &self.group)
             .field("context_mode", &self.context_mode)
@@ -141,12 +139,11 @@ impl std::fmt::Debug for TemplateRaw {
 ///
 /// Partial templates get their configuration from the normal templates that `include` them.
 #[derive(Clone)]
-pub struct TemplatePartialRaw {
+pub struct TemplatePartial {
     /// The template's id.
     ///
-    /// This is typically a file path relative to the templates directory. It serves to identify a
-    /// partial template when called in an `include` tag from within a normal template. This field
-    /// is passed to Tera when registering the template.
+    /// This is the file path relative to the templates directory. It serves to identify a partial
+    /// template when called in an `include` tag from within a non-partial template.
     ///
     /// ```plaintext
     /// --> /path/to/templates/nested/template.md
@@ -157,13 +154,13 @@ pub struct TemplatePartialRaw {
 
     /// The unparsed contents of the template.
     ///
-    /// This gets parsed and validated only when a normal template that includes it is being parsed
-    /// and valiated. This field is passed to Tera when registering the template.
+    /// This gets parsed and validated *only* if its called in an `include` tag in a non-partial
+    /// template that is being registered/parsed/valiated.
     pub contents: String,
 }
 
-impl TemplatePartialRaw {
-    /// Creates a new instance of [`TemplatePartialRaw`].
+impl TemplatePartial {
+    /// Creates a new instance of [`TemplatePartial`].
     ///
     /// # Arguments
     ///
@@ -180,9 +177,9 @@ impl TemplatePartialRaw {
     }
 }
 
-impl std::fmt::Debug for TemplatePartialRaw {
+impl std::fmt::Debug for TemplatePartial {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        f.debug_struct("TemplatePartialRaw")
+        f.debug_struct("TemplatePartial")
             .field("id", &self.id)
             .finish_non_exhaustive()
     }
@@ -190,7 +187,7 @@ impl std::fmt::Debug for TemplatePartialRaw {
 
 /// A struct representing a rendered template.
 #[derive(Default)]
-pub struct TemplateRender {
+pub struct Render {
     /// The path to where the template will be written to.
     ///
     /// This path should be relative to the final output directory as this path is appended to it to
@@ -204,8 +201,8 @@ pub struct TemplateRender {
     pub contents: String,
 }
 
-impl TemplateRender {
-    /// Creates a new instance of [`TemplateRender`].
+impl Render {
+    /// Creates a new instance of [`Template`].
     #[must_use]
     pub fn new(path: PathBuf, filename: String, contents: String) -> Self {
         Self {
@@ -216,9 +213,9 @@ impl TemplateRender {
     }
 }
 
-impl std::fmt::Debug for TemplateRender {
+impl std::fmt::Debug for Render {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        f.debug_struct("TemplateRender")
+        f.debug_struct("Render")
             .field("path", &self.path)
             .field("filename", &self.filename)
             .finish_non_exhaustive()
@@ -370,15 +367,7 @@ mod test_template {
 
     use super::*;
 
-    // Loads a test template from the `TEST_TEMPLATES` directory.
-    //
-    // The test templates are located at: [crate-root]/data/templates/[directory]/[filename]
-    fn load_test_template(directory: &str, filename: &str) -> String {
-        let path = crate::defaults::TEST_TEMPLATES
-            .join(directory)
-            .join(filename);
-        std::fs::read_to_string(path).unwrap()
-    }
+    use crate::utils;
 
     mod invalid_config {
 
@@ -390,64 +379,66 @@ mod test_template {
         #[test]
         #[should_panic(expected = "called `Option::unwrap()` on a `None` value")]
         fn missing_config() {
-            let template = load_test_template(DIRECTORY, "missing-config.txt");
-            TemplateRaw::parse(&template).unwrap();
+            let template = utils::load_test_template_str(DIRECTORY, "missing-config.txt");
+            Template::parse(&template).unwrap();
         }
 
         // Tests that a missing closing tag returns an error.
         #[test]
         #[should_panic(expected = "called `Option::unwrap()` on a `None` value")]
         fn missing_closing_tag() {
-            let template = load_test_template(DIRECTORY, "missing-closing-tag.txt");
-            TemplateRaw::parse(&template).unwrap();
+            let template = utils::load_test_template_str(DIRECTORY, "missing-closing-tag.txt");
+            Template::parse(&template).unwrap();
         }
 
         // Tests that missing `readstor` in the opening tag returns an error.
         #[test]
         #[should_panic(expected = "called `Option::unwrap()` on a `None` value")]
         fn incomplete_opening_tag_01() {
-            let template = load_test_template(DIRECTORY, "incomplete-opening-tag-01.txt");
-            TemplateRaw::parse(&template).unwrap();
+            let template =
+                utils::load_test_template_str(DIRECTORY, "incomplete-opening-tag-01.txt");
+            Template::parse(&template).unwrap();
         }
 
         // Tests that missing the `!` in the opening tag returns an error.
         #[test]
         #[should_panic(expected = "called `Option::unwrap()` on a `None` value")]
         fn incomplete_opening_tag_02() {
-            let template = load_test_template(DIRECTORY, "incomplete-opening-tag-02.txt");
-            TemplateRaw::parse(&template).unwrap();
+            let template =
+                utils::load_test_template_str(DIRECTORY, "incomplete-opening-tag-02.txt");
+            Template::parse(&template).unwrap();
         }
 
         // Tests that no linebreak after `readstor` returns an error.
         #[test]
         #[should_panic(expected = "called `Option::unwrap()` on a `None` value")]
         fn missing_linebreak_01() {
-            let template = load_test_template(DIRECTORY, "missing-linebreak-01.txt");
-            TemplateRaw::parse(&template).unwrap();
+            let template = utils::load_test_template_str(DIRECTORY, "missing-linebreak-01.txt");
+            Template::parse(&template).unwrap();
         }
 
         // Tests that no linebreak after the config body returns an error.
         #[test]
         #[should_panic(expected = "called `Option::unwrap()` on a `None` value")]
         fn missing_linebreak_02() {
-            let template = load_test_template(DIRECTORY, "missing-linebreak-02.txt");
-            TemplateRaw::parse(&template).unwrap();
+            let template = utils::load_test_template_str(DIRECTORY, "missing-linebreak-02.txt");
+            Template::parse(&template).unwrap();
         }
 
         // Tests that no linebreak after the closing tag returns an error.
         #[test]
         #[should_panic(expected = "called `Option::unwrap()` on a `None` value")]
         fn missing_linebreak_03() {
-            let template = load_test_template(DIRECTORY, "missing-linebreak-03.txt");
-            TemplateRaw::parse(&template).unwrap();
+            let template = utils::load_test_template_str(DIRECTORY, "missing-linebreak-03.txt");
+            Template::parse(&template).unwrap();
         }
 
         // Tests that no linebreak before the opening tag returns an error.
         #[test]
         #[should_panic(expected = "called `Option::unwrap()` on a `None` value")]
         fn missing_linebreak_04() {
-            let template = load_test_template(DIRECTORY, "missing-linebreak-04.txt");
-            TemplateRaw::parse(&template).unwrap();
+            let template = utils::load_test_template_str(DIRECTORY, "missing-linebreak-04.txt");
+            Template::parse(&template).unwrap();
         }
     }
 
@@ -461,29 +452,30 @@ mod test_template {
         #[test]
         fn minimum_required_keys() {
             let filename = "minimum-required-keys.txt";
-            let template = load_test_template(DIRECTORY, filename);
-            TemplateRaw::new(filename, &template).unwrap();
+            let template = utils::load_test_template_str(DIRECTORY, filename);
+            Template::new(filename, &template).unwrap();
         }
 
         // Tests that a template with pre- and post-config-content returns no error.
         #[test]
         fn pre_and_post_config_content() {
-            let template = load_test_template(DIRECTORY, "pre-and-post-config-content.txt");
-            TemplateRaw::parse(&template).unwrap();
+            let template =
+                utils::load_test_template_str(DIRECTORY, "pre-and-post-config-content.txt");
+            Template::parse(&template).unwrap();
         }
 
         // Tests that a template with pre-config-content returns no error.
         #[test]
         fn pre_config_content() {
-            let template = load_test_template(DIRECTORY, "pre-config-content.txt");
-            TemplateRaw::parse(&template).unwrap();
+            let template = utils::load_test_template_str(DIRECTORY, "pre-config-content.txt");
+            Template::parse(&template).unwrap();
         }
 
         // Tests that a template with post-config-content returns no error.
         #[test]
         fn post_config_content() {
-            let template = load_test_template(DIRECTORY, "post-config-content.txt");
-            TemplateRaw::parse(&template).unwrap();
+            let template = utils::load_test_template_str(DIRECTORY, "post-config-content.txt");
+            Template::parse(&template).unwrap();
         }
     }
 }

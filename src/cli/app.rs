@@ -7,8 +7,9 @@ use lib::backup::BackupRunner;
 use lib::export::ExportRunner;
 use lib::filter::FilterRunner;
 use lib::models::entry::Entries;
-use lib::process::{PostProcessRunner, PreProcessRunner};
-use lib::render::templates::Templates;
+use lib::process::post::PostProcessor;
+use lib::process::pre::PreProcessor;
+use lib::render::renderer::Renderer;
 
 use crate::cli;
 
@@ -75,7 +76,7 @@ impl App {
                 Self::write_templates(&templates, &self.config.output_directory)?;
 
                 let count_templates = templates.count_templates();
-                let count_renders = templates.count_renders();
+                let count_renders = templates.count_templates_rendered();
 
                 let summary = format!(
                     "-> Rendered {count_templates} template{} into {count_renders} file{} to {}",
@@ -184,7 +185,7 @@ impl App {
     /// * `entries` - The [`Entry`][entry]s to render.
     ///
     /// [entry]: lib::models::entry::Entry
-    fn render_templates(templates: &mut Templates, entries: &mut Entries) -> Result<()> {
+    fn render_templates(templates: &mut Renderer, entries: &mut Entries) -> Result<()> {
         entries.values_mut().try_for_each(|entry| {
             templates
                 .render(entry)
@@ -198,7 +199,7 @@ impl App {
     ///
     /// * `templates` - The templates to write.
     /// * `path` - The ouput directory.
-    fn write_templates(templates: &Templates, path: &Path) -> Result<()> {
+    fn write_templates(templates: &Renderer, path: &Path) -> Result<()> {
         std::fs::create_dir_all(path)?;
 
         templates
@@ -243,9 +244,9 @@ impl App {
     ///
     /// # Arguments
     ///
-    /// * `options` - The [`Templates`]' options.
-    fn init_templates(options: cli::RenderOptions) -> Result<Templates> {
-        let mut templates = Templates::new(options, super::defaults::TEMPLATE.into());
+    /// * `options` - Template rendering options.
+    fn init_templates(options: cli::RenderOptions) -> Result<Renderer> {
+        let mut templates = Renderer::new(options, super::defaults::TEMPLATE.into());
 
         templates
             .init()
@@ -263,7 +264,7 @@ impl App {
     ///
     /// [entry]: lib::models::entry::Entry
     fn run_preprocesses(entries: &mut Entries, options: cli::PreProcessOptions) {
-        PreProcessRunner::run(entries, options);
+        PreProcessor::run(entries, options);
     }
 
     /// Runs filters on all [`Entry`][entry]s.
@@ -280,7 +281,7 @@ impl App {
         }
     }
 
-    /// Runs post-processes on all [`TemplateRender`][template-render]s.
+    /// Runs post-processes on all [`Render`][render]s.
     ///
     /// # Arguments
     ///
@@ -288,9 +289,9 @@ impl App {
     /// * `options` - The post-process options.
     ///
     /// [entry]: lib::models::entry::Entry
-    /// [template-render]: lib::render::template::TemplateRender
-    fn run_postprocesses(templates: &mut Templates, options: cli::PostProcessOptions) {
-        PostProcessRunner::run(templates.renders_mut().collect(), options);
+    /// [render]: lib::render::template::Render
+    fn run_postprocesses(templates: &mut Renderer, options: cli::PostProcessOptions) {
+        PostProcessor::run(templates.templates_rendered_mut().collect(), options);
     }
 
     /// Prompts the user to confirm the filter results. Returns a boolean representing whether or

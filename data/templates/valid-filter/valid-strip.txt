@@ -1,14 +1,7 @@
-<!-- readstor
-group: test
-context: book
-structure: flat
-extension: txt
--->
-
-{{ book.title | strip }}
-{{ book.title | strip(chars=" ") }}
-{{ book.title | strip(chars="-") }}
-{{ book.title | strip(chars="0") }}
-{{ book.title | strip(chars="-0") }}
-{{ book.title | strip(chars="-0 ") }}
-{{ book.title | strip(chars="-0 ") }}
+{{ "" | strip }}
+{{ "" | strip(chars=" ") }}
+{{ "" | strip(chars="-") }}
+{{ "" | strip(chars="0") }}
+{{ "" | strip(chars="-0") }}
+{{ "" | strip(chars="-0 ") }}
+{{ "" | strip(chars="-0 ") }}

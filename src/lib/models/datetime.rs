@@ -10,17 +10,16 @@ use serde::Serialize;
 ///
 /// Why do we need a Default implementation?
 ///
-/// When a new template is added to the [`Templates`][templates] struct, it needs to be validated
-/// both for its syntax and for the fields that its variables reference. In order to achieve the
-/// latter, a dummy [`Entry`][entry] struct---its Default implementation---is passed to validate the
-/// template's variables. Seeing as `DateTime` does not have a Default implementation, it was either
-/// we implement a hand written Default of [`Entry`][entry] which would include multiple nested
-/// structs or wrap [`DateTime<Utc>`] and provide a Default implementation.
+/// When a template is registered, it's validated to make sure it contains no syntax errors
+/// or variables that reference non-existent fields. In order to achieve the latter, a dummy
+/// [`Entry`][entry] struct---its Default implementation---is passed to validate the template's
+/// variables.
 ///
-/// See [`Templates`][templates] for more information.
+/// See [`Renderer`][renderer] and [`dummy`][dummy] for more information.
 ///
+/// [dummy]: crate::models::dummy
 /// [entry]: crate::models::entry::Entry
-/// [templates]: crate::render::templates::Templates
+/// [renderer]: crate::render::renderer::Renderer
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize)]
 pub struct DateTimeUtc(DateTime<Utc>);
 

@@ -274,7 +274,7 @@ pub fn validate_path_exists(value: &str) -> Result<PathBuf, String> {
     std::fs::canonicalize(value).map_err(|_| "path does not exist".into())
 }
 
-impl From<RenderOptions> for lib::render::templates::RenderOptions {
+impl From<RenderOptions> for lib::render::renderer::RenderOptions {
     fn from(options: RenderOptions) -> Self {
         Self {
             templates_directory: options.templates_directory,
@@ -330,7 +330,7 @@ impl From<FilterType> for lib::filter::FilterType {
     }
 }
 
-impl From<PreProcessOptions> for lib::process::PreProcessOptions {
+impl From<PreProcessOptions> for lib::process::pre::PreProcessOptions {
     fn from(options: PreProcessOptions) -> Self {
         Self {
             extract_tags: options.extract_tags,
@@ -341,7 +341,7 @@ impl From<PreProcessOptions> for lib::process::PreProcessOptions {
     }
 }
 
-impl From<PostProcessOptions> for lib::process::PostProcessOptions {
+impl From<PostProcessOptions> for lib::process::post::PostProcessOptions {
     fn from(options: PostProcessOptions) -> Self {
         Self {
             trim_blocks: options.trim_blocks,

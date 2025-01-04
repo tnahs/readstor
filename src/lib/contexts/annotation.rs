@@ -5,6 +5,7 @@ use std::collections::BTreeSet;
 use serde::Serialize;
 
 use crate::models::annotation::{Annotation, AnnotationMetadata, AnnotationStyle};
+use crate::strings;
 
 /// A struct representing an [`Annotation`] within a template context.
 ///
@@ -36,8 +37,8 @@ impl<'a> From<&'a Annotation> for AnnotationContext<'a> {
             metadata: &annotation.metadata,
             slugs: AnnotationSlugs {
                 metadata: AnnotationMetadataSlugs {
-                    created: crate::utils::to_slug_date(&annotation.metadata.created),
-                    modified: crate::utils::to_slug_date(&annotation.metadata.modified),
+                    created: strings::to_slug_date(&annotation.metadata.created),
+                    modified: strings::to_slug_date(&annotation.metadata.modified),
                 },
             },
         }

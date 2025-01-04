@@ -6,7 +6,6 @@ use std::io::Write;
 use std::path::{Path, PathBuf};
 
 use serde::Serialize;
-use tera::Tera;
 use walkdir::DirEntry;
 
 use crate::contexts::annotation::AnnotationContext;
@@ -15,37 +14,35 @@ use crate::contexts::entry::EntryContext;
 use crate::models::entry::Entry;
 use crate::result::{Error, Result};
 
-use super::filters;
+use super::engine::RenderEngine;
 use super::names::NamesRender;
-use super::template::{
-    ContextMode, StructureMode, TemplatePartialRaw, TemplateRaw, TemplateRender,
-};
+use super::template::{ContextMode, Render, StructureMode, Template, TemplatePartial};
 use super::utils;
 
 /// A struct providing a simple interface to build and render templates.
 #[derive(Debug, Default)]
-pub struct Templates {
-    /// All the parsed templates ready for rendering.
-    registry: Tera,
-
-    /// A list of all registed templates.
-    raws: Vec<TemplateRaw>,
-
-    /// A list of all registed partial templates.
-    partials: Vec<TemplatePartialRaw>,
-
-    /// A list of all rendered templates.
-    renders: Vec<TemplateRender>,
+pub struct Renderer {
+    /// The render engine containing the parsed templates ready for rendering.
+    engine: RenderEngine,
 
     /// The default template to use when no templates directory is specified.
-    default: String,
+    template_default: String,
+
+    /// A list of all registed templates.
+    templates: Vec<Template>,
+
+    /// A list of all registed partial templates.
+    templates_partial: Vec<TemplatePartial>,
+
+    /// A list of all rendered templates.
+    renders: Vec<Render>,
 
     /// An instance of [`RenderOptions`].
     options: RenderOptions,
 }
 
-impl Templates {
-    /// Returns a new instance of [`Templates`].
+impl Renderer {
+    /// Returns a new instance of [`Renderer`].
     ///
     /// # Arguments
     ///
@@ -58,13 +55,13 @@ impl Templates {
         O: Into<RenderOptions>,
     {
         Self {
-            default,
+            template_default: default,
             options: options.into(),
             ..Default::default()
         }
     }
 
-    /// Initializes [`Templates`] by building [`TemplateRaw`]s depending on whether a templates
+    /// Initializes [`Renderer`] by building [`Template`]s depending on whether a templates
     /// directory is provided or not. If none is provided then the default template is built.
     ///
     /// # Errors
@@ -81,27 +78,19 @@ impl Templates {
     /// [annotation]: crate::models::annotation::Annotation
     pub fn init(&mut self) -> Result<()> {
         if let Some(path) = &self.options.templates_directory {
-            // Cloning here to prevent mutable & immutable borrows.
             self.build_from_directory(&path.clone())?;
+            // +----------------------^^^^^^^^^^^^^
+            // +---- Cloning here to prevent mutable & immutable borrows.
         } else {
-            self.build_default();
+            self.build_default()?;
         }
 
         self.validate_requested_template_groups()?;
 
-        self.register_filters();
-
         Ok(())
     }
 
-    /// Registers template filters.
-    pub fn register_filters(&mut self) {
-        for (name, function) in filters::FILTER_MAPPING.iter() {
-            self.registry.register_filter(name, function);
-        }
-    }
-
-    /// Iterates through all [`TemplateRaw`]s and renders them based on their [`StructureMode`] and
+    /// Iterates through all [`Template`]s and renders them based on their [`StructureMode`] and
     /// [`ContextMode`]. See respective enums for more information.
     ///
     /// # Arguments
@@ -112,15 +101,14 @@ impl Templates {
     ///
     /// Will return `Err` if any IO errors are encountered.
     pub fn render(&mut self, entry: &Entry) -> Result<()> {
-        let mut renders = Vec::new();
+        let mut renders = Vec::with_capacity(self.templates.len());
 
         let entry = EntryContext::from(entry);
 
         for template in self.iter_requested_templates() {
             let names = NamesRender::new(&entry, template)?;
 
-            // Builds a path, relative to the [output-directory], to where the the rendered template
-            // will be written to.
+            // Builds a the template's output path, relative to the [output-directory].
             let path = match template.structure_mode {
                 StructureMode::Flat => {
                     // -> [output-directory]
@@ -142,7 +130,7 @@ impl Templates {
 
             match template.context_mode {
                 ContextMode::Book => {
-                    renders.push(self.render_book(template, &entry, &names, path)?);
+                    renders.push(self.render_book(template, &entry, &names, &path)?);
                 }
                 ContextMode::Annotation => {
                     renders.extend(self.render_annotations(template, &entry, &names, &path)?);
@@ -155,7 +143,7 @@ impl Templates {
         Ok(())
     }
 
-    /// Iterates through all [`TemplateRender`]s and writes them to disk.
+    /// Iterates through all [`Render`]s and writes them to disk.
     ///
     /// # Arguments
     ///
@@ -186,25 +174,25 @@ impl Templates {
         Ok(())
     }
 
-    /// Returns an iterator over all [`TemplateRender`]s.
-    pub fn renders(&self) -> impl Iterator<Item = &TemplateRender> {
+    /// Returns an iterator over all [`Render`]s.
+    pub fn templates_rendered(&self) -> impl Iterator<Item = &Render> {
         self.renders.iter()
     }
 
-    /// Returns a mutable iterator over all [`TemplateRender`]s.
-    pub fn renders_mut(&mut self) -> impl Iterator<Item = &mut TemplateRender> {
+    /// Returns a mutable iterator over all [`Render`]s.
+    pub fn templates_rendered_mut(&mut self) -> impl Iterator<Item = &mut Render> {
         self.renders.iter_mut()
     }
 
-    /// Returns the number of [`TemplateRaw`]s.
+    /// Returns the number of [`Template`]s.
     #[must_use]
     pub fn count_templates(&self) -> usize {
-        self.raws.len()
+        self.templates.len()
     }
 
-    /// Returns the number of [`TemplateRender`]s.
+    /// Returns the number of [`Render`]s.
     #[must_use]
-    pub fn count_renders(&self) -> usize {
+    pub fn count_templates_rendered(&self) -> usize {
         self.renders.len()
     }
 
@@ -219,7 +207,7 @@ impl Templates {
         }
 
         let available_template_groups: HashSet<&str> = self
-            .raws
+            .templates
             .iter()
             .map(|template| template.group.as_str())
             .collect();
@@ -236,8 +224,8 @@ impl Templates {
     }
 
     /// Returns an iterator over all the requested templates.
-    fn iter_requested_templates(&self) -> impl Iterator<Item = &TemplateRaw> {
-        let templates: Vec<&TemplateRaw> = self.raws.iter().collect();
+    fn iter_requested_templates(&self) -> impl Iterator<Item = &Template> {
+        let templates: Vec<&Template> = self.templates.iter().collect();
 
         if self.options.template_groups.is_empty() {
             return templates.into_iter();
@@ -250,7 +238,7 @@ impl Templates {
             .into_iter()
     }
 
-    /// Builds and registers [`TemplateRaw`]s from a directory containing user- generated templates.
+    /// Builds and registers [`Template`]s from a directory containing user-generated templates.
     ///
     /// # Arguments
     ///
@@ -268,8 +256,8 @@ impl Templates {
     /// [book]: crate::models::book::Book
     /// [annotation]: crate::models::annotation::Annotation
     fn build_from_directory(&mut self, path: &Path) -> Result<()> {
-        // When a normal template is registered it's validated to make sure it contains no syntax
-        // error or variables that reference non-existent fields. Partial templates however are
+        // When a normal template is registered, it's validated to make sure it contains no syntax
+        // errors or variables that reference non-existent fields. Partial templates however are
         // registered without directly being validation as their validation happens when a normal
         // template includes them. Therefore it's important that partial templates are registered
         // before normal ones.
@@ -286,18 +274,16 @@ impl Templates {
             // This unwrap is safe seeing as both `item` and `path` should both be absolute paths.
             let path = pathdiff::diff_paths(&item, path).unwrap();
 
-            let partial_template = std::fs::read_to_string(&item)?;
-            let partial_template = TemplatePartialRaw::new(&path, &partial_template);
+            let template = std::fs::read_to_string(&item)?;
+            let template = TemplatePartial::new(&path, &template);
 
-            self.registry
-                .add_raw_template(&partial_template.id, &partial_template.contents)?;
+            self.engine
+                .register_template(&template.id, &template.contents)?;
 
-            self.partials.push(partial_template);
+            self.templates_partial.push(template);
 
             log::debug!("added partial template: {}", path.display());
         }
-
-        log::debug!("currently registed partial templates: {:#?}", self.partials);
 
         for item in Self::iter_templates_directory(&path, TemplateKind::Normal) {
             // See above.
@@ -306,53 +292,50 @@ impl Templates {
             let path = pathdiff::diff_paths(&item, path).unwrap();
 
             let template = std::fs::read_to_string(&item)?;
-            let template = TemplateRaw::new(&path, &template)?;
+            let template = Template::new(&path, &template)?;
 
-            self.registry
-                .add_raw_template(&template.id, &template.contents)?;
+            self.engine
+                .register_template(&template.id, &template.contents)?;
 
-            // Templates are validated *after* being registered (1) because the registry is used to
-            // retrieve templates because (2) this ensures that any partial templates included can
-            // also be retrieved.
+            // Templates are validated *after* being registered. The registry handles building
+            // template inheritances. We need to register the templates before validating them so
+            // ensure that any partial templates they reference are properly resolved.
             self.validate_template(&template)?;
 
-            self.raws.push(template);
+            self.templates.push(template);
 
             log::debug!("added template: {}", path.display());
         }
 
-        log::debug!("currently registed templates: {:#?}", self.raws);
+        log::debug!("registed partial templates: {:#?}", self.templates_partial);
+        log::debug!("registed templates: {:#?}", self.templates);
 
         log::debug!(
-            "built {} template(s) from {}",
-            self.raws.len(),
+            "built {} template(s) and {} partial template(s) from {}",
+            self.templates.len(),
+            self.templates_partial.len(),
             path.display()
         );
 
         Ok(())
     }
 
-    /// Builds and registers the default [`TemplateRaw`].
-    fn build_default(&mut self) {
-        // This should be safe as were building the default template.
-        let template = TemplateRaw::new("__default", &self.default).unwrap();
+    /// Builds and registers the default [`Template`].
+    fn build_default(&mut self) -> Result<()> {
+        let template = Template::new("__default", &self.template_default)?;
 
-        self.registry
-            .add_raw_template(&template.id, &template.contents)
-            // Unwrap should be okay here as were not building a template inheritance chain.
-            .unwrap();
+        self.engine
+            .register_template(&template.id, &template.contents)?;
 
-        self.raws.push(template);
+        self.templates.push(template);
 
         log::debug!("built the default template");
+
+        Ok(())
     }
 
     /// Validates that a template does not contain variables that reference non-existent fields in
-    /// an [`Entry`], [`Book`][book], [`Annotation`][annotation], [`NamesRender`].
-    ///
-    /// Tera checks for invalid syntax when a new template is registered however the template's use
-    /// of variables can only be checked when a context is supplied. This method performs a test
-    /// render with a dummy context to check for valid use of variables.
+    /// an [`Entry`], [`Book`][book], [`Annotation`][annotation] and [`NamesRender`].
     ///
     /// # Arguments
     ///
@@ -365,7 +348,7 @@ impl Templates {
     ///
     /// [book]: crate::models::book::Book
     /// [annotation]: crate::models::annotation::Annotation
-    fn validate_template(&self, template: &TemplateRaw) -> Result<()> {
+    fn validate_template(&mut self, template: &Template) -> Result<()> {
         let entry = Entry::dummy();
         let entry = EntryContext::from(&entry);
         let names = NamesRender::new(&entry, template)?;
@@ -374,21 +357,21 @@ impl Templates {
             ContextMode::Book => {
                 let context = TemplateContext::book(&entry.book, &entry.annotations, &names);
 
-                self.render_template(template, context)?;
+                self.engine.render(&template.id, context)?;
             }
             ContextMode::Annotation => {
                 // This should be safe as a dummy `Entry` contains three annotations.
                 let annotation = &entry.annotations[0];
                 let context = TemplateContext::annotation(&entry.book, annotation, &names);
 
-                self.render_template(template, context)?;
+                self.engine.render(&template.id, context)?;
             }
         };
 
         Ok(())
     }
 
-    /// Renders an [`Entry`]'s [`Book`][book] to a single [`TemplateRender`].
+    /// Renders an [`Entry`]'s [`Book`][book] to a single [`Render`].
     ///
     /// # Arguments
     ///
@@ -400,27 +383,25 @@ impl Templates {
     ///
     /// # Errors
     ///
-    /// Will return `Err` if Tera encounters an error.
+    /// Will return `Err` if the template renderer encounters an error.
     ///
     /// [book]: crate::models::book::Book
     fn render_book(
         &self,
-        template: &TemplateRaw,
+        template: &Template,
         entry: &EntryContext<'_>,
         names: &NamesRender,
-        path: PathBuf,
-    ) -> Result<TemplateRender> {
+        path: &Path,
+    ) -> Result<Render> {
         let filename = names.book.clone();
-
         let context = TemplateContext::book(&entry.book, &entry.annotations, names);
-
-        let render = self.render_template(template, context)?;
-        let render = TemplateRender::new(path, filename, render);
+        let string = self.engine.render(&template.id, context)?;
+        let render = Render::new(path.to_owned(), filename, string);
 
         Ok(render)
     }
 
-    /// Renders an [`Entry`]'s [`Annotation`][annotation]s to multiple [`TemplateRender`]s.
+    /// Renders an [`Entry`]'s [`Annotation`][annotation]s to multiple [`Render`]s.
     ///
     /// # Arguments
     ///
@@ -432,45 +413,28 @@ impl Templates {
     ///
     /// # Errors
     ///
-    /// Will return `Err` if Tera encounters an error.
+    /// Will return `Err` if the template renderer encounters an error.
     ///
     /// [annotation]: crate::models::annotation::Annotation
     fn render_annotations(
         &self,
-        template: &TemplateRaw,
+        template: &Template,
         entry: &EntryContext<'_>,
         names: &NamesRender,
         path: &Path,
-    ) -> Result<Vec<TemplateRender>> {
+    ) -> Result<Vec<Render>> {
         let mut renders = Vec::with_capacity(entry.annotations.len());
 
         for annotation in &entry.annotations {
             let filename = names.get_annotation_filename(&annotation.metadata.id);
-
             let context = TemplateContext::annotation(&entry.book, annotation, names);
-
-            let render = self.render_template(template, context)?;
-            let render = TemplateRender::new(path.to_owned(), filename, render);
+            let string = self.engine.render(&template.id, context)?;
+            let render = Render::new(path.to_owned(), filename, string);
 
             renders.push(render);
         }
 
         Ok(renders)
-    }
-
-    /// Renders a single template to a string.
-    ///
-    /// # Arguments
-    ///
-    /// * `template` - The template to render.
-    /// * `context` - The template's context.
-    fn render_template(
-        &self,
-        template: &TemplateRaw,
-        context: TemplateContext<'_>,
-    ) -> Result<String> {
-        let context = &tera::Context::from_serialize(context)?;
-        Ok(self.registry.render(&template.id, context)?)
     }
 
     /// Returns an iterator over all template-like files in a directory.
@@ -488,9 +452,8 @@ impl Templates {
             TemplateKind::Partial => utils::is_partial_template,
         };
 
-        // Avoids traversing hidden directories, ignores `.hidden` files,
-        // returns non-directory entries and filters the them by whether are
-        // normal or partial tempaltes.
+        // Avoids traversing hidden directories, ignores `.hidden` files, returns non-directory
+        // entries and filters the them by whether are normal or partial tempaltes.
         walkdir::WalkDir::new(path)
             .into_iter()
             .filter_entry(utils::is_hidden)
@@ -501,7 +464,7 @@ impl Templates {
     }
 }
 
-/// A struct representing options for the [`Templates`] struct.
+/// A struct representing options for the [`Renderer`] struct.
 #[derive(Debug, Default)]
 pub struct RenderOptions {
     /// A path to a directory containing user-generated templates.
@@ -520,12 +483,10 @@ pub struct RenderOptions {
 /// An enum representing the two different template types.
 #[derive(Debug, Clone, Copy)]
 enum TemplateKind {
-    /// A [`TemplateRaw`] template. Requires a configuration block and should not start with an
-    /// underscore.
+    /// A [`Template`]. Requires a configuration block and should not start with an underscore.
     Normal,
 
-    /// A [`TemplatePartialRaw`] template. Must start with an underscore `_` but does not require a
-    /// configuration block.
+    /// A [`TemplatePartial`]. Must start with an underscore `_` but does not require a configuration block.
     Partial,
 }
 
@@ -583,46 +544,36 @@ impl<'a> TemplateContext<'a> {
 }
 
 #[cfg(test)]
-mod test_templates {
+mod test_renderer {
 
     use super::*;
 
     use crate::result::Error;
-
-    // Loads a test template from the `TEST_TEMPLATES` directory.
-    //
-    // The test templates are located at: [crate-root]/data/templates/[directory]/[filename]
-    fn load_test_template(directory: &str, filename: &str) -> TemplateRaw {
-        let path = crate::defaults::TEST_TEMPLATES
-            .join(directory)
-            .join(filename);
-
-        let template = std::fs::read_to_string(path).unwrap();
-
-        TemplateRaw::new(filename, &template).unwrap()
-    }
+    use crate::utils;
 
     // Validates that a template does not contain variables that reference non-existent fields.
-    fn validate_template_context(template: &TemplateRaw) -> Result<()> {
-        let mut templates = Templates::default();
-        templates.register_filters();
+    fn validate_template_context(template: &str) -> Result<()> {
+        let template = Template::new("validate_template_context", template).unwrap();
 
-        templates
-            .registry
-            .add_raw_template(&template.id, &template.contents)
+        let mut renderer = Renderer::default();
+
+        renderer
+            .engine
+            .register_template(&template.id, &template.contents)
             .unwrap();
 
-        templates.validate_template(template)
+        renderer.validate_template(&template)
     }
 
     // Validates that a template does not contain syntax errors.
-    fn validate_template_syntax(template: &TemplateRaw) -> Result<()> {
-        let mut templates = Templates::default();
-        templates.register_filters();
+    fn validate_template_syntax(template: &str) -> Result<()> {
+        let template = Template::new("validate_template_syntax", template).unwrap();
 
-        templates
-            .registry
-            .add_raw_template(&template.id, &template.contents)?;
+        let mut renderer = Renderer::default();
+
+        renderer
+            .engine
+            .register_template(&template.id, &template.contents)?;
 
         Ok(())
     }
@@ -636,7 +587,7 @@ mod test_templates {
         // Tests that an invalid object (`invalid.[attribute]`) returns an error.
         #[test]
         fn invalid_object() {
-            let template = load_test_template(DIRECTORY, "invalid-object.txt");
+            let template = utils::load_test_template_str(DIRECTORY, "invalid-object.txt");
             let result = validate_template_context(&template);
 
             assert!(matches!(result, Err(Error::InvalidTemplate(_))));
@@ -645,7 +596,7 @@ mod test_templates {
         // Tests that an invalid attribute (`[object].invalid`) returns an error.
         #[test]
         fn invalid_attribute() {
-            let template = load_test_template(DIRECTORY, "invalid-attribute.txt");
+            let template = utils::load_test_template_str(DIRECTORY, "invalid-attribute.txt");
             let result = validate_template_context(&template);
 
             assert!(matches!(result, Err(Error::InvalidTemplate(_))));
@@ -654,7 +605,7 @@ mod test_templates {
         // Tests that an invalid annotation attribute within a `book` context returns an error.
         #[test]
         fn invalid_book_annotations() {
-            let template = load_test_template(DIRECTORY, "invalid-book-annotations.txt");
+            let template = utils::load_test_template_str(DIRECTORY, "invalid-book-annotations.txt");
             let result = validate_template_context(&template);
 
             assert!(matches!(result, Err(Error::InvalidTemplate(_))));
@@ -663,7 +614,7 @@ mod test_templates {
         // Tests that an invalid names attribute within a `book` context returns an error.
         #[test]
         fn invalid_book_names() {
-            let template = load_test_template(DIRECTORY, "invalid-book-names.txt");
+            let template = utils::load_test_template_str(DIRECTORY, "invalid-book-names.txt");
             let result = validate_template_context(&template);
 
             assert!(matches!(result, Err(Error::InvalidTemplate(_))));
@@ -672,7 +623,7 @@ mod test_templates {
         // Tests that an invalid names attribute within an `annotation` context returns an error.
         #[test]
         fn invalid_annotation_names() {
-            let template = load_test_template(DIRECTORY, "invalid-annotation-names.txt");
+            let template = utils::load_test_template_str(DIRECTORY, "invalid-annotation-names.txt");
             let result = validate_template_context(&template);
 
             assert!(matches!(result, Err(Error::InvalidTemplate(_))));
@@ -688,7 +639,7 @@ mod test_templates {
         // Tests that all `Book` fields are valid.
         #[test]
         fn valid_book() {
-            let template = load_test_template(DIRECTORY, "valid-book.txt");
+            let template = utils::load_test_template_str(DIRECTORY, "valid-book.txt");
             let result = validate_template_syntax(&template);
 
             assert!(result.is_ok());
@@ -697,7 +648,7 @@ mod test_templates {
         // Tests that all `Annotation` fields are valid.
         #[test]
         fn valid_annotation() {
-            let template = load_test_template(DIRECTORY, "valid-annotation.txt");
+            let template = utils::load_test_template_str(DIRECTORY, "valid-annotation.txt");
             let result = validate_template_syntax(&template);
 
             assert!(result.is_ok());
@@ -713,7 +664,7 @@ mod test_templates {
         // Tests that invalid syntax returns an error.
         #[test]
         fn invalid_syntax() {
-            let template = load_test_template(DIRECTORY, "invalid-syntax.txt");
+            let template = utils::load_test_template_str(DIRECTORY, "invalid-syntax.txt");
             let result = validate_template_syntax(&template);
 
             assert!(matches!(result, Err(Error::InvalidTemplate(_))));
@@ -729,64 +680,8 @@ mod test_templates {
         // Tests that valid syntax returns no errors.
         #[test]
         fn valid_syntax() {
-            let template = load_test_template(DIRECTORY, "valid-syntax.txt");
+            let template = utils::load_test_template_str(DIRECTORY, "valid-syntax.txt");
             let result = validate_template_syntax(&template);
-
-            assert!(result.is_ok());
-        }
-    }
-
-    // Tests that invalid filter calls return an error.
-    mod invalid_filter {
-
-        use super::*;
-
-        const DIRECTORY: &str = "invalid-filter";
-
-        #[test]
-        #[should_panic(expected = "Failed to parse 'invalid-strip-01.txt'")]
-        fn invalid_filter_strip_01() {
-            let template = load_test_template(DIRECTORY, "invalid-strip-01.txt");
-
-            validate_template_context(&template).unwrap();
-        }
-
-        #[test]
-        #[should_panic(expected = "Failed to parse 'invalid-strip-02.txt'")]
-        fn invalid_filter_strip_02() {
-            let template = load_test_template(DIRECTORY, "invalid-strip-02.txt");
-
-            validate_template_context(&template).unwrap();
-        }
-
-        #[test]
-        #[should_panic(expected = "Failed to parse 'invalid-slugify.txt'")]
-        fn invalid_filter_slugify() {
-            let template = load_test_template(DIRECTORY, "invalid-slugify.txt");
-
-            validate_template_context(&template).unwrap();
-        }
-    }
-
-    // Tests that valid filter calls return no errors.
-    mod valid_filter {
-
-        use super::*;
-
-        const DIRECTORY: &str = "valid-filter";
-
-        #[test]
-        fn valid_filter_strip() {
-            let template = load_test_template(DIRECTORY, "valid-strip.txt");
-            let result = validate_template_context(&template);
-
-            assert!(result.is_ok());
-        }
-
-        #[test]
-        fn valid_filter_slugify() {
-            let template = load_test_template(DIRECTORY, "valid-slugify.txt");
-            let result = validate_template_context(&template);
 
             assert!(result.is_ok());
         }
@@ -799,9 +694,9 @@ mod test_templates {
         // Tests that all example templates return no errors.
         #[test]
         fn example_templates() {
-            let mut templates = Templates::default();
+            let mut renderer = Renderer::default();
 
-            templates
+            renderer
                 .build_from_directory(&crate::defaults::EXAMPLE_TEMPLATES)
                 .unwrap();
         }

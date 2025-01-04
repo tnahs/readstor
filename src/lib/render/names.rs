@@ -9,8 +9,9 @@ use crate::contexts::annotation::AnnotationContext;
 use crate::contexts::book::BookContext;
 use crate::contexts::entry::EntryContext;
 use crate::models::datetime::DateTimeUtc;
-use crate::render::template::TemplateRaw;
+use crate::render::template::Template;
 use crate::result::Result;
+use crate::strings;
 use crate::utils;
 
 /// A struct representing the raw template strings for generating output file and directory names.
@@ -74,9 +75,9 @@ impl Names {
 /// included in the template's context so that files/direcories related to the template can be
 /// references within the tenplate.
 ///
-/// See [`Templates::render()`][render] for more information.
+/// See [`Renderer::render()`][renderer] for more information.
 ///
-/// [render]: crate::render::templates::Templates::render()
+/// [renderer]: crate::render::renderer::Renderer::render()
 #[derive(Debug, Default, Clone, Serialize)]
 pub struct NamesRender {
     /// The output filename for a template with [`ContextMode::Book`][book].
@@ -122,7 +123,7 @@ impl NamesRender {
     /// [annotation]: crate::models::annotation::Annotation
     /// [book]: crate::models::book::Book
     /// [context-mode]: crate::render::template::ContextMode
-    pub fn new(entry: &EntryContext<'_>, template: &TemplateRaw) -> Result<Self> {
+    pub fn new(entry: &EntryContext<'_>, template: &Template) -> Result<Self> {
         Ok(Self {
             book: Self::render_book_filename(entry, template)?,
             annotations: Self::render_annotation_filenames(entry, template)?,
@@ -156,11 +157,11 @@ impl NamesRender {
     /// * `template` - The template to render.
     ///
     /// [context-mode]: crate::render::template::ContextMode::Book
-    fn render_book_filename(entry: &EntryContext<'_>, template: &TemplateRaw) -> Result<String> {
+    fn render_book_filename(entry: &EntryContext<'_>, template: &Template) -> Result<String> {
         let context = NamesContext::book(&entry.book, &entry.annotations);
 
-        let filename = utils::render_and_sanitize(&template.names.book, context)?;
-        let filename = utils::build_and_sanitize_filename(&filename, &template.extension);
+        let filename = strings::render_and_sanitize(&template.names.book, context)?;
+        let filename = strings::build_filename_and_sanitize(&filename, &template.extension);
 
         Ok(filename)
     }
@@ -175,15 +176,15 @@ impl NamesRender {
     /// [context-mode]: crate::render::template::ContextMode::Annotation
     fn render_annotation_filenames(
         entry: &EntryContext<'_>,
-        template: &TemplateRaw,
+        template: &Template,
     ) -> Result<HashMap<String, AnnotationNameAttributes>> {
         let mut annotations = HashMap::new();
 
         for annotation in &entry.annotations {
             let context = NamesContext::annotation(&entry.book, annotation);
 
-            let filename = utils::render_and_sanitize(&template.names.annotation, context)?;
-            let filename = utils::build_and_sanitize_filename(&filename, &template.extension);
+            let filename = strings::render_and_sanitize(&template.names.annotation, context)?;
+            let filename = strings::build_filename_and_sanitize(&filename, &template.extension);
 
             annotations.insert(
                 annotation.metadata.id.clone(),
@@ -204,10 +205,10 @@ impl NamesRender {
     ///
     /// [nested]: crate::render::template::StructureMode::Nested
     /// [nested-grouped]: crate::render::template::StructureMode::NestedGrouped
-    fn render_directory_name(entry: &EntryContext<'_>, template: &TemplateRaw) -> Result<String> {
+    fn render_directory_name(entry: &EntryContext<'_>, template: &Template) -> Result<String> {
         let context = NamesContext::directory(&entry.book);
 
-        utils::render_and_sanitize(&template.names.directory, context)
+        strings::render_and_sanitize(&template.names.directory, context)
     }
 }
 

@@ -8,6 +8,7 @@ use serde::Serialize;
 use crate::applebooks::macos::utils::APPLEBOOKS_VERSION;
 use crate::applebooks::macos::ABDatabase;
 use crate::result::Result;
+use crate::strings;
 
 /// The default back-up directory template.
 ///
@@ -125,7 +126,8 @@ impl BackupRunner {
     /// * `template` - The template string to render.
     fn render_directory_name(template: &str) -> Result<String> {
         let context = BackupNameContext::default();
-        crate::utils::render_and_sanitize(template, context)
+
+        strings::render_and_sanitize(template, context)
     }
 }
 
@@ -162,47 +164,32 @@ mod test_backup {
 
     use super::*;
 
-    use tera::Tera;
-
-    // Loads a test template from the `TEST_TEMPLATES` directory.
-    //
-    // The test templates are located at: [crate-root]/data/templates/[directory]/[filename]
-    fn load_test_template(directory: &str, filename: &str) -> String {
-        let path = crate::defaults::TEST_TEMPLATES
-            .join(directory)
-            .join(filename);
-        std::fs::read_to_string(path).unwrap()
-    }
+    use crate::utils;
 
     // Tests that the default template returns no error.
     #[test]
-    fn default_template() {
+    fn default_directory_template() {
         let context = BackupNameContext::default();
-        let context = &tera::Context::from_serialize(context).unwrap();
 
-        Tera::one_off(DIRECTORY_TEMPLATE, context, false).unwrap();
+        strings::render_and_sanitize(DIRECTORY_TEMPLATE, context).unwrap();
     }
 
     // Tests that all valid context fields return no errors.
     #[test]
     fn valid_context() {
-        let template = load_test_template("valid-context", "valid-backup.txt");
-
+        let template = utils::load_test_template_str("valid-context", "valid-backup.txt");
         let context = BackupNameContext::default();
-        let context = &tera::Context::from_serialize(context).unwrap();
 
-        Tera::one_off(&template, context, false).unwrap();
+        strings::render_and_sanitize(&template, context).unwrap();
     }
 
     // Tests that an invalid context field returns an error.
     #[test]
     #[should_panic(expected = "Failed to render '__tera_one_off'")]
     fn invalid_context() {
-        let template = load_test_template("invalid-context", "invalid-backup.txt");
-
+        let template = utils::load_test_template_str("invalid-context", "invalid-backup.txt");
         let context = BackupNameContext::default();
-        let context = &tera::Context::from_serialize(context).unwrap();
 
-        Tera::one_off(&template, context, false).unwrap();
+        strings::render_and_sanitize(&template, context).unwrap();
     }
 }
