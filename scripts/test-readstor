@@ -1,0 +1,150 @@
+#!/usr/bin/env zsh
+
+
+# shellcheck disable=2296
+NAME=$(basename "${(%):-%N}")
+
+ROOT=${0:A:h:h}
+DATA="$ROOT/data"
+TMP="$ROOT/tmp/test-readstor"
+RENDER="$TMP/render"
+EXPORT="$TMP/export"
+
+
+function prepare_test {
+    rm -rf "$TMP"
+    mkdir -p "$TMP"
+}
+
+
+function render_macos {
+    local output="$RENDER/macos"
+
+    mkdir -p "$output"
+
+    cargo run --                                                 \
+        --output-directory "$output"                             \
+        --databases-directory "$DATA/databases/books-annotated/" \
+        --force                                                  \
+        render                                                   \
+            --overwrite-existing                                 \
+            --extract-tags                                       \
+            --normalize-whitespace                               \
+            --ascii-symbols                                      \
+            --trim-blocks                                        \
+            --wrap-text 100
+}
+
+
+function export_macos {
+    local output="$EXPORT/macos"
+
+    mkdir -p "$output"
+
+    cargo run --                                                 \
+        --output-directory "$output"                             \
+        --databases-directory "$DATA/databases/books-annotated/" \
+        --force                                                  \
+        export                                                   \
+            --overwrite-existing                                 \
+            --extract-tags                                       \
+            --normalize-whitespace                               \
+            --ascii-symbols
+}
+
+
+function render_ios {
+    local output="$RENDER/ios"
+
+    mkdir -p "$output"
+
+    cargo run --                                           \
+        --output-directory "$output"                       \
+        --plists-directory "$DATA/plists/books-annotated/" \
+        --force                                            \
+        render                                             \
+            --overwrite-existing                           \
+            --extract-tags                                 \
+            --normalize-whitespace                         \
+            --ascii-symbols                                \
+            --trim-blocks                                  \
+            --wrap-text 100
+}
+
+
+function export_ios {
+    local output="$EXPORT/ios"
+
+    mkdir -p "$output"
+
+    cargo run --                                           \
+        --output-directory "$output"                       \
+        --plists-directory "$DATA/plists/books-annotated/" \
+        --force                                            \
+        export                                             \
+            --overwrite-existing                           \
+            --extract-tags                                 \
+            --normalize-whitespace                         \
+            --ascii-symbols
+}
+
+function print_help {
+    echo -e "Test run readstor.
+
+\e[4mUsage:\e[0m ${NAME} [OPTIONS] <COMMAND>
+
+\e[4mCommands:\e[0m
+  all           Run all commands
+  render-macos  Render macOS database data to default templates
+  export-macos  Export macOS database data
+  render-ios    Render iOS plust data to default templates
+  export-ios    Export iOS plist data
+
+\e[4mOptions:\e[0m
+  -h, --help   Show help"
+}
+
+
+function main {
+
+    if [[ "$1" == "--help" || "$1" == "-h" ]]; then
+        print_help
+        exit 0
+    fi
+
+    if [[ $# -ne 1 ]]; then
+        echo "Error: missing required positional argument 'command'"
+        print_help
+        exit 1
+    fi
+
+    case "$1" in
+        "all")
+            prepare_test        \
+                && render_macos \
+                && export_macos \
+                && render_ios   \
+                && export_ios
+            ;;
+        "render-macos")
+            prepare_test && render_macos
+            ;;
+        "export-macos")
+            prepare_test && export_macos
+            ;;
+        "render-ios")
+            prepare_test && render_ios
+            ;;
+        "export-ios")
+            prepare_test && export_ios
+            ;;
+        *)
+            echo "Error: invalid command '$1'"
+            print_help
+            exit 1
+            ;;
+    esac
+}
+
+
+main "$@"
