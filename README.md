@@ -44,14 +44,14 @@ listed, it doesn't necessarily mean it isn't supported.
 
 ### macOS
 
+- macOS Sonoma 14.x
+  - Apple Books 6.x
 - macOS Ventura 13.x
-  - Apple Books 5.0
+  - Apple Books 5.x
 - macOS Monterey 12.x
-  - Apple Books 4.4
-  - Apple Books 4.2
-  - Apple Books 4.1
+  - Apple Books 4.x
 - macOS Big Sur 11.x
-  - Apple Books 3.2
+  - Apple Books 3.x
 
 ### iOS
 
