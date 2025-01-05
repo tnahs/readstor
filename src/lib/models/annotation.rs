@@ -31,6 +31,7 @@ pub struct Annotation {
     pub metadata: AnnotationMetadata,
 }
 
+// For macOS.
 impl ABQuery for Annotation {
     const QUERY: &'static str = {
         "SELECT
@@ -72,6 +73,7 @@ impl ABQuery for Annotation {
     }
 }
 
+// For iOS.
 impl From<AnnotationRaw> for Annotation {
     fn from(annotation: AnnotationRaw) -> Self {
         Self {
@@ -188,7 +190,7 @@ impl From<usize> for AnnotationStyle {
 }
 
 #[cfg(test)]
-mod test_annotation {
+mod test {
 
     use super::*;
 

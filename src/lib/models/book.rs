@@ -21,6 +21,7 @@ pub struct Book {
     pub metadata: BookMetadata,
 }
 
+// For macOS.
 impl ABQuery for Book {
     const QUERY: &'static str = {
         "SELECT
@@ -40,12 +41,13 @@ impl ABQuery for Book {
             author: row.get_unwrap(1),
             metadata: BookMetadata {
                 id: row.get_unwrap(2),
-                last_opened: DateTimeUtc::from(last_opened),
+                last_opened: Some(DateTimeUtc::from(last_opened)),
             },
         }
     }
 }
 
+// For iOS.
 impl From<BookRaw> for Book {
     fn from(book: BookRaw) -> Self {
         Self {
@@ -53,8 +55,8 @@ impl From<BookRaw> for Book {
             author: book.author,
             metadata: BookMetadata {
                 id: book.id,
-                // FIXME: How can we find the `last_opened` date?
-                last_opened: DateTimeUtc::default(),
+                // TODO: Does iOS store the `last_opened` date?
+                last_opened: None,
             },
         }
     }
@@ -67,5 +69,5 @@ pub struct BookMetadata {
     pub id: String,
 
     /// The date the book was last opened.
-    pub last_opened: DateTimeUtc,
+    pub last_opened: Option<DateTimeUtc>,
 }

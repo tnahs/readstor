@@ -141,7 +141,7 @@ pub struct PreProcessOptions {
 }
 
 #[cfg(test)]
-mod test_preproces {
+mod test {
 
     use super::*;
 

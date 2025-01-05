@@ -344,11 +344,11 @@ impl App {
 }
 
 #[cfg(test)]
-mod test_app {
+mod test {
 
     use super::*;
 
-    use crate::cli::config::test_config::TestConfig;
+    use crate::cli::config::testing::TestConfig;
 
     // Tests dealing with macOS's Apple Books databases.
     mod macos {
@@ -777,7 +777,7 @@ mod test_app {
 
         use lib::result::Error;
 
-        use crate::cli::defaults::MockDatabases;
+        use crate::cli::defaults::testing::MockDatabases;
         use crate::cli::BackupOptions;
 
         // Tests that a valid template returns no error.

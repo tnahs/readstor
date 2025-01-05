@@ -160,10 +160,11 @@ impl Default for BackupNameContext {
 }
 
 #[cfg(test)]
-mod test_backup {
+mod test {
 
     use super::*;
 
+    use crate::defaults::test::TemplatesDirectory;
     use crate::utils;
 
     // Tests that the default template returns no error.
@@ -177,7 +178,8 @@ mod test_backup {
     // Tests that all valid context fields return no errors.
     #[test]
     fn valid_context() {
-        let template = utils::load_test_template_str("valid-context", "valid-backup.txt");
+        let template =
+            utils::testing::load_template_str(TemplatesDirectory::ValidContext, "valid-backup.txt");
         let context = BackupNameContext::default();
 
         strings::render_and_sanitize(&template, context).unwrap();
@@ -187,7 +189,8 @@ mod test_backup {
     #[test]
     #[should_panic(expected = "Failed to render '__tera_one_off'")]
     fn invalid_context() {
-        let template = utils::load_test_template_str("invalid-context", "invalid-backup.txt");
+        let template =
+            utils::testing::load_template_str(TemplatesDirectory::InvalidContext, "invalid-backup.txt");
         let context = BackupNameContext::default();
 
         strings::render_and_sanitize(&template, context).unwrap();

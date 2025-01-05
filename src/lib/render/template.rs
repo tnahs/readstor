@@ -363,23 +363,25 @@ pub enum ContextMode {
 }
 
 #[cfg(test)]
-mod test_template {
+mod test {
 
     use super::*;
 
+    use crate::defaults::test::TemplatesDirectory;
     use crate::utils;
 
     mod invalid_config {
 
         use super::*;
 
-        const DIRECTORY: &str = "invalid-config";
-
         // Tests that a missing config block returns an error.
         #[test]
         #[should_panic(expected = "called `Option::unwrap()` on a `None` value")]
         fn missing_config() {
-            let template = utils::load_test_template_str(DIRECTORY, "missing-config.txt");
+            let template = utils::testing::load_template_str(
+                TemplatesDirectory::InvalidConfig,
+                "missing-config.txt",
+            );
             Template::parse(&template).unwrap();
         }
 
@@ -387,7 +389,10 @@ mod test_template {
         #[test]
         #[should_panic(expected = "called `Option::unwrap()` on a `None` value")]
         fn missing_closing_tag() {
-            let template = utils::load_test_template_str(DIRECTORY, "missing-closing-tag.txt");
+            let template = utils::testing::load_template_str(
+                TemplatesDirectory::InvalidConfig,
+                "missing-closing-tag.txt",
+            );
             Template::parse(&template).unwrap();
         }
 
@@ -395,8 +400,10 @@ mod test_template {
         #[test]
         #[should_panic(expected = "called `Option::unwrap()` on a `None` value")]
         fn incomplete_opening_tag_01() {
-            let template =
-                utils::load_test_template_str(DIRECTORY, "incomplete-opening-tag-01.txt");
+            let template = utils::testing::load_template_str(
+                TemplatesDirectory::InvalidConfig,
+                "incomplete-opening-tag-01.txt",
+            );
             Template::parse(&template).unwrap();
         }
 
@@ -404,8 +411,10 @@ mod test_template {
         #[test]
         #[should_panic(expected = "called `Option::unwrap()` on a `None` value")]
         fn incomplete_opening_tag_02() {
-            let template =
-                utils::load_test_template_str(DIRECTORY, "incomplete-opening-tag-02.txt");
+            let template = utils::testing::load_template_str(
+                TemplatesDirectory::InvalidConfig,
+                "incomplete-opening-tag-02.txt",
+            );
             Template::parse(&template).unwrap();
         }
 
@@ -413,7 +422,10 @@ mod test_template {
         #[test]
         #[should_panic(expected = "called `Option::unwrap()` on a `None` value")]
         fn missing_linebreak_01() {
-            let template = utils::load_test_template_str(DIRECTORY, "missing-linebreak-01.txt");
+            let template = utils::testing::load_template_str(
+                TemplatesDirectory::InvalidConfig,
+                "missing-linebreak-01.txt",
+            );
             Template::parse(&template).unwrap();
         }
 
@@ -421,7 +433,10 @@ mod test_template {
         #[test]
         #[should_panic(expected = "called `Option::unwrap()` on a `None` value")]
         fn missing_linebreak_02() {
-            let template = utils::load_test_template_str(DIRECTORY, "missing-linebreak-02.txt");
+            let template = utils::testing::load_template_str(
+                TemplatesDirectory::InvalidConfig,
+                "missing-linebreak-02.txt",
+            );
             Template::parse(&template).unwrap();
         }
 
@@ -429,7 +444,10 @@ mod test_template {
         #[test]
         #[should_panic(expected = "called `Option::unwrap()` on a `None` value")]
         fn missing_linebreak_03() {
-            let template = utils::load_test_template_str(DIRECTORY, "missing-linebreak-03.txt");
+            let template = utils::testing::load_template_str(
+                TemplatesDirectory::InvalidConfig,
+                "missing-linebreak-03.txt",
+            );
             Template::parse(&template).unwrap();
         }
 
@@ -437,7 +455,10 @@ mod test_template {
         #[test]
         #[should_panic(expected = "called `Option::unwrap()` on a `None` value")]
         fn missing_linebreak_04() {
-            let template = utils::load_test_template_str(DIRECTORY, "missing-linebreak-04.txt");
+            let template = utils::testing::load_template_str(
+                TemplatesDirectory::InvalidConfig,
+                "missing-linebreak-04.txt",
+            );
             Template::parse(&template).unwrap();
         }
     }
@@ -446,35 +467,41 @@ mod test_template {
 
         use super::*;
 
-        const DIRECTORY: &str = "valid-config";
-
         // Test the minimum required keys.
         #[test]
         fn minimum_required_keys() {
             let filename = "minimum-required-keys.txt";
-            let template = utils::load_test_template_str(DIRECTORY, filename);
+            let template = utils::testing::load_template_str(TemplatesDirectory::ValidConfig, filename);
             Template::new(filename, &template).unwrap();
         }
 
         // Tests that a template with pre- and post-config-content returns no error.
         #[test]
         fn pre_and_post_config_content() {
-            let template =
-                utils::load_test_template_str(DIRECTORY, "pre-and-post-config-content.txt");
+            let template = utils::testing::load_template_str(
+                TemplatesDirectory::ValidConfig,
+                "pre-and-post-config-content.txt",
+            );
             Template::parse(&template).unwrap();
         }
 
         // Tests that a template with pre-config-content returns no error.
         #[test]
         fn pre_config_content() {
-            let template = utils::load_test_template_str(DIRECTORY, "pre-config-content.txt");
+            let template = utils::testing::load_template_str(
+                TemplatesDirectory::ValidConfig,
+                "pre-config-content.txt",
+            );
             Template::parse(&template).unwrap();
         }
 
         // Tests that a template with post-config-content returns no error.
         #[test]
         fn post_config_content() {
-            let template = utils::load_test_template_str(DIRECTORY, "post-config-content.txt");
+            let template = utils::testing::load_template_str(
+                TemplatesDirectory::ValidConfig,
+                "post-config-content.txt",
+            );
             Template::parse(&template).unwrap();
         }
     }

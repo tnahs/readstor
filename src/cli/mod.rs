@@ -405,7 +405,7 @@ impl FromStr for FilterOperator {
 }
 
 #[cfg(test)]
-mod test_cli {
+mod test {
 
     use super::*;
 

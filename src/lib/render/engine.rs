@@ -2,8 +2,10 @@
 
 use std::collections::HashMap;
 
+use chrono::format::{Item, StrftimeItems};
+use chrono::{DateTime, Utc};
 use serde::Serialize;
-use tera::Tera;
+use tera::{try_get_value, Tera};
 
 use crate::result::Result;
 use crate::strings;
@@ -83,9 +85,59 @@ impl RenderEngine {
 
     /// Registers custom template filters.
     fn register_custom_filters(&mut self) {
+        self.0.register_filter("date", filter_date);
         self.0.register_filter("strip", filter_strip);
         self.0.register_filter("slugify", filter_slugify);
     }
+}
+
+/// This is a partial reimplementation of `Tera`'s `date` filter that handles empty dates strings.
+///
+/// Some date fields in the source data might be blank. Instead of throwing a 'type' error (`Tera`s
+/// default behaviuor), this function returns a blank string if an empty date is passed to the
+/// `date` filter.
+///
+/// Additionally, this only handles [`DateTime`]'s default serialize format: RFC 3339. As we're
+/// using [`DateTime`]s default [`Serialize`] implementation, we can use its default [`FromStr`]
+/// to deserialize it.
+#[allow(clippy::implicit_hasher)]
+#[allow(clippy::missing_errors_doc)]
+#[allow(clippy::missing_panics_doc)]
+pub fn filter_date(
+    value: &tera::Value,
+    args: &HashMap<String, tera::Value>,
+) -> tera::Result<tera::Value> {
+    if value.is_null() || value.as_str() == Some("") {
+        return Ok(tera::Value::String(String::new()));
+    }
+
+    let format = match args.get("format") {
+        Some(val) => try_get_value!("date", "format", String, val),
+        None => crate::defaults::DATE_FORMAT_TEMPLATE.to_string(),
+    };
+
+    let errors: Vec<Item<'_>> = StrftimeItems::new(&format)
+        .filter(|item| matches!(item, Item::Error))
+        .collect();
+
+    if !errors.is_empty() {
+        return Err(tera::Error::msg(format!("Invalid date format `{format}`",)));
+    }
+
+    let tera::Value::String(date_str) = value else {
+        return Err(tera::Error::msg(format!(
+            "Filter `date` received an incorrect type for arg `value`: \
+             got `{value:?}` but expected String",
+        )));
+    };
+
+    // This should be safe as we're providing the input string. It's a serialized `DateTime<Utc>`
+    // object. An error here would be critical and should fail.
+    let date = date_str.parse::<DateTime<Utc>>().unwrap();
+
+    let formatted = date.format(&format).to_string();
+
+    Ok(tera::Value::String(formatted))
 }
 
 /// Wraps the `strip` function to interface with the templating engine.
@@ -127,10 +179,11 @@ fn filter_slugify(
 }
 
 #[cfg(test)]
-mod test_engine {
+mod test {
 
     use super::*;
 
+    use crate::defaults::test::TemplatesDirectory;
     use crate::utils;
 
     use std::collections::BTreeMap;
@@ -138,9 +191,9 @@ mod test_engine {
     #[derive(Default, Serialize)]
     struct EmptyContext(BTreeMap<String, String>);
 
-    fn test_filter(directory: &str, filename: &str) {
+    fn render_test_template(directory: TemplatesDirectory, filename: &str) {
         let mut engine = RenderEngine::default();
-        let template = utils::load_test_template_str(directory, filename);
+        let template = utils::testing::load_template_str(directory, filename);
         engine.register_template(filename, &template).unwrap();
         engine.render(filename, EmptyContext::default()).unwrap();
     }
@@ -149,16 +202,19 @@ mod test_engine {
 
         use super::*;
 
-        const DIRECTORY: &str = "valid-filter";
-
         #[test]
         fn strip() {
-            test_filter(DIRECTORY, "valid-strip.txt");
+            render_test_template(TemplatesDirectory::ValidFilter, "valid-strip.txt");
         }
 
         #[test]
         fn slugify() {
-            test_filter(DIRECTORY, "valid-slugify.txt");
+            render_test_template(TemplatesDirectory::ValidFilter, "valid-slugify.txt");
+        }
+
+        #[test]
+        fn date() {
+            render_test_template(TemplatesDirectory::ValidFilter, "valid-date.txt");
         }
     }
 
@@ -166,24 +222,30 @@ mod test_engine {
 
         use super::*;
 
-        const DIRECTORY: &str = "invalid-filter";
-
         #[test]
         #[should_panic(expected = "Failed to parse 'invalid-strip-01.txt'")]
         fn strip_01() {
-            test_filter(DIRECTORY, "invalid-strip-01.txt");
+            render_test_template(TemplatesDirectory::InvalidFilter, "invalid-strip-01.txt");
         }
 
         #[test]
         #[should_panic(expected = "Failed to parse 'invalid-strip-02.txt'")]
         fn strip_02() {
-            test_filter(DIRECTORY, "invalid-strip-02.txt");
+            render_test_template(TemplatesDirectory::InvalidFilter, "invalid-strip-02.txt");
         }
 
         #[test]
         #[should_panic(expected = "Failed to parse 'invalid-slugify.txt'")]
         fn slugify() {
-            test_filter(DIRECTORY, "invalid-slugify.txt");
+            render_test_template(TemplatesDirectory::InvalidFilter, "invalid-slugify.txt");
+        }
+
+        #[test]
+        #[should_panic(
+            expected = "called `Result::unwrap()` on an `Err` value: ParseError(TooShort)"
+        )]
+        fn date() {
+            render_test_template(TemplatesDirectory::InvalidFilter, "invalid-date.txt");
         }
     }
 }

@@ -45,74 +45,68 @@ pub static TEMPLATE: &str = include_str!(concat!(
     "/templates/basic/basic.jinja2"
 ));
 
-/// Defines the root path to the mock databases.
-pub static MOCK_DATABASES: Lazy<PathBuf> = Lazy::new(|| {
+/// Defines the root path to the test/mock databases.
+pub static TEST_DATABASES: Lazy<PathBuf> = Lazy::new(|| {
     let mut path = lib::defaults::CRATE_ROOT.to_owned();
     path.extend(["data", "databases"].iter());
     path
 });
 
-#[derive(Debug, Clone, Copy)]
-pub enum MockDatabases {
-    Empty,
-    BooksNew,
-    BooksAnnotated,
-}
+#[cfg(test)]
+pub mod testing {
 
-impl std::fmt::Display for MockDatabases {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            MockDatabases::Empty => write!(f, "empty"),
-            MockDatabases::BooksNew => write!(f, "books-new"),
-            MockDatabases::BooksAnnotated => write!(f, "books-annotated"),
+    use super::*;
+
+    #[derive(Debug, Clone, Copy)]
+    pub enum MockDatabases {
+        Empty,
+        BooksNew,
+        BooksAnnotated,
+    }
+
+    impl std::fmt::Display for MockDatabases {
+        fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+            match self {
+                Self::Empty => write!(f, "empty"),
+                Self::BooksNew => write!(f, "books-new"),
+                Self::BooksAnnotated => write!(f, "books-annotated"),
+            }
         }
     }
-}
 
-impl From<MockDatabases> for PathBuf {
-    fn from(databases: MockDatabases) -> Self {
-        let name = match databases {
-            MockDatabases::Empty => "empty",
-            MockDatabases::BooksNew => "books-new",
-            MockDatabases::BooksAnnotated => "books-annotated",
-        };
-
-        MOCK_DATABASES.join(name)
-    }
-}
-
-/// Defines the root path to the mock plists.
-pub static MOCK_PLISTS: Lazy<PathBuf> = Lazy::new(|| {
-    let mut path = lib::defaults::CRATE_ROOT.to_owned();
-    path.extend(["data", "plists"].iter());
-    path
-});
-
-#[derive(Debug, Clone, Copy)]
-pub enum MockPlists {
-    Empty,
-    BooksNew,
-    BooksAnnotated,
-}
-
-impl std::fmt::Display for MockPlists {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            MockPlists::Empty => write!(f, "empty"),
-            MockPlists::BooksNew => write!(f, "books-new"),
-            MockPlists::BooksAnnotated => write!(f, "books-annotated"),
+    impl From<MockDatabases> for PathBuf {
+        fn from(databases: MockDatabases) -> Self {
+            TEST_DATABASES.join(databases.to_string())
         }
     }
-}
 
-impl From<MockPlists> for PathBuf {
-    fn from(databases: MockPlists) -> Self {
-        let name = match databases {
-            MockPlists::Empty => "empty",
-            MockPlists::BooksNew => "books-new",
-            MockPlists::BooksAnnotated => "books-annotated",
-        };
+    /// Defines the root path to the mock plists.
+    pub static MOCK_PLISTS: Lazy<PathBuf> = Lazy::new(|| {
+        let mut path = lib::defaults::CRATE_ROOT.to_owned();
+        path.extend(["data", "plists"].iter());
+        path
+    });
 
-        MOCK_PLISTS.join(name)
+    #[derive(Debug, Clone, Copy)]
+    pub enum MockPlists {
+        Empty,
+        BooksNew,
+        BooksAnnotated,
+    }
+
+    impl std::fmt::Display for MockPlists {
+        fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+            match self {
+                Self::Empty => write!(f, "empty"),
+                Self::BooksNew => write!(f, "books-new"),
+                Self::BooksAnnotated => write!(f, "books-annotated"),
+            }
+        }
+    }
+
+    impl From<MockPlists> for PathBuf {
+        fn from(databases: MockPlists) -> Self {
+            MOCK_PLISTS.join(databases.to_string())
+        }
     }
 }

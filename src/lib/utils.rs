@@ -127,20 +127,24 @@ where
     seq.end()
 }
 
-/// Loads a test template from the [`TEST_TEMPLATES`][test-templates] directory.
-///
-/// # Arguments
-///
-/// * `directory` - The template directory.
-/// * `filename` - The template filename.
-///
-/// [test-templates]: crate::defaults::TEST_TEMPLATES
 #[cfg(test)]
-#[allow(clippy::missing_panics_doc)]
-pub fn load_test_template_str(directory: &str, filename: &str) -> String {
-    let path = crate::defaults::TEST_TEMPLATES
-        .join(directory)
-        .join(filename);
+pub(crate) mod testing {
+    use std::path::PathBuf;
 
-    std::fs::read_to_string(path).unwrap()
+    use crate::defaults::test::TemplatesDirectory;
+
+    /// Loads a test template from the [`TEST_TEMPLATES`][test-templates] directory.
+    ///
+    /// # Arguments
+    ///
+    /// * `directory` - The template directory.
+    /// * `filename` - The template filename.
+    ///
+    /// [test-templates]: crate::defaults::TEST_TEMPLATES
+    #[allow(clippy::missing_panics_doc)]
+    pub fn load_template_str(directory: TemplatesDirectory, filename: &str) -> String {
+        let path = PathBuf::from(directory).join(filename);
+
+        std::fs::read_to_string(path).unwrap()
+    }
 }

@@ -180,7 +180,7 @@ pub fn parse(raw: &str) -> String {
 }
 
 #[cfg(test)]
-mod test_epubcfi {
+mod test {
 
     use super::*;
 

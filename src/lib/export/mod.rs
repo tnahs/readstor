@@ -164,10 +164,11 @@ impl<'a> From<&'a BookContext<'a>> for ExportContext<'a> {
 }
 
 #[cfg(test)]
-mod test_export {
+mod test {
 
     use super::*;
 
+    use crate::defaults::test::TemplatesDirectory;
     use crate::models::book::Book;
     use crate::render::engine::RenderEngine;
     use crate::utils;
@@ -187,7 +188,8 @@ mod test_export {
     // Tests that all valid context fields return no errors.
     #[test]
     fn valid_context() {
-        let template = utils::load_test_template_str("valid-context", "valid-export.txt");
+        let template =
+            utils::testing::load_template_str(TemplatesDirectory::ValidContext, "valid-export.txt");
 
         let book = Book::default();
         let context = BookContext::from(&book);
@@ -202,7 +204,10 @@ mod test_export {
     #[test]
     #[should_panic(expected = "Failed to render '__tera_one_off'")]
     fn invalid_context() {
-        let template = utils::load_test_template_str("invalid-context", "invalid-export.txt");
+        let template = utils::testing::load_template_str(
+            TemplatesDirectory::InvalidContext,
+            "invalid-export.txt",
+        );
 
         let book = Book::default();
         let context = BookContext::from(&book);

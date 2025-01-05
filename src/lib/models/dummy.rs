@@ -32,7 +32,7 @@ impl Book {
             author: "Laborum Cillum".to_string(),
             metadata: BookMetadata {
                 id: id.to_string(),
-                last_opened: DateTimeUtc::default(),
+                last_opened: Some(DateTimeUtc::default()),
             },
         }
     }

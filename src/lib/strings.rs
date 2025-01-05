@@ -126,7 +126,7 @@ pub fn to_slug(string: &str, lowercase: bool) -> String {
 /// * `date` - The date to slugify.
 #[must_use]
 pub fn to_slug_date(date: &DateTime<Utc>) -> String {
-    date.format(crate::defaults::DATE_FORMAT).to_string()
+    date.format(crate::defaults::DATE_FORMAT_SLUG).to_string()
 }
 
 /// Renders a one-off template string with a context and sanitizes the output string.
@@ -260,7 +260,7 @@ pub fn trim_blocks(string: &str) -> String {
 
 // TODO: Add tests for other functions.
 #[cfg(test)]
-mod test_strings {
+mod test {
 
     use super::*;
 

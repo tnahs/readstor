@@ -23,6 +23,12 @@ pub struct BookContext<'a> {
 
 impl<'a> From<&'a Book> for BookContext<'a> {
     fn from(book: &'a Book) -> Self {
+        let last_opened = if let Some(date) = &book.metadata.last_opened {
+            strings::to_slug_date(date)
+        } else {
+            String::new()
+        };
+
         Self {
             title: &book.title,
             author: &book.author,
@@ -30,9 +36,7 @@ impl<'a> From<&'a Book> for BookContext<'a> {
             slugs: BookSlugs {
                 title: strings::to_slug(&book.title, true),
                 author: strings::to_slug(&book.author, true),
-                metadata: BookMetadataSlugs {
-                    last_opened: strings::to_slug_date(&book.metadata.last_opened),
-                },
+                metadata: BookMetadataSlugs { last_opened },
             },
         }
     }

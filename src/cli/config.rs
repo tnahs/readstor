@@ -83,7 +83,7 @@ impl Default for DataDirectory {
         // Note that the appropriate environment variable to signal a development env should be set
         // in the `.cargo/config.toml` file.
         if is_development_env() {
-            Self::Macos(super::defaults::MockDatabases::BooksAnnotated.into())
+            Self::Macos(super::defaults::TEST_DATABASES.join("books-annotated"))
         } else {
             Self::Macos(applebooks::macos::defaults::DATABASES.to_owned())
         }
@@ -105,12 +105,11 @@ impl DataDirectory {
 }
 
 #[cfg(test)]
-pub mod test_config {
+pub mod testing {
 
     use super::*;
 
-    use crate::cli::defaults::MockDatabases;
-    use crate::cli::defaults::MockPlists;
+    use crate::cli::defaults::testing::{MockDatabases, MockPlists};
 
     impl Config {
         fn test_macos(databases: MockDatabases) -> Self {

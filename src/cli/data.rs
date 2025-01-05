@@ -15,7 +15,7 @@ use crate::cli::app::Result;
 pub struct Data(Entries);
 
 impl Data {
-    /// Builds [`Book`]s and [`Annotation`]s from macOS's Apple Books databases converts them to
+    /// Builds [`Book`]s and [`Annotation`]s from macOS's Apple Books databases, converts them to
     /// [`Entry`]s and appends them to the data model.
     ///
     /// # Arguments
@@ -44,7 +44,9 @@ impl Data {
             ABDatabase::Annotations.to_string()
         );
 
-        self.init_data(books, annotations);
+        let entries = Self::build_entries(books, annotations);
+
+        self.0.extend(entries);
 
         Ok(())
     }
@@ -78,14 +80,16 @@ impl Data {
             ABPlist::Annotations.to_string()
         );
 
-        self.init_data(books, annotations);
+        let entries = Self::build_entries(books, annotations);
+
+        self.0.extend(entries);
 
         Ok(())
     }
 
     /// Converts [`Book`]s and [`Annotation`]s to [`Entry`]s, then sorts and filters them before
     /// adding them to the data model.
-    fn init_data(&mut self, books: Vec<Book>, annotations: Vec<Annotation>) {
+    fn build_entries(books: Vec<Book>, annotations: Vec<Annotation>) -> Entries {
         // `Entry`s are created from `Book`s. Note that `book.metadata.id` is set as the key for
         // each entry into the `Data`. This is later used to compare with each `Annotation` to
         // determine if the `Annotation` belongs to a `Book` and therefore its `Entry`.
@@ -109,17 +113,10 @@ impl Data {
         let count_books = Self::iter_books_inner(&data).count();
         let count_annotations = Self::iter_annotations_inner(&data).count();
 
-        log::debug!(
-            "created {count_books} `Book`{}",
-            if count_books == 1 { "" } else { "s" },
-        );
+        log::debug!("created {count_books} Book(s)",);
+        log::debug!("created {count_annotations} Annotation(s)",);
 
-        log::debug!(
-            "created {count_annotations} `Annotation`{}",
-            if count_annotations == 1 { "" } else { "s" },
-        );
-
-        self.extend(data);
+        data
     }
 
     /// Returns the number of books within [`Data`].
@@ -134,12 +131,12 @@ impl Data {
 
     /// Returns an iterator over all [`Book`]s.
     pub fn iter_books(&self) -> impl Iterator<Item = &Book> {
-        Self::iter_books_inner(self)
+        Self::iter_books_inner(&self.0)
     }
 
     /// Returns an iterator over all [`Annotation`]s.
     pub fn iter_annotations(&self) -> impl Iterator<Item = &Annotation> {
-        Self::iter_annotations_inner(self)
+        Self::iter_annotations_inner(&self.0)
     }
 
     /// Returns an iterator over all [`Annotation`]s given an [`Entries`] type.

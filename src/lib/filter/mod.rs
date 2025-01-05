@@ -178,7 +178,7 @@ pub enum FilterOperator {
 }
 
 #[cfg(test)]
-mod test_filter {
+mod test {
 
     use super::*;
 

@@ -16,26 +16,11 @@ pub static HOME: Lazy<PathBuf> = Lazy::new(|| {
     PathBuf::from(path)
 });
 
-/// The default date format string. Translates to: `YYYY-MM-DD-HHMMSS` i.e. `1970-01-01-120000`.
-pub const DATE_FORMAT: &str = "%Y-%m-%d-%H%M%S";
+/// Date format string for slugs. Translates to: `YYYY-MM-DD-HHMMSS` i.e. `1970-01-01-120000`.
+pub const DATE_FORMAT_SLUG: &str = "%Y-%m-%d-%H%M%S";
 
-/// Defines the root path to the default templates.
-#[cfg(test)]
-pub static EXAMPLE_TEMPLATES: Lazy<PathBuf> = Lazy::new(|| {
-    let mut path = CRATE_ROOT.to_owned();
-    path.push("templates");
-    path
-});
-
-/// Defines the root path to the testing templates.
-///
-/// The test templates are located at: [crate-root]/data/templates/[directory]/[filename]
-#[cfg(test)]
-pub static TEST_TEMPLATES: Lazy<PathBuf> = Lazy::new(|| {
-    let mut path = CRATE_ROOT.to_owned();
-    path.extend(["data", "templates"].iter());
-    path
-});
+/// Date format string for template `date` filter. Translates to: `YYYY-MM-DD` i.e. `1970-01-01`.
+pub const DATE_FORMAT_TEMPLATE: &str = "%Y-%m-%d";
 
 /// A list of "smart" Unicode symbols and their ASCII eqivalents.
 ///
@@ -59,3 +44,60 @@ pub static UNICODE_TO_ASCII_SYMBOLS: Lazy<Vec<(char, &str)>> = Lazy::new(|| {
     .into_iter()
     .collect()
 });
+
+#[cfg(test)]
+pub(crate) mod test {
+
+    use super::*;
+
+    /// Defines the root path to the example templates.
+    pub static EXAMPLE_TEMPLATES: Lazy<PathBuf> = Lazy::new(|| {
+        let mut path = CRATE_ROOT.to_owned();
+        path.push("templates");
+        path
+    });
+
+    /// Defines the root path to the testing templates.
+    ///
+    /// The test templates are located at: [crate-root]/data/templates/[directory]/[filename]
+    pub static TEST_TEMPLATES: Lazy<PathBuf> = Lazy::new(|| {
+        let mut path = CRATE_ROOT.to_owned();
+        path.extend(["data", "templates"].iter());
+        path
+    });
+
+    /// Defines the root path to the testing templates.
+    #[derive(Debug, Copy, Clone)]
+    #[allow(missing_docs)]
+    pub enum TemplatesDirectory {
+        ValidConfig,
+        ValidContext,
+        ValidFilter,
+        ValidSyntax,
+        InvalidConfig,
+        InvalidContext,
+        InvalidFilter,
+        InvalidSyntax,
+    }
+
+    impl std::fmt::Display for TemplatesDirectory {
+        fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+            match self {
+                Self::ValidConfig => write!(f, "valid-config"),
+                Self::ValidContext => write!(f, "valid-context"),
+                Self::ValidFilter => write!(f, "valid-filter"),
+                Self::ValidSyntax => write!(f, "valid-syntax"),
+                Self::InvalidConfig => write!(f, "invalid-config"),
+                Self::InvalidContext => write!(f, "invalid-context"),
+                Self::InvalidFilter => write!(f, "invalid-filter"),
+                Self::InvalidSyntax => write!(f, "invalid-syntax"),
+            }
+        }
+    }
+
+    impl From<TemplatesDirectory> for PathBuf {
+        fn from(directory: TemplatesDirectory) -> Self {
+            TEST_TEMPLATES.join(directory.to_string())
+        }
+    }
+}
