@@ -5,13 +5,13 @@ on:
 
 jobs:
   publish:
-    name: Publish to 'tnahs/homebrew-formulas-test'
+    name: Publish to 'tnahs/homebrew-formulas'
     runs-on: ubuntu-latest
     steps:
       - uses: Justintime50/homebrew-releaser@v2
         with:
           homebrew_owner: tnahs
-          homebrew_tap: homebrew-formulas-test
+          homebrew_tap: homebrew-formulas
           formula_folder: formula
           github_token: ${{ secrets.HOMEBREW_GITHUB_TOKEN }}
           commit_owner: tnahs
