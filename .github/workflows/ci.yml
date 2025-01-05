@@ -1,86 +1,39 @@
 name: ci
 
 on:
-  schedule:
-    - cron: "0 0 * * 1" # 0:00 on Mondays
   workflow_call:
   pull_request:
   push:
 
 jobs:
-  check:
-    name: Run `cargo check`
+  rust-checks:
+    name: Run cargo ${{ matrix.task.name }}
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        task:
+          - name: check
+            command: cargo check
+          - name: rustfmt
+            command: cargo fmt --all -- --check
+          - name: clippy
+            command: cargo clippy --all-targets --all-features -- -D warnings
+          - name: test
+            command: cargo test
+          - name: publish (dry-run)
+            command: cargo publish --dry-run
+          - name: package
+            command: cargo package --list
     steps:
-      - name: Checkout repo
-        uses: actions/checkout@v3
-      - name: Install Rust
-        uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
-          profile: minimal
-          override: true
-      - name: Run `cargo check`
-        uses: actions-rs/cargo@v1
-        with:
-          command: check
+      - name: Checkout
+        uses: actions/checkout@v4
 
-  test:
-    name: Run `cargo test`
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repo
-        uses: actions/checkout@v3
       - name: Install Rust
-        uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
-          profile: minimal
-          override: true
-      - name: Run `cargo test`
-        uses: actions-rs/cargo@v1
-        with:
-          command: test
+        run: |
+          rustup update stable
+          rustup default stable
+          rustup component add clippy
+          rustup component add rustfmt
 
-  clippy:
-    name: Run `cargo clippy`
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repo
-        uses: actions/checkout@v3
-      - name: Install Rust
-        uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
-          profile: minimal
-          override: true
-      - run: rustup component add clippy
-      - name: Run `cargo clippy`
-        uses: actions-rs/cargo@v1
-        with:
-          command: clippy
-          args: |
-            --all-targets
-            --all-features
-            --
-            --deny clippy::pedantic
-            --deny clippy::cargo
-
-  rustfmt:
-    name: Run `cargo fmt`
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repo
-        uses: actions/checkout@v3
-      - name: Install Rust
-        uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
-          profile: minimal
-          override: true
-      - run: rustup component add rustfmt
-      - name: Run `cargo fmt`
-        uses: actions-rs/cargo@v1
-        with:
-          command: fmt
-          args: --all -- --check
+      - name: Run ${{ matrix.task.name }}
+        run: ${{ matrix.task.command }}

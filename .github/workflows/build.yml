@@ -11,7 +11,7 @@ jobs:
     uses: ./.github/workflows/ci.yml
 
   build:
-    name: Build ${{ matrix.name }}
+    name: Build for ${{ matrix.name }}
     needs: ci
     runs-on: macos-latest
     strategy:
@@ -24,35 +24,41 @@ jobs:
             arch: amd64
             target: x86_64-apple-darwin
     steps:
-      - name: Checkout repo
-        uses: actions/checkout@v3
+      - name: Checkout
+        uses: actions/checkout@v4
+
       - name: Install Rust
-        uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
-          target: ${{ matrix.target }}
-          override: true
-      - name: Build release
-        run: cargo build --release --target ${{ matrix.target }}
-      - name: Build archive name
-        id: archive_name
         run: |
-          repo_name=${{ github.event.repository.name }}
-          version=${{ github.ref_name }}
-          arch=${{ matrix.arch }}
-          # [REPO_NAME]-[VERSION]-[OPERATING_SYSTEM]-[ARCHITECTURE].tar.gz
-          archive_name=${repo_name}-${version#v}-darwin-${arch}.tar.gz
-          echo "archive_name=${archive_name}" >> $GITHUB_ENV
-      - name: Archive release
+          rustup update stable
+          rustup default stable
+          rustup target add ${{ matrix.target }}
+
+      - name: Build binary
+        run: cargo build --release --target ${{ matrix.target }}
+
+      - name: Build names
+        run: |
+          binary="$(cargo read-manifest | jq -r '.name')"
+          version="${{ github.ref_name }}"
+          arch="${{ matrix.arch }}"
+
+          # [BINARY]-[VERSION]-darwin-[ARCH].tar.gz
+          archive="${binary}-${version#v}-darwin-${arch}.tar.gz"
+
+          echo "BINARY="${binary}"" >> $GITHUB_ENV
+          echo "ARCHIVE="${archive}"" >> $GITHUB_ENV
+
+      - name: Create archive
         run: >
           tar
           --create
           --gzip
-          --file=${{ env.archive_name }}
-          --directory=./target/${{ matrix.target }}/release/
-          ${{ github.event.repository.name }}
+          --file="${{ env.ARCHIVE }}"
+          --directory="./target/${{ matrix.target }}/release/"
+          "${{ env.BINARY }}"
+
       - name: Create draft release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
-          files: ${{ env.archive_name }}
+          files: "${{ env.ARCHIVE }}"
           draft: true
