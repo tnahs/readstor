@@ -1,14 +1,51 @@
+fail_fast: true
 repos:
-- repo: https://github.com/pre-commit/pre-commit-hooks
-  rev: v5.0.0
-  hooks:
-  - id: check-added-large-files
-    exclude: ^(data)
-  - id: check-executables-have-shebangs
-    exclude: ^(src|tests|data)
-  - id: check-shebang-scripts-are-executable
-    exclude: ^(src|tests|data)
-  - id: check-toml
-  - id: check-yaml
-  - id: end-of-file-fixer
-  - id: trailing-whitespace
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: check-added-large-files
+        exclude: ^(data)
+      - id: check-executables-have-shebangs
+        exclude: ^(src|tests|data)
+      - id: check-shebang-scripts-are-executable
+        exclude: ^(src|tests|data)
+      - id: check-toml
+      - id: check-yaml
+      - id: end-of-file-fixer
+      - id: trailing-whitespace
+  - repo: local
+    hooks:
+      - id: rust-cargo-check
+        name: run cargo check
+        entry: cargo check
+        pass_filenames: false
+        language: system
+        types: [rust]
+      - id: rust-cargo-fmt
+        name: run cargo format
+        entry: cargo fmt -- --check
+        pass_filenames: false
+        language: system
+        types: [rust]
+      - id: rust-cargo-test
+        name: run cargo clippy
+        entry: >
+          cargo clippy
+            --all-targets
+            --all-features
+            -- -D warnings
+        pass_filenames: false
+        language: system
+        types: [rust]
+      - id: rust-cargo-test
+        name: run cargo test
+        entry: cargo test
+        pass_filenames: false
+        language: system
+        types: [rust]
+      - id: rust-cargo-update
+        name: run cargo update
+        entry: cargo update
+        pass_filenames: false
+        language: system
+        files: ^(Cargo\.toml|Cargo\.lock|.*\.rs)$
