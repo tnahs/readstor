@@ -7,7 +7,7 @@
 ### Bug Fixes
 -->
 
-## UNRELEASED CHANGES
+## v0.6.0 (2025-01-05)
 
 ### Features
 
