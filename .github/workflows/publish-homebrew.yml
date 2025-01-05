@@ -12,7 +12,7 @@ jobs:
         with:
           homebrew_owner: tnahs
           homebrew_tap: homebrew-formulas
-          formula_folder: formula
+          formula_folder: Formula
           github_token: ${{ secrets.HOMEBREW_GITHUB_TOKEN }}
           commit_owner: tnahs
           commit_email: shaaant@pm.me
