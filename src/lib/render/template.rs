@@ -471,7 +471,8 @@ mod test {
         #[test]
         fn minimum_required_keys() {
             let filename = "minimum-required-keys.txt";
-            let template = utils::testing::load_template_str(TemplatesDirectory::ValidConfig, filename);
+            let template =
+                utils::testing::load_template_str(TemplatesDirectory::ValidConfig, filename);
             Template::new(filename, &template).unwrap();
         }
 

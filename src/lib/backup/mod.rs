@@ -189,8 +189,10 @@ mod test {
     #[test]
     #[should_panic(expected = "Failed to render '__tera_one_off'")]
     fn invalid_context() {
-        let template =
-            utils::testing::load_template_str(TemplatesDirectory::InvalidContext, "invalid-backup.txt");
+        let template = utils::testing::load_template_str(
+            TemplatesDirectory::InvalidContext,
+            "invalid-backup.txt",
+        );
         let context = BackupNameContext::default();
 
         strings::render_and_sanitize(&template, context).unwrap();
