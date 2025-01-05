@@ -31,9 +31,10 @@
    > 2. `cargo fmt`
    > 3. `cargo clippy`
    > 4. `cargo test`
-   > 5. `cargo publish`
+   > 5. `cargo publish (dry-run)`
+   > 6. `cargo package`
 
-   See [`ci.yml`][action-ci].
+   See [`workflows/ci`][action-ci].
 
 6. Bump `version` in `Cargo.toml`to `v#.#.#`.
 
@@ -70,19 +71,18 @@
 - Check `HOMEBREW_GITHUB_TOKEN` on [GitHub][tokens-github].
 - Check `CARGO_REGISTRY_TOKEN` on [crates.io][tokens-crates-io].
 
-11. Manually run the [`publish`][action-publish] action.
+11. Publish by manually triggering:
 
-    💡 Make sure to set `Use workflow from` to `v#.#.#`.
+    💡 Make sure to `Use workflow from` to `v#.#.#`:
 
-    > This will publish `readstor` to:
-    >
-    > 1. [tnahs/homebrew-forumlas][formulas]
-    > 2. [crates.io][crates-io]
+- [`workflows/publish-homebrew`][action-publish-homebrew] to publish to [tnahs/homebrew-formulas][formulas]
+- [`workflows/publish-crates-io`][action-publish-crates-io] to publish to [crates.io][crates-io]
 
 [action-ci]: ../.github/workflows/ci.yml
-[action-publish]: ../.github/workflows/publish.yml
+[action-publish-crates-io]: ../.github/workflows/publish-crates-io.yml
+[action-publish-homebrew]: ../.github/workflows/publish-homebrew.yml
 [cargo-markdown]: https://crates.io/crates/cargo-markdown
 [crates-io]: https://crates.io
-[formulas]: https://github.com/tnahs/homebrew-forumlas
-[tokens-github]: https://github.com/settings/tokens
+[formulas]: https://github.com/tnahs/homebrew-formulas
 [tokens-crates-io]: https://crates.io/settings/tokens
+[tokens-github]: https://github.com/settings/tokens
