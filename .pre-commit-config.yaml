@@ -4,11 +4,11 @@ repos:
     rev: v5.0.0
     hooks:
       - id: check-added-large-files
-        exclude: ^(data)
+        exclude: ^data/
       - id: check-executables-have-shebangs
-        exclude: ^(src|tests|data)
+        files: ^scripts/
       - id: check-shebang-scripts-are-executable
-        exclude: ^(src|tests|data)
+        files: ^scripts/
       - id: check-toml
       - id: check-yaml
       - id: end-of-file-fixer
@@ -48,4 +48,24 @@ repos:
         entry: cargo update
         pass_filenames: false
         language: system
-        files: ^(Cargo\.toml|Cargo\.lock|.*\.rs)$
+        files: |
+          (?x)^(
+            Cargo\.toml
+            |Cargo\.lock
+            |.*\.rs
+          )
+  - repo: local
+    hooks:
+      - id: prettier-format-yaml
+        name: prettier format yaml
+        entry: >
+          prettier
+            --parser yaml
+            --write
+        language: system
+        types: [yaml]
+      - id: taplo-format
+        name: taplo format toml
+        entry: taplo format
+        language: system
+        types: [toml]
