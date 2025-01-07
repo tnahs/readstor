@@ -44,9 +44,9 @@ impl PostProcessor {
 
     /// Wraps text to a maximum character width.
     ///
-    /// Maximum line length is not guaranteed as long words are not broken if
-    /// their length exceeds the maximum. Hyphenation is not used, however,
-    /// an existing hyphen can be split on to insert a line-break.
+    /// Maximum line length is not guaranteed as long words are not broken if their length exceeds
+    /// the maximum. Hyphenation is not used, however, an existing hyphen can be split on to insert
+    /// a line-break.
     ///
     /// # Arguments
     ///
