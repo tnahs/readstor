@@ -20,6 +20,7 @@
 - [ ] Check `cargo clippy` GitHub Action.
 - [ ] Update how the summaries are printed out. With the ability to skip writing files, the current
       method will display incorrect information.
+- [ ] Find more fields in the iOS plist.
 - [ ] Display a more information-rich table when filtering:
 
   ```plaintext
