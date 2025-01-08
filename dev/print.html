@@ -163,7 +163,7 @@ project is to facilitate data-migration from Apple Books to any other platform. 
 Books provides no simple way to do this. Exporting is possible but not ideal and often times
 truncates long annotations.</p>
 <p>Version <code>0.1.x</code> contained the core functionality: (1) save all annotations and notes as JSON (2)
-render them via a custom (or the default) template using the <a href="https://tera.netlify.app/">Tera</a> syntax or (3) backup the
+render them via a custom (or the default) template using the <a href="https://keats.github.io/tera/">Tera</a> syntax or (3) backup the
 current Apple Books databases.</p>
 <p>Note that this repository is a heavy work-in-progress and things are bound to change.</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="quickstart"><a class="header" href="#quickstart">Quickstart</a></h1>
@@ -174,14 +174,14 @@ current Apple Books databases.</p>
 <li>databases directory: <code>~/Library/Containers/com.apple.iBooksX/Data/Documents</code></li>
 <li>output directory: <code>~/.readstor</code></li>
 </ul>
-<p>We can change the output directory using the <a href="intro//intro/options/global.html#--output-directory-path"><code>--output-directory</code></a> option:</p>
+<p>We can change the output directory using the <a href="intro/./options/global.html#--output-directory-path"><code>--output-directory</code></a> option:</p>
 <pre><code class="language-bash">readstor [COMMAND] --output-directory "/path/to/output"
 </code></pre>
-<p>And change the databases directory using the <a href="intro//intro/options/global.html#--databases-directory-path"><code>--databases-directory</code></a> option:</p>
+<p>And change the databases directory using the <a href="intro/./options/global.html#--databases-directory-path"><code>--databases-directory</code></a> option:</p>
 <pre><code class="language-bash">readstor [COMMAND] --databases-directory "/path/to/databases"
 </code></pre>
 <h2 id="filter"><a class="header" href="#filter">Filter</a></h2>
-<p><a href="intro//intro/options/filter.html">Filters</a> can be used to run commands on a subset of annotations. <em>Note that all filters
+<p><a href="intro/./options/filter.html">Filters</a> can be used to run commands on a subset of annotations. <em>Note that all filters
 are case-insensitive.</em></p>
 <p>We can filter annotations where the book's title is <em>exactly</em> <code>the art spirit</code>:</p>
 <pre><code class="language-bash">readstor [COMMAND] --filter "=title:the art spirit"
@@ -194,16 +194,16 @@ are case-insensitive.</em></p>
 <p>Or, filter annotations that contain the tag <code>#star</code>:</p>
 <pre><code class="language-bash">readstor [COMMAND] --filter "tag:#star" --extract-tags
 </code></pre>
-<p>We can alos combine filters:</p>
+<p>We can also combine filters:</p>
 <pre><code class="language-bash">readstor [COMMAND]                   \
     --filter "=title:the art spirit" \
     --filter "tag:#star"             \
     --extract-tags
 </code></pre>
 <h2 id="custom-templates"><a class="header" href="#custom-templates">Custom Templates</a></h2>
-<p>A custom <a href="intro//intro/options/render.html#--template-group-group">templates directory</a> can be declared by using the
+<p>A custom <a href="intro/./options/render.html#--template-group-group">templates directory</a> can be declared by using the
 <code>--templates-directory</code> option. A template directory can contain any number of templates structured
-in any way, therefore <a href="intro//intro/options/render.html#--templates-directory-path">template groups</a> are used to name them and define relations
+in any way, therefore <a href="intro/./options/render.html#--templates-directory-path">template groups</a> are used to name them and define relations
 between them.</p>
 <p>Render a single template group found inside a custom templates directory:</p>
 <pre><code class="language-bash">readstor render                                \
@@ -241,8 +241,8 @@ ASCII and hard-wrapping the text to 100 characters.</p>
     --wrap-text 100
 </code></pre>
 <blockquote>
-<p><i class="fa fa-info-circle"></i> See <a href="intro//intro/options/preprocess.html#--normalize-whitespace">normalize whitespace</a>, <a href="intro//intro/options/preprocess.html#--ascii-symbols">ascii
-symbols</a>, <a href="intro//intro/options/postprocess.html#--trim-blocks">trim blocks</a>, <a href="intro//intro/options/postprocess.html#--wrap-text-width">wrap text</a> for more information.</p>
+<p><i class="fa fa-info-circle"></i> See <a href="intro/./options/preprocess.html#--normalize-whitespace">normalize whitespace</a>, <a href="intro/./options/preprocess.html#--ascii-symbols">ascii
+symbols</a>, <a href="intro/./options/postprocess.html#--trim-blocks">trim blocks</a>, <a href="intro/./options/postprocess.html#--wrap-text-width">wrap text</a> for more information.</p>
 </blockquote>
 <h2 id="complete-examples"><a class="header" href="#complete-examples">Complete Examples</a></h2>
 <h3 id="render"><a class="header" href="#render">Render</a></h3>
@@ -264,7 +264,7 @@ files are output to <code>/path/to/output</code>.</p>
 <h3 id="export"><a class="header" href="#export">Export</a></h3>
 <p>Exports all annotations. Runs the pre-processes: <code>ascii-symbols</code>, <code>extract-tags</code> and
 <code>normalize-whitespace</code>. The resulting files are output to <code>/path/to/output</code> using a custom
-<a href="intro//intro/options/export.html#--directory-template-template">directory template</a>.</p>
+<a href="intro/./options/export.html#--directory-template-template">directory template</a>.</p>
 <pre><code class="language-bash">readstor export                                                  \
     --output-directory "/path/to/output"                         \
     --directory-template "{{ book.title }} by {{ book.author }}" \
@@ -273,7 +273,7 @@ files are output to <code>/path/to/output</code>.</p>
     --normalize-whitespace
 </code></pre>
 <h3 id="back-up"><a class="header" href="#back-up">Back-up</a></h3>
-<p>Backs-up macOS's Apple Books databases to <code>/path/to/output</code> using a custom <a href="intro//intro/options/export.html#--directory-template-template">directory
+<p>Backs-up macOS's Apple Books databases to <code>/path/to/output</code> using a custom <a href="intro/./options/export.html#--directory-template-template">directory
 template</a>.</p>
 <pre><code class="language-bash">readstor backup                          \
     --output-directory "/path/to/output" \
@@ -283,17 +283,17 @@ template</a>.</p>
 <h2 id="render-1"><a class="header" href="#render-1"><code>render</code></a></h2>
 <p>Render data via templates.</p>
 <blockquote>
-<p><i class="fa fa-info-circle"></i> See <a href="intro//templates/index.html">Templates</a> for a full guide on creating
+<p><i class="fa fa-info-circle"></i> See <a href="intro/../templates/index.html">Templates</a> for a full guide on creating
 templates.</p>
 </blockquote>
 <blockquote>
-<p><i class="fa fa-info-circle"></i> See <a href="intro//intro/options/preprocess.html">Pre-process</a>, <a href="intro//intro/options/postprocess.html">Post-process</a> and
-<a href="intro//intro/options/render.html">Render</a> options for available options.</p>
+<p><i class="fa fa-info-circle"></i> See <a href="intro/./options/preprocess.html">Pre-process</a>, <a href="intro/./options/postprocess.html">Post-process</a> and
+<a href="intro/./options/render.html">Render</a> options for available options.</p>
 </blockquote>
 <h2 id="export-1"><a class="header" href="#export-1"><code>export</code></a></h2>
 <p>Export data as JSON.</p>
 <blockquote>
-<p><i class="fa fa-info-circle"></i> See <a href="intro//intro/options/preprocess.html">Pre-process</a> options for available options.</p>
+<p><i class="fa fa-info-circle"></i> See <a href="intro/./options/preprocess.html">Pre-process</a> options for available options.</p>
 </blockquote>
 <p>Outputs using the following structure:</p>
 <pre><code class="language-plaintext">[output-directory]
@@ -409,7 +409,7 @@ templates.</p>
 ]
 </code></pre>
 <blockquote>
-<p><i class="fa fa-info-circle"></i> This <code>export</code> was run with the <a href="intro//intro/options/preprocess.html#--extract-tags"><code>--extract-tags</code></a> option.</p>
+<p><i class="fa fa-info-circle"></i> This <code>export</code> was run with the <a href="intro/./options/preprocess.html#--extract-tags"><code>--extract-tags</code></a> option.</p>
 </blockquote>
 <h2 id="backup"><a class="header" href="#backup"><code>backup</code></a></h2>
 <p>Back-up macOS's Apple Books databases.</p>
@@ -436,10 +436,10 @@ templates.</p>
          └── BKLibrary-1-091020131601.sqlite-wal
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="options"><a class="header" href="#options">Options</a></h1>
-<p>Each of the three currently available <a href="intro/options//intro/commands.html">Commands</a> has its own pipeline for processing Apple
+<p>Each of the three currently available <a href="intro/options/../commands.html">Commands</a> has its own pipeline for processing Apple
 Books' data before writing it to disk. And by extension, each pipeline has its own set of applicable
 options.</p>
-<p>The pipelines and options for these three <a href="intro/options//intro/commands.html">Commands</a> are as follows:</p>
+<p>The pipelines and options for these three <a href="intro/options/../commands.html">Commands</a> are as follows:</p>
 <pre><code class="language-plaintext">╭─────────╮           Export Pipeline
 │ Global* │          ╭────────╮ ╭─────────────╮ ╔════════╗
 ╰────┬────╯        ┌─┤ Filter ├─┤ Pre-process ├─╢ export ╟────────────────────┐
@@ -461,18 +461,18 @@ options.</p>
        ╚════════╝
 </code></pre>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Affects Commands</th><th>Options For</th></tr></thead><tbody>
-<tr><td><a href="intro/options//intro/options/global.html">Global</a></td><td>All</td><td>-</td></tr>
-<tr><td><a href="intro/options//intro/options/render.html">Render</a></td><td><code>render</code></td><td>Configuring renders.</td></tr>
-<tr><td><a href="intro/options//intro/options/export.html">Export</a></td><td><code>export</code></td><td>Configuring exports.</td></tr>
-<tr><td><a href="intro/options//intro/options/backup.html">Backup</a></td><td><code>backup</code></td><td>Configuring backups.</td></tr>
-<tr><td><a href="intro/options//intro/options/filter.html">Filter</a></td><td><code>render</code> <code>export</code></td><td>Filtering down books/annotations.</td></tr>
-<tr><td><a href="intro/options//intro/options/preprocess.html">Pre-process</a></td><td><code>render</code> <code>export</code></td><td>Processing before running Command.</td></tr>
-<tr><td><a href="intro/options//intro/options/postprocess.html">Post-process</a></td><td><code>render</code></td><td>Processing after running Command.</td></tr>
+<tr><td><a href="intro/options/./global.html">Global</a></td><td>All</td><td>-</td></tr>
+<tr><td><a href="intro/options/./render.html">Render</a></td><td><code>render</code></td><td>Configuring renders.</td></tr>
+<tr><td><a href="intro/options/./export.html">Export</a></td><td><code>export</code></td><td>Configuring exports.</td></tr>
+<tr><td><a href="intro/options/./backup.html">Backup</a></td><td><code>backup</code></td><td>Configuring backups.</td></tr>
+<tr><td><a href="intro/options/./filter.html">Filter</a></td><td><code>render</code> <code>export</code></td><td>Filtering down books/annotations.</td></tr>
+<tr><td><a href="intro/options/./preprocess.html">Pre-process</a></td><td><code>render</code> <code>export</code></td><td>Processing before running Command.</td></tr>
+<tr><td><a href="intro/options/./postprocess.html">Post-process</a></td><td><code>render</code></td><td>Processing after running Command.</td></tr>
 </tbody></table>
 </div><div style="break-before: page; page-break-before: always;"></div><h1 id="global"><a class="header" href="#global">Global</a></h1>
-<p>The following options affect all <a href="intro/options//intro/commands.html">Commands</a>.</p>
+<p>The following options affect all <a href="intro/options/../commands.html">Commands</a>.</p>
 <h2 id="--output-directory-path"><a class="header" href="#--output-directory-path"><code>--output-directory &lt;PATH&gt;</code></a></h2>
-<p>Set the output directory for all <a href="intro/options//intro/commands.html">Commands</a>.</p>
+<p>Set the output directory for all <a href="intro/options/../commands.html">Commands</a>.</p>
 <p>Default: <code>~/.readstor</code>.</p>
 <h2 id="--databases-directory-path"><a class="header" href="#--databases-directory-path"><code>--databases-directory &lt;PATH&gt;</code></a></h2>
 <p>Set the directory containing macOS's Apple Books databases</p>
@@ -492,7 +492,7 @@ options.</p>
 </code></pre>
 <blockquote>
 <p><i class="fa fa-info-circle"></i> This can be useful when running ReadStor on databases backed-up
-with the <a href="intro/options//intro/commands.html#backup"><code>backup</code></a> command. Note that the <a href="intro/options//intro/commands.html#backup"><code>backup</code></a> command produces an output
+with the <a href="intro/options/../commands.html#backup"><code>backup</code></a> command. Note that the <a href="intro/options/../commands.html#backup"><code>backup</code></a> command produces an output
 structure identical to this. So backing up and extracting data would require little effort.</p>
 </blockquote>
 <h2 id="--plists-directory-path"><a class="header" href="#--plists-directory-path"><code>--plists-directory &lt;PATH&gt;</code></a></h2>
@@ -511,7 +511,7 @@ directory should follow the following structure:</p>
  └── ...
 </code></pre>
 <blockquote>
-<p><i class="fa fa-info-circle"></i> See <a href="intro/options//apple-books/ios/library-location.html">iOS - Library Location</a> and <a href="intro/options//apple-books/ios/access-library.html">iOS -
+<p><i class="fa fa-info-circle"></i> See <a href="intro/options/../../apple-books/ios/library-location.html">iOS - Library Location</a> and <a href="intro/options/../../apple-books/ios/access-library.html">iOS -
 Access Library</a> on how to retrieve these files.</p>
 </blockquote>
 <h2 id="--force"><a class="header" href="#--force"><code>--force</code></a></h2>
@@ -519,7 +519,7 @@ Access Library</a> on how to retrieve these files.</p>
 <h2 id="--quiet"><a class="header" href="#--quiet"><code>--quiet</code></a></h2>
 <p>Silence output messages.</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="render-2"><a class="header" href="#render-2">Render</a></h1>
-<p>The following options affect only the <a href="intro/options//intro/commands.html#render"><code>render</code></a> commands.</p>
+<p>The following options affect only the <a href="intro/options/../commands.html#render"><code>render</code></a> commands.</p>
 <h2 id="--templates-directory-path"><a class="header" href="#--templates-directory-path"><code>--templates-directory &lt;PATH&gt;</code></a></h2>
 <p>Set a custom templates directory.</p>
 <blockquote>
@@ -527,12 +527,12 @@ Access Library</a> on how to retrieve these files.</p>
 examples.</p>
 </blockquote>
 <h2 id="--template-group-group"><a class="header" href="#--template-group-group"><code>--template-group &lt;GROUP&gt;</code></a></h2>
-<p>Render specified <a href="intro/options//templates/configuration/template-groups.html">Template Groups</a>.</p>
+<p>Render specified <a href="intro/options/../../templates/configuration/template-groups.html">Template Groups</a>.</p>
 <blockquote>
-<p><i class="fa fa-exclamation-circle"></i> Passing non-existent <a href="intro/options//templates/configuration/template-groups.html">Template Groups</a>
+<p><i class="fa fa-exclamation-circle"></i> Passing non-existent <a href="intro/options/../../templates/configuration/template-groups.html">Template Groups</a>
 will return an error.</p>
 </blockquote>
-<p>Multiple <a href="intro/options//templates/configuration/template-groups.html">Template Groups</a> can be passed using the following syntax.</p>
+<p>Multiple <a href="intro/options/../../templates/configuration/template-groups.html">Template Groups</a> can be passed using the following syntax.</p>
 <pre><code class="language-bash">readstor
     # ...
     --template-group basic
@@ -540,11 +540,11 @@ will return an error.</p>
     # ..
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="export-2"><a class="header" href="#export-2">Export</a></h1>
-<p>The following options affect only the <a href="intro/options//intro/commands.html#export"><code>export</code></a> commands.</p>
+<p>The following options affect only the <a href="intro/options/../commands.html#export"><code>export</code></a> commands.</p>
 <h2 id="--directory-template-template"><a class="header" href="#--directory-template-template"><code>--directory-template &lt;TEMPLATE&gt;</code></a></h2>
 <p>Set the output directory template.</p>
 <div class="table-wrapper"><table><thead><tr><th></th><th></th></tr></thead><tbody>
-<tr><td>Context</td><td><a href="intro/options//templates/context-reference/book.html"><code>book</code></a></td></tr>
+<tr><td>Context</td><td><a href="intro/options/../../templates/context-reference/book.html"><code>book</code></a></td></tr>
 <tr><td>Default</td><td><code>{{ book.author }} - {{ book.title }}</code></td></tr>
 <tr><td>Example</td><td><code>Robert Henri - The Art Spirit</code></td></tr>
 </tbody></table>
@@ -575,7 +575,7 @@ will return an error.</p>
 <p>Overwrite existing files.</p>
 <p>By default, exising files are skipped.</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="backup-1"><a class="header" href="#backup-1">Backup</a></h1>
-<p>The following options affect only the <a href="intro/options//intro/commands.html#backup"><code>backup</code></a> commands.</p>
+<p>The following options affect only the <a href="intro/options/../commands.html#backup"><code>backup</code></a> commands.</p>
 <h2 id="--directory-template-template-1"><a class="header" href="#--directory-template-template-1"><code>--directory-template &lt;TEMPLATE&gt;</code></a></h2>
 <p>Set the output directory template</p>
 <div class="table-wrapper"><table><thead><tr><th></th><th></th></tr></thead><tbody>
@@ -618,19 +618,19 @@ following:</p>
 <tr><td><code>version</code></td><td>string</td><td>the current version of Apple Books for macOS</td></tr>
 </tbody></table>
 </div><div style="break-before: page; page-break-before: always;"></div><h1 id="filter-1"><a class="header" href="#filter-1">Filter</a></h1>
-<p>The following options affect only the <a href="intro/options//intro/commands.html#render"><code>render</code></a> and <a href="intro/options//intro/commands.html#export"><code>export</code></a> commands.</p>
+<p>The following options affect only the <a href="intro/options/../commands.html#render"><code>render</code></a> and <a href="intro/options/../commands.html#export"><code>export</code></a> commands.</p>
 <h2 id="--filter-opfieldquery"><a class="header" href="#--filter-opfieldquery"><code>--filter &lt;[OP]{FIELD}:{QUERY}&gt;</code></a></h2>
 <p>Filter books/annotations before outputting.</p>
 <p>Filtering allows you to specify, to a certain degree, which books and/or annotations to output.
-Currently, this is available for the <a href="intro/options//intro/commands.html#export"><code>export</code></a> and <a href="intro/options//intro/commands.html#render"><code>render</code></a> commands.</p>
-<p>For example, this filter would only <a href="intro/options//intro/commands.html#render"><code>render</code></a> annotations where its respective book's title
+Currently, this is available for the <a href="intro/options/../commands.html#export"><code>export</code></a> and <a href="intro/options/../commands.html#render"><code>render</code></a> commands.</p>
+<p>For example, this filter would only <a href="intro/options/../commands.html#render"><code>render</code></a> annotations where its respective book's title
 is <em>exactly</em> <code>the art spirit</code> AND their tags <em>contain</em> the <code>#star</code> tag.</p>
 <pre><code class="language-bash">readstor render                      \
     --filter "=title:the art spirit" \
     --filter "tag:#star"             \
     --extract-tags
 </code></pre>
-<p>This filter would <a href="intro/options//intro/commands.html#export"><code>export</code></a> annotations where its respective book's author <em>contains</em> the
+<p>This filter would <a href="intro/options/../commands.html#export"><code>export</code></a> annotations where its respective book's author <em>contains</em> the
 string <code>krishnamurti</code> AND their tags <em>contain either</em> <code>#star</code> or <code>#love</code>.</p>
 <pre><code class="language-bash">readstor export                   \
     --filter "author:krishnmurti" \
@@ -737,27 +737,27 @@ specified <a href="intro/options/filter.html#operator"><code>operator</code></a>
 <h2 id="--auto-confirm-filter"><a class="header" href="#--auto-confirm-filter"><code>--auto-confirm-filter</code></a></h2>
 <p>Auto-confirm <a href="intro/options/filter.html#filter-results">Filter Results</a>.</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="pre-process"><a class="header" href="#pre-process">Pre-process</a></h1>
-<p>The following options affect only the <a href="intro/options//intro/commands.html#render"><code>render</code></a> and <a href="intro/options//intro/commands.html#export"><code>export</code></a> commands.</p>
+<p>The following options affect only the <a href="intro/options/../commands.html#render"><code>render</code></a> and <a href="intro/options/../commands.html#export"><code>export</code></a> commands.</p>
 <h2 id="--extract-tags"><a class="header" href="#--extract-tags"><code>--extract-tags</code></a></h2>
-<p>Extract <code>#tags</code> from <a href="intro/options//templates/context-reference/annotation.html"><code>annotation.notes</code></a>.</p>
-<p>All matches are removed from <a href="intro/options//templates/context-reference/annotation.html"><code>annotation.notes</code></a> and placed into
-<a href="intro/options//templates/context-reference/annotation.html"><code>annotation.tags</code></a>.</p>
+<p>Extract <code>#tags</code> from <a href="intro/options/../../templates/context-reference/annotation.html"><code>annotation.notes</code></a>.</p>
+<p>All matches are removed from <a href="intro/options/../../templates/context-reference/annotation.html"><code>annotation.notes</code></a> and placed into
+<a href="intro/options/../../templates/context-reference/annotation.html"><code>annotation.tags</code></a>.</p>
 <blockquote>
 <p><i class="fa fa-exclamation-circle"></i> Tags <em>must</em> start with a hash symbol <code>#</code> followed by
 a letter <code>[a-zA-Z]</code> and then a series of any characters. A tag ends when a space or another <code>#</code>
 is encountered.</p>
 </blockquote>
 <h2 id="--normalize-whitespace"><a class="header" href="#--normalize-whitespace"><code>--normalize-whitespace</code></a></h2>
-<p>Normalize whitespace in <a href="intro/options//templates/context-reference/annotation.html"><code>annotation.body</code></a>.</p>
+<p>Normalize whitespace in <a href="intro/options/../../templates/context-reference/annotation.html"><code>annotation.body</code></a>.</p>
 <p>Trims whitespace and replaces all line-breaks with two consecutive line-breaks: <code>\n\n</code>.</p>
 <h2 id="--ascii-all"><a class="header" href="#--ascii-all"><code>--ascii-all</code></a></h2>
 <p>Convert all Unicode characters to ASCII.</p>
-<p>All Unicode characters found in <a href="intro/options//templates/context-reference/book.html"><code>book.title</code></a>, <a href="intro/options//templates/context-reference/book.html"><code>book.author</code></a> and
-<a href="intro/options//templates/context-reference/annotation.html"><code>annotation.body</code></a> are converted to ASCII.</p>
+<p>All Unicode characters found in <a href="intro/options/../../templates/context-reference/book.html"><code>book.title</code></a>, <a href="intro/options/../../templates/context-reference/book.html"><code>book.author</code></a> and
+<a href="intro/options/../../templates/context-reference/annotation.html"><code>annotation.body</code></a> are converted to ASCII.</p>
 <h2 id="--ascii-symbols"><a class="header" href="#--ascii-symbols"><code>--ascii-symbols</code></a></h2>
 <p>Convert "smart" Unicode symbols to ASCII.</p>
-<p>"Smart" Unicode symbols found in <a href="intro/options//templates/context-reference/book.html"><code>book.title</code></a>, <a href="intro/options//templates/context-reference/book.html"><code>book.author</code></a> and
-<a href="intro/options//templates/context-reference/annotation.html"><code>annotation.body</code></a> are converted to ASCII.</p>
+<p>"Smart" Unicode symbols found in <a href="intro/options/../../templates/context-reference/book.html"><code>book.title</code></a>, <a href="intro/options/../../templates/context-reference/book.html"><code>book.author</code></a> and
+<a href="intro/options/../../templates/context-reference/annotation.html"><code>annotation.body</code></a> are converted to ASCII.</p>
 <div class="table-wrapper"><table><thead><tr><th>Character</th><th style="text-align: center">Unicode</th><th style="text-align: center">Unicode Number</th><th style="text-align: center">ASCII</th></tr></thead><tbody>
 <tr><td>Left Single Quotation Mark</td><td style="text-align: center">‘</td><td style="text-align: center">U+2018</td><td style="text-align: center">'</td></tr>
 <tr><td>Right Single Quotation Mark</td><td style="text-align: center">’</td><td style="text-align: center">U+2019</td><td style="text-align: center">'</td></tr>
@@ -776,7 +776,7 @@ is encountered.</p>
 <li><a href="https://python-markdown.github.io/extensions/smarty/">Python-Markdown - SmartyPants</a></li>
 </ul>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="post-process"><a class="header" href="#post-process">Post-process</a></h1>
-<p>The following options affect only the <a href="intro/options//intro/commands.html#render"><code>render</code></a> command.</p>
+<p>The following options affect only the <a href="intro/options/../commands.html#render"><code>render</code></a> command.</p>
 <h2 id="--trim-blocks"><a class="header" href="#--trim-blocks"><code>--trim-blocks</code></a></h2>
 <p>Trim any blocks left after rendering.</p>
 <blockquote>
@@ -804,7 +804,7 @@ PDFs are possible as well but would require an extra step to convert an HTML fil
 <p>The following is an example template along with its expected output and output structure. In fact,
 it's almost identical to the default template that comes with ReadStor.</p>
 <h2 id="template-syntax"><a class="header" href="#template-syntax">Template Syntax</a></h2>
-<p><a href="https://tera.netlify.app/">Tera</a>, a Jinja-flavored templating language, provides a rich set of tools for building a wide
+<p><a href="https://keats.github.io/tera/">Tera</a>, a Jinja-flavored templating language, provides a rich set of tools for building a wide
 range of template complexities. The following is a brief intro to the syntax.</p>
 <p>Values can be accessed by placing the desired attribute between double curly-braces:</p>
 <pre><code class="language-jinja2">{{ book.author }}
@@ -823,14 +823,14 @@ a space as a delimiter.</p>
 <pre><code class="language-jinja2">{# Hi! I'm a comment! #}
 </code></pre>
 <blockquote>
-<p><i class="fa fa-info-circle"></i> See Tera's <a href="https://tera.netlify.app/docs/">documentation</a> to learn more
-about these and more advanced features, including template <a href="https://tera.netlify.app/docs/#inheritance">inheritance</a>,
-the <a href="https://tera.netlify.app/docs/#include">include</a> tag, <a href="https://tera.netlify.app/docs/#macros">macros</a> and the full list of available
-<a href="https://tera.netlify.app/docs/#built-in-filters">filters</a>.</p>
+<p><i class="fa fa-info-circle"></i> See Tera's <a href="https://keats.github.io/tera/docs/">documentation</a> to learn more
+about these and more advanced features, including template <a href="https://keats.github.io/tera/docs/#inheritance">inheritance</a>,
+the <a href="https://keats.github.io/tera/docs/#include">include</a> tag, <a href="https://keats.github.io/tera/docs/#macros">macros</a> and the full list of available
+<a href="https://keats.github.io/tera/docs/#built-in-filters">filters</a>.</p>
 </blockquote>
 <h2 id="template"><a class="header" href="#template">Template</a></h2>
 <p>Templates consist of two main sections, the configuration block written in YAML (and some
-<a href="https://tera.netlify.app/">Tera</a>) and the template body written in <a href="https://tera.netlify.app/">Tera</a>.</p>
+<a href="https://keats.github.io/tera/">Tera</a>) and the template body written in <a href="https://keats.github.io/tera/">Tera</a>.</p>
 <p>The configuration for this example template describes that this template, grouped under the name
 <code>my-vault</code>, will render a single file for each book and place them all directly into the output
 directory. Each output filename will follow the pattern of <code>Author - Title.md</code>.</p>
@@ -864,10 +864,10 @@ last-opened: {{ book.metadata.last_opened | date(format="%Y-%m-%dT%H:%M") }}
 </code></pre>
 <h2 id="output-structure"><a class="header" href="#output-structure">Output Structure</a></h2>
 <p>The output structure is primarily determined by the <code>structure</code> and <code>context</code> keys. With
-the <code>structure</code> set to <code>flat</code> all the output files will be placed inside the <a href="templates//intro/options/global.html#--output-directory-path">output
+the <code>structure</code> set to <code>flat</code> all the output files will be placed inside the <a href="templates/../intro/options/global.html#--output-directory-path">output
 directory</a> with no structure. With the <code>context</code> set to <code>book</code>, a single file
 will be created for each book and, if the template body requests, will contain all its respective
-annotations. See <a href="templates//templates/configuration/context-modes.html">Context Modes</a> and <a href="templates//templates/configuration/structure-modes.html">Structure Modes</a> for more
+annotations. See <a href="templates/./configuration/context-modes.html">Context Modes</a> and <a href="templates/./configuration/structure-modes.html">Structure Modes</a> for more
 information.</p>
 <pre><code class="language-plaintext">[output-directory]
  ├── Krishnamurti - Think on These Things.md
@@ -1035,11 +1035,11 @@ template without affecting final rendered output.</p>
 </blockquote>
 <p>A quick rundown of each configuration key:</p>
 <div class="table-wrapper"><table><thead><tr><th>Key</th><th>Description</th></tr></thead><tbody>
-<tr><td><code>group</code></td><td>The <a href="templates/configuration//templates/configuration/template-groups.html">Template Group</a> name.</td></tr>
-<tr><td><code>context</code></td><td>The <a href="templates/configuration//templates/configuration/context-modes.html">Context Mode</a> or what the template will render.</td></tr>
-<tr><td><code>structure</code></td><td>The <a href="templates/configuration//templates/configuration/structure-modes.html">Structure Mode</a> or how the output files will be structured.</td></tr>
-<tr><td><code>extension</code></td><td>The template's output <a href="templates/configuration//templates/configuration/file-extensions.html">File Extension</a>.</td></tr>
-<tr><td><code>names</code></td><td>The template <a href="templates/configuration//templates/configuration/names.html">Names</a> for generating file and directory names.</td></tr>
+<tr><td><code>group</code></td><td>The <a href="templates/configuration/../configuration/template-groups.html">Template Group</a> name.</td></tr>
+<tr><td><code>context</code></td><td>The <a href="templates/configuration/../configuration/context-modes.html">Context Mode</a> or what the template will render.</td></tr>
+<tr><td><code>structure</code></td><td>The <a href="templates/configuration/../configuration/structure-modes.html">Structure Mode</a> or how the output files will be structured.</td></tr>
+<tr><td><code>extension</code></td><td>The template's output <a href="templates/configuration/../configuration/file-extensions.html">File Extension</a>.</td></tr>
+<tr><td><code>names</code></td><td>The template <a href="templates/configuration/../configuration/names.html">Names</a> for generating file and directory names.</td></tr>
 </tbody></table>
 </div><div style="break-before: page; page-break-before: always;"></div><h1 id="template-groups"><a class="header" href="#template-groups">Template Groups</a></h1>
 <div class="table-wrapper"><table><thead><tr><th></th><th></th></tr></thead><tbody>
@@ -1056,10 +1056,10 @@ directory. The most common use case would be when using a pair of templates wher
 render a book and the other to render each of its annotations separately.</p>
 <blockquote>
 <p><i class="fa fa-exclamation-circle"></i> Group names are sanitized to make sure they interact well
-with the file system. See <a href="templates/configuration//templates/string-sanitization.html">String Sanitization</a> for more information.</p>
+with the file system. See <a href="templates/configuration/../string-sanitization.html">String Sanitization</a> for more information.</p>
 </blockquote>
 <p>Grouping is triggered when one or more templates are set to either the <code>flat-grouped</code> or the
-<code>nested-grouped</code> <a href="templates/configuration//templates/configuration/structure-modes.html">Structure Mode</a>. The output files are placed within a directory
+<code>nested-grouped</code> <a href="templates/configuration/../configuration/structure-modes.html">Structure Mode</a>. The output files are placed within a directory
 named after the <code>group</code>.</p>
 <p>For example, if two templates share these values in their configurations:</p>
 <pre><code class="language-yaml">group: my-vault
@@ -1130,7 +1130,7 @@ Output Structure</a> for more information.</p>
 <h2 id="the-book-context"><a class="header" href="#the-book-context">The Book Context</a></h2>
 <div class="table-wrapper"><table><thead><tr><th></th><th></th></tr></thead><tbody>
 <tr><td>Context Mode</td><td><code>book</code></td></tr>
-<tr><td>Context Objects</td><td><a href="templates/configuration//templates/context-reference/book.html"><code>book</code></a> <a href="templates/configuration//templates/context-reference/annotation.html"><code>annotations</code></a> <a href="templates/configuration//templates/context-reference/names.html"><code>names</code></a></td></tr>
+<tr><td>Context Objects</td><td><a href="templates/configuration/../context-reference/book.html"><code>book</code></a> <a href="templates/configuration/../context-reference/annotation.html"><code>annotations</code></a> <a href="templates/configuration/../context-reference/names.html"><code>names</code></a></td></tr>
 <tr><td>Output Files</td><td>=1</td></tr>
 </tbody></table>
 </div>
@@ -1189,12 +1189,12 @@ names:
   directory: Robert Henri - The Art Spirit
 </code></pre>
 <blockquote>
-<p><i class="fa fa-info-circle"></i> See <a href="templates/configuration//templates/context-reference/book.html">Context Reference - Book</a> for more information.</p>
+<p><i class="fa fa-info-circle"></i> See <a href="templates/configuration/../context-reference/book.html">Context Reference - Book</a> for more information.</p>
 </blockquote>
 <h2 id="the-annotation-context"><a class="header" href="#the-annotation-context">The Annotation Context</a></h2>
 <div class="table-wrapper"><table><thead><tr><th></th><th></th></tr></thead><tbody>
 <tr><td>Context Mode</td><td><code>annotation</code></td></tr>
-<tr><td>Context Objects</td><td><a href="templates/configuration//templates/context-reference/book.html"><code>book</code></a> <a href="templates/configuration//templates/context-reference/annotation.html"><code>annotation</code></a> <a href="templates/configuration//templates/context-reference/names.html"><code>names</code></a></td></tr>
+<tr><td>Context Objects</td><td><a href="templates/configuration/../context-reference/book.html"><code>book</code></a> <a href="templates/configuration/../context-reference/annotation.html"><code>annotation</code></a> <a href="templates/configuration/../context-reference/names.html"><code>names</code></a></td></tr>
 <tr><td>Output Files</td><td>&gt;=1</td></tr>
 </tbody></table>
 </div>
@@ -1231,9 +1231,9 @@ names:
   directory: Robert Henri - The Art Spirit
 </code></pre>
 <blockquote>
-<p><i class="fa fa-info-circle"></i> See <a href="templates/configuration//templates/context-reference/annotation.html">Context Reference - Annotation</a> for more information.</p>
+<p><i class="fa fa-info-circle"></i> See <a href="templates/configuration/../context-reference/annotation.html">Context Reference - Annotation</a> for more information.</p>
 </blockquote>
-<h2 id="a-note-on-output-structure"><a class="header" href="#a-note-on-output-structure"><i class="fa fa-exclamation-circle"></i> A Note On Output Structure</a></h2>
+<h2 id="a-note-on-output-structure"><a class="header" href="#a-note-on-output-structure">A Note On Output Structure</a></h2>
 <p>When selecting a context mode it's important to understand how the output files will look. The
 following is a quick visualization.</p>
 <p>When the context mode is set to <code>book</code>, a single file for each book is rendered out from the
@@ -1330,7 +1330,7 @@ directory.</p>
 <h2 id="nested-mode"><a class="header" href="#nested-mode">Nested Mode</a></h2>
 <pre><code class="language-yaml">structure: nested
 </code></pre>
-<p>When selected, the template is rendered to the <a href="templates/configuration//intro/options/global.html#--output-directory-path">output directory</a> and placed
+<p>When selected, the template is rendered to the <a href="templates/configuration/../../intro/options/global.html#--output-directory-path">output directory</a> and placed
 inside a directory named after the <code>names.directory</code> key. This is useful if a template group
 contains multiple templates.</p>
 <pre><code class="language-plaintext">[output-directory]
@@ -1356,7 +1356,7 @@ contains multiple templates.</p>
 <pre><code class="language-yaml">group: my-vault
 structure: nested-grouped
 </code></pre>
-<p>When selected, the template is rendered to the <a href="templates/configuration//intro/options/global.html#--output-directory-path">output directory</a> and placed
+<p>When selected, the template is rendered to the <a href="templates/configuration/../../intro/options/global.html#--output-directory-path">output directory</a> and placed
 inside a directory named after its <code>group</code> and another named after the <code>names.directory</code> key. This
 is useful if multiple template groups are being rendered to the same directory and if a template
 group contains multiple templates.</p>
@@ -1397,16 +1397,16 @@ filenames with the format <code>[filename].[extension]</code>.</p>
 <tr><td><code>names.directory</code></td><td><code>book</code></td></tr>
 </tbody></table>
 </div>
-<p>Output files and directory names can be customized using the same <a href="https://tera.netlify.app/">Tera</a> syntax. ReadStor
+<p>Output files and directory names can be customized using the same <a href="https://keats.github.io/tera/">Tera</a> syntax. ReadStor
 will inject a different context into each <code>names</code> during render time and set the template's output
 file/directory name to the resulting string.</p>
 <blockquote>
 <p><i class="fa fa-exclamation-circle"></i> The rendered book, annotation and directory
-names are sanitized to make sure they interact well with the file system. See <a href="templates/configuration//templates/string-sanitization.html">String
+names are sanitized to make sure they interact well with the file system. See <a href="templates/configuration/../string-sanitization.html">String
 Sanitization</a> for more information.</p>
 </blockquote>
 <p>Additionally, all the rendered values from these keys are available within the template's context
-under the <code>names</code> variable regardless of the current context mode. See <a href="templates/configuration//templates/context-reference/names.html">ContextReference -
+under the <code>names</code> variable regardless of the current context mode. See <a href="templates/configuration/../context-reference/names.html">ContextReference -
 Names</a> for more information.</p>
 <blockquote>
 <p><i class="fa fa-exclamation-circle"></i> Note that the template's <code>context</code> matters when setting
@@ -1494,12 +1494,12 @@ the same <code>group</code> have no relation internally. ReadStor just renders e
 multiple templates share the same value for <code>group</code> then they end up in the same directory when the
 <code>structure</code> mode is set to <code>grouped</code> or <code>nested-grouped</code>.</p>
 <p>As a result of this limitation, if a template requires awareness of its <code>group</code>'s sibling names
-i.e. the value defined in the <a href="templates/configuration//templates/context-reference/names.html"><code>names</code></a> field, they <em>must</em> be defined in each template. This
+i.e. the value defined in the <a href="templates/configuration/../context-reference/names.html"><code>names</code></a> field, they <em>must</em> be defined in each template. This
 results in some duplication across templates. This should hopefully be resolved in future versions
 of ReadStor.</p>
 <blockquote>
 <p><i class="fa fa-info-circle"></i> For more information on how to generate and use <code>names</code> see
-<a href="templates/configuration//templates/context-reference/names.html">Context Reference - Names</a> and <a href="templates/configuration//templates/backlinks.html">Backlinks</a>.</p>
+<a href="templates/configuration/../context-reference/names.html">Context Reference - Names</a> and <a href="templates/configuration/../backlinks.html">Backlinks</a>.</p>
 </blockquote>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="partial-templates"><a class="header" href="#partial-templates">Partial Templates</a></h1>
 <p>When working with larger templates it can be helpful to separate them into smaller building blocks.
@@ -1523,11 +1523,11 @@ working example.</p>
 <p>Partial templates are included using the <code>include</code> tag:</p>
 <pre><code class="language-jinja2">{% include "_my-partial-template.md" %}
 </code></pre>
-<p>Where <code>"_my-partial-template.md"</code> is a path relative to the <a href="templates//intro/options/render.html#--templates-directory-path">templates
+<p>Where <code>"_my-partial-template.md"</code> is a path relative to the <a href="templates/../intro/options/render.html#--templates-directory-path">templates
 directory</a>. Therefore, this would be pointing to a template at the root of the
-<a href="templates//intro/options/render.html#--templates-directory-path">templates directory</a>. If we wanted to organize our templates into different
+<a href="templates/../intro/options/render.html#--templates-directory-path">templates directory</a>. If we wanted to organize our templates into different
 directories we would have to add the directory names for any directories between the including
-template and the <a href="templates//intro/options/render.html#--templates-directory-path">templates directory</a>.</p>
+template and the <a href="templates/../intro/options/render.html#--templates-directory-path">templates directory</a>.</p>
 <p>For example, with the following structure:</p>
 <pre><code class="language-plaintext">[templates-directory]
  └── my-vault-templates
@@ -1540,7 +1540,7 @@ template and the <a href="templates//intro/options/render.html#--templates-direc
 {% include "my-vault-templates/_annotation.jinja2" %}
 </code></pre>
 <blockquote>
-<p><i class="fa fa-info-circle"></i> See the documentation for <a href="https://tera.netlify.app/">Tera</a>'s <a href="https://tera.netlify.app/docs/#include">include</a>
+<p><i class="fa fa-info-circle"></i> See the documentation for <a href="https://keats.github.io/tera/">Tera</a>'s <a href="https://keats.github.io/tera/docs/#include">include</a>
 tag for more information on its features and limitations.</p>
 </blockquote>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="backlinks"><a class="header" href="#backlinks">Backlinks</a></h1>
@@ -1557,7 +1557,7 @@ one another.</p>
 <ul>
 <li>
 <p><code>group</code> is set to the same value across the two templates. This makes sure that if we select a
-grouped <a href="templates//templates/configuration/structure-modes.html">Structure Mode</a>, the templates will be rendered to the same directory.</p>
+grouped <a href="templates/./configuration/structure-modes.html">Structure Mode</a>, the templates will be rendered to the same directory.</p>
 </li>
 <li>
 <p><code>context</code> is set to <code>book</code> for the book template and <code>annotation</code> for the annotation template.</p>
@@ -1565,7 +1565,7 @@ grouped <a href="templates//templates/configuration/structure-modes.html">Struct
 <li>
 <p><code>structure</code> can be set to any of the four modes, however, <code>nested-grouped</code> feels the most
 appropriate as it would place each book into its own directory and place them all under a
-directory named after the value for the <code>group</code> key. See <a href="templates//templates/configuration/structure-modes.html">Structure Modes</a> for
+directory named after the value for the <code>group</code> key. See <a href="templates/./configuration/structure-modes.html">Structure Modes</a> for
 more information.</p>
 </li>
 <li>
@@ -1575,7 +1575,7 @@ more information.</p>
 <p><code>names</code> can be set to anything as long as the values are identical between the two templates. It
 might seem odd to see the values for <code>names</code> duplicated across the two templates. Shouldn't the
 book template define <code>names.book</code> and the annotation template define <code>names.annotation</code>? Ideally,
-yes. This need for duplication is the result of a current <a href="templates//templates/configuration/names.html#limitations">limitation</a> of
+yes. This need for duplication is the result of a current <a href="templates/./configuration/names.html#limitations">limitation</a> of
 ReadStor, therefore they <em>must</em> be identical, so the backlinks are correctly generated.</p>
 </li>
 </ul>
@@ -1601,15 +1601,15 @@ names:
 </code></pre>
 <h2 id="template-body"><a class="header" href="#template-body">Template Body</a></h2>
 <p>With our configuration all set up, we can now use the <code>names</code> object, which contains all the
-rendered <a href="templates//templates/context-reference/names.html">Names</a>, to link between our rendered output files.</p>
+rendered <a href="templates/./context-reference/names.html">Names</a>, to link between our rendered output files.</p>
 <blockquote>
-<p><i class="fa fa-info-circle"></i> See <a href="templates//templates/context-reference/names.html">Context Reference - Names</a> for more information.</p>
+<p><i class="fa fa-info-circle"></i> See <a href="templates/./context-reference/names.html">Context Reference - Names</a> for more information.</p>
 </blockquote>
 <h3 id="book-template-body"><a class="header" href="#book-template-body">Book Template Body</a></h3>
 <p>The <code>names.annotations</code> object is a list of dictionaries, where each dictionary refers to a rendered
 annotation file and contains its filename along with metadata about its respective annotation. This
 allows us to link back to the annotation and sort the links based of off different criteria. In the
-example below, <a href="https://tera.netlify.app/">Tera</a>'s <a href="https://tera.netlify.app/docs/#sort"><code>sort</code></a> filter is used with the <code>attribute</code> argument and
+example below, <a href="https://keats.github.io/tera/">Tera</a>'s <a href="https://keats.github.io/tera/docs/#sort"><code>sort</code></a> filter is used with the <code>attribute</code> argument and
 the <code>location</code> attribute.</p>
 <pre><code class="language-jinja2"># {{ book.author }} - {{ book.title }}
 
@@ -1618,7 +1618,7 @@ the <code>location</code> attribute.</p>
 {% endfor %}
 </code></pre>
 <p>Alternatively we can use the <code>names.directory</code> variable to access the rendered name of the parent
-directory. This value is only available if the <a href="templates//templates/configuration/structure-modes.html">Structure Mode</a> is set to <code>nested</code>
+directory. This value is only available if the <a href="templates/./configuration/structure-modes.html">Structure Mode</a> is set to <code>nested</code>
 or <code>nested-grouped</code>.</p>
 <!-- TODO: Verify this works! -->
 <pre><code class="language-jinja2"># {{ book.author }} - {{ book.title }}
@@ -1713,22 +1713,22 @@ for naming files or directories. Characters are either removed or replaced with 
 </div>
 <p>This following values are sanitized:</p>
 <ul>
-<li><a href="templates//templates/configuration/template-groups.html">Template Group</a> set in the <code>group</code> config key.</li>
-<li>The rendered values from <a href="templates//templates/configuration/names.html">Names</a> set in the <code>names</code> config key.</li>
+<li><a href="templates/./configuration/template-groups.html">Template Group</a> set in the <code>group</code> config key.</li>
+<li>The rendered values from <a href="templates/./configuration/names.html">Names</a> set in the <code>names</code> config key.</li>
 </ul>
 <!-- TODO: Provide some examples. -->
 <div style="break-before: page; page-break-before: always;"></div><h1 id="context-reference"><a class="header" href="#context-reference">Context Reference</a></h1>
 <p>Every template is injected with a "context" i.e. the data currently available to rendering. ReadStor
 injects three different objects into every template context: <code>book</code>, <code>annotation</code> (or <code>annotations</code>
-depending on the <a href="templates/context-reference//templates/configuration/context-modes.html">Context Mode</a>) and <code>names</code>.</p>
+depending on the <a href="templates/context-reference/../configuration/context-modes.html">Context Mode</a>) and <code>names</code>.</p>
 <div class="table-wrapper"><table><thead><tr><th>Name</th><th>Description</th></tr></thead><tbody>
-<tr><td><code>book</code></td><td>The current <a href="templates/context-reference//templates/context-reference/book.html">Book</a> being rendered.</td></tr>
-<tr><td><code>annotation</code></td><td>A single <a href="templates/context-reference//templates/context-reference/annotation.html">Annotation</a> belonging to the current book.</td></tr>
-<tr><td><code>annotations</code></td><td>Multiple <a href="templates/context-reference//templates/context-reference/annotation.html">Annotations</a> belonging to the current book.</td></tr>
-<tr><td><code>names</code></td><td>A set of <a href="templates/context-reference//templates/context-reference/names.html">Names</a> for generating backlinks between files.</td></tr>
+<tr><td><code>book</code></td><td>The current <a href="templates/context-reference/../context-reference/book.html">Book</a> being rendered.</td></tr>
+<tr><td><code>annotation</code></td><td>A single <a href="templates/context-reference/../context-reference/annotation.html">Annotation</a> belonging to the current book.</td></tr>
+<tr><td><code>annotations</code></td><td>Multiple <a href="templates/context-reference/../context-reference/annotation.html">Annotations</a> belonging to the current book.</td></tr>
+<tr><td><code>names</code></td><td>A set of <a href="templates/context-reference/../context-reference/names.html">Names</a> for generating backlinks between files.</td></tr>
 </tbody></table>
 </div><div style="break-before: page; page-break-before: always;"></div><h1 id="book"><a class="header" href="#book">Book</a></h1>
-<p>A single <code>book</code> object is injected into all template contexts regardless of the template's <a href="templates/context-reference//templates/configuration/context-modes.html">Context
+<p>A single <code>book</code> object is injected into all template contexts regardless of the template's <a href="templates/context-reference/../configuration/context-modes.html">Context
 Mode</a>.</p>
 <h2 id="template-fields---book"><a class="header" href="#template-fields---book">Template Fields - Book</a></h2>
 <div class="table-wrapper"><table><thead><tr><th>Attribute</th><th>Type</th><th>Description</th></tr></thead><tbody>
@@ -1769,13 +1769,13 @@ last-opened: {{ book.metadata.last_opened | date(format="%Y-%m-%d-%H:%M") }}
 ---
 </code></pre>
 <blockquote>
-<p><i class="fa fa-info-circle"></i> Here <a href="https://tera.netlify.app/">Tera</a>'s <a href="https://tera.netlify.app/docs/#date"><code>date</code></a> filter is used to format
+<p><i class="fa fa-info-circle"></i> Here <a href="https://keats.github.io/tera/">Tera</a>'s <a href="https://keats.github.io/tera/docs/#date"><code>date</code></a> filter is used to format
 a <code>datetime</code> object into a human-readable date.</p>
 </blockquote>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="annotation"><a class="header" href="#annotation">Annotation</a></h1>
-<p>The number of <code>annotation</code> objects injected into a template depends on the template's <a href="templates/context-reference//templates/configuration/context-modes.html">Context
-Mode</a>. When the <a href="templates/context-reference//templates/configuration/context-modes.html#the-annotation-context">Context Mode</a> is set to <code>annotation</code>,
-a single <code>annotation</code> object is injected into the template's context. When the <a href="templates/context-reference//templates/configuration/context-modes.html#the-book-context">Context
+<p>The number of <code>annotation</code> objects injected into a template depends on the template's <a href="templates/context-reference/../configuration/context-modes.html">Context
+Mode</a>. When the <a href="templates/context-reference/../configuration/context-modes.html#the-annotation-context">Context Mode</a> is set to <code>annotation</code>,
+a single <code>annotation</code> object is injected into the template's context. When the <a href="templates/context-reference/../configuration/context-modes.html#the-book-context">Context
 Mode</a> is set to <code>book</code>, multiple <code>annotation</code> objects, under the name
 <code>annotations</code>, are injected into the template's context.</p>
 <h2 id="template-fields---annotation"><a class="header" href="#template-fields---annotation">Template Fields - Annotation</a></h2>
@@ -1832,13 +1832,13 @@ Mode</a> is set to <code>book</code>, multiple <code>annotation</code> objects, 
 {% endfor %}
 </code></pre>
 <blockquote>
-<p><i class="fa fa-info-circle"></i> Here <a href="https://tera.netlify.app/">Tera</a>'s <a href="https://tera.netlify.app/docs/#join"><code>join</code></a> filter is used to join
+<p><i class="fa fa-info-circle"></i> Here <a href="https://keats.github.io/tera/">Tera</a>'s <a href="https://keats.github.io/tera/docs/#join"><code>join</code></a> filter is used to join
 an array of items into a space-separated string.</p>
 </blockquote>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="names-1"><a class="header" href="#names-1">Names</a></h1>
-<p>A single <code>names</code> object is injected into all template contexts regardless of the template's <a href="templates/context-reference//templates/configuration/context-modes.html">Context
+<p>A single <code>names</code> object is injected into all template contexts regardless of the template's <a href="templates/context-reference/../configuration/context-modes.html">Context
 Mode</a>. These contain all the file and directory names rendered from the <code>names</code> key
-in the template's config. See <a href="templates/context-reference//templates/configuration/names.html">Names</a> for more information.</p>
+in the template's config. See <a href="templates/context-reference/../configuration/names.html">Names</a> for more information.</p>
 <h2 id="template-fields---names"><a class="header" href="#template-fields---names">Template Fields - Names</a></h2>
 <div class="table-wrapper"><table><thead><tr><th>Attribute</th><th>Type</th><th>Description</th></tr></thead><tbody>
 <tr><td><code>names</code></td><td>dictionary</td><td>names object</td></tr>
@@ -1857,8 +1857,8 @@ dictionary consists of the following attributes:</p>
 <tr><td><code>location</code></td><td>string</td><td>location string</td></tr>
 </tbody></table>
 </div>
-<p>These attributes allow the sorting of the <code>names.annotations</code> list using <a href="https://tera.netlify.app/">Tera</a>'s
-<a href="https://tera.netlify.app/docs/#sort"><code>sort</code></a> filter. See <a href="templates/context-reference//templates/backlinks.html">Backlinks</a> for example usage.</p>
+<p>These attributes allow the sorting of the <code>names.annotations</code> list using <a href="https://keats.github.io/tera/">Tera</a>'s
+<a href="https://keats.github.io/tera/docs/#sort"><code>sort</code></a> filter. See <a href="templates/context-reference/../backlinks.html">Backlinks</a> for example usage.</p>
 <h2 id="example-data---names"><a class="header" href="#example-data---names">Example Data - Names</a></h2>
 <p>With the following <code>names</code> configuration:</p>
 <pre><code class="language-yaml">names:
@@ -1946,7 +1946,7 @@ in the filenames here.</p>
 ~/Library/Containers/com.apple.iBooksX
 </code></pre>
 <blockquote>
-<p><i class="fa fa-info-circle"></i> See <a href="apple-books/macos//apple-books/macos/library-location.html">macOS - Library Location</a> for more
+<p><i class="fa fa-info-circle"></i> See <a href="apple-books/macos/../macos/library-location.html">macOS - Library Location</a> for more
 information.</p>
 </blockquote>
 <p>However, archiving and restoring only these directories might miss some metadata. Searching
@@ -2149,7 +2149,7 @@ syncing with iCloud Drive is disabled!</p>
 <pre><code class="language-plaintext">[ios-device]/Books/com.apple.ibooks-sync.plist
 </code></pre>
 <blockquote>
-<p><i class="fa fa-info-circle"></i> See <a href="apple-books/ios//apple-books/ios/access-library.html">iOS - Access Library</a> for more information.</p>
+<p><i class="fa fa-info-circle"></i> See <a href="apple-books/ios/../ios/access-library.html">iOS - Access Library</a> for more information.</p>
 </blockquote>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="ios---access-library"><a class="header" href="#ios---access-library">iOS - Access Library</a></h1>
 <p>There are roughly two different methods for accessing iOS's Apple Books library. A (possibly-paid)
@@ -2160,9 +2160,9 @@ the most part, they all expose the same directories, however, each might differ 
 are represented in the GUI.</p>
 <p>The following is a non-exhaustive list of paid software and the library's location within them:</p>
 <h3 id="imazing---httpsimazingcom"><a class="header" href="#imazing---httpsimazingcom">iMazing - <a href="https://imazing.com">https://imazing.com</a></a></h3>
-<p><img src="apple-books/ios//images/imazing.png" alt="iMazing Seenshot" /></p>
+<p><img src="apple-books/ios/../../images/imazing.png" alt="iMazing Seenshot" /></p>
 <h3 id="iexplorer---httpsmacroplantcomiexplorer"><a class="header" href="#iexplorer---httpsmacroplantcomiexplorer">iExplorer - <a href="https://macroplant.com/iexplorer">https://macroplant.com/iexplorer</a></a></h3>
-<p><img src="apple-books/ios//images/iexplorer.png" alt="iExplorer Screenshot" /></p>
+<p><img src="apple-books/ios/../../images/iexplorer.png" alt="iExplorer Screenshot" /></p>
 <h2 id="access-via-macfuse--ifuse"><a class="header" href="#access-via-macfuse--ifuse">Access via <code>macFUSE</code> / <code>ifuse</code></a></h2>
 <p>The free and open-source option requires a bit of work during installation but is effortless to run
 once complete.</p>
@@ -2238,7 +2238,7 @@ version of iOS and the version the archive was created from are identical. Not d
 to unexpected results.</p>
 </blockquote>
 <blockquote>
-<p><i class="fa fa-info-circle"></i> See <a href="apple-books/ios//apple-books/ios/library-location.html">iOS - Library Location</a> and <a href="apple-books/ios//apple-books/ios/access-library.html">iOS -
+<p><i class="fa fa-info-circle"></i> See <a href="apple-books/ios/../ios/library-location.html">iOS - Library Location</a> and <a href="apple-books/ios/../ios/access-library.html">iOS -
 Access Library</a> for more information.</p>
 </blockquote>
 
