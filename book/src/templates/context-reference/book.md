@@ -52,5 +52,5 @@ last-opened: {{ book.metadata.last_opened | date(format="%Y-%m-%d-%H:%M") }}
 > a `datetime` object into a human-readable date.
 
 [context-modes]: /templates/configuration/context-modes.md
-[tera]: https://tera.netlify.app/
-[tera-date]: https://tera.netlify.app/docs/#date
+[tera]: https://keats.github.io/tera/
+[tera-date]: https://keats.github.io/tera/docs/#date

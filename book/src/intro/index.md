@@ -11,4 +11,4 @@ current Apple Books databases.
 
 Note that this repository is a heavy work-in-progress and things are bound to change.
 
-[tera]: https://tera.netlify.app/
+[tera]: https://keats.github.io/tera/

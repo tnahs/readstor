@@ -72,6 +72,6 @@ Mode][context-modes-book] is set to `book`, multiple `annotation` objects, under
 [context-modes]: /templates/configuration/context-modes.md
 [context-modes-book]: /templates/configuration/context-modes.md#the-book-context
 [context-modes-annotation]: /templates/configuration/context-modes.md#the-annotation-context
-[tera]: https://tera.netlify.app/
-[tera-join]: https://tera.netlify.app/docs/#join
+[tera]: https://keats.github.io/tera/
+[tera-join]: https://keats.github.io/tera/docs/#join
 [epubcfi]: https://w3c.github.io/epub-specs/epub33/epubcfi/

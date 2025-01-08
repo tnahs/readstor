@@ -135,4 +135,4 @@ of ReadStor.
 [context-reference]: /template/context-reference/index.md
 [names]: /templates/context-reference/names.md
 [string-sanitization]: /templates/string-sanitization.md
-[tera]: https://tera.netlify.app/
+[tera]: https://keats.github.io/tera/

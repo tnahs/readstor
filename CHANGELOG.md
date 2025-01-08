@@ -218,4 +218,4 @@
 [filtering]: https://tnahs.github.io/readstor/latest/00-intro/02-01-filter.md
 [names]: https://tnahs.github.io/readstor/latest/01-templates/06-03-names.html
 [slug-rs]: https://github.com/Stebalien/slug-rs/
-[tera]: https://tera.netlify.app/
+[tera]: https://keats.github.io/tera/

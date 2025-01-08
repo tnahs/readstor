@@ -192,6 +192,6 @@ tags: #inspiration
 [names]: /templates/context-reference/names.md
 [names-limitations]: /templates/configuration/names.md#limitations
 [structure-modes]: /templates/configuration/structure-modes.md
-[tera]: https://tera.netlify.app/
-[tera-sort]: https://tera.netlify.app/docs/#sort
+[tera]: https://keats.github.io/tera/
+[tera-sort]: https://keats.github.io/tera/docs/#sort
 [using-backlinks]: https://github.com/tnahs/readstor/tree/main/templates/using-backlinks

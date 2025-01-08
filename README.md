@@ -62,4 +62,4 @@ listed, it doesn't necessarily mean it isn't supported.
 Libraries that are synced with iCloud Drive are not supported.
 
 [documentation]: https://tnahs.github.io/readstor/
-[tera]: https://tera.netlify.app/
+[tera]: https://keats.github.io/tera/

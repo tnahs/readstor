@@ -84,5 +84,5 @@ names:
 [context-modes]: /templates/configuration/context-modes.md
 [backlinks]: /templates/backlinks.md
 [names]: /templates/configuration/names.md
-[tera]: https://tera.netlify.app/
-[tera-sort]: https://tera.netlify.app/docs/#sort
+[tera]: https://keats.github.io/tera/
+[tera-sort]: https://keats.github.io/tera/docs/#sort

@@ -236,9 +236,9 @@ tags: #inspiration
 [context-modes]: /templates/configuration/context-modes.md
 [output-directory]: /intro/options/global.md#--output-directory-path
 [structure-modes]: /templates/configuration/structure-modes.md
-[tera]: https://tera.netlify.app/
-[tera-documentation]: https://tera.netlify.app/docs/
-[tera-filters]: https://tera.netlify.app/docs/#built-in-filters
-[tera-include]: https://tera.netlify.app/docs/#include
-[tera-inheritance]: https://tera.netlify.app/docs/#inheritance
-[tera-macros]: https://tera.netlify.app/docs/#macros
+[tera]: https://keats.github.io/tera/
+[tera-documentation]: https://keats.github.io/tera/docs/
+[tera-filters]: https://keats.github.io/tera/docs/#built-in-filters
+[tera-include]: https://keats.github.io/tera/docs/#include
+[tera-inheritance]: https://keats.github.io/tera/docs/#inheritance
+[tera-macros]: https://keats.github.io/tera/docs/#macros

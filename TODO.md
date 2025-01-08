@@ -94,4 +94,4 @@
 [fern]: https://docs.rs/fern/latest/fern/
 [indicatif]: https://docs.rs/indicatif/latest/indicatif/
 [minus]: https://docs.rs/minus/latest/minus/
-[tera]: https://tera.netlify.app/
+[tera]: https://keats.github.io/tera/
