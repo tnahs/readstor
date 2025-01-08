@@ -131,8 +131,8 @@ of ReadStor.
 > <i class="fa fa-info-circle"></i> For more information on how to generate and use `names` see
 > [Context Reference - Names][names] and [Backlinks][backlinks].
 
-[backlinks]: /templates/backlinks.md
-[context-reference]: /template/context-reference/index.md
-[names]: /templates/context-reference/names.md
-[string-sanitization]: /templates/string-sanitization.md
+[backlinks]: ../backlinks.md
+[context-reference]: ../context-reference/index.md
+[names]: ../context-reference/names.md
+[string-sanitization]: ../string-sanitization.md
 [tera]: https://keats.github.io/tera/

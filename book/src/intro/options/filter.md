@@ -146,5 +146,5 @@ specified [`operator`](#operator).
 
 Auto-confirm [Filter Results](#filter-results).
 
-[export]: /intro/commands.md#export
-[render]: /intro/commands.md#render
+[export]: ../commands.md#export
+[render]: ../commands.md#render

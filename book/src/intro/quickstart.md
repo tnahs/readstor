@@ -160,19 +160,19 @@ readstor backup                          \
     --directory-template "{{ now | date(format='%Y-%m-%d') }}-v{{ version }}"
 ```
 
-[ascii-symbols]: /intro/options/preprocess.md#--ascii-symbols
-[backup]: /intro/commands.md#backup
-[databases-directory]: /intro/options/global.md#--databases-directory-path
-[directory-template]: /intro/options/export.html#--directory-template-template
-[export]: /intro/commands.md#export
-[extract-tags]: /intro/options/preprocess.md#--extract-tags
-[filter]: /intro/options/filter.md
-[normalize-whitespace]: /intro/options/preprocess.md#--normalize-whitespace
-[output-directory]: /intro/options/global.md#--output-directory-path
-[plists-directory]: /intro/options/global.md#--plists-directory-path
-[render]: /intro/commands.md#render
-[template-groups]: /intro/options/render.md#--templates-directory-path
-[templates-directory]: /intro/options/render.md#--template-group-group
+[ascii-symbols]: ./options/preprocess.md#--ascii-symbols
+[backup]: ./commands.md#backup
+[databases-directory]: ./options/global.md#--databases-directory-path
+[directory-template]: ./options/export.html#--directory-template-template
+[export]: ./commands.md#export
+[extract-tags]: ./options/preprocess.md#--extract-tags
+[filter]: ./options/filter.md
+[normalize-whitespace]: ./options/preprocess.md#--normalize-whitespace
+[output-directory]: ./options/global.md#--output-directory-path
+[plists-directory]: ./options/global.md#--plists-directory-path
+[render]: ./commands.md#render
+[template-groups]: ./options/render.md#--templates-directory-path
+[templates-directory]: ./options/render.md#--template-group-group
 [templates]: https://github.com/tnahs/readstor/tree/main/templates
-[trim-blocks]: /intro/options/postprocess.md#--trim-blocks
-[wrap-text]: /intro/options/postprocess.md#--wrap-text-width
+[trim-blocks]: ./options/postprocess.md#--trim-blocks
+[wrap-text]: ./options/postprocess.md#--wrap-text-width

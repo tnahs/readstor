@@ -57,8 +57,8 @@ A quick rundown of each configuration key:
 | `extension` | The template's output [File Extension][file-extensions].                          |
 | `names`     | The template [Names][names] for generating file and directory names.              |
 
-[context-modes]: /templates/configuration/context-modes.md
-[file-extensions]: /templates/configuration/file-extensions.md
-[names]: /templates/configuration/names.md
-[structure-modes]: /templates/configuration/structure-modes.md
-[template-groups]: /templates/configuration/template-groups.md
+[context-modes]: ../configuration/context-modes.md
+[file-extensions]: ../configuration/file-extensions.md
+[names]: ../configuration/names.md
+[structure-modes]: ../configuration/structure-modes.md
+[template-groups]: ../configuration/template-groups.md

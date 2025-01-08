@@ -50,9 +50,9 @@ Characters and transliterations taken from:
 - [Daring Fireball - SmartyPants][daring-fireball]
 - [Python-Markdown - SmartyPants][python-markdown]
 
-[annotation]: /templates/context-reference/annotation.md
-[book]: /templates/context-reference/book.md
+[annotation]: ../../templates/context-reference/annotation.md
+[book]: ../../templates/context-reference/book.md
 [daring-fireball]: https://daringfireball.net/projects/smartypants/
-[export]: /intro/commands.md#export
+[export]: ../commands.md#export
 [python-markdown]: https://python-markdown.github.io/extensions/smarty/
-[render]: /intro/commands.md#render
+[render]: ../commands.md#render

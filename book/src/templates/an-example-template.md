@@ -233,9 +233,9 @@ anyway.
 tags: #inspiration
 ```
 
-[context-modes]: /templates/configuration/context-modes.md
-[output-directory]: /intro/options/global.md#--output-directory-path
-[structure-modes]: /templates/configuration/structure-modes.md
+[context-modes]: ./configuration/context-modes.md
+[output-directory]: ../intro/options/global.md#--output-directory-path
+[structure-modes]: ./configuration/structure-modes.md
 [tera]: https://keats.github.io/tera/
 [tera-documentation]: https://keats.github.io/tera/docs/
 [tera-filters]: https://keats.github.io/tera/docs/#built-in-filters

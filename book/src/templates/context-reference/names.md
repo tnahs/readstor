@@ -81,8 +81,8 @@ names:
 {% endfor %}
 ```
 
-[context-modes]: /templates/configuration/context-modes.md
-[backlinks]: /templates/backlinks.md
-[names]: /templates/configuration/names.md
+[context-modes]: ../configuration/context-modes.md
+[backlinks]: ../backlinks.md
+[names]: ../configuration/names.md
 [tera]: https://keats.github.io/tera/
 [tera-sort]: https://keats.github.io/tera/docs/#sort

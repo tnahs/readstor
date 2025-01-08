@@ -46,5 +46,5 @@ Overwrite existing files.
 
 By default, exising files are skipped.
 
-[book]: /templates/context-reference/book.md
-[export]: /intro/commands.md#export
+[book]: ../../templates/context-reference/book.md
+[export]: ../commands.md#export

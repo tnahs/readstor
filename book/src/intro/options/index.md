@@ -38,11 +38,11 @@ The pipelines and options for these three [Commands][commands] are as follows:
 | [Pre-process][pre-process]   | `render` `export` | Processing before running Command. |
 | [Post-process][post-process] | `render`          | Processing after running Command.  |
 
-[backup]: /intro/options/backup.md
-[commands]: /intro/commands.md
-[export]: /intro/options/export.md
-[filter]: /intro/options/filter.md
-[global]: /intro/options/global.md
-[post-process]: /intro/options/postprocess.md
-[pre-process]: /intro/options/preprocess.md
-[render]: /intro/options/render.md
+[backup]: ./backup.md
+[commands]: ../commands.md
+[export]: ./export.md
+[filter]: ./filter.md
+[global]: ./global.md
+[post-process]: ./postprocess.md
+[pre-process]: ./preprocess.md
+[render]: ./render.md

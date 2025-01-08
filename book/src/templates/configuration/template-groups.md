@@ -85,5 +85,5 @@ The output will be:
  └── ...
 ```
 
-[string-sanitization]: /templates/string-sanitization.md
-[structure-modes]: /templates/configuration/structure-modes.md
+[string-sanitization]: ../string-sanitization.md
+[structure-modes]: ../configuration/structure-modes.md

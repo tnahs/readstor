@@ -44,4 +44,4 @@ The annotations plist is located at:
 
 > <i class="fa fa-info-circle"></i> See [iOS - Access Library][ios-access-library] for more information.
 
-[ios-access-library]: /apple-books/ios/access-library.md
+[ios-access-library]: ../ios/access-library.md

@@ -11,7 +11,7 @@ depending on the [Context Mode][context-modes]) and `names`.
 | `annotations` | Multiple [Annotations][annotation] belonging to the current book. |
 | `names`       | A set of [Names][names] for generating backlinks between files.   |
 
-[annotation]: /templates/context-reference/annotation.md
-[book]: /templates/context-reference/book.md
-[context-modes]: /templates/configuration/context-modes.md
-[names]: /templates/context-reference/names.md
+[annotation]: ../context-reference/annotation.md
+[book]: ../context-reference/book.md
+[context-modes]: ../configuration/context-modes.md
+[names]: ../context-reference/names.md

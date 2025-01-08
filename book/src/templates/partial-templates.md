@@ -48,7 +48,7 @@ We would use the following `include` tags:
 > <i class="fa fa-info-circle"></i> See the documentation for [Tera][tera]'s [include][tera-include]
 > tag for more information on its features and limitations.
 
-[templates-directory]: /intro/options/render.md#--templates-directory-path
+[templates-directory]: ../intro/options/render.md#--templates-directory-path
 [tera]: https://keats.github.io/tera/
 [tera-include]: https://keats.github.io/tera/docs/#include
 [using-partials]: https://github.com/tnahs/readstor/tree/main/templates/using-partials

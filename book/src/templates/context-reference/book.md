@@ -51,6 +51,6 @@ last-opened: {{ book.metadata.last_opened | date(format="%Y-%m-%d-%H:%M") }}
 > <i class="fa fa-info-circle"></i> Here [Tera][tera]'s [`date`][tera-date] filter is used to format
 > a `datetime` object into a human-readable date.
 
-[context-modes]: /templates/configuration/context-modes.md
+[context-modes]: ../configuration/context-modes.md
 [tera]: https://keats.github.io/tera/
 [tera-date]: https://keats.github.io/tera/docs/#date

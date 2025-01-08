@@ -52,4 +52,4 @@ And when rendered, the ouput structure would result in the following:
 | `now`     | datetime | the current datetime                         |
 | `version` | string   | the current version of Apple Books for macOS |
 
-[backup]: /intro/commands.md#backup
+[backup]: ../commands.md#backup

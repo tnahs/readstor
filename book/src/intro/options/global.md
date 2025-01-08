@@ -64,8 +64,8 @@ Run even if Apple Books is currently running.
 
 Silence output messages.
 
-[backup]: /intro/commands.md#backup
-[commands]: /intro/commands.md
-[ios-library-location]: /apple-books/ios/library-location.md
-[ios-access-library]: /apple-books/ios/access-library.md
+[backup]: ../commands.md#backup
+[commands]: ../commands.md
+[ios-library-location]: ../../apple-books/ios/library-location.md
+[ios-access-library]: ../../apple-books/ios/access-library.md
 [github-issues]: https://github.com/tnahs/readstor/issues

@@ -26,6 +26,6 @@ readstor
     # ..
 ```
 
-[render]: /intro/commands.md#render
-[template-groups]: /templates/configuration/template-groups.md
+[render]: ../commands.md#render
+[template-groups]: ../../templates/configuration/template-groups.md
 [templates]: https://github.com/tnahs/readstor/tree/main/templates

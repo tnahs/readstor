@@ -189,9 +189,9 @@ on anyway.
 tags: #inspiration
 ```
 
-[names]: /templates/context-reference/names.md
-[names-limitations]: /templates/configuration/names.md#limitations
-[structure-modes]: /templates/configuration/structure-modes.md
+[names]: ./context-reference/names.md
+[names-limitations]: ./configuration/names.md#limitations
+[structure-modes]: ./configuration/structure-modes.md
 [tera]: https://keats.github.io/tera/
 [tera-sort]: https://keats.github.io/tera/docs/#sort
 [using-backlinks]: https://github.com/tnahs/readstor/tree/main/templates/using-backlinks

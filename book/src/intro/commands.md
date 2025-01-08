@@ -175,8 +175,8 @@ Example output:
          └── BKLibrary-1-091020131601.sqlite-wal
 ```
 
-[extract-tags]: /intro/options/preprocess.md#--extract-tags
-[post-process]: /intro/options/postprocess.md
-[pre-process]: /intro/options/preprocess.md
-[render]: /intro/options/render.md
-[templates]: /templates/index.md
+[extract-tags]: ./options/preprocess.md#--extract-tags
+[post-process]: ./options/postprocess.md
+[pre-process]: ./options/preprocess.md
+[render]: ./options/render.md
+[templates]: ../templates/index.md

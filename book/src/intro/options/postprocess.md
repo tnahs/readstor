@@ -21,6 +21,6 @@ maximum. Hyphenation is not used, however, existing hyphen can be split on to in
 > file regardless its structure. Use with caution! Extremely low values may cause unexpected
 > results. Values above `80` or so are recommended.
 
-[render]: /intro/commands.md#render
+[render]: ../commands.md#render
 [github-tera]: https://github.com/Keats/tera/issues/637
 [tera]: https://docs.rs/tera/latest/tera/

@@ -111,5 +111,5 @@ via <https://reincubate.com/support/how-to/mount-iphone-files/>
 
 [homebrew]: https://brew.sh/
 [macfuse]: https://github.com/macfuse/macfuse/wiki/Getting-Started
-[screenshot-imazing]: /images/imazing.png
-[screenshot-iexplorer]: /images/iexplorer.png
+[screenshot-imazing]: ../../images/imazing.png
+[screenshot-iexplorer]: ../../images/iexplorer.png

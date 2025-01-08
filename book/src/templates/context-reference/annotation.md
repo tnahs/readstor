@@ -69,9 +69,9 @@ Mode][context-modes-book] is set to `book`, multiple `annotation` objects, under
 > <i class="fa fa-info-circle"></i> Here [Tera][tera]'s [`join`][tera-join] filter is used to join
 > an array of items into a space-separated string.
 
-[context-modes]: /templates/configuration/context-modes.md
-[context-modes-book]: /templates/configuration/context-modes.md#the-book-context
-[context-modes-annotation]: /templates/configuration/context-modes.md#the-annotation-context
+[context-modes]: ../configuration/context-modes.md
+[context-modes-book]: ../configuration/context-modes.md#the-book-context
+[context-modes-annotation]: ../configuration/context-modes.md#the-annotation-context
 [tera]: https://keats.github.io/tera/
 [tera-join]: https://keats.github.io/tera/docs/#join
 [epubcfi]: https://w3c.github.io/epub-specs/epub33/epubcfi/

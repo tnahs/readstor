@@ -223,7 +223,7 @@ rsync                                                                           
     "$HOME/Library/Group Containers/"  # Note the forward-slash! --------------^
 ```
 
-[macos-library-location]: /apple-books/macos/library-location.md
+[macos-library-location]: ../macos/library-location.md
 [scripts]: https://github.com/tnahs/readstor/tree/main/scripts/apple-books/
 [script-macos-restore]: https://github.com/tnahs/readstor/tree/main/scripts/apple-books/macos-restore.sh
 [script-macos-archive]: https://github.com/tnahs/readstor/tree/main/scripts/apple-books/macos-archive.sh

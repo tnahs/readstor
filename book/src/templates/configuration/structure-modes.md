@@ -112,4 +112,4 @@ group contains multiple templates.
          └── Robert Henri - The Art Spirit.md
 ```
 
-[output-directory]: /intro/options/global.md#--output-directory-path
+[output-directory]: ../../intro/options/global.md#--output-directory-path

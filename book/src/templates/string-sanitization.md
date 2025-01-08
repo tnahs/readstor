@@ -18,5 +18,5 @@ This following values are sanitized:
 
 <!-- TODO: Provide some examples. -->
 
-[names]: /templates/configuration/names.md
-[template-groups]: /templates/configuration/template-groups.md
+[names]: ./configuration/names.md
+[template-groups]: ./configuration/template-groups.md

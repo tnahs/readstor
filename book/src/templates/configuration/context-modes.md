@@ -199,6 +199,6 @@ each of its annotations all rendered out to their own file.
      └── Robert Henri - The Art Spirit.md
 ```
 
-[annotation]: /templates/context-reference/annotation.md
-[book]: /templates/context-reference/book.md
-[names]: /templates/context-reference/names.md
+[annotation]: ../context-reference/annotation.md
+[book]: ../context-reference/book.md
+[names]: ../context-reference/names.md

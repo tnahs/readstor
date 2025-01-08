@@ -10,5 +10,5 @@ exists in a single folder. A simple drag/drop, copy/paste or zip/unzip should su
 > <i class="fa fa-info-circle"></i> See [iOS - Library Location][ios-library-location] and [iOS -
 > Access Library][ios-access-library] for more information.
 
-[ios-library-location]: /apple-books/ios/library-location.md
-[ios-access-library]: /apple-books/ios/access-library.md
+[ios-library-location]: ../ios/library-location.md
+[ios-access-library]: ../ios/access-library.md
