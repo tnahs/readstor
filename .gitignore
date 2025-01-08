@@ -73,9 +73,9 @@ tags
 
 # End of https://www.toptal.com/developers/gitignore/api/rust,macos,vim
 
-# mdBook
-book/build/
 
 # Misc
-release/
-tmp/
+.tmp*/
+
+# mdBook
+book/build/
