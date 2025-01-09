@@ -9,10 +9,6 @@
       Is it possible to automate this nicely for every release?
 - [ ] Add more documentation for each annotation/book field.
 
-## v0.6.0
-
-- [ ] How do we handle `date_last_opened` for a book on iOS?
-
 ## Next
 
 - [ ] Simplify template-groups file naming workflow. Add internal awareness of template groups.
