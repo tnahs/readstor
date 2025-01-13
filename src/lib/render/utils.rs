@@ -10,7 +10,7 @@ pub fn is_hidden(entry: &DirEntry) -> bool {
     entry
         .file_name()
         .to_str()
-        .map_or(false, |s| !s.starts_with('.'))
+        .is_some_and(|s| !s.starts_with('.'))
 }
 
 /// Helper function for [`walkdir`][walkdir]. Filter normal templates.
@@ -21,7 +21,7 @@ pub fn is_normal_template(entry: &DirEntry) -> bool {
     entry
         .file_name()
         .to_str()
-        .map_or(false, |s| !s.starts_with('_'))
+        .is_some_and(|s| !s.starts_with('_'))
 }
 
 /// Helper function for [`walkdir`][walkdir]. Filter partial templates.
@@ -32,5 +32,5 @@ pub fn is_partial_template(entry: &DirEntry) -> bool {
     entry
         .file_name()
         .to_str()
-        .map_or(false, |s| s.starts_with('_'))
+        .is_some_and(|s| s.starts_with('_'))
 }
