@@ -63,7 +63,7 @@ ifuse /tmp/my-device
 If there are multiple devices connected, a specific one can be mounted using its serial number.
 Assuming the device is an `iPhone`, run the following command:
 
-<!-- TODO: Verify this works with other devices too. -->
+<!-- TODO(docs): Verify this works with other devices too. -->
 
 ```bash
 system_profiler SPUSBDataType -detailLevel mini | grep -e iPhone -e Serial

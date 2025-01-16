@@ -1,6 +1,6 @@
 //! Defines types for interacting with the macOS's Apple Books databases.
 //!
-//! The [`ABMacos`] struct, is used to to directly interact with the Apple ! Books databases while
+//! The [`ABMacOs`] struct, is used to to directly interact with the Apple ! Books databases while
 //! the [`ABQuery`] trait provides an interface for ! generating types from either of the Apple Books
 //! databases.
 
@@ -33,16 +33,16 @@ use self::utils::APPLEBOOKS_VERSION;
 ///  └── ...
 /// ```
 #[derive(Debug, Clone, Copy)]
-pub struct ABMacos;
+pub struct ABMacOs;
 
-impl ABMacos {
+impl ABMacOs {
     /// Extracts data from the books database and converts them into `T`.
     ///
     /// # Arguments
     ///
     /// * `path` - The path to a directory containing macOS's Apple Books databases.
     ///
-    /// See [`ABMacos`] for more information on how the databases directory should be structured.
+    /// See [`ABMacOs`] for more information on how the databases directory should be structured.
     ///
     /// # Errors
     ///
@@ -62,7 +62,7 @@ impl ABMacos {
     ///
     /// * `path` - The path to a directory containing macOS's Apple Books databases.
     ///
-    /// See [`ABMacos`] for more information on how the databases directory should be structured.
+    /// See [`ABMacOs`] for more information on how the databases directory should be structured.
     ///
     /// # Errors
     ///
@@ -83,7 +83,7 @@ impl ABMacos {
     /// * `path` - The path to a directory containing macOS's Apple Books databases.
     /// * `database` - Which database to query.
     ///
-    /// See [`ABMacos`] for more information on how the databases directory should be structured.
+    /// See [`ABMacOs`] for more information on how the databases directory should be structured.
     ///
     /// # Errors
     ///
@@ -100,7 +100,7 @@ impl ABMacos {
 
         let Ok(connection) = Connection::open_with_flags(&path, OpenFlags::SQLITE_OPEN_READ_ONLY)
         else {
-            return Err(Error::DatabaseConnection {
+            return Err(Error::MacOsDatabaseConnectionError {
                 name: database.to_string(),
                 path: path.display().to_string(),
             });
@@ -112,7 +112,7 @@ impl ABMacos {
         let mut statement = match connection.prepare(T::QUERY) {
             Ok(statement) => statement,
             Err(error) => {
-                return Err(Error::UnsupportedMacosVersion {
+                return Err(Error::MacOsUnsupportedAppleBooksVersion {
                     error: error.to_string(),
                     version: APPLEBOOKS_VERSION.to_owned(),
                 });
@@ -141,7 +141,7 @@ impl ABMacos {
     /// * `path` - The path to a directory containing macOS's Apple Books databases.
     /// * `database` - Which database path to get.
     ///
-    /// See [`ABMacos`] for more information on how the databases directory should be structured.
+    /// See [`ABMacOs`] for more information on how the databases directory should be structured.
     fn get_database(path: &Path, database: ABDatabase) -> Result<PathBuf> {
         // (a) -> `/path/to/databases/DATABASE_NAME/`
         let path = path.join(database.to_string());
@@ -164,7 +164,7 @@ impl ABMacos {
         // possibly run into unexpected behaviors.
         match &databases[..] {
             [_] => Ok(databases.pop().unwrap()),
-            _ => Err(Error::MissingDefaultDatabase),
+            _ => Err(Error::MacOsMissingDefaultDatabase),
         }
     }
 }
@@ -206,11 +206,44 @@ pub enum ABDatabase {
     Annotations,
 }
 
+impl ABDatabase {
+    /// Copies macOS's Apple Books databases to a destination directory.
+    ///
+    /// # Arguments
+    ///
+    /// * `destination` - Where to copy the databases to.
+    /// * `source` - An optional source database directory. If no source is provided, the default
+    ///   Apple Books data directory will be used.
+    ///
+    /// # Errors
+    ///
+    /// Will return `Err` if any IO errors are encountered.
+    pub fn save_to(destination: &Path, source: Option<&Path>) -> Result<()> {
+        let source = source.unwrap_or(&*self::defaults::DATA_DIRECTORY);
+
+        for variant in &[Self::Books, Self::Annotations] {
+            let name = variant.to_string();
+
+            // -> [databases-directory]/[name]
+            let item_source = source.join(&name);
+
+            // -> [output-directory]/[name]
+            let item_destination = destination.join(&name);
+
+            crate::utils::copy_dir(item_source, item_destination)?;
+        }
+
+        log::debug!("saved macOS databases to: {destination:?}");
+
+        Ok(())
+    }
+}
+
 impl std::fmt::Display for ABDatabase {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            ABDatabase::Books => write!(f, "BKLibrary"),
-            ABDatabase::Annotations => write!(f, "AEAnnotation"),
+            Self::Books => write!(f, "BKLibrary"),
+            Self::Annotations => write!(f, "AEAnnotation"),
         }
     }
 }

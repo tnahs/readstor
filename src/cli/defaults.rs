@@ -17,26 +17,8 @@ pub const READSTOR_LOG: &str = "READSTOR_LOG";
 /// ```plaintext
 /// /users/[user]/.readstor
 /// ```
-pub static OUTPUT_DIRECTORY: Lazy<PathBuf> = Lazy::new(|| lib::defaults::HOME.join(".readstor"));
-
-/// Returns a path to a temp directory to use for reading and writing data during development/testing.
-///
-/// Internally this returns the value of the TMPDIR environment variable if it is set, otherwise it
-/// returns `/tmp`. See [`std::env::temp_dir()`] for more information.
-///
-/// The full path:
-///
-/// ```plaintext
-/// [temp_dir]/readstor/[name]
-/// ```
-///
-/// For example:
-///
-/// ```plaintext
-/// /var/folders/58/8yrgg8897ld633zt0qg9ww680000gn/T/readstor/
-/// ```
-pub static TEMP_OUTPUT_DIRECTORY: Lazy<PathBuf> =
-    Lazy::new(|| std::env::temp_dir().join("readstor"));
+pub static OUTPUT_DIRECTORY: Lazy<PathBuf> =
+    Lazy::new(|| lib::defaults::HOME_DIRECTORY.join(".readstor"));
 
 /// Defines the default template string. This is used as a fallback if the user doesn't supply a
 /// templates directory.
@@ -46,9 +28,15 @@ pub static TEMPLATE: &str = include_str!(concat!(
 ));
 
 /// Defines the root path to the test/mock databases.
-pub static TEST_DATABASES: Lazy<PathBuf> = Lazy::new(|| {
+pub static TEST_DATABASES_DIRECTORY: Lazy<PathBuf> = Lazy::new(|| {
     let mut path = lib::defaults::CRATE_ROOT.to_owned();
     path.extend(["data", "databases"].iter());
+    path
+});
+
+pub static TEST_PLISTS_DIRECTORY: Lazy<PathBuf> = Lazy::new(|| {
+    let mut path = lib::defaults::CRATE_ROOT.to_owned();
+    path.extend(["data", "plists"].iter());
     path
 });
 
@@ -76,12 +64,12 @@ pub mod testing {
 
     impl From<MockDatabases> for PathBuf {
         fn from(databases: MockDatabases) -> Self {
-            TEST_DATABASES.join(databases.to_string())
+            TEST_DATABASES_DIRECTORY.join(databases.to_string())
         }
     }
 
     /// Defines the root path to the mock plists.
-    pub static MOCK_PLISTS: Lazy<PathBuf> = Lazy::new(|| {
+    pub static MOCK_PLISTS_DIRECTORY: Lazy<PathBuf> = Lazy::new(|| {
         let mut path = lib::defaults::CRATE_ROOT.to_owned();
         path.extend(["data", "plists"].iter());
         path
@@ -106,7 +94,7 @@ pub mod testing {
 
     impl From<MockPlists> for PathBuf {
         fn from(databases: MockPlists) -> Self {
-            MOCK_PLISTS.join(databases.to_string())
+            MOCK_PLISTS_DIRECTORY.join(databases.to_string())
         }
     }
 }

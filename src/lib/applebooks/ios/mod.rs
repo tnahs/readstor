@@ -1,8 +1,13 @@
 //! Defines types for interacting with iOS's Apple Books plists.
 
+pub mod defaults;
 pub mod models;
 
+use std::fs::File;
+use std::io::Write;
 use std::path::Path;
+
+use rusty_libimobiledevice::{idevice, services::afc::AfcFileMode};
 
 use crate::result::{Error, Result};
 
@@ -20,16 +25,16 @@ use self::models::{AnnotationRaw, AnnotationsPlist, BookRaw, BooksPlist};
 ///  └── ...
 /// ```
 #[derive(Debug, Clone, Copy)]
-pub struct ABIos;
+pub struct ABIOs;
 
-impl ABIos {
+impl ABIOs {
     /// Extracts data from the books plist and converts them into `T`.
     ///
     /// # Arguments
     ///
     /// * `path` - The path to a directory containing iOS's Apple Books plists.
     ///
-    /// See [`ABIos`] for more information on how the databases directory should be structured.
+    /// See [`ABIOs`] for more information on how the databases directory should be structured.
     ///
     /// # Errors
     ///
@@ -46,7 +51,7 @@ impl ABIos {
         let data: BooksPlist = match plist::from_file(path) {
             Ok(data) => data,
             Err(error) => {
-                return Err(Error::UnsupportedIosVersion {
+                return Err(Error::IOsUnsupportedAppleBooksVersion {
                     error: error.to_string(),
                 })
             }
@@ -63,7 +68,7 @@ impl ABIos {
     ///
     /// * `path` - The path to a directory containing iOS's Apple Books plists.
     ///
-    /// See [`ABIos`] for more information on how the databases directory should be structured.
+    /// See [`ABIOs`] for more information on how the databases directory should be structured.
     ///
     /// # Errors
     ///
@@ -81,7 +86,7 @@ impl ABIos {
         let data: AnnotationsPlist = match plist::from_file(path) {
             Ok(data) => data,
             Err(error) => {
-                return Err(Error::UnsupportedIosVersion {
+                return Err(Error::IOsUnsupportedAppleBooksVersion {
                     error: error.to_string(),
                 })
             }
@@ -110,11 +115,131 @@ pub enum ABPlist {
     Annotations,
 }
 
+impl ABPlist {
+    /// Copies iOS's Apple Books plists to a destination directory.
+    ///
+    /// # Arguments
+    ///
+    /// * `destination` - Where to copy the plists to.
+    /// * `source` - An optional source plists directory. If no source is provided, this function
+    ///   will attempt to access a connected iOS device and copy it from the default data location.
+    ///
+    /// # Errors
+    ///
+    /// Will return `Err` if:
+    /// * Any IO errors are encountered.
+    /// * There are any errors finding/reading the iOS device.
+    pub fn save_to(destination: &Path, source: Option<&Path>) -> Result<()> {
+        if let Some(source) = source {
+            Self::save_from_disk(source, destination)?;
+        } else {
+            Self::save_from_device(destination, None)?;
+            // TODO(feat): Implement UDID ------^^^^
+        }
+
+        log::debug!("saved iOS plists to: {destination:?}");
+
+        Ok(())
+    }
+
+    /// Copies iOS's Apple Books plists from the host filesystem to a destination directory.
+    ///
+    /// # Arguments
+    ///
+    /// * `source` - Where to copy the plists from.
+    /// * `destination` - Where to copy the plists to.
+    ///
+    /// # Errors
+    ///
+    /// Will return `Err` if any IO errors are encountered.
+    fn save_from_disk(source: &Path, destination: &Path) -> Result<()> {
+        for variant in &[Self::Books, Self::Annotations] {
+            let name = variant.to_string();
+
+            // -> [plists-directory]/[name]
+            let item_source = source.join(&name);
+
+            // -> [output-directory]/[name]
+            let item_destination = destination.join(&name);
+
+            std::fs::copy(item_source, item_destination)?;
+        }
+
+        Ok(())
+    }
+
+    /// Copies iOS's Apple Books plists from an iOS device filesystem to a destination directory.
+    ///
+    /// # Arguments
+    ///
+    /// * `destination` - Where to copy the plists to.
+    /// * `udid` - An optional UDID to connect to a specific iOS device.
+    ///
+    /// # Errors
+    ///
+    /// Will return `Err` if there are any errors finding/reading the iOS device.
+    //
+    // TODO(feat): Allow users to pass UDID from the CLI.
+    fn save_from_device(destination: &Path, udid: Option<String>) -> Result<()> {
+        let device = if let Some(udid) = udid {
+            idevice::get_device(&udid).map_err(|_| Error::IOsDeviceNotFoundWithUdid { udid })?
+        } else {
+            idevice::get_first_device().map_err(|_| Error::IOsDeviceNotFound)?
+        };
+
+        let afc_client = device
+            .new_afc_client(crate::defaults::NAME)
+            .map_err(|error| Error::IOsDeviceReadError { error })?;
+
+        std::fs::create_dir_all(destination)?;
+
+        for variant in &[Self::Books, Self::Annotations] {
+            let name = variant.to_string();
+
+            let device_path = defaults::DATA_DIRECTORY.join(&name);
+            let device_path = device_path.to_string_lossy().to_string();
+
+            let file_handle = afc_client
+                .file_open(&device_path, AfcFileMode::ReadOnly)
+                .map_err(|error| Error::IOsDeviceReadError { error })?;
+
+            let file_size = {
+                let file_info = afc_client
+                    .get_file_info(&device_path)
+                    .map_err(|error| Error::IOsDeviceReadError { error })?;
+
+                let size = file_info.get("st_size").ok_or_else(|| Error::OtherError {
+                    error: "Unable to find 'st_size' field".to_owned(),
+                })?;
+
+                let size = size.parse::<u32>().map_err(|_| Error::OtherError {
+                    error: "Failed to parse file size".to_owned(),
+                })?;
+
+                Ok::<u32, Error>(size)
+            }
+            .unwrap_or(u32::MAX);
+
+            let file_contents = afc_client
+                .file_read(file_handle, file_size)
+                .map_err(|error| Error::IOsDeviceReadError { error })?;
+
+            let host_path = destination.join(&name);
+
+            let mut file = File::create(&host_path)?;
+
+            file.write_all(&file_contents)?;
+        }
+
+        Ok(())
+    }
+}
+
 impl std::fmt::Display for ABPlist {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            ABPlist::Books => write!(f, "Books.plist"),
-            ABPlist::Annotations => write!(f, "com.apple.ibooks-sync.plist"),
+            Self::Books => write!(f, "Books.plist"),
+            Self::Annotations => write!(f, "com.apple.ibooks-sync.plist"),
         }
     }
 }

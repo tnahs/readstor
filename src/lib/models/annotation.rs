@@ -31,7 +31,7 @@ pub struct Annotation {
     pub metadata: AnnotationMetadata,
 }
 
-// For macOS.
+// For creating [`Annotation`]s from macOS database data.
 impl ABQuery for Annotation {
     const QUERY: &'static str = {
         "SELECT
@@ -73,7 +73,7 @@ impl ABQuery for Annotation {
     }
 }
 
-// For iOS.
+// For creating [`Annotation`]s from iOS plist data.
 impl From<AnnotationRaw> for Annotation {
     fn from(annotation: AnnotationRaw) -> Self {
         Self {
@@ -195,7 +195,7 @@ mod test {
     use super::*;
 
     // Tests that annotation ordering is properly evaluated from an `epubcfi` string.
-    // TODO: Base function to start testing annotation order using `<` and `>`.
+    // TODO(test): Base function to start testing annotation order using `<` and `>`.
     #[test]
     fn cmp_annotations() {
         let mut a1 = Annotation::default();

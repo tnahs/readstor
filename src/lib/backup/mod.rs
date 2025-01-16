@@ -5,8 +5,10 @@ use std::path::Path;
 use chrono::{DateTime, Local};
 use serde::Serialize;
 
+use crate::applebooks::ios::ABPlist;
 use crate::applebooks::macos::utils::APPLEBOOKS_VERSION;
 use crate::applebooks::macos::ABDatabase;
+use crate::applebooks::Platform;
 use crate::result::Result;
 use crate::strings;
 
@@ -15,126 +17,118 @@ use crate::strings;
 /// Outputs `[YYYY-MM-DD-HHMMSS]-[VERSION]` e.g. `1970-01-01-120000-v0.1-0000`.
 pub const DIRECTORY_TEMPLATE: &str = "{{ now |  date(format='%Y-%m-%d-%H%M%S')}}-{{ version }}";
 
-/// A struct for running the back-up task.
-#[derive(Debug, Clone, Copy)]
-pub struct BackupRunner;
+/// Backs-up macOS's Apple Books databases to disk.
+///
+/// # Arguments
+///
+/// * `platform` - Which platform to perform the backup for.
+/// * `source` - Where the source data is located.
+/// * `destination` - Where to place the backup.
+/// * `options` - The back-up options.
+///
+/// For macOS, the output structure is as follows:
+///
+/// ```plaintext
+/// [output-directory]
+///  │
+///  ├── [YYYY-MM-DD-HHMMSS-VERSION] <- Customizeable
+///  │    │
+///  │    ├── AEAnnotation
+///  │    │   ├── AEAnnotation*.sqlite
+///  │    │   └── ...
+///  │    │
+///  │    └── BKLibrary
+///  │        ├── BKLibrary*.sqlite
+///  │        └── ...
+///  │
+///  ├── [YYYY-MM-DD-HHMMSS-VERSION]
+///  │    └── ...
+///  └── ...
+/// ```
+///
+/// See [`ABMacOs`][abmacos] for information
+///
+///
+/// For iOS, the output structure is as follows:
+///
+/// ```plaintext
+/// [output-directory]
+///  │
+///  ├── [YYYY-MM-DD-HHMMSS-VERSION] <- Customizeable
+///  │    │
+///  │    ├── Books.plist
+///  │    └── com.apple.ibooks-sync.plist
+///  │
+///  ├── [YYYY-MM-DD-HHMMSS-VERSION]
+///  │    └── ...
+///  └── ...
+/// ```
+///
+/// # Errors
+///
+/// Will return `Err` if any IO errors are encountered.
+///
+/// [abmacos]: crate::applebooks::macos::ABMacOs
+pub fn run<O>(platform: Platform, source: &Path, destination: &Path, options: O) -> Result<()>
+where
+    O: Into<BackupOptions>,
+{
+    let options: BackupOptions = options.into();
 
-impl BackupRunner {
-    /// Runs the back-up task.
-    ///
-    /// # Arguments
-    ///
-    /// * `databases` - The directory to back-up.
-    /// * `output` - The ouput directory.
-    /// * `options` - The back-up options.
-    ///
-    /// # Errors
-    ///
-    /// Will return `Err` if any IO errors are encountered.
-    pub fn run<O>(databases: &Path, output: &Path, options: O) -> Result<()>
-    where
-        O: Into<BackupOptions>,
-    {
-        let options: BackupOptions = options.into();
+    let context = match platform {
+        Platform::MacOs => BackupNameContext::macos(),
+        Platform::IOs => BackupNameContext::ios(),
+    };
 
-        Self::backup(databases, output, options)?;
+    let directory_template = if let Some(template) = options.directory_template {
+        self::validate_template(&template, &context)?;
+        template
+    } else {
+        DIRECTORY_TEMPLATE.to_string()
+    };
 
-        Ok(())
+    // -> [YYYY-MM-DD-HHMMSS]-[VERSION]
+    let directory_name = self::render_directory_name(&directory_template, &context)?;
+
+    // -> [output-directory]/[YYYY-MM-DD-HHMMSS]-[VERSION]
+    let destination = destination.join(directory_name);
+
+    std::fs::create_dir_all(&destination)?;
+
+    match platform {
+        Platform::MacOs => ABDatabase::save_to(&destination, Some(source))?,
+        Platform::IOs => ABPlist::save_to(&destination, Some(source))?,
     }
 
-    /// Backs-up macOS's Apple Books databases to disk.
-    ///
-    /// # Arguments
-    ///
-    /// * `databases` - The directory to back-up.
-    /// * `output` - The ouput directory.
-    /// * `options` - The back-up options.
-    ///
-    /// The `output` strucutre is as follows:
-    ///
-    /// ```plaintext
-    /// [ouput-directory]
-    ///  │
-    ///  ├── [YYYY-MM-DD-HHMMSS-VERSION]
-    ///  │    │
-    ///  │    ├── AEAnnotation
-    ///  │    │   ├── AEAnnotation*.sqlite
-    ///  │    │   └── ...
-    ///  │    │
-    ///  │    └─ BKLibrary
-    ///  │       ├── BKLibrary*.sqlite
-    ///  │       └── ...
-    ///  │
-    ///  ├── [YYYY-MM-DD-HHMMSS-VERSION]
-    ///  │    └── ...
-    ///  └── ...
-    /// ```
-    ///
-    /// See [`ABMacos`][abmacos] for information
-    ///
-    /// # Errors
-    ///
-    /// Will return `Err` if any IO errors are encountered.
-    ///
-    /// [abmacos]: crate::applebooks::macos::ABMacos
-    pub fn backup(databases: &Path, output: &Path, options: BackupOptions) -> Result<()> {
-        let directory_template = if let Some(template) = options.directory_template {
-            Self::validate_template(&template)?;
-            template
-        } else {
-            DIRECTORY_TEMPLATE.to_string()
-        };
-
-        // -> [YYYY-MM-DD-HHMMSS]-[VERSION]
-        let directory_name = Self::render_directory_name(&directory_template)?;
-
-        // -> [ouput-directory]/[YYYY-MM-DD-HHMMSS]-[VERSION]
-        let destination_root = output.join(directory_name);
-
-        for name in &[
-            ABDatabase::Books.to_string(),
-            ABDatabase::Annotations.to_string(),
-        ] {
-            // -> [databases-directory]/[name]
-            let source = databases.join(name.clone());
-            // -> [ouput-directory]/[YYYY-MM-DD-HHMMSS]-[VERSION]/[name]
-            let destination = destination_root.join(name);
-
-            crate::utils::copy_dir(source, destination)?;
-        }
-
-        Ok(())
-    }
-
-    /// Validates a template by rendering it.
-    ///
-    /// Seeing as [`BackupNameContext`] requires no external context, this is a pretty
-    /// straightforward validation check. The template is rendered and an empty [`Result`] is
-    /// returned.
-    ///
-    /// # Arguments
-    ///
-    /// * `template` - The template string to validate.
-    fn validate_template(template: &str) -> Result<()> {
-        Self::render_directory_name(template).map(|_| ())
-    }
-
-    /// Renders the directory name from a template string.
-    ///
-    /// # Arguments
-    ///
-    /// * `template` - The template string to render.
-    fn render_directory_name(template: &str) -> Result<String> {
-        let context = BackupNameContext::default();
-
-        strings::render_and_sanitize(template, context)
-    }
+    Ok(())
 }
 
-/// A struct representing options for the [`BackupRunner`] struct.
+/// Validates a template by rendering it.
+///
+/// Seeing as [`BackupNameContext`] requires no external context, this is a pretty
+/// straightforward validation check. The template is rendered and an empty [`Result`] is
+/// returned.
+///
+/// # Arguments
+///
+/// * `template` - The template string to validate.
+fn validate_template(template: &str, context: &BackupNameContext) -> Result<()> {
+    self::render_directory_name(template, context).map(|_| ())
+}
+
+/// Renders the directory name from a template string.
+///
+/// # Arguments
+///
+/// * `template` - The template string to render.
+fn render_directory_name(template: &str, context: &BackupNameContext) -> Result<String> {
+    strings::render_and_sanitize(template, context)
+}
+
+/// A struct representing options for running back-ups.
 #[derive(Debug)]
 pub struct BackupOptions {
-    /// The template to use render for rendering the back-up's ouput directory.
+    /// The template to use render for rendering the back-up's output directory.
     pub directory_template: Option<String>,
 }
 
@@ -150,11 +144,19 @@ struct BackupNameContext {
     version: String,
 }
 
-impl Default for BackupNameContext {
-    fn default() -> Self {
+impl BackupNameContext {
+    fn macos() -> Self {
         Self {
             now: Local::now(),
             version: APPLEBOOKS_VERSION.to_owned(),
+        }
+    }
+
+    // TODO(0.7.0): Get iOS version or Apple Books version.
+    fn ios() -> Self {
+        Self {
+            now: Local::now(),
+            version: "ios-?".to_owned(),
         }
     }
 }
@@ -167,34 +169,81 @@ mod test {
     use crate::defaults::test::TemplatesDirectory;
     use crate::utils;
 
-    // Tests that the default template returns no error.
-    #[test]
-    fn default_directory_template() {
-        let context = BackupNameContext::default();
+    mod macos {
 
-        strings::render_and_sanitize(DIRECTORY_TEMPLATE, context).unwrap();
+        use super::*;
+
+        // Tests that the default template returns no error.
+        #[test]
+        fn default_directory_template() {
+            let context_macos = BackupNameContext::macos();
+
+            strings::render_and_sanitize(DIRECTORY_TEMPLATE, context_macos).unwrap();
+        }
+
+        // Tests that all valid context fields return no errors.
+        #[test]
+        fn valid_context() {
+            let template = utils::testing::load_template_str(
+                TemplatesDirectory::ValidContext,
+                "valid-backup.txt",
+            );
+
+            let context_macos = BackupNameContext::macos();
+
+            strings::render_and_sanitize(&template, context_macos).unwrap();
+        }
+
+        // Tests that an invalid context field returns an error.
+        #[test]
+        #[should_panic(expected = "Failed to render '__tera_one_off'")]
+        fn invalid_context() {
+            let template = utils::testing::load_template_str(
+                TemplatesDirectory::InvalidContext,
+                "invalid-backup.txt",
+            );
+            let context_macos = BackupNameContext::macos();
+
+            strings::render_and_sanitize(&template, context_macos).unwrap();
+        }
     }
 
-    // Tests that all valid context fields return no errors.
-    #[test]
-    fn valid_context() {
-        let template =
-            utils::testing::load_template_str(TemplatesDirectory::ValidContext, "valid-backup.txt");
-        let context = BackupNameContext::default();
+    mod ios {
 
-        strings::render_and_sanitize(&template, context).unwrap();
-    }
+        use super::*;
 
-    // Tests that an invalid context field returns an error.
-    #[test]
-    #[should_panic(expected = "Failed to render '__tera_one_off'")]
-    fn invalid_context() {
-        let template = utils::testing::load_template_str(
-            TemplatesDirectory::InvalidContext,
-            "invalid-backup.txt",
-        );
-        let context = BackupNameContext::default();
+        // Tests that the default template returns no error.
+        #[test]
+        fn default_directory_template() {
+            let context_ios = BackupNameContext::ios();
 
-        strings::render_and_sanitize(&template, context).unwrap();
+            strings::render_and_sanitize(DIRECTORY_TEMPLATE, context_ios).unwrap();
+        }
+
+        // Tests that all valid context fields return no errors.
+        #[test]
+        fn valid_context() {
+            let template = utils::testing::load_template_str(
+                TemplatesDirectory::ValidContext,
+                "valid-backup.txt",
+            );
+
+            let context_ios = BackupNameContext::ios();
+
+            strings::render_and_sanitize(&template, context_ios).unwrap();
+        }
+
+        // Tests that an invalid context field returns an error.
+        #[test]
+        #[should_panic(expected = "Failed to render '__tera_one_off'")]
+        fn invalid_context() {
+            let template = utils::testing::load_template_str(
+                TemplatesDirectory::InvalidContext,
+                "invalid-backup.txt",
+            );
+            let context_ios = BackupNameContext::ios();
+
+            strings::render_and_sanitize(&template, context_ios).unwrap();
+        }
     }
 }

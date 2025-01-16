@@ -1,14 +1,14 @@
 use std::ops::{Deref, DerefMut};
 use std::path::Path;
 
-use lib::applebooks::ios::{ABIos, ABPlist};
-use lib::applebooks::macos::{ABDatabase, ABMacos};
+use lib::applebooks::ios::{ABIOs, ABPlist};
+use lib::applebooks::macos::{ABDatabase, ABMacOs};
 use lib::filter::filters;
 use lib::models::annotation::Annotation;
 use lib::models::book::Book;
 use lib::models::entry::{Entries, Entry};
 
-use crate::cli::app::Result;
+use super::CliResult;
 
 /// A container struct for storing and managing [`Entry`]s.
 #[derive(Debug, Default)]
@@ -22,15 +22,15 @@ impl Data {
     ///
     /// * `path` - The path to a directory containing macOS's Apple Books databases.
     ///
-    /// See [`ABMacos`] for more information on how the databases directory should be structured.
+    /// See [`ABMacOs`] for more information on how the databases directory should be structured.
     ///
     /// # Errors
     ///
-    /// See [`ABMacos::extract_books()`] and [`ABMacos::extract_annotations()`] for information as
+    /// See [`ABMacOs::extract_books()`] and [`ABMacOs::extract_annotations()`] for information as
     /// these are the only sources of possible errors.
-    pub fn init_macos(&mut self, path: &Path) -> Result<()> {
-        let books = ABMacos::extract_books(path)?;
-        let annotations = ABMacos::extract_annotations(path)?;
+    pub fn init_macos(&mut self, path: &Path) -> CliResult<()> {
+        let books = ABMacOs::extract_books(path)?;
+        let annotations = ABMacOs::extract_annotations(path)?;
 
         log::debug!(
             "found {} book(s) in {}",
@@ -58,15 +58,15 @@ impl Data {
     ///
     /// * `path` - The path to a directory containing iOS's Apple Books plists.
     ///
-    /// See [`ABIos`] for more information on how the plists directory should be structured.
+    /// See [`ABIOs`] for more information on how the plists directory should be structured.
     ///
     /// # Errors
     ///
-    /// See [`ABIos::extract_books()`] and [`ABIos::extract_annotations()`] for information as these
+    /// See [`ABIOs::extract_books()`] and [`ABIOs::extract_annotations()`] for information as these
     /// are the only sources of possible errors.
-    pub fn init_ios(&mut self, path: &Path) -> Result<()> {
-        let books = ABIos::extract_books(path)?;
-        let annotations = ABIos::extract_annotations(path)?;
+    pub fn init_ios(&mut self, path: &Path) -> CliResult<()> {
+        let books = ABIOs::extract_books(path)?;
+        let annotations = ABIOs::extract_annotations(path)?;
 
         log::debug!(
             "found {} book(s) in {}",

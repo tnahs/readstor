@@ -1,4 +1,4 @@
-//! Defines defaults for working with Apple Books.
+//! Defines defaults for working with Apple Books for macOS.
 
 use std::collections::HashSet;
 use std::path::PathBuf;
@@ -14,8 +14,8 @@ use once_cell::sync::Lazy;
 /// ```plaintext
 /// ~/Library/Containers/com.apple.iBooksX/Data/Documents
 /// ```
-pub static DATABASES: Lazy<PathBuf> = Lazy::new(|| {
-    let mut path = crate::defaults::HOME.to_owned();
+pub static DATA_DIRECTORY: Lazy<PathBuf> = Lazy::new(|| {
+    let mut path = crate::defaults::HOME_DIRECTORY.to_owned();
     path.extend(
         [
             "Library",

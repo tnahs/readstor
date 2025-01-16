@@ -16,9 +16,9 @@ pub struct RenderEngine(Tera);
 
 impl Default for RenderEngine {
     fn default() -> Self {
-        let mut inst = Self(Tera::default());
-        inst.register_custom_filters();
-        inst
+        let mut engine = Self(Tera::default());
+        engine.register_custom_filters();
+        engine
     }
 }
 
@@ -97,9 +97,11 @@ impl RenderEngine {
 /// default behaviuor), this function returns a blank string if an empty date is passed to the
 /// `date` filter.
 ///
-/// Additionally, this only handles [`DateTime`]'s default serialize format: RFC 3339. As we're
-/// using [`DateTime`]s default [`Serialize`] implementation, we can use its default [`FromStr`]
-/// to deserialize it.
+/// Additionally, this only handles [`DateTime`]'s default serialize format: RFC 3339. As
+/// we're using [`DateTime`]s default [`Serialize`] implementation, we can use its default
+/// [`FromStr`][fromstr] to deserialize it.
+///
+/// [fromstr]: std::str::FromStr
 #[allow(clippy::implicit_hasher)]
 #[allow(clippy::missing_errors_doc)]
 #[allow(clippy::missing_panics_doc)]

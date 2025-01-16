@@ -2,7 +2,7 @@
 
 |              |                                                 |
 | ------------ | ----------------------------------------------- |
-| Name         | `ouput`                                         |
+| Name         | `output`                                        |
 | Type         | string                                          |
 | Valid Values | `flat` `flat-grouped` `nested` `nested-grouped` |
 | Required     | <i class="fa fa-check"></i>                     |

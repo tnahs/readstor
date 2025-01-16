@@ -16,11 +16,11 @@ Set the output directory template
 > nest a pipe `|` inside a markdown table. In other words, the default value does not contain
 > a backslash.
 
-For example, using the default template, the non-rendered ouput structure would look like the
+For example, using the default template, the non-rendered output structure would look like the
 following:
 
 ```plaintext
-[ouput-directory]
+[output-directory]
  └── {{ now | date(format='%Y-%m-%d-%H%M%S') }}-{{ version }}
       ├── AEAnnotation
       │   ├── AEAnnotation*.sqlite
@@ -30,10 +30,10 @@ following:
           └── ...
 ```
 
-And when rendered, the ouput structure would result in the following:
+And when rendered, the output structure would result in the following:
 
 ```plaintext
-[ouput-directory]
+[output-directory]
  └── 2022-10-09-152506-v4.4-5177
      ├── AEAnnotation
      │   ├── AEAnnotation_v10312011_1727_local.sqlite

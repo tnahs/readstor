@@ -1,302 +1,150 @@
 use std::io::Write;
-use std::path::Path;
 
 use color_eyre::eyre::WrapErr;
 
-use lib::backup::BackupRunner;
-use lib::export::ExportRunner;
-use lib::filter::FilterRunner;
-use lib::models::entry::Entries;
-use lib::process::post::PostProcessor;
-use lib::process::pre::PreProcessor;
+use lib::applebooks::Platform;
 use lib::render::renderer::Renderer;
 
-use crate::cli;
+use crate::CliResult;
 
-use super::config::{Config, DataDirectory};
+use super::args::{
+    BackupOptions, ExportOptions, FilterOptions, PostProcessOptions, PreProcessOptions,
+    RenderOptions,
+};
+use super::config::Config;
 use super::data::Data;
-use super::Command;
 
-pub type Result<T> = color_eyre::Result<T>;
+/// Extension for an new [`App`].
+pub struct ExtNone;
 
-/// The main application struct.
-#[derive(Debug)]
-pub struct App {
-    config: Config,
-    data: Data,
+/// Extension for an [`App`] that renders templates.
+pub struct ExtRender {
+    renderer: Renderer,
 }
 
-impl App {
+/// Extension for an [`App`] that exports data.
+pub struct ExtExport {
+    options: ExportOptions,
+}
+
+/// Extension for an [`App`] that backs-up data.
+pub struct ExtBackup {
+    options: BackupOptions,
+}
+
+/// The main application struct.
+pub struct App<Ext> {
+    /// The application's configuration.
+    config: Config,
+
+    /// The application's data.
+    data: Data,
+
+    /// The application's capability extension.
+    extension: Ext,
+}
+
+impl App<ExtNone> {
     /// Creates a new instance of [`App`].
-    pub fn new(config: Config) -> Self {
-        Self {
+    pub fn new(config: Config) -> CliResult<Self> {
+        let mut app = Self {
             config,
             data: Data::default(),
-        }
+            extension: ExtNone,
+        };
+
+        app.init_data()?;
+
+        Ok(app)
     }
 
-    /// Runs the application based off of the given [`Command`].
-    pub fn run(&mut self, command: Command) -> Result<()> {
-        match command {
-            Command::Render {
-                filter_options,
-                template_options,
-                preprocess_options,
-                postprocess_options,
-            } => {
-                self.print("-> Initializing data");
-                self.init_data()?;
+    /// Turns the [`App`] into one that renders templates.
+    pub fn into_render(self, options: RenderOptions) -> CliResult<App<ExtRender>> {
+        let mut renderer = Renderer::new(options, super::defaults::TEMPLATE.into());
 
-                self.print("-> Running pre-processes");
-                Self::run_preprocesses(&mut self.data, preprocess_options);
-
-                if !filter_options.filter_types.is_empty() {
-                    self.print("-> Running filters");
-                    Self::run_filters(&mut self.data, filter_options.filter_types);
-
-                    // Show filter confirmation prompt...
-                    if !filter_options.auto_confirm {
-                        // ...and exit if the user does not confirm.
-                        if !self.confirm_filter_results() {
-                            return Ok(());
-                        }
-                    }
-                }
-
-                self.print("-> Initializing templates");
-                let mut templates = Self::init_templates(template_options)?;
-
-                self.print("-> Rendering templates");
-                Self::render_templates(&mut templates, &mut self.data)?;
-
-                self.print("-> Running post-processes");
-                Self::run_postprocesses(&mut templates, postprocess_options);
-
-                self.print("-> Writing templates");
-                Self::write_templates(&templates, &self.config.output_directory)?;
-
-                let count_templates = templates.count_templates();
-                let count_renders = templates.count_templates_rendered();
-
-                let summary = format!(
-                    "-> Rendered {count_templates} template{} into {count_renders} file{} to {}",
-                    if count_templates == 1 { "" } else { "s" },
-                    if count_renders == 1 { "" } else { "s" },
-                    self.config.output_directory.display()
-                );
-
-                self.print(&summary);
-            }
-            Command::Export {
-                filter_options,
-                preprocess_options,
-                export_options,
-            } => {
-                self.print("-> Initializing data");
-                self.init_data()?;
-
-                self.print("-> Running pre-processes");
-                Self::run_preprocesses(&mut self.data, preprocess_options);
-
-                if !filter_options.filter_types.is_empty() {
-                    self.print("-> Running filters");
-                    Self::run_filters(&mut self.data, filter_options.filter_types);
-
-                    // Show filter confirmation prompt...
-                    if !filter_options.auto_confirm {
-                        // ...and exit if the user does not confirm.
-                        if !self.confirm_filter_results() {
-                            return Ok(());
-                        }
-                    }
-                }
-
-                self.print("-> Exporting data");
-                Self::export_data(
-                    &mut self.data,
-                    &self.config.output_directory,
-                    export_options,
-                )?;
-
-                let count_books = self.data.count_books();
-                let count_annotations = self.data.count_annotations();
-
-                let summary = format!(
-                    "-> Exported {count_annotations} annotation{} from {count_books} book{} to {}",
-                    if count_annotations == 1 { "" } else { "s" },
-                    if count_books == 1 { "" } else { "s" },
-                    self.config.output_directory.display()
-                );
-
-                self.print(&summary);
-            }
-            Command::Backup { backup_options } => {
-                self.print("-> Backing-up databases");
-
-                // TODO: It might be nice to eventually support this.
-                let DataDirectory::Macos(databases) = &self.config.data_directory else {
-                    println!("Backing-up iOS's Apple Books plists is currently unsupported.");
-                    return Ok(());
-                };
-
-                Self::backup_databases(databases, &self.config.output_directory, backup_options)?;
-
-                let summary = &format!(
-                    "-> Backed-up databases to {}",
-                    self.config.output_directory.display()
-                );
-
-                self.print(summary);
-            }
-        }
-
-        Ok(())
-    }
-
-    /// Initializes the application's data.
-    fn init_data(&mut self) -> Result<()> {
-        let error_ios = "Failed while initializing iOS's Apple Books plists data";
-        let error_macos = "Failed while initializing macOS's Apple Books databases data";
-
-        match &self.config.data_directory {
-            DataDirectory::Macos(path) => {
-                self.data.init_macos(path).wrap_err(error_macos)?;
-            }
-            DataDirectory::Ios(path) => {
-                self.data.init_ios(path).wrap_err(error_ios)?;
-            }
-            DataDirectory::Both {
-                path_macos,
-                path_ios,
-            } => {
-                self.data.init_macos(path_macos).wrap_err(error_macos)?;
-                self.data.init_ios(path_ios).wrap_err(error_ios)?;
-            }
-        }
-
-        Ok(())
-    }
-
-    /// Renders templates.
-    ///
-    /// # Arguments
-    ///
-    /// * `templates` - The templates to render with.
-    /// * `entries` - The [`Entry`][entry]s to render.
-    ///
-    /// [entry]: lib::models::entry::Entry
-    fn render_templates(templates: &mut Renderer, entries: &mut Entries) -> Result<()> {
-        entries.values_mut().try_for_each(|entry| {
-            templates
-                .render(entry)
-                .wrap_err("Failed while rendering template(s)")
-        })
-    }
-
-    /// Writes templates to disk.
-    ///
-    /// # Arguments
-    ///
-    /// * `templates` - The templates to write.
-    /// * `path` - The ouput directory.
-    fn write_templates(templates: &Renderer, path: &Path) -> Result<()> {
-        std::fs::create_dir_all(path)?;
-
-        templates
-            .write(path)
-            .wrap_err("Failed while writing template(s)")
-    }
-
-    /// Exports data to disk.
-    ///
-    /// # Arguments
-    ///
-    /// * `entries` - The [`Entry`][entry]s to export.
-    /// * `path` - The ouput directory.
-    /// * `options` - The export options.
-    ///
-    /// [entry]: lib::models::entry::Entry
-    fn export_data(entries: &mut Entries, path: &Path, options: cli::ExportOptions) -> Result<()> {
-        ExportRunner::run(entries, path, options).wrap_err("Failed while exporting data")?;
-
-        Ok(())
-    }
-
-    /// Backs-up macOS's Apple Books databases to disk.
-    ///
-    /// # Arguments
-    ///
-    /// * `databases` - The directory to back-up.
-    /// * `output` - The ouput directory.
-    /// * `options` - The back-up options.
-    fn backup_databases(
-        databases: &Path,
-        output: &Path,
-        options: cli::BackupOptions,
-    ) -> Result<()> {
-        BackupRunner::run(databases, output, options)
-            .wrap_err("Failed while backing-up databases")?;
-
-        Ok(())
-    }
-
-    /// Initializes templates.
-    ///
-    /// # Arguments
-    ///
-    /// * `options` - Template rendering options.
-    fn init_templates(options: cli::RenderOptions) -> Result<Renderer> {
-        let mut templates = Renderer::new(options, super::defaults::TEMPLATE.into());
-
-        templates
+        renderer
             .init()
             .wrap_err("Failed while initializing template(s)")?;
 
-        Ok(templates)
+        Ok(App {
+            config: self.config,
+            data: self.data,
+            extension: ExtRender { renderer },
+        })
+    }
+
+    /// Turns the [`App`] into one that exports data.
+    pub fn into_export(self, options: ExportOptions) -> App<ExtExport> {
+        App {
+            config: self.config,
+            data: self.data,
+            extension: ExtExport { options },
+        }
+    }
+
+    /// Turns the [`App`] into one that backs-up data.
+    pub fn into_backup(self, options: BackupOptions) -> App<ExtBackup> {
+        App {
+            config: self.config,
+            data: self.data,
+            extension: ExtBackup { options },
+        }
+    }
+
+    /// Initializes the application's data.
+    fn init_data(&mut self) -> CliResult<()> {
+        match &self.config.platform {
+            Platform::MacOs => {
+                self.data
+                    .init_macos(&self.config.data_directory)
+                    .wrap_err("Failed while initializing macOS's Apple Books databases data")?;
+            }
+            Platform::IOs => {
+                self.data
+                    .init_ios(&self.config.data_directory)
+                    .wrap_err("Failed while initializing iOS's Apple Books plists data")?;
+            }
+        }
+
+        Ok(())
+    }
+}
+
+/// Implementation of shared methods between different extention types.
+impl<Ext> App<Ext> {
+    /// Runs filters on all [`Entry`][entry]s.
+    ///
+    /// [entry]: lib::models::entry::Entry
+    pub fn run_filters(&mut self, filter_options: &FilterOptions) {
+        // TODO(feat): It might be good to clone `self.data` to allow for filter revisions.
+        for filter_type in &filter_options.filter_types {
+            // TODO(refactor): Can we qvoid this clone?
+            lib::filter::run(filter_type.clone(), &mut self.data);
+        }
     }
 
     /// Runs pre-processes on all [`Entry`][entry]s.
     ///
-    /// # Arguments
-    ///
-    /// * `entries` - The [`Entry`][entry]s to run pre-processors on.
-    /// * `options` - The pre-process options.
-    ///
     /// [entry]: lib::models::entry::Entry
-    fn run_preprocesses(entries: &mut Entries, options: cli::PreProcessOptions) {
-        PreProcessor::run(entries, options);
+    pub fn run_preprocesses(&mut self, options: PreProcessOptions) {
+        lib::process::pre::run(&mut self.data, options);
     }
 
-    /// Runs filters on all [`Entry`][entry]s.
-    ///
-    /// # Arguments
-    ///
-    /// * `entries` - The [`Entry`][entry]s to run filters on.
-    /// * `filter_types` - The filters to run.
-    ///
-    /// [entry]: lib::models::entry::Entry
-    fn run_filters(entries: &mut Entries, filter_types: Vec<cli::FilterType>) {
-        for filter_type in filter_types {
-            FilterRunner::run(filter_type, entries);
+    /// Prints to the terminal. Allows muting.
+    pub fn print<S>(&self, message: S)
+    where
+        S: AsRef<str>,
+    {
+        let message: &str = message.as_ref();
+
+        if !self.config.is_quiet {
+            println!("{message}");
         }
     }
 
-    /// Runs post-processes on all [`Render`][render]s.
-    ///
-    /// # Arguments
-    ///
-    /// * `entries` - The [`Entry`][entry]s to run post-processors on.
-    /// * `options` - The post-process options.
-    ///
-    /// [entry]: lib::models::entry::Entry
-    /// [render]: lib::render::template::Render
-    fn run_postprocesses(templates: &mut Renderer, options: cli::PostProcessOptions) {
-        PostProcessor::run(templates.templates_rendered_mut().collect(), options);
-    }
-
-    /// Prompts the user to confirm the filter results. Returns a boolean representing whether or
-    /// not to continue.
-    fn confirm_filter_results(&self) -> bool {
+    // TODO(0.7.0): Redesign this.
+    /// Prompts the user to confirm the filter results.
+    pub fn confirm_filter_results(&self) -> bool {
         let indent = " ".repeat(3);
         let line = "-".repeat(64);
 
@@ -334,12 +182,67 @@ impl App {
 
         matches!(confirm.trim().to_lowercase().as_str(), "y" | "yes")
     }
+}
 
-    /// Prints to the terminal. Allows muting.
-    fn print(&self, message: &str) {
-        if !self.config.is_quiet {
-            println!("{message}");
-        }
+impl App<ExtRender> {
+    /// Renders templates.
+    pub fn render(&mut self) -> CliResult<()> {
+        self.data.values_mut().try_for_each(|entry| {
+            self.extension
+                .renderer
+                .render(entry)
+                .wrap_err("Failed while rendering template(s)")
+        })
+    }
+
+    /// Writes templates to disk.
+    pub fn write(&self) -> CliResult<()> {
+        std::fs::create_dir_all(&self.config.output_directory)?;
+
+        self.extension
+            .renderer
+            .write(&self.config.output_directory)
+            .wrap_err("Failed while writing template(s)")
+    }
+
+    /// Runs post-processes on all [`Render`][render]s.
+    ///
+    /// [render]: lib::render::template::Render
+    pub fn run_postprocesses(&mut self, options: PostProcessOptions) {
+        lib::process::post::run(
+            self.extension.renderer.templates_rendered_mut().collect(),
+            options,
+        );
+    }
+}
+
+impl App<ExtExport> {
+    /// Exports data to disk.
+    pub fn export(&mut self) -> CliResult<()> {
+        lib::export::run(
+            &mut self.data,
+            &self.config.output_directory,
+            self.extension.options.clone(),
+            // FIXME: Avoid clone? ^^^^^^^
+        )
+        .wrap_err("Failed while exporting data")?;
+
+        Ok(())
+    }
+}
+
+impl App<ExtBackup> {
+    /// Backs-up source data to disk.
+    pub fn backup(&self) -> CliResult<()> {
+        lib::backup::run(
+            self.config.platform,
+            &self.config.data_directory,
+            &self.config.output_directory,
+            self.extension.options.clone(),
+            // FIXME: Avoid clone? ^^^^^^^
+        )?;
+
+        Ok(())
     }
 }
 
@@ -359,9 +262,7 @@ mod test {
         #[test]
         fn test_empty() {
             let config = TestConfig::macos_empty();
-            let mut app = App::new(config);
-
-            app.init_data().unwrap();
+            let app = App::new(config).unwrap();
 
             assert_eq!(app.data.iter_books().count(), 0);
             assert_eq!(app.data.iter_annotations().count(), 0);
@@ -371,9 +272,7 @@ mod test {
         #[test]
         fn test_books_new() {
             let config = TestConfig::macos_new();
-            let mut app = App::new(config);
-
-            app.init_data().unwrap();
+            let app = App::new(config).unwrap();
 
             // Un-annotated books are filtered out.
             assert_eq!(app.data.iter_books().count(), 0);
@@ -384,9 +283,7 @@ mod test {
         #[test]
         fn test_books_annotated() {
             let config = TestConfig::macos_annotated();
-            let mut app = App::new(config);
-
-            app.init_data().unwrap();
+            let app = App::new(config).unwrap();
 
             assert_eq!(app.data.iter_books().count(), 3);
             assert_eq!(app.data.iter_annotations().count(), 10);
@@ -396,12 +293,10 @@ mod test {
         #[test]
         fn test_annotations_order() {
             let config = TestConfig::macos_annotated();
-            let mut app = App::new(config);
-
-            app.init_data().unwrap();
+            let mut app = App::new(config).unwrap();
 
             // The pre-processor sorts the annotations.
-            App::run_preprocesses(&mut app.data, cli::PreProcessOptions::default());
+            app.run_preprocesses(PreProcessOptions::default());
 
             for entry in app.data.values() {
                 for annotations in entry.annotations.windows(2) {
@@ -420,9 +315,7 @@ mod test {
         #[test]
         fn test_empty() {
             let config = TestConfig::ios_empty();
-            let mut app = App::new(config);
-
-            app.init_data().unwrap();
+            let app = App::new(config).unwrap();
 
             assert_eq!(app.data.iter_books().count(), 0);
             assert_eq!(app.data.iter_annotations().count(), 0);
@@ -432,9 +325,7 @@ mod test {
         #[test]
         fn test_books_new() {
             let config = TestConfig::ios_new();
-            let mut app = App::new(config);
-
-            app.init_data().unwrap();
+            let app = App::new(config).unwrap();
 
             // Un-annotated books are filtered out.
             assert_eq!(app.data.iter_books().count(), 0);
@@ -445,9 +336,7 @@ mod test {
         #[test]
         fn test_books_annotated() {
             let config = TestConfig::ios_annotated();
-            let mut app = App::new(config);
-
-            app.init_data().unwrap();
+            let app = App::new(config).unwrap();
 
             assert_eq!(app.data.iter_books().count(), 3);
             assert_eq!(app.data.iter_annotations().count(), 7);
@@ -457,12 +346,10 @@ mod test {
         #[test]
         fn test_annotations_order() {
             let config = TestConfig::ios_annotated();
-            let mut app = App::new(config);
-
-            app.init_data().unwrap();
+            let mut app = App::new(config).unwrap();
 
             // The pre-processor sorts the annotations.
-            App::run_preprocesses(&mut app.data, cli::PreProcessOptions::default());
+            app.run_preprocesses(PreProcessOptions::default());
 
             for entry in app.data.values() {
                 for annotations in entry.annotations.windows(2) {
@@ -472,382 +359,263 @@ mod test {
         }
     }
 
-    // Tests dealing with both iOS's plists and macOS's databases.
-    mod both {
-
-        use super::*;
-
-        // Tests that empty data returns zero books and zero annotations.
-        #[test]
-        fn test_empty() {
-            let config = TestConfig::both_empty();
-            let mut app = App::new(config);
-
-            app.init_data().unwrap();
-
-            assert_eq!(app.data.iter_books().count(), 0);
-            assert_eq!(app.data.iter_annotations().count(), 0);
-        }
-
-        // Tests that un-annotated books return zero books and zero annotations.
-        #[test]
-        fn test_books_new() {
-            let config = TestConfig::both_new();
-            let mut app = App::new(config);
-
-            app.init_data().unwrap();
-
-            // Un-annotated books are filtered out.
-            assert_eq!(app.data.iter_books().count(), 0);
-            assert_eq!(app.data.iter_annotations().count(), 0);
-        }
-
-        // Tests that annotated books return non-zero books and non-zero annotations.
-        #[test]
-        fn test_books_annotated() {
-            let config = TestConfig::both_annotated();
-            let mut app = App::new(config);
-
-            app.init_data().unwrap();
-
-            assert_eq!(app.data.iter_books().count(), 6);
-            assert_eq!(app.data.iter_annotations().count(), 17);
-        }
-
-        // Tests that annotations are sorted in the correct order.
-        #[test]
-        fn test_annotations_order() {
-            let config = TestConfig::both_annotated();
-            let mut app = App::new(config);
-
-            app.init_data().unwrap();
-
-            // The pre-processor sorts the annotations.
-            App::run_preprocesses(&mut app.data, cli::PreProcessOptions::default());
-
-            for entry in app.data.values() {
-                for annotations in entry.annotations.windows(2) {
-                    assert!(annotations[0] < annotations[1]);
-                }
-            }
-        }
-    }
-
-    // Tests dealing with filtering annotations before outputting.
+    // Tests dealing with filtering annotations.
     mod filter {
 
         use super::*;
 
+        use crate::cli::filter::{FilterOperator, FilterType};
+
         // Keeps annotations where their book's title contains either "art" or "think".
-        //
-        // The raw filter string would be: "?title:art think".
         #[test]
         fn test_title_any() {
-            let config = TestConfig::both_annotated();
-            let mut app = App::new(config);
+            let config = TestConfig::macos_annotated();
+            let mut app = App::new(config).unwrap();
 
-            app.init_data().unwrap();
+            // aka "?title:art think"
+            let filter = FilterType::Title {
+                query: vec!["art", "think"]
+                    .into_iter()
+                    .map(str::to_string)
+                    .collect(),
+                operator: FilterOperator::Any,
+            };
 
-            App::run_filters(
-                &mut app.data,
-                vec![cli::FilterType::Title {
-                    query: vec!["art".to_string(), "think".to_string()],
-                    operator: cli::FilterOperator::Any,
-                }],
-            );
+            let filter_options = FilterOptions {
+                filter_types: vec![filter],
+                auto_confirm: true,
+            };
+
+            app.run_filters(&filter_options);
 
             assert_eq!(app.data.iter_books().count(), 2);
             assert_eq!(app.data.iter_annotations().count(), 9);
         }
 
         // Keeps annotations where their book's title contains both "joking" and "feynman".
-        //
-        // The raw filter string would be: "*title:joking feynman".
         #[test]
         fn test_title_all() {
-            let config = TestConfig::both_annotated();
-            let mut app = App::new(config);
+            let config = TestConfig::macos_annotated();
+            let mut app = App::new(config).unwrap();
 
-            app.init_data().unwrap();
+            // aka "*title:joking feynman"
+            let filter = FilterType::Title {
+                query: vec!["joking", "feynman"]
+                    .into_iter()
+                    .map(str::to_string)
+                    .collect(),
+                operator: FilterOperator::All,
+            };
 
-            App::run_filters(
-                &mut app.data,
-                vec![cli::FilterType::Title {
-                    query: vec!["joking".to_string(), "feynman".to_string()],
-                    operator: cli::FilterOperator::All,
-                }],
-            );
+            let filter_options = FilterOptions {
+                filter_types: vec![filter],
+                auto_confirm: true,
+            };
+
+            app.run_filters(&filter_options);
 
             assert_eq!(app.data.iter_books().count(), 1);
             assert_eq!(app.data.iter_annotations().count(), 1);
         }
 
         // Keeps annotations where their book's title exactly matches "the art spirit".
-        //
-        // The raw filter string would be: "=title:the art spirit"
         #[test]
         fn test_title_exact() {
-            let config = TestConfig::both_annotated();
-            let mut app = App::new(config);
+            let config = TestConfig::macos_annotated();
+            let mut app = App::new(config).unwrap();
 
-            app.init_data().unwrap();
+            // aka "=title:the art spirit"
+            let filter = FilterType::Title {
+                query: vec!["the", "art", "spirit"]
+                    .into_iter()
+                    .map(str::to_string)
+                    .collect(),
+                operator: FilterOperator::Exact,
+            };
 
-            App::run_filters(
-                &mut app.data,
-                vec![cli::FilterType::Title {
-                    query: vec!["the".to_string(), "art".to_string(), "spirit".to_string()],
-                    operator: cli::FilterOperator::Exact,
-                }],
-            );
+            let filter_options = FilterOptions {
+                filter_types: vec![filter],
+                auto_confirm: true,
+            };
+
+            app.run_filters(&filter_options);
 
             assert_eq!(app.data.iter_books().count(), 1);
             assert_eq!(app.data.iter_annotations().count(), 4);
         }
 
         // Keeps annotations where their book's author contains either "robert" or "richard".
-        //
-        // The raw filter string would be: "?author:robert richard"
         #[test]
         fn test_author_any() {
-            let config = TestConfig::both_annotated();
-            let mut app = App::new(config);
+            let config = TestConfig::macos_annotated();
+            let mut app = App::new(config).unwrap();
 
-            app.init_data().unwrap();
+            // aka "?author:robert richard"
+            let filter = FilterType::Author {
+                query: vec!["robert", "richard"]
+                    .into_iter()
+                    .map(str::to_string)
+                    .collect(),
+                operator: FilterOperator::Any,
+            };
 
-            App::run_filters(
-                &mut app.data,
-                vec![cli::FilterType::Author {
-                    query: vec!["robert".to_string(), "richard".to_string()],
-                    operator: cli::FilterOperator::Any,
-                }],
-            );
+            let filter_options = FilterOptions {
+                filter_types: vec![filter],
+                auto_confirm: true,
+            };
+
+            app.run_filters(&filter_options);
 
             assert_eq!(app.data.iter_books().count(), 2);
             assert_eq!(app.data.iter_annotations().count(), 5);
         }
 
         // Keeps annotations where their book's author contains both "richard" and "feyman".
-        //
-        // The raw filter string would be: "*author:richard feynman"
         #[test]
         fn test_author_all() {
-            let config = TestConfig::both_annotated();
-            let mut app = App::new(config);
+            let config = TestConfig::macos_annotated();
+            let mut app = App::new(config).unwrap();
 
-            app.init_data().unwrap();
+            // aka "*author:richard feynman"
+            let filter = FilterType::Author {
+                query: vec!["richard", "feynman"]
+                    .into_iter()
+                    .map(str::to_string)
+                    .collect(),
+                operator: FilterOperator::All,
+            };
 
-            App::run_filters(
-                &mut app.data,
-                vec![cli::FilterType::Author {
-                    query: vec!["richard".to_string(), "feynman".to_string()],
-                    operator: cli::FilterOperator::All,
-                }],
-            );
+            let filter_options = FilterOptions {
+                filter_types: vec![filter],
+                auto_confirm: true,
+            };
+
+            app.run_filters(&filter_options);
 
             assert_eq!(app.data.iter_books().count(), 1);
             assert_eq!(app.data.iter_annotations().count(), 1);
         }
 
         // Keeps annotations where their book's author exactly matches "richard p. feynman".
-        //
-        // The raw filter string would be: "=author:richard p. feynman"
         #[test]
         fn test_author_exact() {
-            let config = TestConfig::both_annotated();
-            let mut app = App::new(config);
+            let config = TestConfig::macos_annotated();
+            let mut app = App::new(config).unwrap();
 
-            app.init_data().unwrap();
+            // aka "=author:richard p. feynman"
+            let filter = FilterType::Author {
+                query: vec!["richard", "p.", "feynman"]
+                    .into_iter()
+                    .map(str::to_string)
+                    .collect(),
+                operator: FilterOperator::Exact,
+            };
 
-            App::run_filters(
-                &mut app.data,
-                vec![cli::FilterType::Author {
-                    query: vec![
-                        "richard".to_string(),
-                        "p.".to_string(),
-                        "feynman".to_string(),
-                    ],
-                    operator: cli::FilterOperator::Exact,
-                }],
-            );
+            let filter_options = FilterOptions {
+                filter_types: vec![filter],
+                auto_confirm: true,
+            };
+
+            app.run_filters(&filter_options);
 
             assert_eq!(app.data.iter_books().count(), 1);
             assert_eq!(app.data.iter_annotations().count(), 1);
         }
 
-        // Keeps annotations where their tags contain either "#art" or "#death".
-        //
-        // The raw filter string would be: "?tags:#artist #death"
+        // Keeps annotations where their tags contain either "#artst" or "#death".
         #[test]
         fn test_tags_any() {
-            let config = TestConfig::both_annotated();
-            let mut app = App::new(config);
+            let config = TestConfig::macos_annotated();
+            let mut app = App::new(config).unwrap();
 
-            app.init_data().unwrap();
+            // aka "?tags:#artist #death"
+            let filter = FilterType::Tags {
+                query: vec!["#artist", "#death"]
+                    .into_iter()
+                    .map(str::to_string)
+                    .collect(),
+                operator: FilterOperator::Any,
+            };
+
+            let filter_options = FilterOptions {
+                filter_types: vec![filter],
+                auto_confirm: true,
+            };
 
             // The pre-processor extracts the tags.
-            App::run_preprocesses(
-                &mut app.data,
-                cli::PreProcessOptions {
-                    extract_tags: true,
-                    ..Default::default()
-                },
-            );
+            app.run_preprocesses(PreProcessOptions {
+                extract_tags: true,
+                ..Default::default()
+            });
 
-            App::run_filters(
-                &mut app.data,
-                vec![cli::FilterType::Tags {
-                    query: vec!["#artist".to_string(), "#death".to_string()],
-                    operator: cli::FilterOperator::Any,
-                }],
-            );
+            app.run_filters(&filter_options);
 
             assert_eq!(app.data.iter_books().count(), 2);
             assert_eq!(app.data.iter_annotations().count(), 2);
         }
 
         // Keeps annotations where their tags contain both "#death" and "#impermanence".
-        //
-        // The raw filter string would be: "*tags:#death #impermanence"
         #[test]
         fn test_tags_all() {
-            let config = TestConfig::both_annotated();
-            let mut app = App::new(config);
+            let config = TestConfig::macos_annotated();
+            let mut app = App::new(config).unwrap();
 
-            app.init_data().unwrap();
+            // aka "*tags:#death #impermanence"
+            let filter = FilterType::Tags {
+                query: vec!["#death", "#impermanence"]
+                    .into_iter()
+                    .map(str::to_string)
+                    .collect(),
+                operator: FilterOperator::All,
+            };
+
+            let filter_options = FilterOptions {
+                filter_types: vec![filter],
+                auto_confirm: true,
+            };
 
             // The pre-processor extracts the tags.
-            App::run_preprocesses(
-                &mut app.data,
-                cli::PreProcessOptions {
-                    extract_tags: true,
-                    ..Default::default()
-                },
-            );
+            app.run_preprocesses(PreProcessOptions {
+                extract_tags: true,
+                ..Default::default()
+            });
 
-            App::run_filters(
-                &mut app.data,
-                vec![cli::FilterType::Tags {
-                    query: vec!["#death".to_string(), "#impermanence".to_string()],
-                    operator: cli::FilterOperator::All,
-                }],
-            );
+            app.run_filters(&filter_options);
 
             assert_eq!(app.data.iter_books().count(), 1);
             assert_eq!(app.data.iter_annotations().count(), 1);
         }
 
         // Keeps annotations where their tags contain exactly "#artist" and "#being".
-        //
-        // The raw filter string would be: "=tags:#artist #being"
         #[test]
         fn test_tags_exact() {
-            let config = TestConfig::both_annotated();
-            let mut app = App::new(config);
+            let config = TestConfig::macos_annotated();
+            let mut app = App::new(config).unwrap();
 
-            app.init_data().unwrap();
+            // aka "=tags:#artist #being"
+            let filter = FilterType::Tags {
+                query: vec!["#artist", "#being"]
+                    .into_iter()
+                    .map(str::to_string)
+                    .collect(),
+                operator: FilterOperator::Exact,
+            };
+
+            let filter_options = FilterOptions {
+                filter_types: vec![filter],
+                auto_confirm: true,
+            };
 
             // The pre-processor extracts the tags.
-            App::run_preprocesses(
-                &mut app.data,
-                cli::PreProcessOptions {
-                    extract_tags: true,
-                    ..Default::default()
-                },
-            );
+            app.run_preprocesses(PreProcessOptions {
+                extract_tags: true,
+                ..Default::default()
+            });
 
-            App::run_filters(
-                &mut app.data,
-                vec![cli::FilterType::Tags {
-                    query: vec!["#artist".to_string(), "#being".to_string()],
-                    operator: cli::FilterOperator::Exact,
-                }],
-            );
+            app.run_filters(&filter_options);
 
             assert_eq!(app.data.iter_books().count(), 1);
             assert_eq!(app.data.iter_annotations().count(), 1);
-        }
-    }
-
-    // Tests dealing with running back-ups.
-    mod backup {
-
-        use super::*;
-
-        use std::path::PathBuf;
-
-        use lib::result::Error;
-
-        use crate::cli::defaults::testing::MockDatabases;
-        use crate::cli::BackupOptions;
-
-        // Tests that a valid template returns no error.
-        #[test]
-        fn valid_template() {
-            let options = BackupOptions {
-                directory_template: Some("{{ now }}".to_string()),
-            };
-
-            let databases: PathBuf = MockDatabases::Empty.into();
-            let output = crate::cli::defaults::TEMP_OUTPUT_DIRECTORY.join("tests");
-
-            BackupRunner::run(&databases, &output, options).unwrap();
-        }
-
-        // Tests that an invalid template returns an error.
-        #[test]
-        fn invalid_template() {
-            let options = BackupOptions {
-                directory_template: Some("{{ invalid }}".to_string()),
-            };
-
-            let databases: PathBuf = MockDatabases::Empty.into();
-            let output = crate::cli::defaults::TEMP_OUTPUT_DIRECTORY.join("tests");
-
-            let result = BackupRunner::run(&databases, &output, options);
-
-            assert!(matches!(result, Err(Error::InvalidTemplate(_))));
-        }
-    }
-
-    // Tests dealing with running exports.
-    mod export {
-
-        use super::*;
-
-        use std::collections::HashMap;
-
-        use lib::result::Error;
-
-        use crate::cli::ExportOptions;
-
-        // Tests that a valid template returns no error.
-        #[test]
-        fn valid_template() {
-            let options = ExportOptions {
-                directory_template: Some("{{ book.author }} - {{ book.title }}".to_string()),
-                ..Default::default()
-            };
-
-            let mut entries = HashMap::new();
-            let path = crate::cli::defaults::TEMP_OUTPUT_DIRECTORY.join("tests");
-
-            ExportRunner::run(&mut entries, &path, options).unwrap();
-        }
-
-        // Tests that an invalid template returns an error.
-        #[test]
-        fn invalid_template() {
-            let options = ExportOptions {
-                directory_template: Some("{{ invalid }}".to_string()),
-                ..Default::default()
-            };
-
-            let mut entries = HashMap::new();
-            let path = crate::cli::defaults::TEMP_OUTPUT_DIRECTORY.join("tests");
-
-            let result = ExportRunner::run(&mut entries, &path, options);
-
-            assert!(matches!(result, Err(Error::InvalidTemplate(_))));
         }
     }
 }

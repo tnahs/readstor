@@ -1,14 +1,20 @@
 use std::path::PathBuf;
 
-use lib::applebooks;
+use color_eyre::eyre::Context;
+use lib::applebooks::ios::ABPlist;
+use lib::applebooks::macos::ABDatabase;
+use lib::applebooks::Platform;
 
-use super::utils::is_development_env;
-use super::Options;
+use super::args::GlobalOptions;
+use super::{utils, CliResult};
 
 #[derive(Debug)]
 pub struct Config {
+    /// The Apple Books platform.
+    pub platform: Platform,
+
     /// The data directory.
-    pub data_directory: DataDirectory,
+    pub data_directory: PathBuf,
 
     /// The path to the output directory.
     pub output_directory: PathBuf,
@@ -17,90 +23,80 @@ pub struct Config {
     pub is_quiet: bool,
 }
 
-impl Default for Config {
-    fn default() -> Self {
-        // Creates the appropriate `Config` depending on the environment. In a development
-        // environment this sets the output directory to a temp directory on disk.
-        //
-        // Note that the appropriate environment variable to signal a development env should be set
-        // in the `.cargo/config.toml` file.
-        let output_directory = if is_development_env() {
-            super::defaults::TEMP_OUTPUT_DIRECTORY.to_owned()
+impl Config {
+    /// Creates a new instance of [`Config`].
+    ///
+    /// # Arguments
+    ///
+    /// * `platform` - Which platform to build for.
+    /// * `options` - The config options.
+    ///
+    /// # Errors
+    ///
+    /// Will return `Err` if:
+    /// * Any IO errors are encountered.
+    /// * There are any errors finding/reading the iOS device.
+    pub fn new(platform: Platform, options: GlobalOptions) -> CliResult<Self> {
+        let data_directory = Self::get_data_directory(platform, options.data_directory)
+            .wrap_err("Failed while retrieving source data directory")?;
+
+        let output_directory = Self::get_output_directory(options.output_directory);
+
+        Ok(Self {
+            platform,
+            data_directory,
+            output_directory,
+            is_quiet: options.is_quiet,
+        })
+    }
+
+    fn get_output_directory(path: Option<PathBuf>) -> PathBuf {
+        if let Some(path) = path {
+            return path;
+        }
+
+        if utils::is_development_env() {
+            lib::defaults::TEMP_OUTPUT_DIRECTORY.to_owned()
         } else {
             super::defaults::OUTPUT_DIRECTORY.to_owned()
+        }
+    }
+
+    fn get_data_directory(platform: Platform, path: Option<PathBuf>) -> CliResult<PathBuf> {
+        if let Some(path) = path {
+            return Ok(path);
+        }
+
+        let path = match platform {
+            Platform::MacOs => {
+                let destination = lib::defaults::TEMP_OUTPUT_DIRECTORY.join("macos-data");
+                std::fs::create_dir_all(&destination)?;
+
+                if utils::is_development_env() {
+                    let source = super::defaults::TEST_DATABASES_DIRECTORY.join("books-annotated");
+                    ABDatabase::save_to(&destination, Some(&source))?;
+                } else {
+                    ABDatabase::save_to(&destination, None)?;
+                };
+
+                destination
+            }
+            Platform::IOs => {
+                let destination = lib::defaults::TEMP_OUTPUT_DIRECTORY.join("ios-data");
+                std::fs::create_dir_all(&destination)?;
+
+                if utils::is_development_env() {
+                    let source = super::defaults::TEST_PLISTS_DIRECTORY.join("books-annotated");
+                    ABPlist::save_to(&destination, Some(&source))?;
+                } else {
+                    ABPlist::save_to(&destination, None)?;
+                }
+
+                destination
+            }
         };
 
-        Self {
-            data_directory: DataDirectory::default(),
-            output_directory,
-            is_quiet: false,
-        }
-    }
-}
-
-impl From<Options> for Config {
-    fn from(options: Options) -> Self {
-        let data_directory =
-            DataDirectory::new(options.databases_directory, options.plists_directory);
-
-        Self::default()
-            .data_directory(data_directory)
-            .output_directory(options.output_directory)
-    }
-}
-
-impl Config {
-    fn data_directory(mut self, data_directory: DataDirectory) -> Self {
-        self.data_directory = data_directory;
-        self
-    }
-
-    fn output_directory(mut self, path: Option<PathBuf>) -> Self {
-        let Some(path) = path else {
-            return self;
-        };
-
-        self.output_directory = path;
-        self
-    }
-}
-
-#[derive(Debug)]
-pub enum DataDirectory {
-    Macos(PathBuf),
-    Ios(PathBuf),
-    Both {
-        path_macos: PathBuf,
-        path_ios: PathBuf,
-    },
-}
-
-impl Default for DataDirectory {
-    fn default() -> Self {
-        // Creates the appropriate `DataDirectory` depending on the environment. In a development
-        // environment this sets the path to a local mock databases directory.
-        //
-        // Note that the appropriate environment variable to signal a development env should be set
-        // in the `.cargo/config.toml` file.
-        if is_development_env() {
-            Self::Macos(super::defaults::TEST_DATABASES.join("books-annotated"))
-        } else {
-            Self::Macos(applebooks::macos::defaults::DATABASES.to_owned())
-        }
-    }
-}
-
-impl DataDirectory {
-    fn new(databases: Option<PathBuf>, plists: Option<PathBuf>) -> Self {
-        match [databases, plists] {
-            [Some(path), None] => Self::Macos(path),
-            [None, Some(path)] => Self::Ios(path),
-            [Some(path_macos), Some(path_ios)] => Self::Both {
-                path_macos,
-                path_ios,
-            },
-            _ => Self::default(),
-        }
+        Ok(path)
     }
 }
 
@@ -113,40 +109,27 @@ pub mod testing {
 
     impl Config {
         fn test_macos(databases: MockDatabases) -> Self {
-            let name = databases.to_string();
+            let output_directory = lib::defaults::TEMP_OUTPUT_DIRECTORY
+                .join("tests-macos")
+                .join(databases.to_string());
 
             Self {
-                data_directory: DataDirectory::Macos(databases.into()),
-                output_directory: crate::cli::defaults::TEMP_OUTPUT_DIRECTORY
-                    .join("tests-macos")
-                    .join(name),
+                platform: Platform::MacOs,
+                data_directory: databases.into(),
+                output_directory,
                 is_quiet: true,
             }
         }
 
         fn test_ios(plists: MockPlists) -> Self {
-            let name = plists.to_string();
+            let output_directory = lib::defaults::TEMP_OUTPUT_DIRECTORY
+                .join("tests-ios")
+                .join(plists.to_string());
 
             Self {
-                data_directory: DataDirectory::Ios(plists.into()),
-                output_directory: crate::cli::defaults::TEMP_OUTPUT_DIRECTORY
-                    .join("tests-ios")
-                    .join(name),
-                is_quiet: true,
-            }
-        }
-
-        fn test_both(databases: MockDatabases, plists: MockPlists) -> Self {
-            let name = format!("{databases}_{plists}");
-
-            Self {
-                data_directory: DataDirectory::Both {
-                    path_macos: databases.into(),
-                    path_ios: plists.into(),
-                },
-                output_directory: crate::cli::defaults::TEMP_OUTPUT_DIRECTORY
-                    .join("tests-both")
-                    .join(name),
+                platform: Platform::IOs,
+                data_directory: plists.into(),
+                output_directory,
                 is_quiet: true,
             }
         }
@@ -177,18 +160,6 @@ pub mod testing {
 
         pub fn ios_annotated() -> Config {
             Config::test_ios(MockPlists::BooksAnnotated)
-        }
-
-        pub fn both_empty() -> Config {
-            Config::test_both(MockDatabases::Empty, MockPlists::Empty)
-        }
-
-        pub fn both_new() -> Config {
-            Config::test_both(MockDatabases::BooksNew, MockPlists::BooksNew)
-        }
-
-        pub fn both_annotated() -> Config {
-            Config::test_both(MockDatabases::BooksAnnotated, MockPlists::BooksAnnotated)
         }
     }
 }

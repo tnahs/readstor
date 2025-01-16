@@ -3,7 +3,7 @@
 > <i class="fa fa-info-circle"></i> Complete archive and restore scripts are available in
 > [scripts/apple-books][scripts].
 
-<!-- TODO: Add a paragraph on what the goal of archiving is. -->
+<!-- TODO(docs): Add a paragraph on what the goal of archiving is. -->
 
 ## What To Archive/Restore?
 

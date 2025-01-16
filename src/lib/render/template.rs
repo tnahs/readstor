@@ -76,7 +76,7 @@ impl Template {
     {
         let path = path.as_ref();
 
-        let (config, contents) = Self::parse(string).ok_or(Error::InvalidTemplateConfig {
+        let (config, contents) = Self::parse(string).ok_or(Error::TemplateInvalidConfig {
             path: path.display().to_string(),
         })?;
 
@@ -233,7 +233,7 @@ pub enum StructureMode {
     /// ```
     ///
     /// ```plaintext
-    /// [ouput-directory]
+    /// [output-directory]
     ///  │
     ///  ├─ [template-name-01].[extension]
     ///  ├─ [template-name-01].[extension]
@@ -250,7 +250,7 @@ pub enum StructureMode {
     /// ```
     ///
     /// ```plaintext
-    /// [ouput-directory]
+    /// [output-directory]
     ///  │
     ///  ├─ [template-group-01]
     ///  │   ├─ [template-name-01].[extension]
@@ -273,7 +273,7 @@ pub enum StructureMode {
     /// ```
     ///
     /// ```plaintext
-    /// [ouput-directory]
+    /// [output-directory]
     ///  │
     ///  ├─ [author-title-01]
     ///  │   ├─ [template-name-01].[extension]
@@ -298,7 +298,7 @@ pub enum StructureMode {
     /// ```
     ///
     /// ```plaintext
-    /// [ouput-directory]
+    /// [output-directory]
     ///  │
     ///  ├─ [template-group-01]
     ///  │   │
@@ -334,7 +334,7 @@ pub enum ContextMode {
     /// ```
     ///
     /// ```plaintext
-    /// [ouput-directory]
+    /// [output-directory]
     ///  └─ [template-name].[extension]
     /// ```
     ///
@@ -350,7 +350,7 @@ pub enum ContextMode {
     /// ```
     ///
     /// ```plaintext
-    /// [ouput-directory]
+    /// [output-directory]
     ///  ├─ [template-name].[extension]
     ///  ├─ [template-name].[extension]
     ///  ├─ [template-name].[extension]

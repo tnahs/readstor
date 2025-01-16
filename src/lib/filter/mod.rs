@@ -6,97 +6,87 @@ use std::collections::BTreeSet;
 
 use crate::models::entry::Entries;
 
-/// A struct for running filters on [`Entry`][entry]s.
+/// Runs filters on [`Entries`]s.
+///
+/// # Arguments
+///
+/// * `filter_type` - The type of filter to run.
+/// * `entries` - The [`Entries`] to filter.
+pub fn run<F>(filter_type: F, entries: &mut Entries)
+where
+    F: Into<FilterType>,
+{
+    let filter_type: FilterType = filter_type.into();
+
+    match filter_type {
+        FilterType::Title { query, operator } => {
+            self::filter_by_title(&query, operator, entries);
+        }
+        FilterType::Author { query, operator } => {
+            self::filter_by_author(&query, operator, entries);
+        }
+        FilterType::Tags { query, operator } => {
+            self::filter_by_tags(&query, operator, entries);
+        }
+    }
+
+    // Remove `Entry`s that have had all their `Annotation`s filtered out.
+    filters::contains_no_annotations(entries);
+}
+
+/// Filters out [`Entry`][entry]s by their [`Book::title`][book].
+///
+/// # Arguments
+///
+/// * `query` - A list of strings to filter against.
+/// * `operator` - The [`FilterOperator`] to use.
+/// * `entries` - The [`Entry`][entry]s to filter.
+///
+/// [book]: crate::models::book::Book::title
+/// [entry]: crate::models::entry::Entry
+fn filter_by_title(query: &[String], operator: FilterOperator, entries: &mut Entries) {
+    match operator {
+        FilterOperator::Any => filters::by_title_any(query, entries),
+        FilterOperator::All => filters::by_title_all(query, entries),
+        FilterOperator::Exact => filters::by_title_exact(&query.join(" "), entries),
+    }
+}
+
+/// Filters out [`Entry`][entry]s by their [`Book::author`][book].
+///
+/// # Arguments
+///
+/// * `query` - A list of strings to filter against.
+/// * `operator` - The [`FilterOperator`] to use.
+/// * `entries` - The [`Entry`][entry]s to filter.
+///
+/// [book]: crate::models::book::Book::author
+/// [entry]: crate::models::entry::Entry
+fn filter_by_author(query: &[String], operator: FilterOperator, entries: &mut Entries) {
+    match operator {
+        FilterOperator::Any => filters::by_author_any(query, entries),
+        FilterOperator::All => filters::by_author_all(query, entries),
+        FilterOperator::Exact => filters::by_author_exact(&query.join(" "), entries),
+    }
+}
+
+/// Filters out [`Entry`][entry]s by their [`tags`][tags].
+///
+/// # Arguments
+///
+/// * `query` - A list of strings to filter against.
+/// * `operator` - The [`FilterOperator`] to use.
+/// * `entries` - The [`Entry`][entry]s to filter.
 ///
 /// [entry]: crate::models::entry::Entry
-#[derive(Debug, Clone, Copy)]
-pub struct FilterRunner;
+/// [tags]: crate::models::annotation::Annotation::tags
+fn filter_by_tags(query: &[String], operator: FilterOperator, entries: &mut Entries) {
+    let tags = BTreeSet::from_iter(query);
 
-impl FilterRunner {
-    /// Runs filters on all [`Entry`][entry]s.
-    ///
-    /// # Arguments
-    ///
-    /// * `filter_type` - The type of filter to run.
-    /// * `entries` - The [`Entry`][entry]s to filter.
-    ///
-    /// [entry]: crate::models::entry::Entry
-    pub fn run<F>(filter_type: F, entries: &mut Entries)
-    where
-        F: Into<FilterType>,
-    {
-        let filter_type: FilterType = filter_type.into();
-
-        match filter_type {
-            FilterType::Title { query, operator } => {
-                Self::filter_by_title(&query, operator, entries);
-            }
-            FilterType::Author { query, operator } => {
-                Self::filter_by_author(&query, operator, entries);
-            }
-            FilterType::Tags { query, operator } => {
-                Self::filter_by_tags(&query, operator, entries);
-            }
-        }
-
-        // Remove `Entry`s that have had all their `Annotation`s filtered out.
-        filters::contains_no_annotations(entries);
-    }
-
-    /// Filters out [`Entry`][entry]s by their [`Book::title`][book].
-    ///
-    /// # Arguments
-    ///
-    /// * `query` - A list of strings to filter against.
-    /// * `operator` - The [`FilterOperator`] to use.
-    /// * `entries` - The [`Entry`][entry]s to filter.
-    ///
-    /// [book]: crate::models::book::Book::title
-    /// [entry]: crate::models::entry::Entry
-    fn filter_by_title(query: &[String], operator: FilterOperator, entries: &mut Entries) {
-        match operator {
-            FilterOperator::Any => filters::by_title_any(query, entries),
-            FilterOperator::All => filters::by_title_all(query, entries),
-            FilterOperator::Exact => filters::by_title_exact(&query.join(" "), entries),
-        }
-    }
-
-    /// Filters out [`Entry`][entry]s by their [`Book::author`][book].
-    ///
-    /// # Arguments
-    ///
-    /// * `query` - A list of strings to filter against.
-    /// * `operator` - The [`FilterOperator`] to use.
-    /// * `entries` - The [`Entry`][entry]s to filter.
-    ///
-    /// [book]: crate::models::book::Book::author
-    /// [entry]: crate::models::entry::Entry
-    fn filter_by_author(query: &[String], operator: FilterOperator, entries: &mut Entries) {
-        match operator {
-            FilterOperator::Any => filters::by_author_any(query, entries),
-            FilterOperator::All => filters::by_author_all(query, entries),
-            FilterOperator::Exact => filters::by_author_exact(&query.join(" "), entries),
-        }
-    }
-
-    /// Filters out [`Entry`][entry]s by their [`tags`][tags].
-    ///
-    /// # Arguments
-    ///
-    /// * `query` - A list of strings to filter against.
-    /// * `operator` - The [`FilterOperator`] to use.
-    /// * `entries` - The [`Entry`][entry]s to filter.
-    ///
-    /// [entry]: crate::models::entry::Entry
-    /// [tags]: crate::models::annotation::Annotation::tags
-    fn filter_by_tags(query: &[String], operator: FilterOperator, entries: &mut Entries) {
-        let tags = BTreeSet::from_iter(query);
-
-        match operator {
-            FilterOperator::Any => filters::by_tags_any(&tags, entries),
-            FilterOperator::All => filters::by_tags_all(&tags, entries),
-            FilterOperator::Exact => filters::by_tags_exact(&tags, entries),
-        }
+    match operator {
+        FilterOperator::Any => filters::by_tags_any(&tags, entries),
+        FilterOperator::All => filters::by_tags_all(&tags, entries),
+        FilterOperator::Exact => filters::by_tags_exact(&tags, entries),
     }
 }
 
@@ -244,7 +234,7 @@ mod test {
     fn title_any() {
         let mut entries = create_test_entries();
 
-        FilterRunner::run(
+        super::run(
             FilterType::title(&["incididunt", "laboris"], FilterOperator::Any),
             &mut entries,
         );
@@ -263,7 +253,7 @@ mod test {
     fn title_all() {
         let mut entries = create_test_entries();
 
-        FilterRunner::run(
+        super::run(
             FilterType::title(&["laboris", "cillum"], FilterOperator::All),
             &mut entries,
         );
@@ -282,7 +272,7 @@ mod test {
     fn title_exact() {
         let mut entries = create_test_entries();
 
-        FilterRunner::run(
+        super::run(
             FilterType::title(&["incididunt", "sint"], FilterOperator::Exact),
             &mut entries,
         );
@@ -301,7 +291,7 @@ mod test {
     fn author_any() {
         let mut entries = create_test_entries();
 
-        FilterRunner::run(
+        super::run(
             FilterType::author(&["quis"], FilterOperator::Any),
             &mut entries,
         );
@@ -320,7 +310,7 @@ mod test {
     fn author_all() {
         let mut entries = create_test_entries();
 
-        FilterRunner::run(
+        super::run(
             FilterType::author(&["lorem", "sint"], FilterOperator::All),
             &mut entries,
         );
@@ -339,7 +329,7 @@ mod test {
     fn author_exact() {
         let mut entries = create_test_entries();
 
-        FilterRunner::run(
+        super::run(
             FilterType::author(&["lorem", "du", "quis"], FilterOperator::Exact),
             &mut entries,
         );
@@ -358,7 +348,7 @@ mod test {
     fn tags_any() {
         let mut entries = create_test_entries();
 
-        FilterRunner::run(
+        super::run(
             FilterType::tags(&["#tag01", "#tag03"], FilterOperator::Any),
             &mut entries,
         );
@@ -377,7 +367,7 @@ mod test {
     fn tags_all() {
         let mut entries = create_test_entries();
 
-        FilterRunner::run(
+        super::run(
             FilterType::tags(&["#tag01", "#tag03"], FilterOperator::All),
             &mut entries,
         );
@@ -396,7 +386,7 @@ mod test {
     fn tags_exact() {
         let mut entries = create_test_entries();
 
-        FilterRunner::run(
+        super::run(
             FilterType::tags(&["#tag01", "#tag02", "#tag03"], FilterOperator::Exact),
             &mut entries,
         );
@@ -415,7 +405,7 @@ mod test {
     fn tags_exact_different_order() {
         let mut entries = create_test_entries();
 
-        FilterRunner::run(
+        super::run(
             FilterType::tags(&["#tag03", "#tag02", "#tag01"], FilterOperator::Exact),
             &mut entries,
         );
@@ -434,17 +424,17 @@ mod test {
     fn multi() {
         let mut entries = create_test_entries();
 
-        FilterRunner::run(
+        super::run(
             FilterType::title(&["sint"], FilterOperator::Any),
             &mut entries,
         );
 
-        FilterRunner::run(
+        super::run(
             FilterType::author(&["quis", "sint"], FilterOperator::Exact),
             &mut entries,
         );
 
-        FilterRunner::run(
+        super::run(
             FilterType::tags(&["#tag02"], FilterOperator::Any),
             &mut entries,
         );

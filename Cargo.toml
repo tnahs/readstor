@@ -36,6 +36,7 @@ plist = "1"
 regex = "1"
 serde_yaml_ng = "0.10"
 sysinfo = "0.33"
+rusty_libimobiledevice = "0.2"
 textwrap = "0.16"
 thiserror = "2"
 walkdir = "2"
@@ -84,6 +85,3 @@ all = { level = "warn", priority = -1 }
 pedantic = { level = "warn", priority = -1 }
 module_name_repetitions = "allow"
 multiple_crate_versions = "allow"
-
-[lints.rustdoc]
-private_intra_doc_links = "allow"

@@ -12,10 +12,10 @@ Set the output directory template.
 | Default | `{{ book.author }} - {{ book.title }}` |
 | Example | `Robert Henri - The Art Spirit`        |
 
-For example, using the default template, the non-rendered ouput structure would look like the following:
+For example, using the default template, the non-rendered output structure would look like the following:
 
 ```plaintext
-[ouput-directory]
+[output-directory]
  ├── {{ book.author }} - {{ book.title }}
  │    ├── book.json
  │    └── annotations.json
@@ -25,10 +25,10 @@ For example, using the default template, the non-rendered ouput structure would 
  └── ...
 ```
 
-And when rendered, the ouput structure would result in the following:
+And when rendered, the output structure would result in the following:
 
 ```plaintext
-[ouput-directory]
+[output-directory]
  ├── Krishnamurti - Think on These Things
  │   ├── annotations.json
  │   └── book.json

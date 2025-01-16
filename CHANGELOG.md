@@ -7,6 +7,19 @@
 ### Bug Fixes
 -->
 
+## UNRELEASED CHANGES
+
+### Features
+
+- (EXPERIMENTAL) Added ability to read Apple Books data from a connected iPhone/iPad.
+  - The first connected device is used. A `udid` option will be available in the next iteration.
+  - All commands--`render`, `export`, `backup`--work for both macOS and iOS.
+
+### Breaking Changes
+
+- Re-structured CLI. Comands now require a positional argument of the platform: `macos` or `ios`.
+  - For example: `readstor render macos [OPTIONS]` / `readstor render ios [OPTIONS]`
+
 ## v0.6.0 (2025-01-05)
 
 ### Features

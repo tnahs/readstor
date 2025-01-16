@@ -4,6 +4,9 @@ use std::path::PathBuf;
 
 use once_cell::sync::Lazy;
 
+/// The name of this package.
+pub const NAME: &str = env!("CARGO_PKG_NAME");
+
 /// The crates's root directory.
 pub static CRATE_ROOT: Lazy<PathBuf> = Lazy::new(|| env!("CARGO_MANIFEST_DIR").into());
 
@@ -11,10 +14,28 @@ pub static CRATE_ROOT: Lazy<PathBuf> = Lazy::new(|| env!("CARGO_MANIFEST_DIR").i
 //
 // Unwrap should be safe here. It would only fail if the user is deleted after the process has
 // started. Which is highly unlikely, and would be okay to panic if that was the case.
-pub static HOME: Lazy<PathBuf> = Lazy::new(|| {
+pub static HOME_DIRECTORY: Lazy<PathBuf> = Lazy::new(|| {
     let path = std::env::var_os("HOME").expect("could not determine home directory");
     PathBuf::from(path)
 });
+
+/// Returns a path to a temp directory to use for reading and writing data during development/testing.
+///
+/// Internally this returns the value of the TMPDIR environment variable if it is set, otherwise it
+/// returns `/tmp`. See [`std::env::temp_dir()`] for more information.
+///
+/// The full path:
+///
+/// ```plaintext
+/// [temp_dir]/readstor/[name]
+/// ```
+///
+/// For example:
+///
+/// ```plaintext
+/// /var/folders/58/8yrgg8897ld633zt0qg9ww680000gn/T/readstor/
+/// ```
+pub static TEMP_OUTPUT_DIRECTORY: Lazy<PathBuf> = Lazy::new(|| std::env::temp_dir().join(NAME));
 
 /// Date format string for slugs. Translates to: `YYYY-MM-DD-HHMMSS` i.e. `1970-01-01-120000`.
 pub const DATE_FORMAT_SLUG: &str = "%Y-%m-%d-%H%M%S";
@@ -51,7 +72,7 @@ pub(crate) mod test {
     use super::*;
 
     /// Defines the root path to the example templates.
-    pub static EXAMPLE_TEMPLATES: Lazy<PathBuf> = Lazy::new(|| {
+    pub static EXAMPLE_TEMPLATES_DIRECTORY: Lazy<PathBuf> = Lazy::new(|| {
         let mut path = CRATE_ROOT.to_owned();
         path.push("templates");
         path
@@ -60,7 +81,7 @@ pub(crate) mod test {
     /// Defines the root path to the testing templates.
     ///
     /// The test templates are located at: [crate-root]/data/templates/[directory]/[filename]
-    pub static TEST_TEMPLATES: Lazy<PathBuf> = Lazy::new(|| {
+    pub static TEST_TEMPLATES_DIRECTORY: Lazy<PathBuf> = Lazy::new(|| {
         let mut path = CRATE_ROOT.to_owned();
         path.extend(["data", "templates"].iter());
         path
@@ -97,7 +118,7 @@ pub(crate) mod test {
 
     impl From<TemplatesDirectory> for PathBuf {
         fn from(directory: TemplatesDirectory) -> Self {
-            TEST_TEMPLATES.join(directory.to_string())
+            TEST_TEMPLATES_DIRECTORY.join(directory.to_string())
         }
     }
 }

@@ -6,9 +6,12 @@ NAME=$(basename "${(%):-%N}")
 
 ROOT=${0:A:h:h}
 DATA="$ROOT/data"
-TMP="$ROOT/tmp/test-readstor"
+DATA_MACOS="$DATA/databases/books-annotated/"
+DATA_IOS="$DATA/plists/books-annotated/"
+TMP="$ROOT/.tmp/test-readstor"
 RENDER="$TMP/render"
 EXPORT="$TMP/export"
+BACKUP="$TMP/backup"
 
 
 function prepare_test {
@@ -22,16 +25,19 @@ function render_macos {
 
     mkdir -p "$output"
 
-    cargo run --                                                 \
-        --output-directory "$output"                             \
-        --databases-directory "$DATA/databases/books-annotated/" \
-        --force                                                  \
-        render                                                   \
-            --overwrite-existing                                 \
-            --extract-tags                                       \
-            --normalize-whitespace                               \
-            --ascii-symbols                                      \
-            --trim-blocks                                        \
+    cargo run --                           \
+        render                             \
+            macos                          \
+            --output-directory "$output"   \
+            --data-directory "$DATA_MACOS" \
+            --overwrite-existing           \
+            --force                        \
+                                           \
+            --extract-tags                 \
+            --normalize-whitespace         \
+            --ascii-symbols                \
+                                           \
+            --trim-blocks                  \
             --wrap-text 100
 }
 
@@ -41,15 +47,31 @@ function export_macos {
 
     mkdir -p "$output"
 
-    cargo run --                                                 \
-        --output-directory "$output"                             \
-        --databases-directory "$DATA/databases/books-annotated/" \
-        --force                                                  \
-        export                                                   \
-            --overwrite-existing                                 \
-            --extract-tags                                       \
-            --normalize-whitespace                               \
+    cargo run --                           \
+        export                             \
+            macos                          \
+            --output-directory "$output"   \
+            --data-directory "$DATA_MACOS" \
+            --overwrite-existing           \
+            --force                        \
+                                           \
+            --extract-tags                 \
+            --normalize-whitespace         \
             --ascii-symbols
+}
+
+
+function backup_macos {
+    local output="$BACKUP/macos"
+
+    mkdir -p "$output"
+
+    cargo run --                           \
+        backup                             \
+            macos                          \
+            --output-directory "$output"   \
+            --data-directory "$DATA_MACOS" \
+            --force
 }
 
 
@@ -58,16 +80,19 @@ function render_ios {
 
     mkdir -p "$output"
 
-    cargo run --                                           \
-        --output-directory "$output"                       \
-        --plists-directory "$DATA/plists/books-annotated/" \
-        --force                                            \
-        render                                             \
-            --overwrite-existing                           \
-            --extract-tags                                 \
-            --normalize-whitespace                         \
-            --ascii-symbols                                \
-            --trim-blocks                                  \
+    cargo run --                         \
+        render                           \
+            ios                          \
+            --output-directory "$output" \
+            --data-directory "$DATA_IOS" \
+            --overwrite-existing         \
+            --force                      \
+                                         \
+            --extract-tags               \
+            --normalize-whitespace       \
+            --ascii-symbols              \
+                                         \
+            --trim-blocks                \
             --wrap-text 100
 }
 
@@ -77,16 +102,33 @@ function export_ios {
 
     mkdir -p "$output"
 
-    cargo run --                                           \
-        --output-directory "$output"                       \
-        --plists-directory "$DATA/plists/books-annotated/" \
-        --force                                            \
-        export                                             \
-            --overwrite-existing                           \
-            --extract-tags                                 \
-            --normalize-whitespace                         \
+    cargo run --                         \
+        export                           \
+            ios                          \
+            --output-directory "$output" \
+            --data-directory "$DATA_IOS" \
+            --overwrite-existing         \
+            --force                      \
+                                         \
+            --extract-tags               \
+            --normalize-whitespace       \
             --ascii-symbols
 }
+
+
+function backup_ios {
+    local output="$BACKUP/ios"
+
+    mkdir -p "$output"
+
+    cargo run --                         \
+        backup                           \
+            ios                          \
+            --output-directory "$output" \
+            --data-directory "$DATA_IOS" \
+            --force
+}
+
 
 function print_help {
     echo -e "Test run readstor.
@@ -97,8 +139,10 @@ function print_help {
   all           Run all commands
   render-macos  Render macOS database data to default templates
   export-macos  Export macOS database data
+  backup-macos  Back-up macOS database data
   render-ios    Render iOS plust data to default templates
   export-ios    Export iOS plist data
+  backup-ios    Back-up iOS plist data
 
 \e[4mOptions:\e[0m
   -h, --help   Show help"
@@ -123,8 +167,10 @@ function main {
             prepare_test        \
                 && render_macos \
                 && export_macos \
+                && backup_macos \
                 && render_ios   \
-                && export_ios
+                && export_ios   \
+                && backup_ios
             ;;
         "render-macos")
             prepare_test && render_macos
@@ -132,11 +178,17 @@ function main {
         "export-macos")
             prepare_test && export_macos
             ;;
+        "backup-macos")
+            prepare_test && backup_macos
+            ;;
         "render-ios")
             prepare_test && render_ios
             ;;
         "export-ios")
             prepare_test && export_ios
+            ;;
+        "backup-ios")
+            prepare_test && backup_ios
             ;;
         *)
             echo "Error: invalid command '$1'"

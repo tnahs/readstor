@@ -24,7 +24,7 @@ Apple Books for iOS stores its data in the `Books` directory on an iOS device.
 
 Both the EPUBs and plists are stored in:
 
-<!-- TODO: Where do PDFs and Audiobooks sit? -->
+<!-- TODO(docs): Where do PDFs and Audiobooks sit? -->
 
 ```plaintext
 [ios-device]/Books

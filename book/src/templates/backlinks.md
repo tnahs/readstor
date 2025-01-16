@@ -83,7 +83,7 @@ Alternatively we can use the `names.directory` variable to access the rendered n
 directory. This value is only available if the [Structure Mode][structure-modes] is set to `nested`
 or `nested-grouped`.
 
-<!-- TODO: Verify this works! -->
+<!-- TODO(docs): Verify this works! -->
 
 ```jinja2
 # {{ book.author }} - {{ book.title }}

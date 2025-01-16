@@ -155,12 +155,12 @@ impl Renderer {
     /// Will return `Err` if any IO errors are encountered.
     pub fn write(&self, path: &Path) -> Result<()> {
         for render in &self.renders {
-            // -> [ouput-directory]/[template-subdirectory]
+            // -> [output-directory]/[template-subdirectory]
             let root = path.join(&render.path);
 
             std::fs::create_dir_all(&root)?;
 
-            // -> [ouput-directory]/[template-subdirectory]/[template-filename]
+            // -> [output-directory]/[template-subdirectory]/[template-filename]
             let file = root.join(&render.filename);
 
             if !self.options.overwrite_existing && file.exists() {
@@ -214,7 +214,7 @@ impl Renderer {
 
         for template_group in &self.options.template_groups {
             if !available_template_groups.contains(template_group.as_str()) {
-                return Err(Error::NonexistentTemplateGroup {
+                return Err(Error::TemplateInvalidGroup {
                     name: template_group.to_string(),
                 });
             }
@@ -592,7 +592,7 @@ mod test {
             );
             let result = validate_template_context(&template);
 
-            assert!(matches!(result, Err(Error::InvalidTemplate(_))));
+            assert!(matches!(result, Err(Error::TemplateError(_))));
         }
 
         // Tests that an invalid attribute (`[object].invalid`) returns an error.
@@ -604,7 +604,7 @@ mod test {
             );
             let result = validate_template_context(&template);
 
-            assert!(matches!(result, Err(Error::InvalidTemplate(_))));
+            assert!(matches!(result, Err(Error::TemplateError(_))));
         }
 
         // Tests that an invalid annotation attribute within a `book` context returns an error.
@@ -616,7 +616,7 @@ mod test {
             );
             let result = validate_template_context(&template);
 
-            assert!(matches!(result, Err(Error::InvalidTemplate(_))));
+            assert!(matches!(result, Err(Error::TemplateError(_))));
         }
 
         // Tests that an invalid names attribute within a `book` context returns an error.
@@ -628,7 +628,7 @@ mod test {
             );
             let result = validate_template_context(&template);
 
-            assert!(matches!(result, Err(Error::InvalidTemplate(_))));
+            assert!(matches!(result, Err(Error::TemplateError(_))));
         }
 
         // Tests that an invalid names attribute within an `annotation` context returns an error.
@@ -640,7 +640,7 @@ mod test {
             );
             let result = validate_template_context(&template);
 
-            assert!(matches!(result, Err(Error::InvalidTemplate(_))));
+            assert!(matches!(result, Err(Error::TemplateError(_))));
         }
     }
 
@@ -686,7 +686,7 @@ mod test {
             );
             let result = validate_template_syntax(&template);
 
-            assert!(matches!(result, Err(Error::InvalidTemplate(_))));
+            assert!(matches!(result, Err(Error::TemplateError(_))));
         }
     }
 
@@ -717,7 +717,7 @@ mod test {
             let mut renderer = Renderer::default();
 
             renderer
-                .build_from_directory(&crate::defaults::test::EXAMPLE_TEMPLATES)
+                .build_from_directory(&crate::defaults::test::EXAMPLE_TEMPLATES_DIRECTORY)
                 .unwrap();
         }
     }

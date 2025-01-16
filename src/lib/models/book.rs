@@ -21,7 +21,7 @@ pub struct Book {
     pub metadata: BookMetadata,
 }
 
-// For macOS.
+// For creating [`Book`]s from macOS database data.
 impl ABQuery for Book {
     const QUERY: &'static str = {
         "SELECT
@@ -47,7 +47,7 @@ impl ABQuery for Book {
     }
 }
 
-// For iOS.
+// For creating [`Book`]s from iOS plist data.
 impl From<BookRaw> for Book {
     fn from(book: BookRaw) -> Self {
         Self {
@@ -55,7 +55,7 @@ impl From<BookRaw> for Book {
             author: book.author,
             metadata: BookMetadata {
                 id: book.id,
-                // TODO: Does iOS store the `last_opened` date?
+                // TODO(feat): Does iOS store the `last_opened` date?
                 last_opened: None,
             },
         }

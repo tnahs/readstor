@@ -258,7 +258,7 @@ pub fn trim_blocks(string: &str) -> String {
     string
 }
 
-// TODO: Add tests for other functions.
+// TODO(test): Add tests for other functions.
 #[cfg(test)]
 mod test {
 

@@ -15,141 +15,135 @@ use crate::strings;
 /// Outputs `[author] - [book]` e.g. `Robert Henri - The Art Spirit`.
 const DIRECTORY_TEMPLATE: &str = "{{ book.author }} - {{ book.title }}";
 
-/// A struct for running export tasks.
-#[derive(Debug, Copy, Clone)]
-pub struct ExportRunner;
+/// Runs the exporter.
+///
+/// # Arguments
+///
+/// * `entries` - The entries to export.
+/// * `destination` - The destination directory.
+/// * `options` - The export options.
+///
+/// # Errors
+///
+/// Will return `Err` if:
+/// * Any IO errors are encountered.
+/// * [`serde_json`][serde-json] encounters any errors.
+///
+/// [serde-json]: https://docs.rs/serde_json/latest/serde_json/
+pub fn run<O>(entries: &mut Entries, destination: &Path, options: O) -> Result<()>
+where
+    O: Into<ExportOptions>,
+{
+    let options: ExportOptions = options.into();
 
-impl ExportRunner {
-    /// Runs the export task.
-    ///
-    /// # Arguments
-    ///
-    /// * `entries` - The entries to export.
-    /// * `path` - The ouput directory.
-    /// * `options` - The export options.
-    ///
-    /// # Errors
-    ///
-    /// Will return `Err` if:
-    /// * Any IO errors are encountered.
-    /// * [`serde_json`][serde-json] encounters any errors.
-    ///
-    /// [serde-json]: https://docs.rs/serde_json/latest/serde_json/
-    pub fn run<O>(entries: &mut Entries, path: &Path, options: O) -> Result<()>
-    where
-        O: Into<ExportOptions>,
-    {
-        let options: ExportOptions = options.into();
+    self::export(entries, destination, options)?;
 
-        Self::export(entries, path, options)?;
-
-        Ok(())
-    }
-
-    /// Exports data as JSON.
-    ///
-    /// # Arguments
-    ///
-    /// * `entries` - The entries to export.
-    /// * `path` - The ouput directory.
-    /// * `options` - The export options.
-    ///
-    /// The output strucutre is as follows:
-    ///
-    /// ```plaintext
-    /// [ouput-directory]
-    ///  │
-    ///  ├── [author-title]
-    ///  │    ├── book.json
-    ///  │    └── annotations.json
-    ///  │
-    ///  ├── [author-title]
-    ///  │    └── ...
-    ///  └── ...
-    /// ```
-    ///
-    /// # Errors
-    ///
-    /// Will return `Err` if:
-    /// * Any IO errors are encountered.
-    /// * [`serde_json`][serde-json] encounters any errors.
-    ///
-    /// [serde-json]: https://docs.rs/serde_json/latest/serde_json/
-    fn export(entries: &Entries, path: &Path, options: ExportOptions) -> Result<()> {
-        let directory_template = if let Some(template) = options.directory_template {
-            Self::validate_template(&template)?;
-            template
-        } else {
-            DIRECTORY_TEMPLATE.to_string()
-        };
-
-        for entry in entries.values() {
-            // -> [author-title]
-            let directory_name = Self::render_directory_name(&directory_template, entry)?;
-
-            // -> [ouput-directory]/[author-title]
-            let item = path.join(directory_name);
-            // -> [ouput-directory]/[author-title]/book.json
-            let book_json = item.join("book").with_extension("json");
-            // -> [ouput-directory]/[author-title]/annotation.json
-            let annotations_json = item.join("annotations").with_extension("json");
-
-            std::fs::create_dir_all(&item)?;
-
-            if !options.overwrite_existing && book_json.exists() {
-                log::debug!("skipped writing {}", book_json.display());
-            } else {
-                let book_json = File::create(book_json)?;
-                serde_json::to_writer_pretty(&book_json, &entry.book)?;
-            }
-
-            if !options.overwrite_existing && annotations_json.exists() {
-                log::debug!("skipped writing {}", annotations_json.display());
-            } else {
-                let annotations_json = File::create(annotations_json)?;
-                serde_json::to_writer_pretty(&annotations_json, &entry.annotations)?;
-            }
-        }
-
-        Ok(())
-    }
-
-    /// Validates a template by rendering it.
-    ///
-    /// The template is rendered and an empty [`Result`] is returned.
-    ///
-    /// # Arguments
-    ///
-    /// * `template` - The template string to validate.
-    fn validate_template(template: &str) -> Result<()> {
-        let entry = Entry::dummy();
-        Self::render_directory_name(template, &entry).map(|_| ())
-    }
-
-    /// Renders the directory name from a template string and an [`Entry`].
-    ///
-    /// # Arguments
-    ///
-    /// * `template` - The template string to render.
-    /// * `entry` - The [`Entry`] providing the template context.
-    fn render_directory_name(template: &str, entry: &Entry) -> Result<String> {
-        let context = BookContext::from(&entry.book);
-        let context = ExportContext::from(&context);
-        strings::render_and_sanitize(template, context)
-    }
+    Ok(())
 }
 
-/// A struct representing options for the [`ExportRunner`] struct.
+/// Exports data as JSON.
+///
+/// # Arguments
+///
+/// * `entries` - The entries to export.
+/// * `destination` - The output directory.
+/// * `options` - The export options.
+///
+/// The output strucutre is as follows:
+///
+/// ```plaintext
+/// [output-directory]
+///  │
+///  ├── [author-title]
+///  │    ├── book.json
+///  │    └── annotations.json
+///  │
+///  ├── [author-title]
+///  │    └── ...
+///  └── ...
+/// ```
+///
+/// # Errors
+///
+/// Will return `Err` if:
+/// * Any IO errors are encountered.
+/// * [`serde_json`][serde-json] encounters any errors.
+///
+/// [serde-json]: https://docs.rs/serde_json/latest/serde_json/
+fn export(entries: &Entries, destination: &Path, options: ExportOptions) -> Result<()> {
+    let directory_template = if let Some(template) = options.directory_template {
+        self::validate_template(&template)?;
+        template
+    } else {
+        DIRECTORY_TEMPLATE.to_string()
+    };
+
+    for entry in entries.values() {
+        // -> [author-title]
+        let directory_name = self::render_directory_name(&directory_template, entry)?;
+
+        // -> [output-directory]/[author-title]
+        let item = destination.join(directory_name);
+        // -> [output-directory]/[author-title]/book.json
+        let book_json = item.join("book").with_extension("json");
+        // -> [output-directory]/[author-title]/annotation.json
+        let annotations_json = item.join("annotations").with_extension("json");
+
+        std::fs::create_dir_all(&item)?;
+
+        if !options.overwrite_existing && book_json.exists() {
+            log::debug!("skipped writing {}", book_json.display());
+        } else {
+            let book_json = File::create(book_json)?;
+            serde_json::to_writer_pretty(&book_json, &entry.book)?;
+        }
+
+        if !options.overwrite_existing && annotations_json.exists() {
+            log::debug!("skipped writing {}", annotations_json.display());
+        } else {
+            let annotations_json = File::create(annotations_json)?;
+            serde_json::to_writer_pretty(&annotations_json, &entry.annotations)?;
+        }
+    }
+
+    Ok(())
+}
+
+/// Validates a template by rendering it.
+///
+/// The template is rendered and an empty [`Result`] is returned.
+///
+/// # Arguments
+///
+/// * `template` - The template string to validate.
+fn validate_template(template: &str) -> Result<()> {
+    let entry = Entry::dummy();
+    self::render_directory_name(template, &entry).map(|_| ())
+}
+
+/// Renders the directory name from a template string and an [`Entry`].
+///
+/// # Arguments
+///
+/// * `template` - The template string to render.
+/// * `entry` - The [`Entry`] providing the template context.
+fn render_directory_name(template: &str, entry: &Entry) -> Result<String> {
+    let context = BookContext::from(&entry.book);
+    let context = ExportContext::from(&context);
+    strings::render_and_sanitize(template, context)
+}
+
+/// A struct representing options for running exports.
 #[derive(Debug)]
 pub struct ExportOptions {
-    /// The template to use for rendering the export's ouput directories.
+    /// The template to use for rendering the export's output directories.
     pub directory_template: Option<String>,
 
     /// Toggles whether or not to overwrite existing files.
     pub overwrite_existing: bool,
 }
 
-/// An struct represening the template context for exports.
+/// An struct representing the template context for exports.
 ///
 /// This is primarily used for generating directory names.
 #[derive(Debug, Serialize)]

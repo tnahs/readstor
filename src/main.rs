@@ -6,29 +6,14 @@
 mod cli;
 
 use clap::Parser;
+use cli::args::Args;
+use cli::CliResult;
 
-use crate::cli::app::{App, Result};
-use crate::cli::config::Config;
-use crate::cli::Cli;
-
-use lib::applebooks::macos::utils::applebooks_is_running;
-
-fn main() -> Result<()> {
+fn main() -> CliResult<()> {
     cli::utils::init_logger();
     color_eyre::install()?;
 
-    let args = Cli::parse();
+    let args = Args::parse();
 
-    log::debug!("{:#?}", &args);
-
-    if !args.options.force && applebooks_is_running() {
-        println!("Apple Books is currently running. To ignore this, use the `-f, --force` flag.");
-        return Ok(());
-    }
-
-    let config = Config::from(args.options);
-
-    log::debug!("{:#?}", &config);
-
-    App::new(config).run(args.command)
+    cli::run(args.command)
 }
