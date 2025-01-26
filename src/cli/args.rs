@@ -40,7 +40,7 @@ pub enum Command {
         global_options: GlobalOptions,
     },
 
-    /// Export data as json
+    /// Export Apple Books data to JSON
     Export {
         platform: Platform,
 
@@ -90,7 +90,7 @@ pub struct GlobalOptions {
     )]
     pub output_directory: Option<PathBuf>,
 
-    /// Set a custom input data directory
+    /// Set a custom source data directory
     #[arg(
         short = 'd',
         long,

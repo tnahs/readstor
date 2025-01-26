@@ -17,14 +17,7 @@ use crate::strings;
 /// Outputs `[YYYY-MM-DD-HHMMSS]-[VERSION]` e.g. `1970-01-01-120000-v0.1-0000`.
 pub const DIRECTORY_TEMPLATE: &str = "{{ now |  date(format='%Y-%m-%d-%H%M%S')}}-{{ version }}";
 
-/// Backs-up macOS's Apple Books databases to disk.
-///
-/// # Arguments
-///
-/// * `platform` - Which platform to perform the backup for.
-/// * `source` - Where the source data is located.
-/// * `destination` - Where to place the backup.
-/// * `options` - The back-up options.
+/// Backs-up data to disk.
 ///
 /// For macOS, the output structure is as follows:
 ///
@@ -63,6 +56,13 @@ pub const DIRECTORY_TEMPLATE: &str = "{{ now |  date(format='%Y-%m-%d-%H%M%S')}}
 ///  │    └── ...
 ///  └── ...
 /// ```
+///
+/// # Arguments
+///
+/// * `platform` - Which platform to perform the backup for.
+/// * `source` - Where the source data is located.
+/// * `destination` - Where to place the backup.
+/// * `options` - The back-up options.
 ///
 /// # Errors
 ///
