@@ -15,39 +15,7 @@ use crate::strings;
 /// Outputs `[author] - [book]` e.g. `Robert Henri - The Art Spirit`.
 const DIRECTORY_TEMPLATE: &str = "{{ book.author }} - {{ book.title }}";
 
-/// Runs the exporter.
-///
-/// # Arguments
-///
-/// * `entries` - The entries to export.
-/// * `destination` - The destination directory.
-/// * `options` - The export options.
-///
-/// # Errors
-///
-/// Will return `Err` if:
-/// * Any IO errors are encountered.
-/// * [`serde_json`][serde-json] encounters any errors.
-///
-/// [serde-json]: https://docs.rs/serde_json/latest/serde_json/
-pub fn run<O>(entries: &mut Entries, destination: &Path, options: O) -> Result<()>
-where
-    O: Into<ExportOptions>,
-{
-    let options: ExportOptions = options.into();
-
-    self::export(entries, destination, options)?;
-
-    Ok(())
-}
-
 /// Exports data as JSON.
-///
-/// # Arguments
-///
-/// * `entries` - The entries to export.
-/// * `destination` - The output directory.
-/// * `options` - The export options.
 ///
 /// The output strucutre is as follows:
 ///
@@ -63,6 +31,12 @@ where
 ///  └── ...
 /// ```
 ///
+/// # Arguments
+///
+/// * `entries` - The entries to export.
+/// * `destination` - The output directory.
+/// * `options` - The export options.
+///
 /// # Errors
 ///
 /// Will return `Err` if:
@@ -70,7 +44,12 @@ where
 /// * [`serde_json`][serde-json] encounters any errors.
 ///
 /// [serde-json]: https://docs.rs/serde_json/latest/serde_json/
-fn export(entries: &Entries, destination: &Path, options: ExportOptions) -> Result<()> {
+pub fn run<O>(entries: &mut Entries, destination: &Path, options: O) -> Result<()>
+where
+    O: Into<ExportOptions>,
+{
+    let options: ExportOptions = options.into();
+
     let directory_template = if let Some(template) = options.directory_template {
         self::validate_template(&template)?;
         template
