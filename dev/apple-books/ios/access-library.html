@@ -207,7 +207,7 @@ enabling support for third party kernel extensions and will require a restart.</
 <h4 id="mount-multiple-devices"><a class="header" href="#mount-multiple-devices">Mount Multiple Devices</a></h4>
 <p>If there are multiple devices connected, a specific one can be mounted using its serial number.
 Assuming the device is an <code>iPhone</code>, run the following command:</p>
-<!-- TODO: Verify this works with other devices too. -->
+<!-- TODO(docs): Verify this works with other devices too. -->
 <pre><code class="language-bash">system_profiler SPUSBDataType -detailLevel mini | grep -e iPhone -e Serial
 </code></pre>
 <p>Something similar to the following will print out. The 24-character string is the device's serial

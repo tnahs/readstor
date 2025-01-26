@@ -549,8 +549,8 @@ will return an error.</p>
 <tr><td>Example</td><td><code>Robert Henri - The Art Spirit</code></td></tr>
 </tbody></table>
 </div>
-<p>For example, using the default template, the non-rendered ouput structure would look like the following:</p>
-<pre><code class="language-plaintext">[ouput-directory]
+<p>For example, using the default template, the non-rendered output structure would look like the following:</p>
+<pre><code class="language-plaintext">[output-directory]
  ├── {{ book.author }} - {{ book.title }}
  │    ├── book.json
  │    └── annotations.json
@@ -559,8 +559,8 @@ will return an error.</p>
  │    └── ...
  └── ...
 </code></pre>
-<p>And when rendered, the ouput structure would result in the following:</p>
-<pre><code class="language-plaintext">[ouput-directory]
+<p>And when rendered, the output structure would result in the following:</p>
+<pre><code class="language-plaintext">[output-directory]
  ├── Krishnamurti - Think on These Things
  │   ├── annotations.json
  │   └── book.json
@@ -589,9 +589,9 @@ will return an error.</p>
 nest a pipe <code>|</code> inside a markdown table. In other words, the default value does not contain
 a backslash.</p>
 </blockquote>
-<p>For example, using the default template, the non-rendered ouput structure would look like the
+<p>For example, using the default template, the non-rendered output structure would look like the
 following:</p>
-<pre><code class="language-plaintext">[ouput-directory]
+<pre><code class="language-plaintext">[output-directory]
  └── {{ now | date(format='%Y-%m-%d-%H%M%S') }}-{{ version }}
       ├── AEAnnotation
       │   ├── AEAnnotation*.sqlite
@@ -600,8 +600,8 @@ following:</p>
           ├── BKLibrary*.sqlite
           └── ...
 </code></pre>
-<p>And when rendered, the ouput structure would result in the following:</p>
-<pre><code class="language-plaintext">[ouput-directory]
+<p>And when rendered, the output structure would result in the following:</p>
+<pre><code class="language-plaintext">[output-directory]
  └── 2022-10-09-152506-v4.4-5177
      ├── AEAnnotation
      │   ├── AEAnnotation_v10312011_1727_local.sqlite
@@ -1293,7 +1293,7 @@ each of its annotations all rendered out to their own file.</p>
 </code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="structure-modes"><a class="header" href="#structure-modes">Structure Modes</a></h1>
 <div class="table-wrapper"><table><thead><tr><th></th><th></th></tr></thead><tbody>
-<tr><td>Name</td><td><code>ouput</code></td></tr>
+<tr><td>Name</td><td><code>output</code></td></tr>
 <tr><td>Type</td><td>string</td></tr>
 <tr><td>Valid Values</td><td><code>flat</code> <code>flat-grouped</code> <code>nested</code> <code>nested-grouped</code></td></tr>
 <tr><td>Required</td><td><i class="fa fa-check"></i></td></tr>
@@ -1620,7 +1620,7 @@ the <code>location</code> attribute.</p>
 <p>Alternatively we can use the <code>names.directory</code> variable to access the rendered name of the parent
 directory. This value is only available if the <a href="templates/./configuration/structure-modes.html">Structure Mode</a> is set to <code>nested</code>
 or <code>nested-grouped</code>.</p>
-<!-- TODO: Verify this works! -->
+<!-- TODO(docs): Verify this works! -->
 <pre><code class="language-jinja2"># {{ book.author }} - {{ book.title }}
 
 {% for name in names.annotations -%}
@@ -1716,7 +1716,7 @@ for naming files or directories. Characters are either removed or replaced with 
 <li><a href="templates/./configuration/template-groups.html">Template Group</a> set in the <code>group</code> config key.</li>
 <li>The rendered values from <a href="templates/./configuration/names.html">Names</a> set in the <code>names</code> config key.</li>
 </ul>
-<!-- TODO: Provide some examples. -->
+<!-- TODO(docs): Provide some examples. -->
 <div style="break-before: page; page-break-before: always;"></div><h1 id="context-reference"><a class="header" href="#context-reference">Context Reference</a></h1>
 <p>Every template is injected with a "context" i.e. the data currently available to rendering. ReadStor
 injects three different objects into every template context: <code>book</code>, <code>annotation</code> (or <code>annotations</code>
@@ -1939,7 +1939,7 @@ in the filenames here.</p>
 <p><i class="fa fa-info-circle"></i> Complete archive and restore scripts are available in
 <a href="https://github.com/tnahs/readstor/tree/main/scripts/apple-books/">scripts/apple-books</a>.</p>
 </blockquote>
-<!-- TODO: Add a paragraph on what the goal of archiving is. -->
+<!-- TODO(docs): Add a paragraph on what the goal of archiving is. -->
 <h2 id="what-to-archiverestore"><a class="header" href="#what-to-archiverestore">What To Archive/Restore?</a></h2>
 <p>Apple Books for macOS stores its data in two locations:</p>
 <pre><code class="language-plaintext">~/Library/Containers/com.apple.BKAgentService
@@ -2139,7 +2139,7 @@ syncing with iCloud Drive is disabled!</p>
  └── ...
 </code></pre>
 <p>Both the EPUBs and plists are stored in:</p>
-<!-- TODO: Where do PDFs and Audiobooks sit? -->
+<!-- TODO(docs): Where do PDFs and Audiobooks sit? -->
 <pre><code class="language-plaintext">[ios-device]/Books
 </code></pre>
 <p>The books plist is located at:</p>
@@ -2199,7 +2199,7 @@ enabling support for third party kernel extensions and will require a restart.</
 <h4 id="mount-multiple-devices"><a class="header" href="#mount-multiple-devices">Mount Multiple Devices</a></h4>
 <p>If there are multiple devices connected, a specific one can be mounted using its serial number.
 Assuming the device is an <code>iPhone</code>, run the following command:</p>
-<!-- TODO: Verify this works with other devices too. -->
+<!-- TODO(docs): Verify this works with other devices too. -->
 <pre><code class="language-bash">system_profiler SPUSBDataType -detailLevel mini | grep -e iPhone -e Serial
 </code></pre>
 <p>Something similar to the following will print out. The 24-character string is the device's serial
