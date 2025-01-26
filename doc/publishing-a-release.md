@@ -1,6 +1,7 @@
 # Publishing a Release
 
 1. Clone this repository.
+
 2. Install `pre-commit` hooks.
 
    ```shell
@@ -8,6 +9,7 @@
    ```
 
 3. Add feature/patch.
+
 4. Update `README.md` with relevant info.
 
    💡 Use [`cargo-markdown`][cargo-markdown] to verify that it renders correctly
@@ -38,9 +40,9 @@
 
 6. Bump `version` in `Cargo.toml`to `v#.#.#`.
 
-   💡 The pre-commit hooks should take care of running `cargo update`.
+7. Run `cargo update`
 
-7. Push changes:
+8. Push changes:
 
    ```shell
    git add .
@@ -48,7 +50,7 @@
    git push origin main
    ```
 
-8. Tag the last commit:
+9. Tag the last commit:
 
    ```shell
    git tag v#.#.#
@@ -62,16 +64,16 @@
    > 3. Create a draft release in GitHub.
    > 4. Upload the archives to the draft release.
 
-9. Add release notes and publish the draft release.
+10. Add release notes and publish the draft release.
 
-   💡 The tag and title should be `v#.#.#`.
+    💡 The tag and title should be `v#.#.#`.
 
-10. Verify API tokens are still valid.
+11. Verify API tokens are still valid.
 
 - Check `HOMEBREW_GITHUB_TOKEN` on [GitHub][tokens-github].
 - Check `CARGO_REGISTRY_TOKEN` on [crates.io][tokens-crates-io].
 
-11. Publish by manually triggering:
+12. Publish by manually triggering:
 
     💡 Make sure to `Use workflow from` to `v#.#.#`:
 
