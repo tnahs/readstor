@@ -43,17 +43,6 @@ repos:
         pass_filenames: false
         language: system
         types: [rust]
-      - id: rust-cargo-update
-        name: run cargo update
-        entry: cargo update
-        pass_filenames: false
-        language: system
-        files: |
-          (?x)^(
-            Cargo\.toml
-            |Cargo\.lock
-            |.*\.rs
-          )
   - repo: local
     hooks:
       - id: prettier-format-yaml
