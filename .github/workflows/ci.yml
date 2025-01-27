@@ -8,7 +8,7 @@ on:
 jobs:
   rust-checks:
     name: Run cargo ${{ matrix.task.name }}
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
     strategy:
       matrix:
         task:
@@ -34,6 +34,14 @@ jobs:
           rustup default stable
           rustup component add clippy
           rustup component add rustfmt
+
+      - name: Install libimobiledevice
+        run: |
+          brew update
+          brew install libimobiledevice
+          brew install libimobiledevice-glue
+          brew install libplist
+          brew install libusbmuxd
 
       - name: Run ${{ matrix.task.name }}
         run: ${{ matrix.task.command }}

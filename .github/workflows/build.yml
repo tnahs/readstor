@@ -33,6 +33,14 @@ jobs:
           rustup default stable
           rustup target add ${{ matrix.target }}
 
+      - name: Install libimobiledevice
+        run: |
+          brew update
+          brew install libimobiledevice
+          brew install libimobiledevice-glue
+          brew install libplist
+          brew install libusbmuxd
+
       - name: Build binary
         run: cargo build --release --target ${{ matrix.target }}
 
