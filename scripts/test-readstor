@@ -133,9 +133,9 @@ function backup_ios {
 function print_help {
     echo -e "Test run readstor.
 
-\e[4mUsage:\e[0m ${NAME} [OPTIONS] <COMMAND>
+\033[4mUsage:\033[0m ${NAME} [OPTIONS] <COMMAND>
 
-\e[4mCommands:\e[0m
+\033[4mCommands:\033[0m
   all           Run all commands
   render-macos  Render macOS database data to default templates
   export-macos  Export macOS database data
@@ -144,7 +144,7 @@ function print_help {
   export-ios    Export iOS plist data
   backup-ios    Back-up iOS plist data
 
-\e[4mOptions:\e[0m
+\033[4mOptions:\033[0m
   -h, --help   Show help"
 }
 

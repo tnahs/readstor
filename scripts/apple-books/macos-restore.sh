@@ -69,12 +69,12 @@ function check_requirements_are_installed {
 function print_help {
     echo -e "Restore a previously archived macOS Apple Books library.
 
-\e[4mUsage:\e[0m ${NAME} [OPTIONS] PATH
+\033[4mUsage:\033[0m ${NAME} [OPTIONS] PATH
 
-\e[4mArguments:\e[0m
+\033[4mArguments:\033[0m
   path  Path to restore archive from
 
-\e[4mOptions:\e[0m
+\033[4mOptions:\033[0m
   -h, --help  Show help"
 }
 
