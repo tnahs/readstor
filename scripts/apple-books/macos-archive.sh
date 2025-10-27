@@ -25,8 +25,8 @@ function archive_library {
     rsync                                            \
         --archive                                    \
         --extended-attributes                        \
-        "$HOME/Library/Containers/com.apple.BK*"     \
-        "$HOME/Library/Containers/com.apple.iBooks*" \
+        "$HOME"/Library/Containers/com.apple.BK*     \
+        "$HOME"/Library/Containers/com.apple.iBooks* \
         "$archive/Containers"                        \
         || {
             echo "Error: encountered error during rsync for 'Containers'"
@@ -36,7 +36,7 @@ function archive_library {
     rsync                                                       \
         --archive                                               \
         --extended-attributes                                   \
-        "$HOME/Library/Group Containers/group.com.apple.iBooks" \
+        "$HOME"/Library/Group Containers/group.com.apple.iBooks \
         "$archive/Group Containers"                             \
         || {
             echo "Error: encountered error during rsync for 'Group Containers'"
